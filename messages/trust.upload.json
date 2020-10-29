@@ -1,0 +1,7 @@
+{
+  "description": "upload signature to S3. Requires AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID to be set in the environment",
+  "signature": "path to .sig file you want to upload to S3",
+  "bucket": "name of S3 bucket",
+  "keyPrefix": "prefix to add to S3 key",
+  "MissingAwsEnVars": "AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID are required to be set in the environment"
+}
