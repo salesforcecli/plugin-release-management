@@ -5,17 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as chalk from 'chalk';
-import * as util from '../../../package';
 import { verifyDependencies } from '../../../dependencies';
-import { isMonoRepo } from '../../../repository';
+import { isMonoRepo, MultiPackageRepo } from '../../../repository';
+import { SigningResponse } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
 
-interface PrepareResult {
+interface ReleaseResult {
   version: string;
   name: string;
 }
@@ -28,9 +29,8 @@ export default class Release extends SfdxCommand {
       default: false,
       description: messages.getMessage('dryrun'),
     }),
-    sign: flags.boolean({
+    sign: flags.array({
       char: 's',
-      default: false,
       description: messages.getMessage('sign'),
     }),
     npmtag: flags.string({
@@ -50,7 +50,7 @@ export default class Release extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<PrepareResult> {
+  public async run(): Promise<ReleaseResult[]> {
     if (!(await isMonoRepo())) {
       const errType = 'InvalidRepoType';
       throw new SfdxError(messages.getMessage(errType), errType);
@@ -63,62 +63,73 @@ export default class Release extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
 
-    const pkg = await util.Package.create(this.ux);
-    this.ux.log(util.getStepMsg('Validate Next Version'));
-    const pkgValidation = pkg.validateNextVersion();
-    if (!pkgValidation.valid) {
-      const errType = 'InvalidNextVersion';
-      throw new SfdxError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
-    }
-    this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
-    this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
+    const monorepo = await MultiPackageRepo.create(this.ux);
+
+    monorepo.printStage('Validate Next Version');
+    const pkgValidations = monorepo.validate();
+
+    pkgValidations.forEach((pkgValidation) => {
+      if (!pkgValidation.valid) {
+        const errType = 'InvalidNextVersion';
+        throw new SfdxError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
+      }
+      this.ux.log(`Package: ${pkgValidation.name}`);
+      this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
+      this.ux.log(`Next Version: ${pkgValidation.nextVersion}${os.EOL}`);
+    });
 
     if (this.flags.install) {
-      this.ux.log(util.getStepMsg('Install'));
-      pkg.install();
+      monorepo.printStage('Install');
+      monorepo.install();
 
-      this.ux.log(util.getStepMsg('Build'));
-      pkg.build();
+      monorepo.printStage('Build');
+      monorepo.build();
     }
 
-    this.ux.log(util.getStepMsg('Prepare Release'));
-    pkg.prepare({ dryrun: this.flags.dryrun });
+    monorepo.printStage('Prepare Release');
+    monorepo.prepare({ dryrun: this.flags.dryrun });
 
-    let tarfile: string;
+    let signatures: SigningResponse[] = [];
     if (this.flags.sign && !this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Sign'));
-      const signature = await pkg.sign();
-      tarfile = signature.tarPath;
-      this.ux.log(util.getStepMsg('Upload Signature'));
-      pkg.uploadSignature(signature);
+      monorepo.printStage('Sign');
+      signatures = await monorepo.sign(this.flags.sign);
+      monorepo.printStage('Upload Signatures');
+      for (const signature of signatures) {
+        this.ux.log(chalk.dim(signature.name));
+        await monorepo.uploadSignature(signature);
+      }
     }
 
-    this.ux.log(util.getStepMsg('Publish'));
-    pkg.publish({
-      tarfile,
+    if (!this.flags.dryrun) {
+      monorepo.printStage('Push Changes to Git');
+      monorepo.pushChangesToGit();
+    }
+
+    monorepo.printStage('Publish');
+    monorepo.publish({
+      signatures,
       access: this.flags.npmaccess,
       tag: this.flags.npmtag,
       dryrun: this.flags.dryrun,
     });
 
     if (!this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Waiting For Availablity'));
-      const found = await pkg.waitForVersionToExistOnNpm();
+      monorepo.printStage('Waiting For Availablity');
+      const found = await monorepo.waitForAvailability();
       if (!found) {
-        this.ux.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);
+        this.ux.warn('Exceeded timeout waiting for packages to become available');
       }
     }
 
     if (this.flags.sign && !this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Verify Signed Packaged'));
-      pkg.verifySignature();
+      monorepo.printStage('Verify Signed Packaged');
+      monorepo.verifySignature(this.flags.sign);
     }
 
-    this.ux.log(chalk.green.bold(`Successfully released ${pkg.name}@${pkg.nextVersion}`));
+    this.ux.log(monorepo.getSuccessMessage());
 
-    return {
-      version: pkg.nextVersion,
-      name: pkg.name,
-    };
+    return monorepo.packages.map((pkg) => {
+      return { name: pkg.name, version: pkg.getNextVersion() };
+    });
   }
 }

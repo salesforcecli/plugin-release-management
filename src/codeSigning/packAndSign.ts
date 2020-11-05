@@ -83,6 +83,13 @@ export interface SigningResponse {
   name: string;
 }
 
+export interface SigningOpts {
+  publickeyurl: string;
+  signatureurl: string;
+  privatekeypath: string;
+  target?: string;
+}
+
 export const api = {
   /**
    * Validates that a url is a valid salesforce url.
@@ -160,7 +167,7 @@ export const api = {
       verifyInfo.dataToVerify = tarGzStream;
       verifyInfo.signatureStream = sigFilenameStream;
 
-      const req = https.get(publicKeyUrl);
+      const req = https.get(publicKeyUrl, { agent: false });
       validateRequestCert(req);
 
       req.on('response', (response) => {
@@ -311,15 +318,15 @@ export const api = {
    * @param ux - The cli ux interface usually provided by oclif.
    * @return {Promise<SigningResponse>} The SigningResponse
    */
-  async doPackAndSign(args, ux: UX): Promise<SigningResponse> {
+  async doPackAndSign(args: SigningOpts, ux: UX): Promise<SigningResponse> {
     const logger = await Logger.child('packAndSign');
     let packageDotJsonBackedUp = false;
     cliUx = ux;
     pathGetter = new PathGetter(args.target);
 
     try {
-      logger.debug(`validating args.signatureurl: ${args.signatureurl as string}`);
-      logger.debug(`validating args.publickeyurl: ${args.publickeyurl as string}`);
+      logger.debug(`validating args.signatureurl: ${args.signatureurl}`);
+      logger.debug(`validating args.publickeyurl: ${args.publickeyurl}`);
       api.validateUrl(args.signatureurl);
       api.validateUrl(args.publickeyurl);
 
@@ -365,9 +372,7 @@ export const api = {
       cliUx.log(`Backed up ${pathGetter.packageJson} to ${pathGetter.packageJsonBak}`);
 
       // update the package.json object with the signature urls and write it to disk.
-      const sigUrl = `${args.signatureurl as string}${args.signatureurl.endsWith('/') ? '' : '/'}${basename(
-        sigFilename
-      )}`;
+      const sigUrl = `${args.signatureurl}${args.signatureurl.endsWith('/') ? '' : '/'}${basename(sigFilename)}`;
       logger.debug(`sigUrl: ${sigUrl}`);
       packageJson = Object.assign(packageJson, {
         sfdx: {
@@ -410,7 +415,7 @@ export const api = {
           );
         }
         if (verified) {
-          cliUx.log(`Successfully verified signature with public key at: ${args.publickeyurl as string}`);
+          cliUx.log(`Successfully verified signature with public key at: ${args.publickeyurl}`);
           return {
             tarPath: filepath,
             filename: sigFilename,

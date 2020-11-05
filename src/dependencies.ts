@@ -30,27 +30,27 @@ const DEPENDENCIES: Dependency[] = [
   {
     name: 'sfdx-trust',
     type: 'bin',
-    condition: (flags): boolean => Object.keys(flags).includes('sign'),
+    condition: (flags): boolean => flags.sign,
   },
   {
     name: 'AWS_ACCESS_KEY_ID',
     type: 'env',
-    condition: (flags): boolean => Object.keys(flags).includes('sign'),
+    condition: (flags): boolean => flags.sign,
   },
   {
     name: 'AWS_SECRET_ACCESS_KEY',
     type: 'env',
-    condition: (flags): boolean => Object.keys(flags).includes('sign'),
+    condition: (flags): boolean => flags.sign,
   },
   {
     name: 'SALESFORCE_KEY',
     type: 'env',
-    condition: (flags): boolean => Object.keys(flags).includes('sign'),
+    condition: (flags): boolean => flags.sign,
   },
   {
     name: 'NPM_TOKEN',
     type: 'env',
-    condition: (flags): boolean => !Object.keys(flags).includes('dryrun'),
+    condition: (flags): boolean => !flags.dryrun,
   },
 ];
 

@@ -1,7 +1,7 @@
 {
   "description": "prepare and publish npm packages inside a monorepo (e.g. lerna)",
-  "dryrun": "If true, will not commit changes to repo or push any tags",
-  "sign": "If true, then the package will be signed and the signature will be uploaded to S3",
+  "dryrun": "ff true, will not commit changes to repo or push any tags",
+  "sign": "list of packages to be signed",
   "npmTag": "tag to use when publishing to npm",
   "npmAccess": "access level to use when publishing to npm",
   "install": "Run yarn install and build on repository",

@@ -7,15 +7,14 @@
 
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import * as chalk from 'chalk';
-import * as util from '../../../package';
 import { verifyDependencies } from '../../../dependencies';
-import { isMonoRepo } from '../../../repository';
+import { isMonoRepo, SinglePackageRepo } from '../../../repository';
+import { SigningResponse } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
 
-interface PrepareResult {
+interface ReleaseResult {
   version: string;
   name: string;
 }
@@ -50,7 +49,7 @@ export default class Release extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<PrepareResult> {
+  public async run(): Promise<ReleaseResult> {
     if (await isMonoRepo()) {
       const errType = 'InvalidRepoType';
       throw new SfdxError(messages.getMessage(errType), errType);
@@ -63,58 +62,63 @@ export default class Release extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
 
-    const pkg = await util.Package.create(this.ux);
-    this.ux.log(util.getStepMsg('Validate Next Version'));
-    const pkgValidation = pkg.validateNextVersion();
+    const pkg = await SinglePackageRepo.create(this.ux);
+    pkg.printStage('Validate Next Version');
+    const pkgValidation = pkg.validate();
     if (!pkgValidation.valid) {
       const errType = 'InvalidNextVersion';
       throw new SfdxError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
     }
+    this.ux.log(`Name: ${pkgValidation.name}`);
     this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
     this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
 
     if (this.flags.install) {
-      this.ux.log(util.getStepMsg('Install'));
+      pkg.printStage('Install');
       pkg.install();
 
-      this.ux.log(util.getStepMsg('Build'));
+      pkg.printStage('Build');
       pkg.build();
     }
 
-    this.ux.log(util.getStepMsg('Prepare Release'));
+    pkg.printStage('Prepare Release');
     pkg.prepare({ dryrun: this.flags.dryrun });
 
-    let tarfile: string;
+    let signature: SigningResponse;
     if (this.flags.sign && this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Sign'));
-      const signature = await pkg.sign();
-      tarfile = signature.tarPath;
-      this.ux.log(util.getStepMsg('Upload Signature'));
+      pkg.printStage('Sign');
+      signature = await pkg.sign();
+      pkg.printStage('Upload Signature');
       await pkg.uploadSignature(signature);
     }
 
-    this.ux.log(util.getStepMsg('Publish'));
+    if (!this.flags.dryrun) {
+      pkg.printStage('Push Changes to Git');
+      pkg.pushChangesToGit();
+    }
+
+    pkg.printStage('Publish');
     pkg.publish({
-      tarfile,
+      signatures: [signature],
       access: this.flags.npmaccess,
       tag: this.flags.npmtag,
       dryrun: this.flags.dryrun,
     });
 
     if (!this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Waiting For Availablity'));
-      const found = await pkg.waitForVersionToExistOnNpm();
+      pkg.printStage('Waiting For Availablity');
+      const found = await pkg.waitForAvailability();
       if (!found) {
         this.ux.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);
       }
     }
 
     if (this.flags.sign && !this.flags.dryrun) {
-      this.ux.log(util.getStepMsg('Verify Signed Packaged'));
+      pkg.printStage('Verify Signed Packaged');
       pkg.verifySignature();
     }
 
-    this.ux.log(chalk.green.bold(`Successfully released ${pkg.name}@${pkg.nextVersion}`));
+    this.ux.log(pkg.getSuccessMessage());
 
     return {
       version: pkg.nextVersion,

@@ -7,7 +7,7 @@
 
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { api as packAndSignApi, SigningResponse } from '../../codeSigning/packAndSign';
+import { api as packAndSignApi, SigningOpts, SigningResponse } from '../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'trust.sign');
@@ -38,6 +38,6 @@ export default class Sign extends SfdxCommand {
   };
 
   public async run(): Promise<SigningResponse> {
-    return packAndSignApi.doPackAndSign(this.flags, this.ux);
+    return packAndSignApi.doPackAndSign(this.flags as SigningOpts, this.ux);
   }
 }
