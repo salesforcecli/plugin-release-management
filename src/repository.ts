@@ -46,28 +46,13 @@ export async function isMonoRepo(): Promise<boolean> {
   return fs.fileExists('lerna.json');
 }
 
-async function readLernaJson(): Promise<LernaJson> {
-  return (await fs.readJson('lerna.json')) as LernaJson;
-}
-
 async function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
 
-async function getListOfPackages(): Promise<string[]> {
-  const workingDir = pwd().stdout;
-  const lernaJson = await readLernaJson();
-  const packageGlobs = lernaJson.packages || ['*'];
-  const packages = packageGlobs
-    .map((pGlob) => glob.sync(pGlob))
-    .reduce((x, y) => x.concat(y), [])
-    .map((pkg) => path.join(workingDir, pkg));
-  return packages;
-}
-
-class Signer extends AsyncOptionalCreatable {
+export class Signer extends AsyncOptionalCreatable {
   public static PUBLIC_KEY_URL = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt';
   public static SIGNATURE_URL = 'https://developer.salesforce.com/media/salesforce-cli/signatures';
   public keyPath: string;
@@ -166,6 +151,7 @@ abstract class Repository extends AsyncOptionalCreatable {
 
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
+  public abstract prepare(options: PrepareOpts): void;
   public abstract publish(options: PublishOpts): void;
   public abstract verifySignature(packageNames?: string[]): void;
   public abstract async sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
@@ -185,14 +171,10 @@ export class MultiPackageRepo extends Repository {
   }
 
   public validate(): VersionValidation[] {
-    const validations: VersionValidation[] = [];
-    this.packages.forEach((pkg) => {
-      validations.push(pkg.validateNextVersion());
-    });
-    return validations;
+    return this.packages.map((pkg) => pkg.validateNextVersion());
   }
 
-  public prepare(opts?: PrepareOpts): void {
+  public prepare(opts: PrepareOpts = {}): void {
     if (opts.dryrun) {
       const cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push --no-git-tag-version';
       this.execCommand(cmd);
@@ -216,9 +198,9 @@ export class MultiPackageRepo extends Repository {
     return responses;
   }
 
-  public publish(opts: PublishOpts): void {
+  public publish(opts: PublishOpts = {}): void {
     const { dryrun, signatures, access, tag } = opts;
-    const tarPathsByPkgName: { [key: string]: string } = signatures.reduce((res, curr) => {
+    const tarPathsByPkgName: { [key: string]: string } = (signatures || []).reduce((res, curr) => {
       res[curr.name] = curr.tarPath;
       return res;
     }, {});
@@ -264,7 +246,7 @@ export class MultiPackageRepo extends Repository {
 
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
-    const pkgPaths = await getListOfPackages();
+    const pkgPaths = await this.getPackagePaths();
     const nextVersions = this.determineNextVersionByPackage();
     for (const pkgPath of pkgPaths) {
       const pkg = await Package.create(pkgPath);
@@ -274,15 +256,26 @@ export class MultiPackageRepo extends Repository {
     }
   }
 
+  private async getPackagePaths(): Promise<string[]> {
+    const workingDir = pwd().stdout;
+    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
+    const packageGlobs = lernaJson.packages || ['*'];
+    const packages = packageGlobs
+      .map((pGlob) => glob.sync(pGlob))
+      .reduce((x, y) => x.concat(y), [])
+      .map((pkg) => path.join(workingDir, pkg));
+    return packages;
+  }
+
   private determineNextVersionByPackage(): VersionsByPackage {
     const currentVersionRegex = /(?<=:\s)([0-9]{1,}\.|.){2,}(?=\s=>)/gi;
     const nextVersionsRegex = /(?<==>\s)([0-9]{1,}\.|.){2,}/gi;
     const pkgNameRegex = /(?<=-\s)(.*?)(?=:)/gi;
-    const result = exec(
+    const result = this.execCommand(
       'npx lerna version --conventional-commits --yes --no-changelog --no-commit-hooks --no-git-tag-version --no-push',
-      { silent: true }
+      true
     )
-      .stdout.replace(`Changes:${os.EOL}`, '')
+      .replace(`Changes:${os.EOL}`, '')
       .split(os.EOL)
       .filter((s) => !!s)
       .reduce((res, current) => {
@@ -317,7 +310,7 @@ export class SinglePackageRepo extends Repository {
     return this.package.validateNextVersion();
   }
 
-  public prepare(opts?: PrepareOpts): void {
+  public prepare(opts: PrepareOpts = {}): void {
     const { dryrun } = opts;
     let cmd =
       'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
@@ -336,7 +329,7 @@ export class SinglePackageRepo extends Repository {
     this.execCommand(cmd);
   }
 
-  public publish(opts: PublishOpts): void {
+  public publish(opts: PublishOpts = {}): void {
     const { dryrun, signatures, access, tag } = opts;
     let cmd = 'npm publish';
     const tarPath = get(signatures, '0.tarPath', null) as Nullable<string>;
@@ -385,9 +378,9 @@ export class SinglePackageRepo extends Repository {
       return this.package.projectJson.version;
     } else {
       this.logger.debug('Using standard-version to determine next version');
-      const result = exec('npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog', { silent: true });
+      const result = this.execCommand('npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog', true);
       const nextVersionRegex = /(?<=to\s)([0-9]{1,}\.|.){2,}/gi;
-      return result.stdout.match(nextVersionRegex)[0];
+      return result.match(nextVersionRegex)[0];
     }
   }
 }

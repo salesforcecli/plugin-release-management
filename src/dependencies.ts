@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { exec } from 'shelljs';
+import { which } from 'shelljs';
 import { Env } from '@salesforce/kit';
 import { OutputFlags } from '@oclif/parser';
 
@@ -66,7 +66,7 @@ export function verifyDependencies(args: Flags): { failures: number; results: Re
     if (dep.condition(args)) {
       switch (dep.type) {
         case 'bin':
-          result.passed = !!exec(`which ${dep.name}`, { silent: true }).stdout;
+          result.passed = !!which(dep.name);
           if (!result.passed) {
             result.message = `Install ${dep.name}`;
           }
