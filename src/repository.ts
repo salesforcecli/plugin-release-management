@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as glob from 'glob';
 import { pwd } from 'shelljs';
-import { AnyJson } from '@salesforce/ts-types';
+import { AnyJson, ensureString } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
@@ -115,10 +115,14 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.execCommand('yarn build', silent);
   }
 
+  public getBranchName(): string {
+    const branch =
+      this.env.getString('CIRCLE_BRANCH', null) || exec('npx git branch --show-current', { silent: true }).stdout;
+    return ensureString(branch);
+  }
+
   public pushChangesToGit(): void {
-    const currentBranch =
-      exec('npx git branch --show-current', { silent: true }).stdout || this.env.getString('CIRCLE_BRANCH');
-    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${currentBranch}`;
+    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${this.getBranchName()}`;
     this.ux.log(cmd);
     exec(cmd, { silent: false });
   }
