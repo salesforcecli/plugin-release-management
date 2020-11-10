@@ -115,7 +115,7 @@ export default class Release extends SfdxCommand {
     }
 
     lernaRepo.printStage('Publish');
-    lernaRepo.publish({
+    await lernaRepo.publish({
       signatures,
       access: this.flags.npmaccess,
       tag: this.flags.npmtag,

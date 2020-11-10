@@ -98,7 +98,7 @@ export default class Release extends SfdxCommand {
     }
 
     pkg.printStage('Publish');
-    pkg.publish({
+    await pkg.publish({
       signatures: [signature],
       access: this.flags.npmaccess,
       tag: this.flags.npmtag,

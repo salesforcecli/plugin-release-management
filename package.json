@@ -77,7 +77,12 @@
     "bin": "sfdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "topics": {
+      "npm": {
+        "description": "release npm packages"
+      }
+    }
   },
   "repository": "salesforcecli/plugin-release-management",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "description": "prepare and publish npm package",
+  "description": "publish npm package",
   "dryrun": "If true, will not commit changes to repo or push any tags",
   "sign": "If true, then the package will be signed and the signature will be uploaded to S3",
   "npmTag": "tag to use when publishing to npm",

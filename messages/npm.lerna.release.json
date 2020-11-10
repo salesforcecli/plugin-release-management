@@ -1,5 +1,5 @@
 {
-  "description": "prepare and publish npm packages inside a monorepo (e.g. lerna)",
+  "description": "publish npm packages from a lerna repository",
   "dryrun": "if true, will not commit changes to repo or push any tags",
   "sign": "list of packages to be signed",
   "npmTag": "tag to use when publishing to npm",

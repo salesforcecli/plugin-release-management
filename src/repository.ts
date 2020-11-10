@@ -98,11 +98,13 @@ export class Signer extends AsyncOptionalCreatable {
 
 abstract class Repository extends AsyncOptionalCreatable {
   protected ux: UX;
+  protected env: Env;
   private stepCounter = 1;
 
   public constructor(ux: UX) {
     super(ux);
     this.ux = ux;
+    this.env = new Env();
   }
 
   public install(silent = false): void {
@@ -114,7 +116,8 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   public pushChangesToGit(): void {
-    const currentBranch = exec('npx git branch --show-current', { silent: true }).stdout;
+    const currentBranch =
+      exec('npx git branch --show-current', { silent: true }).stdout || this.env.getString('CIRCLE_BRANCH');
     const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${currentBranch}`;
     this.ux.log(cmd);
     exec(cmd, { silent: false });
@@ -140,6 +143,14 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.ux.log(`VersionId: ${result.VersionId}`);
   }
 
+  protected async writeNpmToken(): Promise<void> {
+    const token = this.env.getString('NPM_TOKEN');
+    const authString = `//registry.npmjs.org/:_authToken=${token}`;
+    const home = this.env.getString('HOME');
+    const npmrcPath = path.join(home, '.npmrc');
+    await fs.writeFile(npmrcPath, authString);
+  }
+
   protected execCommand(cmd: string, silent?: boolean): ShellString {
     if (!silent) this.ux.log(`${chalk.dim(cmd)}${os.EOL}`);
     const result = exec(cmd, { silent });
@@ -153,8 +164,8 @@ abstract class Repository extends AsyncOptionalCreatable {
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
-  public abstract publish(options: PublishOpts): void;
   public abstract verifySignature(packageNames?: string[]): void;
+  public abstract async publish(options: PublishOpts): Promise<void>;
   public abstract async sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
   public abstract async waitForAvailability(): Promise<boolean>;
   protected abstract async init(): Promise<void>;
@@ -199,8 +210,9 @@ export class LernaRepo extends Repository {
     return responses;
   }
 
-  public publish(opts: PublishOpts = {}): void {
+  public async publish(opts: PublishOpts = {}): Promise<void> {
     const { dryrun, signatures, access, tag } = opts;
+    if (!dryrun) await this.writeNpmToken();
     const tarPathsByPkgName: { [key: string]: string } = (signatures || []).reduce((res, curr) => {
       res[curr.name] = curr.tarPath;
       return res;
@@ -334,8 +346,9 @@ export class SinglePackageRepo extends Repository {
     this.execCommand(cmd);
   }
 
-  public publish(opts: PublishOpts = {}): void {
+  public async publish(opts: PublishOpts = {}): Promise<void> {
     const { dryrun, signatures, access, tag } = opts;
+    if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
     const tarPath = get(signatures, '0.tarPath', null) as Nullable<string>;
     if (tarPath) cmd += ` ${tarPath}`;
