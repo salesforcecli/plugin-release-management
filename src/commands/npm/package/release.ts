@@ -85,7 +85,7 @@ export default class Release extends SfdxCommand {
     pkg.prepare({ dryrun: this.flags.dryrun });
 
     let signature: SigningResponse;
-    if (this.flags.sign && this.flags.dryrun) {
+    if (this.flags.sign && !this.flags.dryrun) {
       pkg.printStage('Sign');
       signature = await pkg.sign();
       pkg.printStage('Upload Signature');
