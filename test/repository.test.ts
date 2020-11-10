@@ -196,19 +196,19 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {
-      repo.publish({ dryrun: true });
+      await repo.publish({ dryrun: true });
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.include('--dry-run');
     });
 
     it('should not use the --dry-run flag when the dryrun option is not provided', async () => {
-      repo.publish();
+      await repo.publish();
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.not.include('--dry-run');
     });
 
     it('should publish the tarfile when a signature is provided in the options', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         signatures: [
           { tarPath: 'tarfile.tar', verified: true, version: '1.1.0', name: pkgName, filename: 'signature.sig' },
@@ -219,7 +219,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should publish the package with the specified tag', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         tag: 'test',
       });
@@ -228,7 +228,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should publish the package with the specified access level', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         access: 'restricted',
       });
@@ -377,19 +377,19 @@ describe('LernaRepo', () => {
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {
-      repo.publish({ dryrun: true });
+      await repo.publish({ dryrun: true });
       const cmd = execStub.lastCall.args[0];
       expect(cmd).to.include('--dry-run');
     });
 
     it('should not use the --dry-run flag when the dryrun option is not provided', async () => {
-      repo.publish();
+      await repo.publish();
       const cmd = execStub.lastCall.args[0];
       expect(cmd).to.not.include('--dry-run');
     });
 
     it('should publish the tarfile when a signature is provided in the options', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         signatures: [
           { tarPath: 'tarfile.tar', verified: true, version: '1.1.0', name: pkgName, filename: 'signature.sig' },
@@ -400,7 +400,7 @@ describe('LernaRepo', () => {
     });
 
     it('should publish the package with the specified tag', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         tag: 'test',
       });
@@ -409,7 +409,7 @@ describe('LernaRepo', () => {
     });
 
     it('should publish the package with the specified access level', async () => {
-      repo.publish({
+      await repo.publish({
         dryrun: true,
         access: 'restricted',
       });
