@@ -166,6 +166,26 @@ abstract class Repository extends AsyncOptionalCreatable {
     }
   }
 
+  protected async poll(checkFn: Function): Promise<boolean> {
+    const isTTY = !this.env.getBoolean('CI') || !this.env.getBoolean('CIRCLECI') || true;
+    let found = false;
+    let attempts = 0;
+    const maxAttempts = 300;
+    const start = isTTY ? this.ux.startSpinner.bind(this) : this.ux.log.bind(this);
+    const update = isTTY ? this.ux.setSpinnerStatus.bind(this) : this.ux.log.bind(this);
+    const stop = isTTY ? this.ux.stopSpinner.bind(this) : this.ux.log.bind(this);
+
+    start('Polling for new version(s) to become available on npm');
+    while (attempts < maxAttempts && !found) {
+      attempts += 1;
+      update(`attempt: ${attempts} of ${maxAttempts}`);
+      found = checkFn();
+      await sleep(1000);
+    }
+    stop(attempts >= maxAttempts ? 'failed' : 'done');
+    return found;
+  }
+
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
@@ -364,18 +384,7 @@ export class SinglePackageRepo extends Repository {
   }
 
   public async waitForAvailability(): Promise<boolean> {
-    let found = false;
-    let attempts = 0;
-    const maxAttempts = 300;
-    this.ux.startSpinner('Polling for new version to become available on npm');
-    while (attempts < maxAttempts && !found) {
-      attempts += 1;
-      this.ux.setSpinnerStatus(`attempt: ${attempts} of ${maxAttempts}`);
-      found = this.package.nextVersionIsAvailable();
-      await sleep(1000);
-    }
-    this.ux.stopSpinner(attempts >= maxAttempts ? 'failed' : 'done');
-    return found;
+    return this.poll(this.package.nextVersionIsAvailable.bind(this));
   }
 
   public getSuccessMessage(): string {
