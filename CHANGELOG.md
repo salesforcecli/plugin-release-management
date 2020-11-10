@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.4...v0.0.5) (2020-11-10)
+
+### Bug Fixes
+
+- unsafe perm ([fd4f127](https://github.com/salesforcecli/plugin-release-management/commit/fd4f1273fa9c2381ef70659d6a5f705ab4e8ed33))
+
 ### [0.0.4](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.3...v0.0.4) (2020-11-10)
 
 ### Bug Fixes
