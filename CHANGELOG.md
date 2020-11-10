@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.7...v0.0.8) (2020-11-10)
+
+### Bug Fixes
+
+- polling ([8708f04](https://github.com/salesforcecli/plugin-release-management/commit/8708f042ea75bc81fa0d2a1a9d7b187cdd9d949e))
+
 ### [0.0.7](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.6...v0.0.7) (2020-11-10)
 
 ### Bug Fixes
