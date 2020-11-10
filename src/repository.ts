@@ -13,7 +13,7 @@ import { AnyJson } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, Env } from '@salesforce/kit';
+import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
 import { get, Nullable } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
@@ -26,6 +26,7 @@ type LernaJson = {
 
 interface PrepareOpts {
   dryrun?: boolean;
+  githubRelease?: boolean;
 }
 
 interface PublishOpts {
@@ -46,30 +47,30 @@ export async function isMonoRepo(): Promise<boolean> {
   return fs.fileExists('lerna.json');
 }
 
-async function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 export class Signer extends AsyncOptionalCreatable {
-  public static PUBLIC_KEY_URL = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt';
-  public static SIGNATURE_URL = 'https://developer.salesforce.com/media/salesforce-cli/signatures';
+  public static DEFAULT_PUBLIC_KEY_URL = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt';
+  public static DEFAULT_SIGNATURE_URL = 'https://developer.salesforce.com/media/salesforce-cli/signatures';
   public keyPath: string;
+  public publicKeyUrl: string;
+  public signatureUrl: string;
+
   private logger: Logger;
   private ux: UX;
+  private env: Env;
 
   public constructor(ux: UX) {
     super(ux);
     this.ux = ux;
+    this.env = new Env();
+    this.publicKeyUrl = this.env.getString('SFDX_PUBLIC_KEY_URL', Signer.DEFAULT_PUBLIC_KEY_URL);
+    this.signatureUrl = this.env.getString('SFDX_SIGNATURE_URL', Signer.DEFAULT_SIGNATURE_URL);
   }
 
   public async prepare(): Promise<void> {
-    const fingerprint = await packAndSignApi.retrieveFingerprint(Signer.PUBLIC_KEY_URL);
-    const env = new Env();
-    env.setString('SFDX_DEVELOPER_TRUSTED_FINGERPRINT', fingerprint);
+    const fingerprint = await packAndSignApi.retrieveFingerprint(this.publicKeyUrl);
+    this.env.setString('SFDX_DEVELOPER_TRUSTED_FINGERPRINT', fingerprint);
 
-    const key = Buffer.from(env.getString('SALESFORCE_KEY'), 'base64').toString();
+    const key = Buffer.from(this.env.getString('SALESFORCE_KEY'), 'base64').toString();
     this.keyPath = path.join(os.tmpdir(), 'salesforce-cli.key');
     await fs.writeFile(this.keyPath, key);
     this.logger.debug(`Wrote key to ${this.keyPath}`);
@@ -78,8 +79,8 @@ export class Signer extends AsyncOptionalCreatable {
   public async sign(target?: string): Promise<SigningResponse> {
     const repsonse = packAndSignApi.doPackAndSign(
       {
-        signatureurl: Signer.SIGNATURE_URL,
-        publickeyurl: Signer.PUBLIC_KEY_URL,
+        signatureurl: this.signatureUrl,
+        publickeyurl: this.publicKeyUrl,
         privatekeypath: this.keyPath,
         target,
       },
@@ -159,7 +160,7 @@ abstract class Repository extends AsyncOptionalCreatable {
   protected abstract async init(): Promise<void>;
 }
 
-export class MultiPackageRepo extends Repository {
+export class LernaRepo extends Repository {
   public packages: Package[] = [];
 
   // Both loggers are used because some logs we only want to show in the debug output
@@ -175,14 +176,14 @@ export class MultiPackageRepo extends Repository {
   }
 
   public prepare(opts: PrepareOpts = {}): void {
-    if (opts.dryrun) {
-      const cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push --no-git-tag-version';
-      this.execCommand(cmd);
+    const { dryrun, githubRelease } = opts;
+    let cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push';
+    if (dryrun) cmd += ' --no-git-tag-version';
+    if (!dryrun && githubRelease) cmd += ' --create-release github';
+    this.execCommand(cmd);
+
+    if (dryrun) {
       this.revertUnstagedChanges();
-    } else {
-      const cmd =
-        'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push --message "chore(release): publish [ci skip]"';
-      this.execCommand(cmd);
     }
   }
 
@@ -224,7 +225,7 @@ export class MultiPackageRepo extends Repository {
       attempts += 1;
       this.ux.setSpinnerStatus(`attempt: ${attempts} of ${maxAttempts}`);
       found = this.packages.every((pkg) => pkg.nextVersionIsAvailable());
-      await wait(1000);
+      await sleep(1000);
     }
     this.ux.stopSpinner(attempts >= maxAttempts ? 'failed' : 'done');
     return found;
@@ -248,11 +249,15 @@ export class MultiPackageRepo extends Repository {
     this.logger = await Logger.child(this.constructor.name);
     const pkgPaths = await this.getPackagePaths();
     const nextVersions = this.determineNextVersionByPackage();
-    for (const pkgPath of pkgPaths) {
-      const pkg = await Package.create(pkgPath);
-      const nextVersion = nextVersions[pkg.name].nextVersion;
-      pkg.setNextVersion(nextVersion);
-      this.packages.push(pkg);
+    if (!isEmpty(nextVersions)) {
+      for (const pkgPath of pkgPaths) {
+        const pkg = await Package.create(pkgPath);
+        const nextVersion = get(nextVersions, `${pkg.name}.nextVersion`, null) as string;
+        if (nextVersion) {
+          pkg.setNextVersion(nextVersion);
+          this.packages.push(pkg);
+        }
+      }
     }
   }
 
@@ -349,7 +354,7 @@ export class SinglePackageRepo extends Repository {
       attempts += 1;
       this.ux.setSpinnerStatus(`attempt: ${attempts} of ${maxAttempts}`);
       found = this.package.nextVersionIsAvailable();
-      await wait(1000);
+      await sleep(1000);
     }
     this.ux.stopSpinner(attempts >= maxAttempts ? 'failed' : 'done');
     return found;

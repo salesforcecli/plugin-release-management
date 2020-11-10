@@ -4,7 +4,7 @@
   "sign": "If true, then the package will be signed and the signature will be uploaded to S3",
   "npmTag": "tag to use when publishing to npm",
   "npmAccess": "access level to use when publishing to npm",
-  "install": "Run yarn install and build on repository",
+  "install": "run yarn install and build on repository",
   "InvalidNextVersion": "%s already exists in the public npm registry",
   "MissingDependencies": "Missing requred environment variables or utilites",
   "InvalidRepoType": "Cannot run this command on a monorepo. Use sfdx npm:monorepo:release instead."

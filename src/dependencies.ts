@@ -52,6 +52,11 @@ const DEPENDENCIES: Dependency[] = [
     type: 'env',
     condition: (flags): boolean => !flags.dryrun,
   },
+  {
+    name: 'GH_TOKEN',
+    type: 'env',
+    condition: (flags): boolean => flags.githubrelease,
+  },
 ];
 
 export function verifyDependencies(args: Flags): { failures: number; results: Result[] } {

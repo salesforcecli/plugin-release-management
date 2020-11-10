@@ -25,6 +25,7 @@ describe('Depedencies', () => {
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
       { name: 'SALESFORCE_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
+      { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);
   });
 
@@ -59,6 +60,7 @@ describe('Depedencies', () => {
         passed: false,
         message: 'Set NPM_TOKEN environment variable',
       },
+      { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);
   });
 
@@ -78,6 +80,7 @@ describe('Depedencies', () => {
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
       { name: 'SALESFORCE_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
+      { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);
   });
 });

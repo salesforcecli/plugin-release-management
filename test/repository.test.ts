@@ -13,7 +13,7 @@ import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import * as sinon from 'sinon';
 import { UX } from '@salesforce/command';
 import { Package } from '../src/package';
-import { MultiPackageRepo, SinglePackageRepo, Signer } from '../src/repository';
+import { LernaRepo, SinglePackageRepo, Signer } from '../src/repository';
 
 const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
@@ -238,7 +238,7 @@ describe('SinglePackageRepo', () => {
   });
 });
 
-describe('MultiPackageRepo', () => {
+describe('LernaRepo', () => {
   let uxStub: UX;
   let execStub: sinon.SinonStub;
   let revertUnstagedChangesStub: sinon.SinonStub;
@@ -246,10 +246,8 @@ describe('MultiPackageRepo', () => {
   beforeEach(async () => {
     uxStub = (stubInterface<UX>($$.SANDBOX, {}) as unknown) as UX;
     // if this stub doesn't exist, the test will revert all of your unstaged changes
-    revertUnstagedChangesStub = stubMethod($$.SANDBOX, MultiPackageRepo.prototype, 'revertUnstagedChanges').returns(
-      null
-    );
-    stubMethod($$.SANDBOX, MultiPackageRepo.prototype, 'getPackagePaths').returns(
+    revertUnstagedChangesStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);
+    stubMethod($$.SANDBOX, LernaRepo.prototype, 'getPackagePaths').returns(
       Promise.resolve([path.join('packages', 'my-plugin')])
     );
     stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -257,7 +255,7 @@ describe('MultiPackageRepo', () => {
       version: '1.0.0',
       versions: ['1.0.0'],
     });
-    execStub = stubMethod($$.SANDBOX, MultiPackageRepo.prototype, 'execCommand').returns(
+    execStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'execCommand').returns(
       `Changes:${os.EOL} - ${pkgName}: 1.0.0 => 1.1.0`
     );
   });
@@ -267,7 +265,7 @@ describe('MultiPackageRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       expect(repo.packages[0].getNextVersion()).to.equal('1.1.0');
     });
   });
@@ -278,7 +276,7 @@ describe('MultiPackageRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       repo.packages[0].setNextVersion('2.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal([
@@ -296,7 +294,7 @@ describe('MultiPackageRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       repo.packages[0].setNextVersion('1.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal([
@@ -318,7 +316,7 @@ describe('MultiPackageRepo', () => {
     });
 
     it('should run lerna with --no-git-tag-version flag when the dryrun option is provided', async () => {
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       repo.prepare({ dryrun: true });
       const cmd = execStub.secondCall.args[0];
       expect(cmd).to.include('--no-git-tag-version');
@@ -328,7 +326,7 @@ describe('MultiPackageRepo', () => {
     });
 
     it('should run lerna without --no-git-tag-version flag when the dryrun option is not provided', async () => {
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       repo.prepare();
       const cmd = execStub.secondCall.args[0];
       expect(cmd).to.not.include('--no-git-tag-version');
@@ -348,7 +346,7 @@ describe('MultiPackageRepo', () => {
     it('should sign the packages', async () => {
       const signerStub = stubInterface<Signer>($$.SANDBOX, {});
       stubMethod($$.SANDBOX, Signer, 'create').returns(Promise.resolve(signerStub));
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       await repo.sign([pkgName]);
       expect(signerStub.sign.callCount).to.equal(1);
     });
@@ -362,20 +360,20 @@ describe('MultiPackageRepo', () => {
     });
 
     it('should use sfdx-trust to verify that the packages were signed', async () => {
-      const repo = await MultiPackageRepo.create(uxStub);
+      const repo = await LernaRepo.create(uxStub);
       repo.verifySignature([pkgName]);
       expect(execStub.lastCall.args[0]).to.include('sfdx-trust');
     });
   });
 
   describe('publish', () => {
-    let repo: MultiPackageRepo;
+    let repo: LernaRepo;
 
     beforeEach(async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
-      repo = await MultiPackageRepo.create(uxStub);
+      repo = await LernaRepo.create(uxStub);
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {

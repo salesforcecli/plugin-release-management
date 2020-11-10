@@ -10,11 +10,11 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { verifyDependencies } from '../../../dependencies';
-import { isMonoRepo, MultiPackageRepo } from '../../../repository';
+import { isMonoRepo, LernaRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.lerna.release');
 
 interface ReleaseResult {
   version: string;
@@ -48,6 +48,10 @@ export default class Release extends SfdxCommand {
       description: messages.getMessage('install'),
       allowNo: true,
     }),
+    githubrelease: flags.boolean({
+      default: false,
+      description: messages.getMessage('githubRelease'),
+    }),
   };
 
   public async run(): Promise<ReleaseResult[]> {
@@ -63,10 +67,15 @@ export default class Release extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
 
-    const monorepo = await MultiPackageRepo.create(this.ux);
+    const lernaRepo = await LernaRepo.create(this.ux);
 
-    monorepo.printStage('Validate Next Version');
-    const pkgValidations = monorepo.validate();
+    lernaRepo.printStage('Validate Next Version');
+    const pkgValidations = lernaRepo.validate();
+
+    if (!pkgValidations.length) {
+      const errType = 'NoChangesToPublish';
+      throw new SfdxError(messages.getMessage(errType), errType);
+    }
 
     pkgValidations.forEach((pkgValidation) => {
       if (!pkgValidation.valid) {
@@ -79,34 +88,34 @@ export default class Release extends SfdxCommand {
     });
 
     if (this.flags.install) {
-      monorepo.printStage('Install');
-      monorepo.install();
+      lernaRepo.printStage('Install');
+      lernaRepo.install();
 
-      monorepo.printStage('Build');
-      monorepo.build();
+      lernaRepo.printStage('Build');
+      lernaRepo.build();
     }
 
-    monorepo.printStage('Prepare Release');
-    monorepo.prepare({ dryrun: this.flags.dryrun });
+    lernaRepo.printStage('Prepare Release');
+    lernaRepo.prepare({ dryrun: this.flags.dryrun, githubRelease: this.flags.githubrelease });
 
     let signatures: SigningResponse[] = [];
     if (this.flags.sign && !this.flags.dryrun) {
-      monorepo.printStage('Sign');
-      signatures = await monorepo.sign(this.flags.sign);
-      monorepo.printStage('Upload Signatures');
+      lernaRepo.printStage('Sign');
+      signatures = await lernaRepo.sign(this.flags.sign);
+      lernaRepo.printStage('Upload Signatures');
       for (const signature of signatures) {
         this.ux.log(chalk.dim(signature.name));
-        await monorepo.uploadSignature(signature);
+        await lernaRepo.uploadSignature(signature);
       }
     }
 
     if (!this.flags.dryrun) {
-      monorepo.printStage('Push Changes to Git');
-      monorepo.pushChangesToGit();
+      lernaRepo.printStage('Push Changes to Git');
+      lernaRepo.pushChangesToGit();
     }
 
-    monorepo.printStage('Publish');
-    monorepo.publish({
+    lernaRepo.printStage('Publish');
+    lernaRepo.publish({
       signatures,
       access: this.flags.npmaccess,
       tag: this.flags.npmtag,
@@ -114,21 +123,21 @@ export default class Release extends SfdxCommand {
     });
 
     if (!this.flags.dryrun) {
-      monorepo.printStage('Waiting For Availablity');
-      const found = await monorepo.waitForAvailability();
+      lernaRepo.printStage('Waiting For Availablity');
+      const found = await lernaRepo.waitForAvailability();
       if (!found) {
         this.ux.warn('Exceeded timeout waiting for packages to become available');
       }
     }
 
     if (this.flags.sign && !this.flags.dryrun) {
-      monorepo.printStage('Verify Signed Packaged');
-      monorepo.verifySignature(this.flags.sign);
+      lernaRepo.printStage('Verify Signed Packaged');
+      lernaRepo.verifySignature(this.flags.sign);
     }
 
-    this.ux.log(monorepo.getSuccessMessage());
+    this.ux.log(lernaRepo.getSuccessMessage());
 
-    return monorepo.packages.map((pkg) => {
+    return lernaRepo.packages.map((pkg) => {
       return { name: pkg.name, version: pkg.getNextVersion() };
     });
   }
