@@ -19,7 +19,6 @@ export type NpmPackage = {
   name: string;
   version: string;
   versions: string[];
-  'dist-tags': string[];
 } & AnyJson;
 
 export async function readProjectJson(rootDir?: string): Promise<ProjectJson> {
@@ -105,7 +104,6 @@ export class Package extends AsyncOptionalCreatable {
       name: this.name,
       version: this.projectJson.version,
       versions: [],
-      'dist-tags': [],
     };
   }
 }

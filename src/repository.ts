@@ -167,13 +167,15 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   protected async poll(checkFn: Function): Promise<boolean> {
-    const isTTY = !this.env.getBoolean('CI') || !this.env.getBoolean('CIRCLECI') || true;
+    const isNonTTY = this.env.getBoolean('CI') || this.env.getBoolean('CIRCLECI');
     let found = false;
     let attempts = 0;
     const maxAttempts = 300;
-    const start = isTTY ? this.ux.startSpinner.bind(this) : this.ux.log.bind(this);
-    const update = isTTY ? this.ux.setSpinnerStatus.bind(this) : this.ux.log.bind(this);
-    const stop = isTTY ? this.ux.stopSpinner.bind(this) : this.ux.log.bind(this);
+    const start = isNonTTY ? (msg: string): UX => this.ux.log(msg) : (msg: string): void => this.ux.startSpinner(msg);
+    const update = isNonTTY
+      ? (msg: string): UX => this.ux.log(msg)
+      : (msg: string): void => this.ux.setSpinnerStatus(msg);
+    const stop = isNonTTY ? (msg: string): UX => this.ux.log(msg) : (msg: string): void => this.ux.stopSpinner(msg);
 
     start('Polling for new version(s) to become available on npm');
     while (attempts < maxAttempts && !found) {
@@ -254,18 +256,9 @@ export class LernaRepo extends Repository {
   }
 
   public async waitForAvailability(): Promise<boolean> {
-    let found = false;
-    let attempts = 0;
-    const maxAttempts = 300;
-    this.ux.startSpinner('Polling for new versions to become available on npm');
-    while (attempts < maxAttempts && !found) {
-      attempts += 1;
-      this.ux.setSpinnerStatus(`attempt: ${attempts} of ${maxAttempts}`);
-      found = this.packages.every((pkg) => pkg.nextVersionIsAvailable());
-      await sleep(1000);
-    }
-    this.ux.stopSpinner(attempts >= maxAttempts ? 'failed' : 'done');
-    return found;
+    return this.poll(() => {
+      return this.packages.every((pkg) => pkg.nextVersionIsAvailable());
+    });
   }
 
   public verifySignature(packageNames: string[]): void {
@@ -384,7 +377,7 @@ export class SinglePackageRepo extends Repository {
   }
 
   public async waitForAvailability(): Promise<boolean> {
-    return this.poll(this.package.nextVersionIsAvailable.bind(this));
+    return this.poll(() => this.package.nextVersionIsAvailable());
   }
 
   public getSuccessMessage(): string {
