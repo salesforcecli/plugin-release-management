@@ -149,7 +149,7 @@ abstract class Repository extends AsyncOptionalCreatable {
 
   protected async writeNpmToken(): Promise<void> {
     const token = this.env.getString('NPM_TOKEN');
-    const authString = `//registry.npmjs.org/:_authToken=${token}`;
+    const authString = `//registry.npmjs.org/:_authToken=${token}${os.EOL}unsafe-perm = true`;
     const home = this.env.getString('HOME');
     const npmrcPath = path.join(home, '.npmrc');
     await fs.writeFile(npmrcPath, authString);
