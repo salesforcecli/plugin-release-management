@@ -115,7 +115,7 @@ abstract class Repository extends AsyncOptionalCreatable {
 
   public pushChangesToGit(): void {
     const currentBranch = exec('npx git branch --show-current', { silent: true }).stdout;
-    const cmd = `npx git push --no-verify --follow-tags origin ${currentBranch}`;
+    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${currentBranch}`;
     this.ux.log(cmd);
     exec(cmd, { silent: false });
   }
