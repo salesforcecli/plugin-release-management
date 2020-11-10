@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.2...v0.0.3) (2020-11-10)
+
+### Bug Fixes
+
+- failed tests ([094dfaf](https://github.com/salesforcecli/plugin-release-management/commit/094dfaf5194305314197e949d85e8772659548f1))
+- write npmrc file before publish ([a3eaddf](https://github.com/salesforcecli/plugin-release-management/commit/a3eaddfcf32e1e51ed031202d14a1b6dd4252567))
+
 ### [0.0.2](https://github.com/salesforcecli/plugin-release-management/compare/v0.0.1...v0.0.2) (2020-11-10)
 
 ### Bug Fixes
