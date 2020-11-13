@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.0.0 (2020-11-13)
+
+
+### Features
+
+* add npm:package:release and npm:lerna:release ([781775c](https://github.com/salesforcecli/plugin-release-management/commit/781775c6271d3746c7c25047eeecdc0d4af5982c))
+
 ### 0.0.9 (2020-11-13)
 
 ### Features
