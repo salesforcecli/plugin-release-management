@@ -77,15 +77,13 @@ export class Signer extends AsyncOptionalCreatable {
   }
 
   public async sign(target?: string): Promise<SigningResponse> {
-    const repsonse = await packAndSignApi.doPackAndSign(
-      {
-        signatureurl: this.signatureUrl,
-        publickeyurl: this.publicKeyUrl,
-        privatekeypath: this.keyPath,
-        target,
-      },
-      this.ux
-    );
+    packAndSignApi.setUx(this.ux);
+    const repsonse = await packAndSignApi.doPackAndSign({
+      signatureurl: this.signatureUrl,
+      publickeyurl: this.publicKeyUrl,
+      privatekeypath: this.keyPath,
+      target,
+    });
     await fs.unlink(this.keyPath);
     return repsonse;
   }

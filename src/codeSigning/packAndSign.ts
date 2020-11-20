@@ -91,6 +91,10 @@ export interface SigningOpts {
 }
 
 export const api = {
+  setUx(ux: UX): void {
+    cliUx = ux;
+  },
+
   /**
    * Validates that a url is a valid salesforce url.
    *
@@ -218,6 +222,7 @@ export const api = {
     if (!filePath.endsWith('tgz')) {
       throw new NamedError('UnexpectedTgzName', `The file path ${filePath} is unexpected. It should be a tgz file.`);
     }
+    if (!pathGetter) pathGetter = new PathGetter();
     cliUx.log(`Signing file at: ${filePath}`);
     const pathComponents: string[] = filePath.split(pathSep);
     const filenamePart: string = pathComponents[pathComponents.length - 1];
@@ -318,10 +323,9 @@ export const api = {
    * @param ux - The cli ux interface usually provided by oclif.
    * @return {Promise<SigningResponse>} The SigningResponse
    */
-  async doPackAndSign(args: SigningOpts, ux: UX): Promise<SigningResponse> {
+  async doPackAndSign(args: SigningOpts): Promise<SigningResponse> {
     const logger = await Logger.child('packAndSign');
     let packageDotJsonBackedUp = false;
-    cliUx = ux;
     pathGetter = new PathGetter(args.target);
 
     try {

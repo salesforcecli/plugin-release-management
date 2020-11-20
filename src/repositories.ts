@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+
+import got from 'got';
+
+type SourcePackageDefinition = {
+  name: string;
+  type: 'package' | 'library' | 'orb';
+};
+
+type SourceRepositoryDefinition = {
+  url: string;
+  packages: SourcePackageDefinition[];
+};
+
+export type PackageInfo = {
+  url: string;
+} & SourcePackageDefinition;
+
+export type RepositoryInfo = {
+  organization: string;
+  name: string;
+} & SourceRepositoryDefinition;
+
+/**
+ * Get a list of known tooling repositories that include Salesforce CLI plugins, libraries, and orbs.
+ */
+export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => {
+  const response = await got.get('https://raw.githubusercontent.com/salesforcecli/status/main/repositories.json');
+  const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
+
+  return repositories.map((repository) => {
+    const [, organization, name] = /https:\/\/github.com\/([\w_-]+)\/([\w_-]+)/.exec(repository.url);
+    const packages = repository.packages.map((pkg) =>
+      Object.assign(pkg, { url: `https://www.npmjs.com/package/${pkg.name}` })
+    );
+    return Object.assign({ organization, name, packages }, repository);
+  });
+};
