@@ -3,5 +3,6 @@
   "signatureUrl": "the url location where the signature will be hosted minus the name of the actual signature file.",
   "publicKeyUrl": "the url where the public key/certificate will be hosted.",
   "privateKeyPath": "the local file path for the private key.",
-  "target": "the package path you want to target for signing. Helpful for signing individual packages within a multipackage project (e.g. lerna)."
+  "target": "the package path you want to target for signing. Helpful for signing individual packages within a multipackage project (e.g. lerna). Defaults to the current working directory.",
+  "tarPath": "specify the package tgz path to sign instead of generating one from the target package"
 }

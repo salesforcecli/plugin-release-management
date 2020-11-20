@@ -34,10 +34,22 @@ export default class Sign extends SfdxCommand {
       char: 't',
       required: false,
       description: messages.getMessage('target'),
+      exclusive: ['tarpath'],
+    }),
+    tarpath: flags.string({
+      description: messages.getMessage('tarPath'),
+      exclusive: ['target'],
     }),
   };
 
   public async run(): Promise<SigningResponse> {
-    return packAndSignApi.doPackAndSign(this.flags as SigningOpts, this.ux);
+    const opts = this.flags as SigningOpts;
+    packAndSignApi.setUx(this.ux);
+
+    if (this.flags.tarpath) {
+      return packAndSignApi.doSign(opts);
+    } else {
+      return packAndSignApi.doPackAndSign(opts);
+    }
   }
 }

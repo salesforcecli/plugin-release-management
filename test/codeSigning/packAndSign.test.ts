@@ -120,8 +120,8 @@ describe('doPackAndSign', () => {
     };
 
     const ux: UX = new UX(await core.Logger.child('packAndSignTests'));
-
-    return packAndSignApi.doPackAndSign(flags, ux).then((result: SigningResponse) => {
+    packAndSignApi.setUx(ux);
+    return packAndSignApi.doPackAndSign(flags).then((result: SigningResponse) => {
       expect(result.verified).to.be.equal(true);
     });
   });
