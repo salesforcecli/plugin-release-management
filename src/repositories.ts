@@ -7,6 +7,9 @@
 
 import got from 'got';
 
+const KNOWN_REPOSITORIES_URL = 'https://raw.githubusercontent.com/salesforcecli/status/main/repositories.json';
+const PACKAGE_REGISTRY_BASE_URL = 'https://www.npmjs.com/package';
+
 type SourcePackageDefinition = {
   name: string;
   type: 'package' | 'library' | 'orb';
@@ -30,13 +33,13 @@ export type RepositoryInfo = {
  * Get a list of known tooling repositories that include Salesforce CLI plugins, libraries, and orbs.
  */
 export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => {
-  const response = await got.get('https://raw.githubusercontent.com/salesforcecli/status/main/repositories.json');
+  const response = await got.get(KNOWN_REPOSITORIES_URL);
   const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
 
   return repositories.map((repository) => {
     const [, organization, name] = /https:\/\/github.com\/([\w_-]+)\/([\w_-]+)/.exec(repository.url);
     const packages = repository.packages.map((pkg) =>
-      Object.assign(pkg, { url: `https://www.npmjs.com/package/${pkg.name}` })
+      Object.assign(pkg, { url: `${PACKAGE_REGISTRY_BASE_URL}/${pkg.name}` })
     );
     return Object.assign({ organization, name, packages }, repository);
   });

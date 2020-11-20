@@ -44,7 +44,7 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
       multiple: true,
     }),
     dryrun: flags.boolean({
-      description: 's',
+      description: messages.getMessage('envvar.update.flags.dryrun'),
     }),
   };
 

@@ -19,7 +19,7 @@ export default class CircleCI extends SfdxCommand {
 
   public static readonly flagsConfig: FlagsConfig = {
     'contains-package-type': flags.enum({
-      description: 'asd',
+      description: messages.getMessage('list.flags.type'),
       char: 't',
       options: ['plugin', 'library', 'orb'],
     }),

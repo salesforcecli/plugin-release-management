@@ -79,8 +79,8 @@ export interface SigningResponse {
   tarPath: string;
   filename: string;
   verified: boolean;
-  version: string;
-  name: string;
+  version?: string;
+  name?: string;
 }
 
 export interface SigningOpts {
@@ -88,6 +88,7 @@ export interface SigningOpts {
   signatureurl: string;
   privatekeypath: string;
   target?: string;
+  tarpath?: string;
 }
 
 export const api = {
@@ -316,6 +317,61 @@ export const api = {
     return fs.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
   },
 
+  async doSign(args: SigningOpts, packageJson?: { name: string; version: string }): Promise<SigningResponse> {
+    const logger = await Logger.child('packAndSign');
+    const filepath = args.tarpath;
+
+    if (!filepath) {
+      throw new NamedError('MissingTarFile', 'A tgz file to sign was not specified.');
+    }
+
+    // create the signature file
+    const signature = await api.retrieveSignature(
+      createReadStream(filepath, { encoding: 'binary' }),
+      createReadStream(args.privatekeypath)
+    );
+    logger.debug('created the digital signature');
+    if (signature && signature.length > 0) {
+      // write the signature file to disk
+      const sigFilename = await api.writeSignatureFile(filepath, signature);
+
+      cliUx.log(`Artifact signed and saved in ${sigFilename}`);
+
+      let verified;
+      try {
+        // verify the signature with the public key url
+        verified = await api.verify(
+          createReadStream(filepath, { encoding: 'binary' }),
+          createReadStream(sigFilename),
+          args.publickeyurl
+        );
+      } catch (e) {
+        cliUx.error(e);
+        throw new NamedError(
+          'VerificationError',
+          'An error occurred trying to validate the signature. Check the public key url and try again.',
+          e
+        );
+      }
+      if (verified) {
+        cliUx.log(`Successfully verified signature with public key at: ${args.publickeyurl}`);
+        return {
+          tarPath: filepath,
+          filename: sigFilename,
+          verified,
+          name: packageJson?.name,
+          version: packageJson?.version,
+        };
+      } else {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new NamedError('FailedToVerifySignature', 'Failed to verify signature with tar gz content');
+      }
+    } else {
+      // noinspection ExceptionCaughtLocallyJS
+      throw new NamedError('EmptySignature', 'The generated signature is empty. Verify the private key and try again');
+    }
+  },
+
   /**
    * main method to pack and sign an npm.
    *
@@ -389,55 +445,8 @@ export const api = {
       cliUx.log('Successfully updated package.json with public key and signature file locations.');
 
       const filepath = await api.pack();
-
-      // create the signature file
-      const signature = await api.retrieveSignature(
-        createReadStream(filepath, { encoding: 'binary' }),
-        createReadStream(args.privatekeypath)
-      );
-      logger.debug('created the digital signature');
-      if (signature && signature.length > 0) {
-        // write the signature file to disk
-        await api.writeSignatureFile(filepath, signature);
-
-        cliUx.log(`Artifact signed and saved in ${sigFilename}`);
-
-        let verified;
-        try {
-          // verify the signature with the public key url
-          verified = await api.verify(
-            createReadStream(filepath, { encoding: 'binary' }),
-            createReadStream(sigFilename),
-            args.publickeyurl
-          );
-        } catch (e) {
-          cliUx.error(e);
-          throw new NamedError(
-            'VerificationError',
-            'An error occurred trying to validate the signature. Check the public key url and try again.',
-            e
-          );
-        }
-        if (verified) {
-          cliUx.log(`Successfully verified signature with public key at: ${args.publickeyurl}`);
-          return {
-            tarPath: filepath,
-            filename: sigFilename,
-            verified,
-            name: packageJson.name,
-            version: packageJson.version,
-          };
-        } else {
-          // noinspection ExceptionCaughtLocallyJS
-          throw new NamedError('FailedToVerifySignature', 'Failed to verify signature with tar gz content');
-        }
-      } else {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new NamedError(
-          'EmptySignature',
-          'The generated signature is empty. Verify the private key and try again'
-        );
-      }
+      args.tarpath = filepath;
+      return api.doSign(args);
     } finally {
       // Restore the package.json file so it doesn't show a git diff.
       if (packageDotJsonBackedUp) {

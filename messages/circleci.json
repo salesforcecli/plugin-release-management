@@ -1,7 +1,10 @@
 {
   "list": {
     "description": "list known Circle CI slugs from '<%= config.bin %> repositories'",
-    "examples": ["<%= config.bin %> <%= command.id %> -t plugin"]
+    "examples": ["<%= config.bin %> <%= command.id %> -t plugin"],
+    "flags": {
+      "type": "filter based on type of package"
+    }
   },
   "envvar": {
     "update": {
@@ -13,7 +16,8 @@
       ],
       "flags": {
         "envvar": "a environment variables to set on the given circle slug(s)",
-        "slug": "a circle ci slugs in the format <vcs>/<org name>/<repo name>"
+        "slug": "a circle ci slugs in the format <vcs>/<org name>/<repo name>",
+        "dryrun": "do validation but do not update the environment variable values"
       }
     }
   }
