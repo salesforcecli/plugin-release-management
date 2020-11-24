@@ -216,7 +216,7 @@ export class LernaRepo extends Repository {
     let cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push';
     if (dryrun) cmd += ' --no-git-tag-version';
     if (!dryrun && githubRelease) cmd += ' --create-release github';
-    if (!dryrun) cmd += '--message "chore(release): publish [ci skip]"';
+    if (!dryrun) cmd += ' --message "chore(release): publish [ci skip]"';
     this.execCommand(cmd);
 
     if (dryrun) {
