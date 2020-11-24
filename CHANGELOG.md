@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.0.0...v1.1.0) (2020-11-24)
+
+
+### Features
+
+* add 3 new commands and a new flag ([fbc7355](https://github.com/salesforcecli/plugin-release-management/commit/fbc735567a19e80b30a52f8715b07250f1d52941))
+
+
+### Bug Fixes
+
+* failing unit test ([eea1ce2](https://github.com/salesforcecli/plugin-release-management/commit/eea1ce27ce3b8d41aba2310ca64ced64ad54e140))
+* lerna release ([ae79097](https://github.com/salesforcecli/plugin-release-management/commit/ae7909766f70b865cdf659c3132ac499cb008f40))
+
 ## 1.0.0 (2020-11-13)
 
 
