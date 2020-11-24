@@ -57,6 +57,7 @@ before(async function () {
   this.timeout(10000);
   // Prime oclif commands into memory
   await load(`${__dirname}/../../`);
+  process.env['CIRCLE_CI_TOKEN'] = '123456';
 });
 
 describe('circleci envvar update', () => {
