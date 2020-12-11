@@ -15,6 +15,12 @@ export type ProjectJson = {
   version: string;
 } & AnyJson;
 
+export type ChangedPackageVersions = Array<{
+  name: string;
+  version: string;
+  tag: string;
+}>;
+
 export type NpmPackage = {
   name: string;
   version: string;
@@ -90,6 +96,38 @@ export class Package extends AsyncOptionalCreatable {
     const pkg = this.retrieveNpmPackage();
     const versions = get(pkg, 'versions', []) as string[];
     return versions.includes(this.nextVersion);
+  }
+
+  public writePackageJson(rootDir?: string): void {
+    const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
+    fs.writeJsonSync(pkgJsonPath, this.projectJson);
+  }
+
+  public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
+    // get the list of dependencies to hardcode
+    const dependencies: string[] = this.projectJson['pinnedDependencies'];
+    const pinnedPackages = [];
+    dependencies.forEach((name) => {
+      // get the 'release' tag version or the version specified by the passed in tag
+      const result = exec(`npm view ${name} dist-tags --json`, { silent: true });
+      const versions = JSON.parse(result.stdout);
+      let tag = targetTag;
+
+      // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
+      if (!versions[tag]) {
+        tag = 'latest';
+      }
+
+      const version = versions[tag];
+
+      // insert the new hardcoded versions into the dependencies in the project's package.json
+      this.projectJson['dependencies'][name] = version;
+
+      // accumulate information to return
+      pinnedPackages.push({ name, version, tag });
+    });
+
+    return pinnedPackages;
   }
 
   protected async init(): Promise<void> {
