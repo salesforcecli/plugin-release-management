@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.1...v1.1.2) (2020-12-11)
+
+
+### Bug Fixes
+
+* add ability to pin deps to specified version ([8abed1b](https://github.com/salesforcecli/plugin-release-management/commit/8abed1bec002089281f30273d43752b39e480355))
+
 ### [1.1.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.0...v1.1.1) (2020-12-10)
 
 ## [1.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.0.0...v1.1.0) (2020-11-24)
