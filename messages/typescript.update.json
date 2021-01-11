@@ -1,0 +1,7 @@
+{
+  "description": "Runs tests with updated typescript version and ES target",
+  "typescriptVersion": "Specify the typescript version you'd like to update to. Defaults to latest if not specified",
+  "esTarget": "Specify the ES target you'd like to use. Defaults to ESNext if not specified",
+  "InvalidTypescriptVersion": "typescript version %s does not exist",
+  "InvalidTargetVersion": "Invalid ES target: %s."
+}

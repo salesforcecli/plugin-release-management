@@ -113,6 +113,10 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.execCommand('yarn build', silent);
   }
 
+  public test(): void {
+    this.execCommand('yarn test');
+  }
+
   public getBranchName(): string {
     const branch =
       this.env.getString('CIRCLE_BRANCH', null) || exec('npx git branch --show-current', { silent: true }).stdout;
@@ -394,12 +398,12 @@ export class SinglePackageRepo extends Repository {
   }
 
   private determineNextVersion(): string {
-    const versionExists = this.package.npmPackage.versions.includes(this.package.projectJson.version);
+    const versionExists = this.package.npmPackage.versions.includes(this.package.packageJson.version);
     if (!versionExists) {
       this.logger.debug(
-        `${this.package.projectJson.name}@${this.package.projectJson.version} does not exist in the registry. Assuming that it's the version we want published`
+        `${this.package.packageJson.name}@${this.package.packageJson.version} does not exist in the registry. Assuming that it's the version we want published`
       );
-      return this.package.projectJson.version;
+      return this.package.packageJson.version;
     } else {
       this.logger.debug('Using standard-version to determine next version');
       const result = this.execCommand('npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog', true);
