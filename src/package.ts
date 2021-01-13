@@ -6,7 +6,7 @@
  */
 import * as path from 'path';
 import { exec } from 'shelljs';
-import { fs, Logger } from '@salesforce/core';
+import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable } from '@salesforce/kit';
 import { AnyJson, get } from '@salesforce/ts-types';
 
@@ -105,6 +105,11 @@ export class Package extends AsyncOptionalCreatable {
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
     // get the list of dependencies to hardcode
+    if (!this.projectJson['pinnedDependencies']) {
+      throw new SfdxError(
+        'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
+      );
+    }
     const dependencies: string[] = this.projectJson['pinnedDependencies'];
     const pinnedPackages = [];
     dependencies.forEach((name) => {
