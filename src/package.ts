@@ -31,11 +31,6 @@ export type NpmPackage = {
   'dist-tags': string[];
 } & AnyJson;
 
-export async function readPackageJson(rootDir?: string): Promise<PackageJson> {
-  const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
-  return (await fs.readJson(pkgJsonPath)) as PackageJson;
-}
-
 export interface VersionValidation {
   nextVersion: string;
   currentVersion: string;

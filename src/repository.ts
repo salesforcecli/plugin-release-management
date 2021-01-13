@@ -113,8 +113,8 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.execCommand('yarn build', silent);
   }
 
-  public test(silent = false): void {
-    this.execCommand('yarn test', silent);
+  public test(): void {
+    this.execCommand('yarn test');
   }
 
   public getBranchName(): string {

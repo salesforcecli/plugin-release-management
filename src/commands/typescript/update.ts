@@ -10,7 +10,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
-import { asObject, ensureString, get } from '@salesforce/ts-types';
+import { asObject, ensureString, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
 import { SinglePackageRepo } from '../../repository';
 
@@ -36,7 +36,7 @@ export default class Update extends SfdxCommand {
     const typescriptPkg = this.retrieveTsPackage();
     this.validateTsVersion(typescriptPkg);
 
-    await this.updateTsVesion(typescriptPkg);
+    await this.updateTsVersion(typescriptPkg);
     await this.updateEsTarget();
 
     const pkg = await SinglePackageRepo.create(this.ux);
@@ -53,8 +53,8 @@ export default class Update extends SfdxCommand {
     await fs.writeJson(tsConfigPath, tsConfig);
   }
 
-  private async updateTsVesion(typescriptPkg: NpmPackage): Promise<void> {
-    const newVersion = ensureString(this.flags.version || get(typescriptPkg, 'dist-tags.latest'));
+  private async updateTsVersion(typescriptPkg: NpmPackage): Promise<void> {
+    const newVersion = this.determineNextTsVersion(typescriptPkg);
     this.ux.log(`Updating typescript version to ${newVersion}`);
     const pkg = await Package.create(path.resolve('.'));
 
@@ -72,6 +72,14 @@ export default class Update extends SfdxCommand {
     pkg.writePackageJson();
   }
 
+  private determineNextTsVersion(typescriptPkg: NpmPackage): string {
+    if (this.flags.version === 'latest' || !this.flags.version) {
+      return getString(typescriptPkg, 'dist-tags.latest');
+    } else {
+      return this.flags.version;
+    }
+  }
+
   private retrieveTsPackage(): NpmPackage {
     const result = exec('npm view typescript --json', { silent: true });
     if (result.code === 0) {
@@ -86,16 +94,17 @@ export default class Update extends SfdxCommand {
 
     if (/ES[0-9]{4}/g.test(this.flags.target)) return true;
 
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    throw new SfdxError(`Invalid target: ${this.flags.target}`, 'InvalidTargetVersion');
+    throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTargetVersion', [
+      this.flags.target,
+    ]);
   }
 
   private validateTsVersion(typescriptPkg: NpmPackage): boolean {
-    if (this.flags.version) {
-      if (!typescriptPkg.versions.includes(this.flags.version)) {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new SfdxError(`${this.flags.version} does not exist`, 'InvalidTypescriptVersion');
-      }
+    if (this.flags.version === 'latest') return true;
+    if (this.flags.version && !typescriptPkg.versions.includes(this.flags.version)) {
+      throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTypescriptVersion', [
+        this.flags.version,
+      ]);
     }
     return true;
   }
