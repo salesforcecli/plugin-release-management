@@ -10,7 +10,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
-import { asObject, ensureString, getString } from '@salesforce/ts-types';
+import { asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
 import { SinglePackageRepo } from '../../repository';
 
@@ -23,6 +23,7 @@ export default class Update extends SfdxCommand {
     version: flags.string({
       char: 'v',
       description: messages.getMessage('typescriptVersion'),
+      default: 'latest',
     }),
     target: flags.string({
       char: 't',
@@ -31,18 +32,26 @@ export default class Update extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<void> {
-    this.validateEsTarget();
-    const typescriptPkg = this.retrieveTsPackage();
-    this.validateTsVersion(typescriptPkg);
+  private typescriptPkg: NpmPackage;
 
-    await this.updateTsVersion(typescriptPkg);
+  public async run(): Promise<void> {
+    this.typescriptPkg = this.retrieveTsPackage();
+    this.validateEsTarget();
+    this.validateTsVersion();
+
+    this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
+    await this.updateTsVersion();
     await this.updateEsTarget();
 
     const pkg = await SinglePackageRepo.create(this.ux);
-    pkg.install();
-    pkg.build();
-    pkg.test();
+    try {
+      pkg.install();
+      pkg.build();
+      pkg.test();
+    } finally {
+      this.ux.log('Reverting unstaged stages');
+      pkg.revertUnstagedChanges();
+    }
   }
 
   private async updateEsTarget(): Promise<void> {
@@ -53,8 +62,8 @@ export default class Update extends SfdxCommand {
     await fs.writeJson(tsConfigPath, tsConfig);
   }
 
-  private async updateTsVersion(typescriptPkg: NpmPackage): Promise<void> {
-    const newVersion = this.determineNextTsVersion(typescriptPkg);
+  private async updateTsVersion(): Promise<void> {
+    const newVersion = this.determineNextTsVersion();
     this.ux.log(`Updating typescript version to ${newVersion}`);
     const pkg = await Package.create(path.resolve('.'));
 
@@ -72,12 +81,10 @@ export default class Update extends SfdxCommand {
     pkg.writePackageJson();
   }
 
-  private determineNextTsVersion(typescriptPkg: NpmPackage): string {
-    if (this.flags.version === 'latest' || !this.flags.version) {
-      return getString(typescriptPkg, 'dist-tags.latest');
-    } else {
-      return this.flags.version;
-    }
+  private determineNextTsVersion(): string {
+    return this.flags.version === 'latest' || !this.flags.version
+      ? getString(this.typescriptPkg, 'dist-tags.latest')
+      : this.flags.version;
   }
 
   private retrieveTsPackage(): NpmPackage {
@@ -99,9 +106,9 @@ export default class Update extends SfdxCommand {
     ]);
   }
 
-  private validateTsVersion(typescriptPkg: NpmPackage): boolean {
+  private validateTsVersion(): boolean {
     if (this.flags.version === 'latest') return true;
-    if (this.flags.version && !typescriptPkg.versions.includes(this.flags.version)) {
+    if (this.flags.version && !this.typescriptPkg.versions.includes(this.flags.version)) {
       throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTypescriptVersion', [
         this.flags.version,
       ]);
