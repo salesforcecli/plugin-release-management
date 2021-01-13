@@ -2,34 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.1.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.1...v1.1.2) (2020-12-11)
+### [1.1.2-0](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.2...v1.1.2-0) (2021-01-13)
 
+### Features
+
+- add typescript:update command ([be178ec](https://github.com/salesforcecli/plugin-release-management/commit/be178ec48b25a7f2f9835890018ab808c2ca2f76))
+
+### [1.1.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.1...v1.1.2) (2020-12-11)
 
 ### Bug Fixes
 
-* add ability to pin deps to specified version ([8abed1b](https://github.com/salesforcecli/plugin-release-management/commit/8abed1bec002089281f30273d43752b39e480355))
+- add ability to pin deps to specified version ([8abed1b](https://github.com/salesforcecli/plugin-release-management/commit/8abed1bec002089281f30273d43752b39e480355))
 
 ### [1.1.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.0...v1.1.1) (2020-12-10)
 
 ## [1.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.0.0...v1.1.0) (2020-11-24)
 
-
 ### Features
 
-* add 3 new commands and a new flag ([fbc7355](https://github.com/salesforcecli/plugin-release-management/commit/fbc735567a19e80b30a52f8715b07250f1d52941))
-
+- add 3 new commands and a new flag ([fbc7355](https://github.com/salesforcecli/plugin-release-management/commit/fbc735567a19e80b30a52f8715b07250f1d52941))
 
 ### Bug Fixes
 
-* failing unit test ([eea1ce2](https://github.com/salesforcecli/plugin-release-management/commit/eea1ce27ce3b8d41aba2310ca64ced64ad54e140))
-* lerna release ([ae79097](https://github.com/salesforcecli/plugin-release-management/commit/ae7909766f70b865cdf659c3132ac499cb008f40))
+- failing unit test ([eea1ce2](https://github.com/salesforcecli/plugin-release-management/commit/eea1ce27ce3b8d41aba2310ca64ced64ad54e140))
+- lerna release ([ae79097](https://github.com/salesforcecli/plugin-release-management/commit/ae7909766f70b865cdf659c3132ac499cb008f40))
 
 ## 1.0.0 (2020-11-13)
 
-
 ### Features
 
-* add npm:package:release and npm:lerna:release ([781775c](https://github.com/salesforcecli/plugin-release-management/commit/781775c6271d3746c7c25047eeecdc0d4af5982c))
+- add npm:package:release and npm:lerna:release ([781775c](https://github.com/salesforcecli/plugin-release-management/commit/781775c6271d3746c7c25047eeecdc0d4af5982c))
 
 ### 0.0.9 (2020-11-13)
 
