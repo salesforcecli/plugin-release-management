@@ -11,9 +11,12 @@ import { AsyncOptionalCreatable, Env } from '@salesforce/kit';
 import { AnyJson, get } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
-export type ProjectJson = {
+export type PackageJson = {
   name: string;
   version: string;
+  dependencies: AnyJson;
+  devDependencies: AnyJson;
+  scripts: AnyJson;
 } & AnyJson;
 
 export type ChangedPackageVersions = Array<{
@@ -26,12 +29,8 @@ export type NpmPackage = {
   name: string;
   version: string;
   versions: string[];
+  'dist-tags': string[];
 } & AnyJson;
-
-export async function readProjectJson(rootDir?: string): Promise<ProjectJson> {
-  const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
-  return (await fs.readJson(pkgJsonPath)) as ProjectJson;
-}
 
 export interface VersionValidation {
   nextVersion: string;
@@ -43,7 +42,7 @@ export interface VersionValidation {
 export class Package extends AsyncOptionalCreatable {
   public name: string;
   public npmPackage: NpmPackage;
-  public projectJson: ProjectJson;
+  public packageJson: PackageJson;
   public location: string;
 
   private logger: Logger;
@@ -56,9 +55,9 @@ export class Package extends AsyncOptionalCreatable {
     this.env = new Env();
   }
 
-  public async readProjectJson(): Promise<ProjectJson> {
+  public async readPackageJson(): Promise<PackageJson> {
     const pkgJsonPath = this.location ? path.join(this.location, 'package.json') : 'package.json';
-    return (await fs.readJson(pkgJsonPath)) as ProjectJson;
+    return (await fs.readJson(pkgJsonPath)) as PackageJson;
   }
 
   public retrieveNpmPackage(): NpmPackage {
@@ -104,7 +103,7 @@ export class Package extends AsyncOptionalCreatable {
 
   public writePackageJson(rootDir?: string): void {
     const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
-    fs.writeJsonSync(pkgJsonPath, this.projectJson);
+    fs.writeJsonSync(pkgJsonPath, this.packageJson);
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
@@ -131,7 +130,7 @@ export class Package extends AsyncOptionalCreatable {
       const version = versions[tag];
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
-      this.projectJson['dependencies'][name] = version;
+      this.packageJson['dependencies'][name] = version;
 
       // accumulate information to return
       pinnedPackages.push({ name, version, tag });
@@ -142,16 +141,17 @@ export class Package extends AsyncOptionalCreatable {
 
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
-    this.projectJson = await this.readProjectJson();
-    this.name = this.projectJson.name;
+    this.packageJson = await this.readPackageJson();
+    this.name = this.packageJson.name;
     this.npmPackage = this.retrieveNpmPackage() || this.createDefaultNpmPackage();
   }
 
   private createDefaultNpmPackage(): NpmPackage {
     return {
       name: this.name,
-      version: this.projectJson.version,
+      version: this.packageJson.version,
       versions: [],
+      'dist-tags': [],
     };
   }
 }

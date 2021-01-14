@@ -36,7 +36,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should use the version in package.json if that version does not exist in the registry', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '2.0.0' })
       );
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
@@ -45,7 +45,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should use standard-version to determine the next version if the version in the package.json already exists', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0');
@@ -56,7 +56,7 @@ describe('SinglePackageRepo', () => {
 
   describe('validate', () => {
     it('should validate that next version is valid', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -78,7 +78,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should invalidate the next version when it already exists', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -102,7 +102,7 @@ describe('SinglePackageRepo', () => {
 
   describe('prepare', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -138,7 +138,7 @@ describe('SinglePackageRepo', () => {
 
   describe('sign', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -160,7 +160,7 @@ describe('SinglePackageRepo', () => {
 
   describe('verifySignature', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -183,7 +183,7 @@ describe('SinglePackageRepo', () => {
     let repo: SinglePackageRepo;
 
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
@@ -264,7 +264,7 @@ describe('LernaRepo', () => {
 
   describe('determineNextVersionByPackage', () => {
     it('should use lerna to determine the next version number', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
       const repo = await LernaRepo.create(uxStub);
@@ -274,7 +274,7 @@ describe('LernaRepo', () => {
 
   describe('validate', () => {
     it('should validate that next version is valid', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
@@ -292,7 +292,7 @@ describe('LernaRepo', () => {
     });
 
     it('should invalidate the next version when it already exists', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
@@ -312,7 +312,7 @@ describe('LernaRepo', () => {
 
   describe('prepare', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
     });
@@ -340,7 +340,7 @@ describe('LernaRepo', () => {
 
   describe('sign', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
     });
@@ -356,7 +356,7 @@ describe('LernaRepo', () => {
 
   describe('verifySignature', () => {
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
     });
@@ -372,7 +372,7 @@ describe('LernaRepo', () => {
     let repo: LernaRepo;
 
     beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       repo = await LernaRepo.create(uxStub);
