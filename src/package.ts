@@ -108,12 +108,12 @@ export class Package extends AsyncOptionalCreatable {
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
     // get the list of dependencies to hardcode
-    if (!this.projectJson['pinnedDependencies']) {
+    if (!this.packageJson['pinnedDependencies']) {
       throw new SfdxError(
         'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
       );
     }
-    const dependencies: string[] = this.projectJson['pinnedDependencies'];
+    const dependencies: string[] = this.packageJson['pinnedDependencies'];
     const pinnedPackages = [];
     const registry = new Registry(this.env.getString('NPM_REGISTRY', this.env.getString('NPM_TOKEN')));
     dependencies.forEach((name) => {
