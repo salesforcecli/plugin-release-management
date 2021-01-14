@@ -17,7 +17,7 @@ const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
 
 describe('Package', () => {
-  describe('readProjectJson', () => {
+  describe('readPackageJson', () => {
     let readStub: sinon.SinonStub;
 
     beforeEach(() => {
@@ -31,7 +31,7 @@ describe('Package', () => {
 
     it('should read the package.json in the current working directory', async () => {
       const pkg = await Package.create();
-      const pJson = await pkg.readProjectJson();
+      const pJson = await pkg.readPackageJson();
       expect(pJson).to.deep.equal({
         name: pkgName,
         version: '1.0.0',
@@ -42,7 +42,7 @@ describe('Package', () => {
     it('should read the package.json in the package location', async () => {
       const packageDir = path.join('my', 'project', 'dir');
       const pkg = await Package.create(packageDir);
-      const pJson = await pkg.readProjectJson();
+      const pJson = await pkg.readPackageJson();
       expect(pJson).to.deep.equal({
         name: pkgName,
         version: '1.0.0',
@@ -53,7 +53,7 @@ describe('Package', () => {
 
   describe('validateNextVersion', () => {
     beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({
           name: pkgName,
           version: '1.0.0',
@@ -93,7 +93,7 @@ describe('Package', () => {
 
   describe('get/set nextVersion', () => {
     beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({
           name: pkgName,
           version: '1.0.0',
@@ -115,7 +115,7 @@ describe('Package', () => {
 
   describe('nextVersionIsAvailable', () => {
     beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readProjectJson').returns(
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({
           name: pkgName,
           version: '1.0.0',
