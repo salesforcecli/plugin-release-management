@@ -7,7 +7,6 @@
 
 import * as path from 'path';
 import * as os from 'os';
-import { URL } from 'url';
 import * as glob from 'glob';
 import { pwd } from 'shelljs';
 import { AnyJson, ensureString } from '@salesforce/ts-types';
@@ -20,6 +19,7 @@ import * as chalk from 'chalk';
 import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
 import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
+import { Registry } from './registry';
 
 type LernaJson = {
   packages?: string[];
@@ -107,9 +107,8 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   public install(silent = false): void {
-    const registry = this.env.getString('NPM_REGISTRY');
-    const registryParameter = registry ? `--registry ${registry}` : '';
-    this.execCommand(`yarn install ${registryParameter}`, silent);
+    const registry = new Registry(this.env.getString('NPM_REGISTRY'));
+    this.execCommand(`yarn install ${registry.getRegistryParameter()}`, silent);
   }
 
   public build(silent = false): void {
@@ -150,11 +149,9 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   protected async writeNpmToken(): Promise<void> {
-    const token = this.env.getString('NPM_TOKEN');
-    const authString = `${this.getRegistryForAuth()}:_authToken=${token}${os.EOL}unsafe-perm = true`;
+    const registry = new Registry(this.env.getString('NPM_REGISTRY'), this.env.getString('NPM_TOKEN'));
     const home = this.env.getString('HOME');
-    const npmrcPath = path.join(home, '.npmrc');
-    await fs.writeFile(npmrcPath, authString);
+    await registry.setNpmAuth(home);
   }
 
   protected execCommand(cmd: string, silent?: boolean): ShellString {
@@ -187,13 +184,6 @@ abstract class Repository extends AsyncOptionalCreatable {
     }
     stop(attempts >= maxAttempts ? 'failed' : 'done');
     return found;
-  }
-
-  private getRegistryForAuth(): string {
-    const registry: string = this.env.getString('NPM_REGISTRY');
-    if (!registry) return '//registry.npmjs.org/';
-    const registryDomain = new URL(registry);
-    return `//${registryDomain.host}/`;
   }
 
   public abstract getSuccessMessage(): string;
@@ -253,14 +243,14 @@ export class LernaRepo extends Repository {
       res[curr.name] = curr.tarPath;
       return res;
     }, {});
+    const registry = new Registry(this.env.getString('NPM_REGISTRY'));
     for (const pkg of this.packages) {
-      const registry = this.env.getString('NPM_REGISTRY');
       const tarPath = tarPathsByPkgName[pkg.name];
       let cmd = 'npm publish';
       if (tarPath) cmd += ` ${tarPath}`;
       if (tag) cmd += ` --tag ${tag}`;
       if (dryrun) cmd += ' --dry-run';
-      if (registry) cmd += ` --registry ${registry}`;
+      cmd += registry.getRegistryParameter();
       cmd += ` --access ${access || 'public'}`;
       this.execCommand(`(cd ${pkg.location} ; ${cmd})`);
     }
