@@ -69,6 +69,7 @@ describe('npmrc tests', () => {
     }
   });
   it('should write token from constructor when NPM_TOKEN is not set', async () => {
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry(undefined, 'foobarbaz');
     await registry.setNpmAuth(packageDir);
     const npmrc = await registry.readNpmrc(packageDir);
