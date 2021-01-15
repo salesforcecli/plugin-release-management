@@ -9,32 +9,33 @@ import * as os from 'os';
 import * as path from 'path';
 import { expect } from '@salesforce/command/lib/test';
 import { fs } from '@salesforce/core';
-import { shouldThrow } from '@salesforce/core/lib/testSetup';
+import { shouldThrow, testSetup } from '@salesforce/core/lib/testSetup';
+import { Env } from '@salesforce/kit';
 import { Registry } from '../src/registry';
+
+const $$ = testSetup();
 
 describe('registry tests', () => {
   it('should represent defaults', () => {
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     expect(registry).to.be.ok;
     expect(registry.registryUrl).to.include('https://registry');
     expect(registry.getRegistryParameter()).to.be.include('--registry https://registry');
-    expect(registry.authToken).to.not.be.ok;
   });
   it('should represent registry https://foo.bar.baz.org', () => {
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry('https://foo.bar.baz.org');
     expect(registry).to.be.ok;
     expect(registry.registryUrl).to.be.equal('https://foo.bar.baz.org');
     expect(registry.getRegistryParameter()).to.be.equal('--registry https://foo.bar.baz.org');
-    expect(registry.authToken).to.not.be.ok;
   });
   it('should pickup registry from env var', () => {
-    process.env.NPM_REGISTRY = 'https://foo.bar.baz.org';
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns('https://foo.bar.baz.org');
     const registry = new Registry();
     expect(registry).to.be.ok;
     expect(registry.registryUrl).to.be.equal('https://foo.bar.baz.org');
     expect(registry.getRegistryParameter()).to.be.equal('--registry https://foo.bar.baz.org');
-    expect(registry.authToken).to.not.be.ok;
-    delete process.env.NPM_REGISTRY;
   });
 });
 describe('npmrc tests', () => {
@@ -48,6 +49,7 @@ describe('npmrc tests', () => {
     }
   });
   it('should NOT WRITE npmrc registry for registry defaults', async () => {
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     await registry.setNpmRegistry(packageDir);
     expect(fs.fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.false;
@@ -58,6 +60,7 @@ describe('npmrc tests', () => {
     expect(fs.fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.true;
   });
   it('should throw error when setting auth token when token not present', async () => {
+    $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     try {
       await shouldThrow(registry.setNpmAuth(packageDir));
@@ -74,23 +77,27 @@ describe('npmrc tests', () => {
     expect(npmrc[0]).to.be.include('registry');
   });
   it('should write token from NPM_TOKEN when constructor token not set', async () => {
-    process.env.NPM_TOKEN = 'foobarbazfoobarbaz';
+    const stub = $$.SANDBOX.stub(Env.prototype, 'getString');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    stub.withArgs('NPM_TOKEN').returns('foobarbazfoobarbaz');
     const registry = new Registry();
     await registry.setNpmAuth(packageDir);
     const npmrc = await registry.readNpmrc(packageDir);
     expect(npmrc).to.have.lengthOf(2);
     expect(npmrc[0]).to.be.include(':_authToken="foobarbazfoobarbaz"');
     expect(npmrc[0]).to.be.include('registry');
-    delete process.env.NPM_TOKEN;
   });
   it('should write token from NPM_TOKEN with private registry and undefined token in constructor', async () => {
-    process.env.NPM_TOKEN = 'foobarbazfoobarbaz';
+    const stub = $$.SANDBOX.stub(Env.prototype, 'getString');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    stub.withArgs('NPM_TOKEN').returns('foobarbazfoobarbaz');
     const registry = new Registry('https://foo.bar.baz.org');
     await registry.setNpmAuth(packageDir);
     const npmrc = await registry.readNpmrc(packageDir);
     expect(npmrc).to.have.lengthOf(2);
     expect(npmrc[0]).to.be.include(':_authToken="foobarbazfoobarbaz"');
     expect(npmrc[0]).to.be.include('foo.bar.baz.org');
-    delete process.env.NPM_TOKEN;
   });
 });
