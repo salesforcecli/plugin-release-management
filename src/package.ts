@@ -61,7 +61,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public retrieveNpmPackage(): NpmPackage {
-    const registry = new Registry(this.env.getString('NPM_REGISTRY', this.env.getString('NPM_TOKEN')));
+    const registry = new Registry();
     const result = exec(`npm view ${this.name} ${registry.getRegistryParameter()} --json`, { silent: true });
     return result.code === 0 ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }

@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable no-underscore-dangle */
-
 import { URL } from 'url';
 import * as path from 'path';
 import * as os from 'os';
@@ -15,26 +13,11 @@ import { fs, SfdxError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 
 export class Registry {
-  public get registryEntryLocal(): string {
-    return this._registryEntryLocal;
-  }
-
-  public get registryEntryGlobal(): string {
-    return this._registryEntryGlobal;
-  }
-
-  public get registryUrl(): string {
-    return this._registryUrl;
-  }
-
-  public get authToken(): string {
-    return this._authToken;
-  }
-  private _registryEntryLocal: string;
-  private _registryEntryGlobal: string;
+  public registryEntryLocal: string;
+  public registryEntryGlobal: string;
   private env: Env;
 
-  public constructor(private _registryUrl?, private _authToken?: string) {
+  public constructor(public registryUrl?: string, public authToken?: string) {
     this.init();
     this.loadNpmConfigs();
   }
@@ -54,7 +37,7 @@ export class Registry {
    */
   public async setNpmRegistry(packageDirectory: string): Promise<void> {
     if (this.registryEntryLocal !== this.registryUrl || this.registryEntryGlobal !== this.registryUrl) {
-      let npmrc: string[] = await this.readNpmrc(packageDirectory);
+      let npmrc = await this.readNpmrc(packageDirectory);
       npmrc = npmrc.map((line) => {
         if (line.includes('registry=')) {
           if (line.endsWith(this.registryUrl)) return line;
@@ -95,15 +78,15 @@ export class Registry {
 
   public loadNpmConfigs(): void {
     // check npm configs for registry
-    this._registryEntryLocal = exec('npm config get registry', { silent: true }).stdout.trim();
-    this._registryEntryGlobal = exec('npm config get registry -g', { silent: true }).stdout.trim();
-    if (!this._registryUrl) {
-      if (this._registryEntryLocal) {
-        this._registryUrl = this._registryEntryLocal;
-      } else if (this._registryEntryGlobal) {
-        this._registryUrl = this._registryEntryGlobal;
+    this.registryEntryLocal = exec('npm config get registry', { silent: true }).stdout.trim();
+    this.registryEntryGlobal = exec('npm config get registry -g', { silent: true }).stdout.trim();
+    if (!this.registryUrl) {
+      if (this.registryEntryLocal) {
+        this.registryUrl = this.registryEntryLocal;
+      } else if (this.registryEntryGlobal) {
+        this.registryUrl = this.registryEntryGlobal;
       } else {
-        this._registryUrl = 'https://registry.npmjs.org/';
+        this.registryUrl = 'https://registry.npmjs.org/';
       }
     }
   }
@@ -122,13 +105,13 @@ export class Registry {
   }
 
   private normalizeRegistryUrl(): string {
-    const registryDomain = new URL(this._registryUrl);
+    const registryDomain = new URL(this.registryUrl);
     return `//${registryDomain.host}/`;
   }
 
   private init(): void {
     this.env = new Env();
-    this._registryUrl = this.env.getString('NPM_REGISTRY') ?? this.registryUrl;
-    this._authToken = this.env.getString('NPM_TOKEN') ?? this.authToken;
+    this.registryUrl = this.env.getString('NPM_REGISTRY') ?? this.registryUrl;
+    this.authToken = this.env.getString('NPM_TOKEN') ?? this.authToken;
   }
 }
