@@ -38,13 +38,17 @@ export class Registry {
   public async setNpmRegistry(packageDirectory: string): Promise<void> {
     if (this.registryEntryLocal !== this.registryUrl || this.registryEntryGlobal !== this.registryUrl) {
       let npmrc = await this.readNpmrc(packageDirectory);
-      npmrc = npmrc.map((line) => {
-        if (line.includes('registry=')) {
-          if (line.endsWith(this.registryUrl)) return line;
-          return `registry=${this.registryUrl}`;
-        }
-        return line;
-      });
+      if (npmrc.find((line) => line.includes('registry='))) {
+        npmrc = npmrc.map((line) => {
+          if (line.includes('registry=')) {
+            if (line.endsWith(this.registryUrl)) return line;
+            return `registry=${this.registryUrl}`;
+          }
+          return line;
+        });
+      } else {
+        npmrc.push(`registry=${this.registryUrl}`);
+      }
       await this.writeNpmrc(packageDirectory, npmrc);
     }
   }
@@ -66,13 +70,14 @@ export class Registry {
       npmrc = npmrc.map((line) => {
         if (line.includes('_authToken')) {
           if (line.includes(normalizedRegistry)) return line;
-          return `${normalizedRegistry}:_authToken="${this.authToken}"${os.EOL}unsafe-perm = true`;
+          return `${normalizedRegistry}:_authToken="${this.authToken}"`;
         }
         return line;
       });
     } else {
-      npmrc.push(`${normalizedRegistry}:_authToken="${this.authToken}"${os.EOL}unsafe-perm = true`);
+      npmrc.push(`${normalizedRegistry}:_authToken="${this.authToken}"`);
     }
+    npmrc.push('unsafe-perm=true');
     await this.writeNpmrc(packageDirectory, npmrc);
   }
 
@@ -97,16 +102,19 @@ export class Registry {
     }
 
     const npmrc = await fs.readFile(path.join(packageDir, '.npmrc'), 'utf8');
-    return npmrc.split(os.EOL);
+    const npmrcLines = npmrc.split(os.EOL);
+    return [...new Set(npmrcLines).values()].filter((line) => line?.length);
   }
 
   public async writeNpmrc(packageDir: string, npmrc: string[]): Promise<void> {
-    await fs.writeFile(path.join(packageDir, '.npmrc'), npmrc.join(os.EOL), 'utf8');
+    const npmrcLines = [...new Set(npmrc).values()].filter((line) => line?.length);
+    await fs.writeFile(path.join(packageDir, '.npmrc'), npmrcLines.join(os.EOL), 'utf8');
   }
 
   private normalizeRegistryUrl(): string {
     const registryDomain = new URL(this.registryUrl);
-    return `//${registryDomain.host}/`;
+    const pathPart = registryDomain.pathname?.length ? `${registryDomain.pathname.replace(/\/$/, '')}` : '';
+    return `//${registryDomain.host}${pathPart}/`;
   }
 
   private init(): void {

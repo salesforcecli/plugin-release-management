@@ -98,17 +98,19 @@ export class Signer extends AsyncOptionalCreatable {
 abstract class Repository extends AsyncOptionalCreatable {
   protected ux: UX;
   protected env: Env;
+  protected registry: Registry;
   private stepCounter = 1;
 
   public constructor(ux: UX) {
     super(ux);
     this.ux = ux;
     this.env = new Env();
+    this.registry = new Registry();
   }
 
-  public install(silent = false): void {
-    const registry = new Registry(this.env.getString('NPM_REGISTRY'));
-    this.execCommand(`yarn install ${registry.getRegistryParameter()}`, silent);
+  public async install(silent = false): Promise<void> {
+    await this.writeNpmToken();
+    this.execCommand(`yarn install ${this.registry.getRegistryParameter()}`, silent);
   }
 
   public build(silent = false): void {
@@ -153,9 +155,9 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   protected async writeNpmToken(): Promise<void> {
-    const registry = new Registry(this.env.getString('NPM_REGISTRY'), this.env.getString('NPM_TOKEN'));
     const home = this.env.getString('HOME');
-    await registry.setNpmAuth(home);
+    await this.registry.setNpmAuth(home);
+    await this.registry.setNpmRegistry(home);
   }
 
   protected execCommand(cmd: string, silent?: boolean): ShellString {
@@ -247,14 +249,13 @@ export class LernaRepo extends Repository {
       res[curr.name] = curr.tarPath;
       return res;
     }, {});
-    const registry = new Registry(this.env.getString('NPM_REGISTRY'));
     for (const pkg of this.packages) {
       const tarPath = tarPathsByPkgName[pkg.name];
       let cmd = 'npm publish';
       if (tarPath) cmd += ` ${tarPath}`;
       if (tag) cmd += ` --tag ${tag}`;
       if (dryrun) cmd += ' --dry-run';
-      cmd += registry.getRegistryParameter();
+      cmd += ` ${this.registry.getRegistryParameter()}`;
       cmd += ` --access ${access || 'public'}`;
       this.execCommand(`(cd ${pkg.location} ; ${cmd})`);
     }
@@ -370,7 +371,6 @@ export class SinglePackageRepo extends Repository {
   }
 
   public async publish(opts: PublishOpts = {}): Promise<void> {
-    const registry = this.env.getString('NPM_REGISTRY');
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
@@ -378,7 +378,7 @@ export class SinglePackageRepo extends Repository {
     if (tarPath) cmd += ` ${tarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
-    if (registry) cmd += ` --registry ${registry}`;
+    cmd += ` ${this.registry.getRegistryParameter()}`;
     cmd += ` --access ${access || 'public'}`;
     this.execCommand(cmd);
   }

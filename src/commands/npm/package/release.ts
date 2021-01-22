@@ -75,7 +75,7 @@ export default class Release extends SfdxCommand {
 
     if (this.flags.install) {
       pkg.printStage('Install');
-      pkg.install();
+      await pkg.install();
 
       pkg.printStage('Build');
       pkg.build();

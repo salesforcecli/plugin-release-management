@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { exec } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, Env } from '@salesforce/kit';
+import { AsyncOptionalCreatable } from '@salesforce/kit';
 import { AnyJson, get } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
@@ -47,12 +47,12 @@ export class Package extends AsyncOptionalCreatable {
 
   private logger: Logger;
   private nextVersion: string;
-  private env: Env;
+  private registry: Registry;
 
   public constructor(location?: string) {
     super();
     this.location = location;
-    this.env = new Env();
+    this.registry = new Registry();
   }
 
   public async readPackageJson(): Promise<PackageJson> {
@@ -61,8 +61,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public retrieveNpmPackage(): NpmPackage {
-    const registry = new Registry();
-    const result = exec(`npm view ${this.name} ${registry.getRegistryParameter()} --json`, { silent: true });
+    const result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     return result.code === 0 ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
 
@@ -115,10 +114,11 @@ export class Package extends AsyncOptionalCreatable {
     }
     const dependencies: string[] = this.packageJson['pinnedDependencies'];
     const pinnedPackages = [];
-    const registry = new Registry(this.env.getString('NPM_REGISTRY', this.env.getString('NPM_TOKEN')));
     dependencies.forEach((name) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${name} dist-tags ${registry.getRegistryParameter()} --json`, { silent: true });
+      const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+        silent: true,
+      });
       const versions = JSON.parse(result.stdout);
       let tag = targetTag;
 
