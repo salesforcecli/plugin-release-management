@@ -192,7 +192,12 @@ describe('SinglePackageRepo', () => {
         versions: ['1.0.0'],
       });
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
+      process.env.NPM_TOKEN = 'FOOBARBAZ';
       repo = await SinglePackageRepo.create(uxStub);
+    });
+
+    afterEach(() => {
+      delete process.env.NPM_TOKEN;
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {
@@ -202,11 +207,9 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should not use the --dry-run flag when the dryrun option is not provided', async () => {
-      process.env.NPM_TOKEN = 'FOOBARBAZ';
       await repo.publish();
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.not.include('--dry-run');
-      delete process.env.NPM_TOKEN;
     });
 
     it('should publish the tarfile when a signature is provided in the options', async () => {
@@ -375,7 +378,12 @@ describe('LernaRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
+      process.env.NPM_TOKEN = 'FOOBARBAZ';
       repo = await LernaRepo.create(uxStub);
+    });
+
+    afterEach(() => {
+      delete process.env.NPM_TOKEN;
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {
@@ -385,11 +393,9 @@ describe('LernaRepo', () => {
     });
 
     it('should not use the --dry-run flag when the dryrun option is not provided', async () => {
-      process.env.NPM_TOKEN = 'FOOBARBAZ';
       await repo.publish();
       const cmd = execStub.lastCall.args[0];
       expect(cmd).to.not.include('--dry-run');
-      delete process.env.NPM_TOKEN;
     });
 
     it('should publish the tarfile when a signature is provided in the options', async () => {
