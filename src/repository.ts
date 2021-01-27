@@ -7,15 +7,18 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import { Readable } from 'stream';
 import * as glob from 'glob';
 import { pwd } from 'shelljs';
-import { AnyJson, ensureString } from '@salesforce/ts-types';
+import { AnyJson, ensureString, getString } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
-import { get, Nullable } from '@salesforce/ts-types';
+import { Nullable } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
+import * as conventionalCommitsParser from 'conventional-commits-parser';
+import * as conventionalChangelogPresetLoader from 'conventional-changelog-preset-loader';
 import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
 import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
@@ -42,6 +45,12 @@ interface VersionsByPackage {
     currentVersion: string;
     nextVersion: string;
   };
+}
+
+interface Commit {
+  type: Nullable<string>;
+  header: Nullable<string>;
+  body: Nullable<string>;
 }
 
 export async function isMonoRepo(): Promise<boolean> {
@@ -192,14 +201,65 @@ abstract class Repository extends AsyncOptionalCreatable {
     return found;
   }
 
+  /**
+   * If the commit type isn't fix (patch bump), feat (minor bump), or breaking (major bump),
+   * then standard-version always defaults to a patch bump.
+   * See https://github.com/conventional-changelog/standard-version/issues/577
+   *
+   * We, however, don't want to publish a new version for chore, docs, etc. So we analyze
+   * the commits to see if any of them indicate that a new release should be published.
+   */
+  protected async isReleasable(pkg: Package, lerna = false): Promise<boolean> {
+    // Return true if the version bump is hardcoded in the package.json
+    // In this scenario, we want to publish regardless of the commit types
+    if (pkg.nextVersionIsHardcoded()) return true;
+
+    const skippableCommitTypes = ['chore', 'style', 'docs', 'ci', 'test'];
+
+    // find the latest git tag so that we can get all the commits that have happened since
+    const tags = this.execCommand('git tag', true).stdout.split(os.EOL);
+    const latestTag = lerna
+      ? tags.find((tag) => tag.includes(`${pkg.name}@${pkg.npmPackage.version}`)) || ''
+      : tags.find((tag) => tag.includes(pkg.npmPackage.version));
+
+    // import the default commit parser configuration
+    const defaultConfigPath = require.resolve('conventional-changelog-conventionalcommits');
+    const configuration = await conventionalChangelogPresetLoader({ name: defaultConfigPath });
+
+    const commits: Commit[] = await new Promise((resolve) => {
+      const DELIMITER = 'SPLIT';
+      const gitLogCommand = lerna
+        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD -- ${pkg.location}`
+        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD`;
+      const gitLog = this.execCommand(gitLogCommand, true)
+        .stdout.split(`${DELIMITER}${os.EOL}`)
+        .filter((c) => !!c);
+      const readable = Readable.from(gitLog);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore because the type exported from conventionalCommitsParser is wrong
+      const parser = readable.pipe(conventionalCommitsParser(configuration.parserOpts));
+      const allCommits: Commit[] = [];
+      parser.on('data', (commit: Commit) => allCommits.push(commit));
+      parser.on('finish', () => resolve(allCommits));
+    });
+
+    const commitsThatWarrantRelease = commits.filter((commit) => {
+      const headerIndicatesMajorChange = !!commit.header && commit.header.includes('!');
+      const bodyIndicatesMajorChange = !!commit.body && commit.body.includes('BREAKING');
+      const typeIsSkippable = skippableCommitTypes.includes(commit.type);
+      return !typeIsSkippable || bodyIndicatesMajorChange || headerIndicatesMajorChange;
+    });
+    return commitsThatWarrantRelease.length > 0;
+  }
+
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
   public abstract verifySignature(packageNames?: string[]): void;
-  public abstract async publish(options: PublishOpts): Promise<void>;
-  public abstract async sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
-  public abstract async waitForAvailability(): Promise<boolean>;
-  protected abstract async init(): Promise<void>;
+  public abstract publish(options: PublishOpts): Promise<void>;
+  public abstract sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
+  public abstract waitForAvailability(): Promise<boolean>;
+  protected abstract init(): Promise<void>;
 }
 
 export class LernaRepo extends Repository {
@@ -288,8 +348,9 @@ export class LernaRepo extends Repository {
     if (!isEmpty(nextVersions)) {
       for (const pkgPath of pkgPaths) {
         const pkg = await Package.create(pkgPath);
-        const nextVersion = get(nextVersions, `${pkg.name}.nextVersion`, null) as string;
-        if (nextVersion) {
+        const shouldBePublihsed = await this.isReleasable(pkg, true);
+        const nextVersion = getString(nextVersions, `${pkg.name}.nextVersion`, null);
+        if (shouldBePublihsed && nextVersion) {
           pkg.setNextVersion(nextVersion);
           this.packages.push(pkg);
         }
@@ -338,6 +399,7 @@ export class SinglePackageRepo extends Repository {
   public name: string;
   public nextVersion: string;
   public package: Package;
+  public shouldBePublished: boolean;
 
   // Both loggers are used because some logs we only want to show in the debug output
   // but other logs we always want to go to stdout
@@ -374,7 +436,7 @@ export class SinglePackageRepo extends Repository {
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
-    const tarPath = get(signatures, '0.tarPath', null) as Nullable<string>;
+    const tarPath = getString(signatures, '0.tarPath', null);
     if (tarPath) cmd += ` ${tarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
@@ -394,7 +456,7 @@ export class SinglePackageRepo extends Repository {
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     this.package = await Package.create();
-
+    this.shouldBePublished = await this.isReleasable(this.package);
     this.nextVersion = this.determineNextVersion();
     this.package.setNextVersion(this.nextVersion);
 
@@ -402,8 +464,7 @@ export class SinglePackageRepo extends Repository {
   }
 
   private determineNextVersion(): string {
-    const versionExists = this.package.npmPackage.versions.includes(this.package.packageJson.version);
-    if (!versionExists) {
+    if (this.package.nextVersionIsHardcoded()) {
       this.logger.debug(
         `${this.package.packageJson.name}@${this.package.packageJson.version} does not exist in the registry. Assuming that it's the version we want published`
       );

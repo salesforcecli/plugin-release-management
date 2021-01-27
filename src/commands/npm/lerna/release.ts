@@ -68,14 +68,13 @@ export default class Release extends SfdxCommand {
     }
 
     const lernaRepo = await LernaRepo.create(this.ux);
+    if (!lernaRepo.packages.length) {
+      this.ux.log(messages.getMessage('NoChangesToPublish'));
+      return;
+    }
 
     lernaRepo.printStage('Validate Next Version');
     const pkgValidations = lernaRepo.validate();
-
-    if (!pkgValidations.length) {
-      const errType = 'NoChangesToPublish';
-      throw new SfdxError(messages.getMessage(errType), errType);
-    }
 
     pkgValidations.forEach((pkgValidation) => {
       if (!pkgValidation.valid) {

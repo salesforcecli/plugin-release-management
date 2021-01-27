@@ -63,6 +63,11 @@ export default class Release extends SfdxCommand {
     }
 
     const pkg = await SinglePackageRepo.create(this.ux);
+    if (!pkg.shouldBePublished) {
+      this.ux.log('Found no commits that warrant a release. Exiting...');
+      return;
+    }
+
     pkg.printStage('Validate Next Version');
     const pkgValidation = pkg.validate();
     if (!pkgValidation.valid) {
