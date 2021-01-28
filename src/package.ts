@@ -139,6 +139,14 @@ export class Package extends AsyncOptionalCreatable {
     return pinnedPackages;
   }
 
+  /**
+   * Returns true if the version specified in the package.json has not been
+   * published to the registry
+   */
+  public nextVersionIsHardcoded(): boolean {
+    return !this.npmPackage.versions.includes(this.packageJson.version);
+  }
+
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();

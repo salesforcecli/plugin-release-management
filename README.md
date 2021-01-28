@@ -1,8 +1,34 @@
 # plugin-release-management
 
-This plugin is bundled with the [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli). For more information on the CLI, read the [getting started guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm).
+Plugin designed to handle all tasks related to signing, releasing, and testing npm packages.
 
-We always recommend using the latest version of these commands bundled with the CLI, however, you can install a specific version or tag if needed.
+## Releases
+
+The following steps are automated for package releases
+
+### Version Bump
+
+We use [standard-version](https://github.com/conventional-changelog/standard-version) to determine the next version that will be published. This means that all commits **must** adhere to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) in order for `standard-version` to work.
+
+In the case that you have manually bumped the version in the package.json, then the plugin will respect that and publish that version instead of using `standard-version` to determine the next version.
+
+NOTE: We consider the `chore`, `style`, `docs`, `ci`, `test` commit types to be "non-releasable", meaning that if all the commits are of those types then we do not publish a new version. However, if you've manually bumped the version in the package.json then the plugin will publish that version regardless of the commit types.
+
+### Changelogs
+
+`standard-version` automatically handles this for us as well. Again you must adhere to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) in order for the changelog generation to work.
+
+### Build
+
+After determining the next version, the plugin builds the package using `yarn build`. This means that you must have a `build` script included in the package.json
+
+### Signing
+
+If you pass the `--sign (-s)` flag into the release command, then the plugin will sign the package and verify that the signature exists in S3.
+
+### Publishing
+
+Once the package has been built and signed it will be published to npm. The command will not exit until the new version is found on the npm registry.
 
 ## Install
 
