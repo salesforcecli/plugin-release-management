@@ -229,8 +229,8 @@ abstract class Repository extends AsyncOptionalCreatable {
     const commits: Commit[] = await new Promise((resolve) => {
       const DELIMITER = 'SPLIT';
       const gitLogCommand = lerna
-        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD -- ${pkg.location}`
-        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD`;
+        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges -- ${pkg.location}`
+        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges`;
       const gitLog = this.execCommand(gitLogCommand, true)
         .stdout.split(`${DELIMITER}${os.EOL}`)
         .filter((c) => !!c);
