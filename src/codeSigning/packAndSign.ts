@@ -13,7 +13,6 @@ import { EOL } from 'os';
 import { basename, join as pathJoin } from 'path';
 import { sep as pathSep } from 'path';
 import { Readable } from 'stream';
-import { TLSSocket } from 'tls';
 import { copyFile, createReadStream } from 'fs';
 import * as https from 'https';
 import { UX } from '@salesforce/command';
@@ -23,7 +22,6 @@ import {
   CodeSignInfo,
   CodeVerifierInfo,
   default as sign,
-  validateRequestCert,
   validSalesforceHostname,
   verify,
 } from '../codeSigning/codeSignApi';
@@ -174,7 +172,6 @@ export const api = {
       verifyInfo.signatureStream = sigFilenameStream;
 
       const req = https.get(publicKeyUrl, { agent: false });
-      validateRequestCert(req);
 
       req.on('response', (response) => {
         if (response && response.statusCode === 200) {
@@ -456,24 +453,5 @@ export const api = {
         await fs.unlink(pathGetter.packageJsonBak);
       }
     }
-  },
-
-  /**
-   * Retrieve the fingerprint from a url where a cert is hosted
-   *
-   * @param publicKeyUrl
-   */
-  async retrieveFingerprint(publicKeyUrl: string): Promise<string> {
-    return new Promise((resolve) => {
-      let fingerprint: string;
-      const req = https.request(publicKeyUrl, { agent: false });
-      req.on('socket', (socket: TLSSocket) => {
-        socket.on('secureConnect', () => {
-          fingerprint = socket.getPeerCertificate(true).fingerprint;
-          resolve(fingerprint);
-        });
-      });
-      req.end();
-    });
   },
 };

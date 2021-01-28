@@ -6,14 +6,12 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as events from 'events';
 import { Readable } from 'stream';
 import { expect } from 'chai';
 import {
   CodeSignInfo,
   CodeVerifierInfo,
   default as sign,
-  validateRequestCert,
   validSalesforceHostname,
   verify,
 } from '../../src/codeSigning/codeSignApi';
@@ -67,33 +65,6 @@ describe('Sign Tests', () => {
       process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING = 'jj';
       expect(validSalesforceHostname('https://tnoonan-wsm2.internal.salesforce.com')).to.be.equal(false);
       delete process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING;
-    });
-  });
-
-  describe('validateRequestCert', () => {
-    it('invalid finger print', () => {
-      delete process.env.SFDX_DISABLE_CERT_PINNING;
-      try {
-        // eslint-disable-next-line prettier/prettier
-        class Request extends events.EventEmitter { }
-
-        const request = new Request();
-
-        class Socket extends events.EventEmitter {
-          public getPeerCertificate() {
-            return { fingerprint: '123456' };
-          }
-        }
-
-        const socket = new Socket();
-
-        validateRequestCert(request);
-        request.emit('socket', socket);
-        socket.emit('secureConnect');
-        throw new Error("Shouldn't Get Here!");
-      } catch (err) {
-        expect(err).to.have.property('name', 'CertificateFingerprintNotMatch');
-      }
     });
   });
 

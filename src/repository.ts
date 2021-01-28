@@ -81,9 +81,6 @@ export class Signer extends AsyncOptionalCreatable {
   }
 
   public async prepare(): Promise<void> {
-    const fingerprint = await packAndSignApi.retrieveFingerprint(this.publicKeyUrl);
-    this.env.setString('SFDX_DEVELOPER_TRUSTED_FINGERPRINT', fingerprint);
-
     const key = Buffer.from(this.env.getString('SALESFORCE_KEY'), 'base64').toString();
     this.keyPath = path.join(os.tmpdir(), 'salesforce-cli.key');
     await fs.writeFile(this.keyPath, key);

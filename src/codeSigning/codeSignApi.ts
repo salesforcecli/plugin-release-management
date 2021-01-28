@@ -7,9 +7,7 @@
 
 /* eslint-disable no-underscore-dangle */
 import * as crypto from 'crypto';
-import { EventEmitter } from 'events';
 import { Readable } from 'stream';
-import { TLSSocket } from 'tls';
 import { parse as parseUrl, UrlWithStringQuery } from 'url';
 import { NamedError } from '@salesforce/kit';
 import { Nullable } from '@salesforce/ts-types';
@@ -22,10 +20,6 @@ if (process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING === 'true') {
   SALESFORCE_URL_PATTERNS.push(/(.salesforce.com)$/);
 }
 
-// This is the fingerprint for https://developer.salesforce.com
-export const SALESFORCE_CERT_FINGERPRINT =
-  process.env.SFDX_DEVELOPER_TRUSTED_FINGERPRINT || '22:F4:87:2C:B2:22:04:1E:F5:D2:AB:AE:E7:69:81:10:1E:C1:F7:0B';
-
 export function validSalesforceHostname(url: Nullable<string>): boolean {
   if (!url) {
     return false;
@@ -36,29 +30,6 @@ export function validSalesforceHostname(url: Nullable<string>): boolean {
     return parsedUrl.hostname && /(\.salesforce\.com)$/.test(parsedUrl.hostname);
   } else {
     return parsedUrl.protocol === 'https:' && parsedUrl.hostname && parsedUrl.hostname === 'developer.salesforce.com';
-  }
-}
-
-export function validateRequestCert(request: EventEmitter): void {
-  if (!(process.env.SFDX_DISABLE_CERT_PINNING === 'true')) {
-    request.on('socket', (socket: TLSSocket) => {
-      socket.on('secureConnect', () => {
-        const fingerprint = socket.getPeerCertificate().fingerprint;
-        // If NODE_TLS_REJECT_UNAUTHORIZED is disabled this code can still enforce authorization.
-        // If we ever get asked by security to prevent disabling auth (essentially not support self signed certs) - then
-        // this is the code for it. So keep this code around.
-        // if (!socket.authorized) {
-        // throw new NamedError('CertificateNotAuthorized',
-        //    `The certificate for ${url} is not valid: ${socket.authorizationError}`);
-        // }
-        if (!SALESFORCE_CERT_FINGERPRINT.includes(fingerprint)) {
-          throw new NamedError(
-            'CertificateFingerprintNotMatch',
-            `The expected fingerprint and the fingerprint [${fingerprint}] from the certificate found at https://developer.salesforce.com do not match.`
-          );
-        }
-      });
-    });
   }
 }
 
