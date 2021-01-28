@@ -19,6 +19,7 @@ import * as chalk from 'chalk';
 import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
 import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
+import { Registry } from './registry';
 
 type LernaJson = {
   packages?: string[];
@@ -97,16 +98,19 @@ export class Signer extends AsyncOptionalCreatable {
 abstract class Repository extends AsyncOptionalCreatable {
   protected ux: UX;
   protected env: Env;
+  protected registry: Registry;
   private stepCounter = 1;
 
   public constructor(ux: UX) {
     super(ux);
     this.ux = ux;
     this.env = new Env();
+    this.registry = new Registry();
   }
 
-  public install(silent = false): void {
-    this.execCommand('yarn install', silent);
+  public async install(silent = false): Promise<void> {
+    await this.writeNpmToken();
+    this.execCommand(`yarn install ${this.registry.getRegistryParameter()}`, silent);
   }
 
   public build(silent = false): void {
@@ -151,11 +155,9 @@ abstract class Repository extends AsyncOptionalCreatable {
   }
 
   protected async writeNpmToken(): Promise<void> {
-    const token = this.env.getString('NPM_TOKEN');
-    const authString = `//registry.npmjs.org/:_authToken=${token}${os.EOL}unsafe-perm = true`;
     const home = this.env.getString('HOME');
-    const npmrcPath = path.join(home, '.npmrc');
-    await fs.writeFile(npmrcPath, authString);
+    await this.registry.setNpmAuth(home);
+    await this.registry.setNpmRegistry(home);
   }
 
   protected execCommand(cmd: string, silent?: boolean): ShellString {
@@ -253,6 +255,7 @@ export class LernaRepo extends Repository {
       if (tarPath) cmd += ` ${tarPath}`;
       if (tag) cmd += ` --tag ${tag}`;
       if (dryrun) cmd += ' --dry-run';
+      cmd += ` ${this.registry.getRegistryParameter()}`;
       cmd += ` --access ${access || 'public'}`;
       this.execCommand(`(cd ${pkg.location} ; ${cmd})`);
     }
@@ -375,6 +378,7 @@ export class SinglePackageRepo extends Repository {
     if (tarPath) cmd += ` ${tarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
+    cmd += ` ${this.registry.getRegistryParameter()}`;
     cmd += ` --access ${access || 'public'}`;
     this.execCommand(cmd);
   }

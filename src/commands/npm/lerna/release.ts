@@ -89,7 +89,7 @@ export default class Release extends SfdxCommand {
 
     if (this.flags.install) {
       lernaRepo.printStage('Install');
-      lernaRepo.install();
+      await lernaRepo.install();
 
       lernaRepo.printStage('Build');
       lernaRepo.build();

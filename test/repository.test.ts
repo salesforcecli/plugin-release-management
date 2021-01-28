@@ -192,7 +192,12 @@ describe('SinglePackageRepo', () => {
         versions: ['1.0.0'],
       });
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
+      process.env.NPM_TOKEN = 'FOOBARBAZ';
       repo = await SinglePackageRepo.create(uxStub);
+    });
+
+    afterEach(() => {
+      delete process.env.NPM_TOKEN;
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {
@@ -373,7 +378,12 @@ describe('LernaRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
+      process.env.NPM_TOKEN = 'FOOBARBAZ';
       repo = await LernaRepo.create(uxStub);
+    });
+
+    afterEach(() => {
+      delete process.env.NPM_TOKEN;
     });
 
     it('should use the --dry-run flag when the dryrun option is provided', async () => {

@@ -6,9 +6,10 @@
  */
 import * as path from 'path';
 import { exec } from 'shelljs';
-import { fs, Logger } from '@salesforce/core';
+import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable } from '@salesforce/kit';
 import { AnyJson, get } from '@salesforce/ts-types';
+import { Registry } from './registry';
 
 export type PackageJson = {
   name: string;
@@ -46,10 +47,12 @@ export class Package extends AsyncOptionalCreatable {
 
   private logger: Logger;
   private nextVersion: string;
+  private registry: Registry;
 
   public constructor(location?: string) {
     super();
     this.location = location;
+    this.registry = new Registry();
   }
 
   public async readPackageJson(): Promise<PackageJson> {
@@ -58,7 +61,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public retrieveNpmPackage(): NpmPackage {
-    const result = exec(`npm view ${this.name} --json`, { silent: true });
+    const result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     return result.code === 0 ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
 
@@ -104,11 +107,18 @@ export class Package extends AsyncOptionalCreatable {
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
     // get the list of dependencies to hardcode
+    if (!this.packageJson['pinnedDependencies']) {
+      throw new SfdxError(
+        'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
+      );
+    }
     const dependencies: string[] = this.packageJson['pinnedDependencies'];
     const pinnedPackages = [];
     dependencies.forEach((name) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${name} dist-tags --json`, { silent: true });
+      const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+        silent: true,
+      });
       const versions = JSON.parse(result.stdout);
       let tag = targetTag;
 
