@@ -64,11 +64,13 @@ export default class Update extends SfdxCommand {
 
   private async updateTsVersion(): Promise<void> {
     const newVersion = this.determineNextTsVersion();
-    this.ux.log(`Updating typescript version to ${newVersion}`);
     const pkg = await Package.create(path.resolve('.'));
 
     if (pkg.packageJson.devDependencies['typescript']) {
+      this.ux.log(`Updating typescript version to ${newVersion}`);
       pkg.packageJson.devDependencies['typescript'] = newVersion;
+      pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
+      pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
     }
 
     // If the prepare script runs sf-install, the install will fail because the typescript version
