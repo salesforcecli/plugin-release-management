@@ -139,8 +139,7 @@ abstract class Repository extends AsyncOptionalCreatable {
   public pushChangesToGit(): void {
     const branch = this.getBranchName();
     const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
-    this.ux.log(cmd);
-    exec(cmd, { silent: false });
+    this.execCommand(cmd, false);
   }
 
   public revertUnstagedChanges(): void {
