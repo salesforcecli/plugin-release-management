@@ -23,7 +23,7 @@
     "got": "^11.8.0",
     "shelljs": "^0.8.4",
     "standard-version": "^9.0.0",
-    "tslib": "^1"
+    "tslib": "^2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
