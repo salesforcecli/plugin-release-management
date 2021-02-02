@@ -10,7 +10,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { verifyDependencies } from '../../../dependencies';
-import { isMonoRepo, LernaRepo } from '../../../repository';
+import { Access, isMonoRepo, LernaRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
@@ -95,7 +95,10 @@ export default class Release extends SfdxCommand {
     }
 
     lernaRepo.printStage('Prepare Release');
-    lernaRepo.prepare({ dryrun: this.flags.dryrun, githubRelease: this.flags.githubrelease });
+    lernaRepo.prepare({
+      dryrun: this.flags.dryrun as boolean,
+      githubRelease: this.flags.githubrelease as boolean,
+    });
 
     let signatures: SigningResponse[] = [];
     if (this.flags.sign && !this.flags.dryrun) {
@@ -116,9 +119,9 @@ export default class Release extends SfdxCommand {
     lernaRepo.printStage('Publish');
     await lernaRepo.publish({
       signatures,
-      access: this.flags.npmaccess,
-      tag: this.flags.npmtag,
-      dryrun: this.flags.dryrun,
+      access: this.flags.npmaccess as Access,
+      tag: this.flags.npmtag as string,
+      dryrun: this.flags.dryrun as boolean,
     });
 
     if (!this.flags.dryrun) {

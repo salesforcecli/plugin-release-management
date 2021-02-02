@@ -30,22 +30,22 @@ const DEPENDENCIES: Dependency[] = [
   {
     name: 'sfdx-trust',
     type: 'bin',
-    condition: (flags): boolean => flags.sign,
+    condition: (flags): boolean => !!flags.sign,
   },
   {
     name: 'AWS_ACCESS_KEY_ID',
     type: 'env',
-    condition: (flags): boolean => flags.sign,
+    condition: (flags): boolean => !!flags.sign,
   },
   {
     name: 'AWS_SECRET_ACCESS_KEY',
     type: 'env',
-    condition: (flags): boolean => flags.sign,
+    condition: (flags): boolean => !!flags.sign,
   },
   {
     name: 'SALESFORCE_KEY',
     type: 'env',
-    condition: (flags): boolean => flags.sign,
+    condition: (flags): boolean => !!flags.sign,
   },
   {
     name: 'NPM_TOKEN',
@@ -55,7 +55,7 @@ const DEPENDENCIES: Dependency[] = [
   {
     name: 'GH_TOKEN',
     type: 'env',
-    condition: (flags): boolean => flags.githubrelease,
+    condition: (flags): boolean => !!flags.githubrelease,
   },
 ];
 

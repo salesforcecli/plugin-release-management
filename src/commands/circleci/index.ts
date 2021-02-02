@@ -29,7 +29,7 @@ export default class CircleCI extends SfdxCommand {
     let repositories = await retrieveKnownRepositories();
 
     if (this.flags['contains-package-type']) {
-      const packageType = this.flags['contains-package-type'];
+      const packageType = this.flags['contains-package-type'] as string;
       repositories = repositories.filter((repository) => repository.packages.find((pkg) => pkg.type === packageType));
     }
 

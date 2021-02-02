@@ -79,7 +79,7 @@ describe('npmrc tests', () => {
   });
   it('should write token from NPM_TOKEN when constructor token not set', async () => {
     const stub = $$.SANDBOX.stub(Env.prototype, 'getString');
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     stub.withArgs('NPM_TOKEN').returns('foobarbazfoobarbaz');
     const registry = new Registry();
@@ -91,7 +91,7 @@ describe('npmrc tests', () => {
   });
   it('should write token from NPM_TOKEN with private registry and undefined token in constructor', async () => {
     const stub = $$.SANDBOX.stub(Env.prototype, 'getString');
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     stub.withArgs('NPM_TOKEN').returns('foobarbazfoobarbaz');
     const registry = new Registry('https://foo.bar.baz.org');

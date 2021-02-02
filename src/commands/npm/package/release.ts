@@ -8,7 +8,7 @@
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { verifyDependencies } from '../../../dependencies';
-import { isMonoRepo, SinglePackageRepo } from '../../../repository';
+import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
@@ -87,7 +87,7 @@ export default class Release extends SfdxCommand {
     }
 
     pkg.printStage('Prepare Release');
-    pkg.prepare({ dryrun: this.flags.dryrun });
+    pkg.prepare({ dryrun: this.flags.dryrun as boolean });
 
     let signature: SigningResponse;
     if (this.flags.sign && !this.flags.dryrun) {
@@ -105,9 +105,9 @@ export default class Release extends SfdxCommand {
     pkg.printStage('Publish');
     await pkg.publish({
       signatures: [signature],
-      access: this.flags.npmaccess,
-      tag: this.flags.npmtag,
-      dryrun: this.flags.dryrun,
+      access: this.flags.npmaccess as Access,
+      tag: this.flags.npmtag as string,
+      dryrun: this.flags.dryrun as boolean,
     });
 
     if (!this.flags.dryrun) {

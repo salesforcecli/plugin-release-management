@@ -33,11 +33,13 @@ interface PrepareOpts {
   githubRelease?: boolean;
 }
 
+export type Access = 'public' | 'restricted';
+
 interface PublishOpts {
   dryrun?: boolean;
   signatures?: SigningResponse[];
   tag?: string;
-  access?: 'public' | 'restricted';
+  access?: Access;
 }
 
 interface VersionsByPackage {
@@ -52,6 +54,8 @@ interface Commit {
   header: Nullable<string>;
   body: Nullable<string>;
 }
+
+type PollFunction = () => boolean;
 
 export async function isMonoRepo(): Promise<boolean> {
   return fs.fileExists('lerna.json');
@@ -178,7 +182,7 @@ abstract class Repository extends AsyncOptionalCreatable {
     }
   }
 
-  protected async poll(checkFn: Function): Promise<boolean> {
+  protected async poll(checkFn: PollFunction): Promise<boolean> {
     const isNonTTY = this.env.getBoolean('CI') || this.env.getBoolean('CIRCLECI');
     let found = false;
     let attempts = 0;
@@ -234,7 +238,7 @@ abstract class Repository extends AsyncOptionalCreatable {
         .stdout.split(`${DELIMITER}${os.EOL}`)
         .filter((c) => !!c);
       const readable = Readable.from(gitLog);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore because the type exported from conventionalCommitsParser is wrong
       const parser = readable.pipe(conventionalCommitsParser(configuration.parserOpts));
       const allCommits: Commit[] = [];

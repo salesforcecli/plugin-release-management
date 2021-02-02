@@ -18,6 +18,7 @@ export default class Repositories extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(EOL);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   public static readonly flagsConfig: FlagsConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(cli.table.flags() as any),
@@ -39,6 +40,7 @@ export default class Repositories extends SfdxCommand {
           },
         },
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           printLine: this.log.bind(this),
           ...this.flags, // parsed flags
         }
