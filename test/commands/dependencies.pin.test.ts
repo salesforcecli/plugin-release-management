@@ -18,7 +18,7 @@ function setupStub(): void {
     pinnedDependencies: ['@salesforce/plugin-auth'],
   });
   // we don't need all members of what exec returns, just the stdout
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   $$.SANDBOX.stub(shell, 'exec').returns({ stdout: '{"latest":"1.4.4","test":"0.0.6"}' });
 }

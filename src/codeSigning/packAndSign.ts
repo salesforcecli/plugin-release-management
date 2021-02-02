@@ -27,6 +27,7 @@ import {
   validSalesforceHostname,
   verify,
 } from '../codeSigning/codeSignApi';
+import { PackageJson } from '../package';
 import { ExecProcessFailed, InvalidUrlError, SignSignedCertError } from './error';
 import { NpmName } from './NpmName';
 
@@ -313,7 +314,7 @@ export const api = {
    *
    * @param pJson - the updated json content to write to disk
    */
-  writePackageJson(pJson: object): Promise<void> {
+  writePackageJson(pJson: PackageJson): Promise<void> {
     return fs.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
   },
 
@@ -337,7 +338,7 @@ export const api = {
 
       cliUx.log(`Artifact signed and saved in ${sigFilename}`);
 
-      let verified;
+      let verified: boolean;
       try {
         // verify the signature with the public key url
         verified = await api.verify(
@@ -391,8 +392,8 @@ export const api = {
       api.validateUrl(args.publickeyurl);
 
       // read package.json info
-      const packageJsonContent = await api.retrievePackageJson();
-      let packageJson = JSON.parse(packageJsonContent);
+      const packageJsonContent: string = await api.retrievePackageJson();
+      let packageJson = JSON.parse(packageJsonContent) as PackageJson;
       logger.debug('parsed the package.json content');
 
       if (packageJson.files) {
@@ -439,7 +440,7 @@ export const api = {
           publicKeyUrl: args.publickeyurl,
           signatureUrl: `${sigUrl}`,
         },
-      });
+      }) as PackageJson;
       await api.writePackageJson(packageJson);
 
       cliUx.log('Successfully updated package.json with public key and signature file locations.');

@@ -7,6 +7,11 @@
 
 import { NamedError } from '@salesforce/kit';
 
+interface NpmNameResponse {
+  scope: string;
+  name: string;
+}
+
 /**
  * String representing the parsed components of an NpmName
  *
@@ -73,7 +78,7 @@ export class NpmName {
    * @param {string} name - The string to parse.
    * @param returnNpmName - The object to update.
    */
-  private static setNameAndScope(name: string, returnNpmName): void {
+  private static setNameAndScope(name: string, returnNpmName: NpmNameResponse): void {
     // There are at least 2 components. So there is likely a scope.
     const subComponents: string[] = name.split('/');
     if (subComponents.length === 2 && subComponents[0].trim().length > 0 && subComponents[1].trim().length > 0) {

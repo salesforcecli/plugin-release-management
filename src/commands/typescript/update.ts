@@ -86,7 +86,7 @@ export default class Update extends SfdxCommand {
   private determineNextTsVersion(): string {
     return this.flags.version === 'latest' || !this.flags.version
       ? getString(this.typescriptPkg, 'dist-tags.latest')
-      : this.flags.version;
+      : (this.flags.version as string);
   }
 
   private retrieveTsPackage(): NpmPackage {

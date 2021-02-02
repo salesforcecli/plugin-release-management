@@ -44,7 +44,8 @@ export default class Fingerprint extends SfdxCommand {
       this.ux.log(response.ETag);
       return response;
     } catch (err) {
-      throw new SfdxError(err.name);
+      const error = err as SfdxError;
+      throw new SfdxError(error.name);
     }
   }
 }

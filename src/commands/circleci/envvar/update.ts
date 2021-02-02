@@ -9,9 +9,9 @@ import { EOL } from 'os';
 import { fstat } from 'fs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import { isArray, isString, Dictionary } from '@salesforce/ts-types';
+import { isArray, isString, Dictionary, AnyJson, getArray } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
-import got from 'got';
+import got, { Response } from 'got';
 import { green, red, bold, cyan, yellow } from 'chalk';
 
 Messages.importMessagesDirectory(__dirname);
@@ -96,12 +96,13 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
 
   private async updateEnvvars(slug: string): Promise<string | EnvvarUpdateStatus[]> {
     const envvarNames: string[] = this.getFlagAsArray('envvar');
-    let response;
+    let response: Response<string>;
 
     try {
-      response = await got.get(`${URL_BASE}/${slug}/envvar`, { headers: this.headers });
-    } catch (error) {
-      return `${error.message as string}. Skipping...`;
+      response = await got.get<string>(`${URL_BASE}/${slug}/envvar`, { headers: this.headers });
+    } catch (err) {
+      const error = err as SfdxError;
+      return `${error.message}. Skipping...`;
     }
     const body = JSON.parse(response.body) as { items: [{ name: string }] };
     const existingEnvvars = body.items;
@@ -153,7 +154,8 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
           headers: this.headers,
           json: { name, value },
         });
-      } catch (error) {
+      } catch (err) {
+        const error = err as SfdxError;
         return { name, success: false, message: error.message };
       }
     }
@@ -167,11 +169,11 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
     if (await this.isPipedIn()) {
       const input = await this.readPipedInput();
       try {
-        const json = JSON.parse(input);
+        const json = JSON.parse(input) as AnyJson;
         if (isArray<string>(json)) {
           slugs = json;
-        } else if (isArray<string>(json.result)) {
-          slugs = json.result;
+        } else if (isArray<string>(getArray(json, 'result', null))) {
+          slugs = getArray(json, 'result', []) as string[];
         }
       } catch (error) {
         slugs = input.split('\n');
@@ -187,7 +189,7 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
   }
 
   private getFlagAsArray(name: string): string[] {
-    const value = this.flags[name];
+    const value = this.flags[name] as string | string[];
     if (isArray<string>(value)) {
       return value;
     } else if (value) {

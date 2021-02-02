@@ -17,6 +17,8 @@ export type PackageJson = {
   dependencies: AnyJson;
   devDependencies: AnyJson;
   scripts: AnyJson;
+  files?: string[];
+  pinnedDependencies?: string[];
 } & AnyJson;
 
 export type ChangedPackageVersions = Array<{
@@ -37,6 +39,12 @@ export interface VersionValidation {
   currentVersion: string;
   valid: boolean;
   name: string;
+}
+
+interface PinnedPackage {
+  name: string;
+  version: string;
+  tag: string;
 }
 
 export class Package extends AsyncOptionalCreatable {
@@ -107,19 +115,19 @@ export class Package extends AsyncOptionalCreatable {
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
     // get the list of dependencies to hardcode
-    if (!this.packageJson['pinnedDependencies']) {
+    if (!this.packageJson.pinnedDependencies) {
       throw new SfdxError(
         'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
       );
     }
-    const dependencies: string[] = this.packageJson['pinnedDependencies'];
-    const pinnedPackages = [];
+    const dependencies: string[] = this.packageJson.pinnedDependencies;
+    const pinnedPackages: PinnedPackage[] = [];
     dependencies.forEach((name) => {
       // get the 'release' tag version or the version specified by the passed in tag
       const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
         silent: true,
       });
-      const versions = JSON.parse(result.stdout);
+      const versions = JSON.parse(result.stdout) as Record<string, string>;
       let tag = targetTag;
 
       // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
