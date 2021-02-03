@@ -121,8 +121,7 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.registry = new Registry();
   }
 
-  public async install(silent = false): Promise<void> {
-    await this.writeNpmToken();
+  public install(silent = false): void {
     this.execCommand(`yarn install ${this.registry.getRegistryParameter()}`, silent);
   }
 
@@ -166,7 +165,7 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.ux.log(`VersionId: ${result.VersionId}`);
   }
 
-  protected async writeNpmToken(): Promise<void> {
+  public async writeNpmToken(): Promise<void> {
     const home = this.env.getString('HOME');
     await this.registry.setNpmAuth(home);
     await this.registry.setNpmRegistry(home);

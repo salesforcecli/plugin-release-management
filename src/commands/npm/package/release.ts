@@ -78,9 +78,11 @@ export default class Release extends SfdxCommand {
     this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
     this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
 
+    await pkg.writeNpmToken();
+
     if (this.flags.install) {
       pkg.printStage('Install');
-      await pkg.install();
+      pkg.install();
 
       pkg.printStage('Build');
       pkg.build();

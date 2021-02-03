@@ -86,9 +86,11 @@ export default class Release extends SfdxCommand {
       this.ux.log(`Next Version: ${pkgValidation.nextVersion}${os.EOL}`);
     });
 
+    await lernaRepo.writeNpmToken();
+
     if (this.flags.install) {
       lernaRepo.printStage('Install');
-      await lernaRepo.install();
+      lernaRepo.install();
 
       lernaRepo.printStage('Build');
       lernaRepo.build();
