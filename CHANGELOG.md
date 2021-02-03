@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.2...v1.4.3) (2021-02-03)
+
+
+### Bug Fixes
+
+* strip tsconfig comments before parsing as JSON ([#36](https://github.com/salesforcecli/plugin-release-management/issues/36)) ([3e16f1c](https://github.com/salesforcecli/plugin-release-management/commit/3e16f1cd4bfdaf47adafede43857f237311040a2))
+
 ### [1.4.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.1...v1.4.2) (2021-01-29)
 
 
