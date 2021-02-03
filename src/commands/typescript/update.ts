@@ -10,7 +10,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
-import { asObject, getString } from '@salesforce/ts-types';
+import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
 import { SinglePackageRepo } from '../../repository';
 
@@ -45,7 +45,7 @@ export default class Update extends SfdxCommand {
 
     const pkg = await SinglePackageRepo.create(this.ux);
     try {
-      await pkg.install();
+      pkg.install();
       pkg.build();
       pkg.test();
     } finally {
@@ -56,7 +56,12 @@ export default class Update extends SfdxCommand {
 
   private async updateEsTarget(): Promise<void> {
     const tsConfigPath = path.resolve('tsconfig.json');
-    const tsConfig = await fs.readJson(tsConfigPath);
+    const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
+
+    // strip out any comments that might be in the tsconfig.json
+    const commentRegex = new RegExp(/(\/\/.*)/, 'gi');
+    const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
+
     set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
     this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
     await fs.writeJson(tsConfigPath, tsConfig);
