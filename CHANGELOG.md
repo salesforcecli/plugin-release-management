@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.3...v1.5.0) (2021-02-03)
+
+
+### Features
+
+* remove fingerprint checks ([#18](https://github.com/salesforcecli/plugin-release-management/issues/18)) ([6befa55](https://github.com/salesforcecli/plugin-release-management/commit/6befa55ac257c15bd47f17652619d4fa0a7f91b7))
+
 ### [1.4.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.2...v1.4.3) (2021-02-03)
 
 
