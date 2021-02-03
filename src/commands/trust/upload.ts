@@ -14,7 +14,7 @@ import { upload } from '../../codeSigning/upload';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'trust.upload');
 
-export default class Fingerprint extends SfdxCommand {
+export default class Upload extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   protected static flagsConfig: FlagsConfig = {
     signature: flags.string({

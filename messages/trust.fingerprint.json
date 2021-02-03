@@ -1,4 +1,0 @@
-{
-  "description": "get the SHA1 fingerprint for the provided url",
-  "publicKeyUrl": "the url where the public key/certificate will be hosted."
-}
