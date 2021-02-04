@@ -27,8 +27,10 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
+    "@oclif/plugin-command-snapshot": "^2.0.0",
     "@salesforce/dev-config": "^2.1.0",
     "@salesforce/dev-scripts": "0.7.0",
+    "@salesforce/plugin-command-reference": "^1.3.0",
     "@salesforce/prettier-config": "^0.0.1",
     "@salesforce/ts-sinon": "1.3.0",
     "@types/conventional-changelog-preset-loader": "^2.3.1",
@@ -85,11 +87,38 @@
     "commands": "./lib/commands",
     "bin": "sfdx",
     "devPlugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-command-snapshot",
+      "@salesforce/plugin-command-reference"
     ],
     "topics": {
+      "circleci": {
+        "description": "interact with circleci api",
+        "subtopics": {
+          "envvar": {
+            "description": "update and set environment variables in circleci"
+          }
+        }
+      },
       "npm": {
-        "description": "release npm packages"
+        "description": "release npm packages",
+        "subtopics": {
+          "dependencies": {
+            "description": "pin dependenices to a specific version in package.json"
+          },
+          "lerna": {
+            "description": "work with lerna npm projects"
+          },
+          "package": {
+            "description": "work with npm projects"
+          }
+        }
+      },
+      "trust": {
+        "description": "commands for signing plugins"
+      },
+      "typescript": {
+        "description": "test updates to typescript version"
       }
     }
   },
@@ -104,12 +133,14 @@
     "format": "sf-format",
     "lint": "sf-lint",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
+    "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
     "prepack": "sf-build",
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
     "test": "sf-test",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "test:deprecation-policy": "./bin/run snapshot:compare",
+    "test:command-reference": "./bin/run commandreference:generate --erroronwarnings"
   },
   "husky": {
     "hooks": {
