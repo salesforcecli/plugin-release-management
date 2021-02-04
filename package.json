@@ -92,8 +92,33 @@
       "@salesforce/plugin-command-reference"
     ],
     "topics": {
+      "circleci": {
+        "description": "interact with circleci api",
+        "subtopics": {
+          "envvar": {
+            "description": "update and set environment variables in circleci"
+          }
+        }
+      },
       "npm": {
-        "description": "release npm packages"
+        "description": "release npm packages",
+        "subtopics": {
+          "dependencies": {
+            "description": "pin dependenices to a specific version in package.json"
+          },
+          "lerna": {
+            "description": "work with lerna npm projects"
+          },
+          "package": {
+            "description": "work with npm projects"
+          }
+        }
+      },
+      "trust": {
+        "description": "commands for signing plugins"
+      },
+      "typescript": {
+        "description": "test updates to typescript version"
       }
     }
   },
