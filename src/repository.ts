@@ -216,7 +216,7 @@ abstract class Repository extends AsyncOptionalCreatable {
     const skippableCommitTypes = ['chore', 'style', 'docs', 'ci', 'test'];
 
     // find the latest git tag so that we can get all the commits that have happened since
-    const tags = this.execCommand('git tag', true).stdout.split(os.EOL);
+    const tags = this.execCommand('git fetch --tags && git tag', true).stdout.split(os.EOL);
     const latestTag = lerna
       ? tags.find((tag) => tag.includes(`${pkg.name}@${pkg.npmPackage.version}`)) || ''
       : tags.find((tag) => tag.includes(pkg.npmPackage.version));
