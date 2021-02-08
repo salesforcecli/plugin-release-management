@@ -19,6 +19,7 @@
     "conventional-changelog-conventionalcommits": "^4.5.0",
     "conventional-changelog-preset-loader": "^2.3.4",
     "conventional-commits-parser": "^3.2.0",
+    "fast-glob": "^3.2.5",
     "glob": "^7.1.6",
     "got": "^11.8.0",
     "shelljs": "^0.8.4",
@@ -92,6 +93,14 @@
       "@salesforce/plugin-command-reference"
     ],
     "topics": {
+      "cli": {
+        "description": "get information on the cli",
+        "subtopics": {
+          "versions": {
+            "description": "view CLI versions"
+          }
+        }
+      },
       "circleci": {
         "description": "interact with circleci api",
         "subtopics": {

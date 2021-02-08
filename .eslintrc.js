@@ -6,4 +6,8 @@
  */
 module.exports = {
   extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license'],
+  rules: {
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error']
+  }
 };
