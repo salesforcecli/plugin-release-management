@@ -1,0 +1,311 @@
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+
+import * as os from 'os';
+import * as path from 'path';
+import * as fg from 'fast-glob';
+import { exec } from 'shelljs';
+import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { fs, Messages } from '@salesforce/core';
+import { green, red, cyan, yellow, bold } from 'chalk';
+import { PackageJson } from '../../../package';
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
+
+const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
+const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
+const STABLE_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable';
+const STABLE_RC_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable-rc';
+const SALESFORCE_DEP_GLOBS = ['@salesforce/**/*', 'salesforce-alm', 'salesforcedx'];
+
+type Info = {
+  origin: string;
+  version: string;
+  channel: Channel;
+  location: Location;
+  dependencies?: Dependency[];
+};
+
+type Dependency = {
+  name: string;
+  version: string;
+};
+
+enum Channel {
+  LEGACY = 'legacy',
+  STABLE = 'stable',
+  STABLE_RC = 'stable-rc',
+  LATEST = 'latest',
+  LATEST_RC = 'latest-rc',
+}
+
+enum Location {
+  ARCHIVE = 'archive',
+  NPM = 'npm',
+}
+
+type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.LEGACY>;
+type Archives = Record<ArchiveChannel, string[]>;
+
+const ARCHIVES: Archives = {
+  [Channel.STABLE]: [
+    `${STABLE_PATH}/sfdx-darwin-x64.tar.gz`,
+    `${STABLE_PATH}/sfdx-darwin-x64.tar.xz`,
+    `${STABLE_PATH}/sfdx-linux-arm.tar.gz`,
+    `${STABLE_PATH}/sfdx-linux-arm.tar.xz`,
+    `${STABLE_PATH}/sfdx-linux-x64.tar.gz`,
+    `${STABLE_PATH}/sfdx-linux-x64.tar.xz`,
+    `${STABLE_PATH}/sfdx-win32-x64.tar.gz`,
+    `${STABLE_PATH}/sfdx-win32-x64.tar.xz`,
+    `${STABLE_PATH}/sfdx-win32-x86.tar.gz`,
+    `${STABLE_PATH}/sfdx-win32-x86.tar.xz`,
+  ],
+  [Channel.STABLE_RC]: [
+    `${STABLE_RC_PATH}/sfdx-darwin-x64.tar.gz`,
+    `${STABLE_RC_PATH}/sfdx-darwin-x64.tar.xz`,
+    `${STABLE_RC_PATH}/sfdx-linux-arm.tar.gz`,
+    `${STABLE_RC_PATH}/sfdx-linux-arm.tar.xz`,
+    `${STABLE_RC_PATH}/sfdx-linux-x64.tar.gz`,
+    `${STABLE_RC_PATH}/sfdx-linux-x64.tar.xz`,
+    `${STABLE_RC_PATH}/sfdx-win32-x64.tar.gz`,
+    `${STABLE_RC_PATH}/sfdx-win32-x64.tar.xz`,
+    `${STABLE_RC_PATH}/sfdx-win32-x86.tar.gz`,
+    `${STABLE_RC_PATH}/sfdx-win32-x86.tar.xz`,
+  ],
+  [Channel.LEGACY]: [
+    `${LEGACY_PATH}/sfdx-cli-darwin-x64.tar.gz`,
+    `${LEGACY_PATH}/sfdx-cli-darwin-x64.tar.xz`,
+    `${LEGACY_PATH}/sfdx-cli-linux-arm.tar.gz`,
+    `${LEGACY_PATH}/sfdx-cli-linux-arm.tar.xz`,
+    `${LEGACY_PATH}/sfdx-cli-linux-x64.tar.gz`,
+    `${LEGACY_PATH}/sfdx-cli-linux-x64.tar.xz`,
+    `${LEGACY_PATH}/sfdx-cli-windows-x64.tar.gz`,
+    `${LEGACY_PATH}/sfdx-cli-windows-x64.tar.xz`,
+    `${LEGACY_PATH}/sfdx-cli-windows-x86.tar.gz`,
+    `${LEGACY_PATH}/sfdx-cli-windows-x86.tar.xz`,
+    `${LEGACY_TOP_LEVEL_PATH}/sfdx-linux-amd64.tar.gz`,
+    `${LEGACY_TOP_LEVEL_PATH}/sfdx-linux-amd64.tar.xz`,
+  ],
+};
+
+const CHANNEL_MAPPING: Record<Location, Record<Channel, Channel>> = {
+  [Location.NPM]: {
+    [Channel.STABLE_RC]: Channel.LATEST_RC,
+    [Channel.STABLE]: Channel.LATEST,
+    [Channel.LATEST_RC]: Channel.LATEST_RC,
+    [Channel.LATEST]: Channel.LATEST,
+    [Channel.LEGACY]: Channel.LEGACY,
+  },
+  [Location.ARCHIVE]: {
+    [Channel.LATEST_RC]: Channel.STABLE_RC,
+    [Channel.LATEST]: Channel.STABLE_RC,
+    [Channel.STABLE_RC]: Channel.STABLE_RC,
+    [Channel.STABLE]: Channel.STABLE_RC,
+    [Channel.LEGACY]: Channel.LEGACY,
+  },
+};
+
+function toArray(arrOrString: string | string[]): string[] {
+  return Array.isArray(arrOrString) ? arrOrString : [arrOrString];
+}
+
+export default class Inspect extends SfdxCommand {
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly flagsConfig: FlagsConfig = {
+    dependencies: flags.string({
+      description: messages.getMessage('deps'),
+      char: 'd',
+      multiple: true,
+    }),
+    salesforce: flags.boolean({
+      description: messages.getMessage('salesforce'),
+      char: 's',
+      default: false,
+    }),
+    channels: flags.string({
+      description: messages.getMessage('channels'),
+      char: 'c',
+      options: Object.values(Channel),
+      required: true,
+      multiple: true,
+    }),
+    locations: flags.string({
+      description: messages.getMessage('locations'),
+      char: 'l',
+      options: Object.values(Location),
+      required: true,
+      multiple: true,
+    }),
+  };
+
+  public workingDir = path.join(os.tmpdir(), 'cli_inspection');
+
+  public async run(): Promise<Info[]> {
+    this.ux.log(`Working Directory: ${this.workingDir}`);
+    // ensure that we are starting with a clean directory
+    await fs.rmdir(this.workingDir, { recursive: true });
+    await fs.mkdirp(this.workingDir);
+
+    const results: Info[] = [];
+    const locations = toArray(this.flags.locations) as Location[];
+    const channels = toArray(this.flags.channels) as Channel[];
+
+    if (locations.includes(Location.ARCHIVE)) {
+      results.push(...(await this.inspectArchives(channels)));
+    }
+
+    if (locations.includes(Location.NPM)) {
+      results.push(...(await this.inspectNpm(channels)));
+    }
+
+    this.logResults(results, locations, channels);
+
+    return results;
+  }
+
+  private async inspectArchives(channels: Channel[]): Promise<Info[]> {
+    const tarDir = await this.mkdir(this.workingDir, 'tar');
+
+    const pathsByChannel = channels.reduce((res, current) => {
+      const channel = CHANNEL_MAPPING[Location.ARCHIVE][current] as ArchiveChannel;
+      return Object.assign(res, { [channel]: ARCHIVES[channel] });
+    }, {} as Archives);
+
+    const results: Info[] = [];
+    for (const channel of Object.keys(pathsByChannel) as Channel[]) {
+      this.ux.log(`---- ${Location.ARCHIVE} ${channel} ----`);
+      for (const archivePath of pathsByChannel[channel] as string[]) {
+        this.ux.startSpinner(`Downloading: ${cyan(archivePath)}`);
+        const curlResult = exec(`curl ${archivePath} -Os`, { cwd: tarDir });
+        this.ux.stopSpinner();
+        if (curlResult.code !== 0) {
+          this.ux.log(red('Download failed. That is a big deal. Investigate immediately.'));
+          continue;
+        }
+        const filename = path.basename(archivePath);
+        const unpackedDir = await this.mkdir(this.workingDir, 'unpacked', filename);
+        this.ux.startSpinner(`Unpacking: ${cyan(unpackedDir)}`);
+        const tarResult = exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
+        this.ux.stopSpinner();
+        if (tarResult.code !== 0) {
+          this.ux.log(red('Failed to unpack. Skipping...'));
+          continue;
+        }
+        const pkgJson = await this.readPackageJson(unpackedDir);
+        results.push({
+          dependencies: await this.getDependencies(unpackedDir),
+          origin: archivePath,
+          channel,
+          location: Location.ARCHIVE,
+          version: pkgJson.version,
+        });
+      }
+    }
+    return results;
+  }
+
+  private async inspectNpm(channels: Channel[]): Promise<Info[]> {
+    const npmDir = await this.mkdir(this.workingDir, 'npm');
+    const results: Info[] = [];
+    const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);
+    for (const tag of tags) {
+      this.ux.log(`---- ${Location.NPM} ${tag} ----`);
+      const installDir = await this.mkdir(npmDir, tag);
+      const name = `sfdx-cli@${tag}`;
+      this.ux.startSpinner(`Installing: ${cyan(name)}`);
+      exec(`npm install ${name}`, { cwd: installDir, silent: true });
+      this.ux.stopSpinner();
+      const pkgJson = await this.readPackageJson(path.join(installDir, 'node_modules', 'sfdx-cli'));
+      results.push({
+        dependencies: await this.getDependencies(installDir),
+        origin: `https://www.npmjs.com/package/sfdx-cli/v/${pkgJson.version}`,
+        channel: tag,
+        location: Location.NPM,
+        version: pkgJson.version,
+      });
+    }
+    return results;
+  }
+
+  private async getDependencies(directory: string): Promise<Dependency[]> {
+    const depGlobs: string[] = [];
+    if (this.flags.dependencies) {
+      const globPatterns = (this.flags.dependencies as string[]).map((d) => `${directory}/node_modules/${d}`);
+      depGlobs.push(...globPatterns);
+    }
+    if (this.flags.salesforce) {
+      const globPatterns = SALESFORCE_DEP_GLOBS.map((d) => `${directory}/node_modules/${d}`);
+      depGlobs.push(...globPatterns);
+    }
+
+    const dependencyPaths = await fg(depGlobs, { onlyDirectories: true, deep: 1 });
+    const dependencies: Dependency[] = [];
+    for (const dep of dependencyPaths) {
+      const pkg = await this.readPackageJson(dep);
+      dependencies.push({
+        name: pkg.name,
+        version: pkg.version,
+      });
+    }
+    return dependencies;
+  }
+
+  private async readPackageJson(pkgDir: string): Promise<PackageJson> {
+    return (await fs.readJson(path.join(pkgDir, 'package.json'))) as PackageJson;
+  }
+
+  private async mkdir(...parts: string[]): Promise<string> {
+    const dir = path.resolve(path.join(...parts));
+    await fs.mkdirp(dir);
+    return dir;
+  }
+
+  private logResults(results: Info[], locations: Location[], channels: Channel[]): void {
+    this.ux.log();
+    results.forEach((result) => {
+      this.ux.log(bold(`${result.origin}: ${green(result.version)}`));
+      result.dependencies.forEach((dep) => {
+        this.ux.log(`  ${dep.name}: ${dep.version}`);
+      });
+    });
+    this.ux.log();
+
+    if (locations.includes(Location.ARCHIVE)) {
+      const archivesMatch =
+        new Set(results.filter((r) => r.location === Location.ARCHIVE).map((r) => r.version)).size === 1;
+      this.ux.log(`${'All archives match?'} ${archivesMatch ? green(archivesMatch) : yellow(archivesMatch)}`);
+
+      channels.forEach((channel) => {
+        const allMatch = new Set(results.filter((r) => r.channel === channel).map((r) => r.version)).size === 1;
+        this.ux.log(
+          `${`All ${Location.ARCHIVE}@${channel} versions match?`} ${allMatch ? green(allMatch) : red(allMatch)}`
+        );
+      });
+    }
+
+    if (locations.includes(Location.NPM) && locations.includes(Location.ARCHIVE)) {
+      channels
+        .filter((c) => c !== Channel.LEGACY)
+        .forEach((channel) => {
+          const npmChannel = CHANNEL_MAPPING[Location.NPM][channel];
+          const archiveChannel = CHANNEL_MAPPING[Location.ARCHIVE][channel];
+
+          const npmAndArchivesMatch =
+            new Set(
+              results.filter((r) => r.channel === npmChannel || r.channel === archiveChannel).map((r) => r.version)
+            ).size === 1;
+
+          const match = npmAndArchivesMatch ? green(true) : red(false);
+          this.ux.log(
+            `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
+          );
+        });
+    }
+  }
+}

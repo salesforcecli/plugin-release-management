@@ -20,6 +20,18 @@
         ]
     },
     {
+        "command": "cli:versions:inspect",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "channels",
+            "dependencies",
+            "json",
+            "locations",
+            "loglevel",
+            "salesforce"
+        ]
+    },
+    {
         "command": "npm:dependencies:pin",
         "plugin": "@salesforce/plugin-release-management",
         "flags": [
