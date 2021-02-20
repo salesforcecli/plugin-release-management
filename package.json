@@ -144,16 +144,17 @@
     "docs": "sf-docs",
     "format": "sf-format",
     "lint": "sf-lint",
+    "oclif-artifacts": "oclif-dev manifest",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
-    "prepack": "sf-build",
+    "prepack": "sf-build && yarn oclif-artifacts",
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
     "test": "sf-test",
-    "version": "oclif-dev readme && git add README.md",
-    "test:deprecation-policy": "./bin/run snapshot:compare",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
-    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel"
+    "test:deprecation-policy": "./bin/run snapshot:compare",
+    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
+    "version": "oclif-dev readme && git add README.md"
   },
   "husky": {
     "hooks": {
