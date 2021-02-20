@@ -72,9 +72,10 @@
     "node": ">=12.0.0"
   },
   "files": [
+    "bin",
+    "oclif.manifest.json",
     "/lib",
-    "/messages",
-    "/oclif.manifest.json"
+    "/messages"
   ],
   "homepage": "https://github.com/salesforcecli/plugin-release-management",
   "keywords": [
@@ -87,6 +88,7 @@
   "license": "BSD-3-Clause",
   "oclif": {
     "commands": "./lib/commands",
+    "node": "14.15.4",
     "bin": "sfdx",
     "devPlugins": [
       "@oclif/plugin-help",
