@@ -16,7 +16,7 @@ export type PackageJson = {
   version: string;
   dependencies: AnyJson;
   devDependencies: AnyJson;
-  scripts: AnyJson;
+  scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
 } & AnyJson;
@@ -153,6 +153,10 @@ export class Package extends AsyncOptionalCreatable {
    */
   public nextVersionIsHardcoded(): boolean {
     return !this.npmPackage.versions.includes(this.packageJson.version);
+  }
+
+  public hasScript(scriptName: string): boolean {
+    return !!get(this.packageJson, `scripts.${scriptName}`, null);
   }
 
   protected async init(): Promise<void> {

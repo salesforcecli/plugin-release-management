@@ -126,6 +126,10 @@ abstract class Repository extends AsyncOptionalCreatable {
     this.execCommand('yarn build', silent);
   }
 
+  public run(script: string, silent = false): void {
+    this.execCommand(`yarn run ${script}`, silent);
+  }
+
   public test(): void {
     this.execCommand('yarn test');
   }
@@ -138,7 +142,7 @@ abstract class Repository extends AsyncOptionalCreatable {
 
   public pushChangesToGit(): void {
     const branch = this.getBranchName();
-    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
+    const cmd = `npx git add . && npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
     this.execCommand(cmd, false);
   }
 
@@ -283,7 +287,9 @@ export class LernaRepo extends Repository {
     if (!dryrun && githubRelease) cmd += ' --create-release github';
     if (!dryrun) cmd += ' --message "chore(release): publish [ci skip]"';
     this.execCommand(cmd);
-
+    this.packages.forEach((pkg) => {
+      if (pkg.hasScript('version')) this.run('version');
+    });
     if (dryrun) {
       this.revertUnstagedChanges();
     }
@@ -419,6 +425,10 @@ export class SinglePackageRepo extends Repository {
     if (dryrun) cmd += ' --dry-run';
     cmd += ` --release-as ${this.nextVersion}`;
     this.execCommand(cmd);
+
+    if (this.package.hasScript('version')) {
+      this.run('version');
+    }
   }
 
   public async sign(): Promise<SigningResponse> {
