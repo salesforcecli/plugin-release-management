@@ -103,9 +103,9 @@ const CHANNEL_MAPPING: Record<Location, Record<Channel, Channel>> = {
   },
   [Location.ARCHIVE]: {
     [Channel.LATEST_RC]: Channel.STABLE_RC,
-    [Channel.LATEST]: Channel.STABLE_RC,
+    [Channel.LATEST]: Channel.STABLE,
     [Channel.STABLE_RC]: Channel.STABLE_RC,
-    [Channel.STABLE]: Channel.STABLE_RC,
+    [Channel.STABLE]: Channel.STABLE,
     [Channel.LEGACY]: Channel.LEGACY,
   },
 };
