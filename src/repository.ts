@@ -142,8 +142,12 @@ abstract class Repository extends AsyncOptionalCreatable {
 
   public pushChangesToGit(): void {
     const branch = this.getBranchName();
-    const cmd = `npx git add . && npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
+    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
     this.execCommand(cmd, false);
+  }
+
+  public stageChanges(): void {
+    this.execCommand('npx git add .', false);
   }
 
   public revertUnstagedChanges(): void {
@@ -282,14 +286,19 @@ export class LernaRepo extends Repository {
 
   public prepare(opts: PrepareOpts = {}): void {
     const { dryrun, githubRelease } = opts;
+
+    this.packages.forEach((pkg) => {
+      if (pkg.hasScript('version')) {
+        this.run('version');
+        this.stageChanges();
+      }
+    });
+
     let cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push';
     if (dryrun) cmd += ' --no-git-tag-version';
     if (!dryrun && githubRelease) cmd += ' --create-release github';
     if (!dryrun) cmd += ' --message "chore(release): publish [ci skip]"';
     this.execCommand(cmd);
-    this.packages.forEach((pkg) => {
-      if (pkg.hasScript('version')) this.run('version');
-    });
     if (dryrun) {
       this.revertUnstagedChanges();
     }
@@ -420,15 +429,17 @@ export class SinglePackageRepo extends Repository {
 
   public prepare(opts: PrepareOpts = {}): void {
     const { dryrun } = opts;
+
+    if (this.package.hasScript('version')) {
+      this.run('version');
+      this.stageChanges();
+    }
+
     let cmd =
       'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
     if (dryrun) cmd += ' --dry-run';
     cmd += ` --release-as ${this.nextVersion}`;
     this.execCommand(cmd);
-
-    if (this.package.hasScript('version')) {
-      this.run('version');
-    }
   }
 
   public async sign(): Promise<SigningResponse> {
