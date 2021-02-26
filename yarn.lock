@@ -576,10 +576,10 @@
   resolved "https://registry.npmjs.org/@salesforce/dev-config/-/dev-config-2.1.0.tgz#78efdf5d660d7cb839d9cafa036f9882741dc6bc"
   integrity sha512-I+zrptt8zI1jbP3TVA6g7i3quuh71tPky8gwCsXaQ2X9ea1xbeAslN4YjWfgqbY5SaxJhqP979oxFADlH+OehQ==
 
-"@salesforce/dev-scripts@0.9.0":
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/@salesforce/dev-scripts/-/dev-scripts-0.9.0.tgz#3c0d78eff5cbe8b1ecab00bd438d80675ae42e2a"
-  integrity sha512-pGPQ3Jm5lm8HuF05z4zWlCTy3JdnHgAV6EdRRJgcBBAkxN0WoEtnI/IdUmtNi5uap/z7HlN2RhNok2ZWYFK7uA==
+"@salesforce/dev-scripts@0.9.1":
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/@salesforce/dev-scripts/-/dev-scripts-0.9.1.tgz#69be3ceedc44b393f3507e2d502f99392a8abd31"
+  integrity sha512-+bge27zCy/ARHmDKzyjOVeA3rQ1Znic+Kr4+yQaftS6sM7plAgipAwt9Gm6slUoRvjlkYT7QaOmSk1ecUgEH6g==
   dependencies:
     "@commitlint/cli" "^9.1.1"
     "@commitlint/config-conventional" "^10.0.0"
