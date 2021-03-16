@@ -47,6 +47,9 @@ export default class Release extends SfdxCommand {
       description: messages.getMessage('install'),
       allowNo: true,
     }),
+    prerelease: flags.string({
+      description: messages.getMessage('prerelease'),
+    }),
   };
 
   public async run(): Promise<ReleaseResult> {
@@ -62,7 +65,7 @@ export default class Release extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
 
-    const pkg = await SinglePackageRepo.create(this.ux);
+    const pkg = await SinglePackageRepo.create({ ux: this.ux, useprerelease: this.flags.prerelease as string });
     if (!pkg.shouldBePublished) {
       this.ux.log('Found no commits that warrant a release. Exiting...');
       return;

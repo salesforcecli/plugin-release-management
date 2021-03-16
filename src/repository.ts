@@ -15,7 +15,7 @@ import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
-import { Nullable } from '@salesforce/ts-types';
+import { Nullable, isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import * as conventionalCommitsParser from 'conventional-commits-parser';
 import * as conventionalChangelogPresetLoader from 'conventional-changelog-preset-loader';
@@ -105,15 +105,22 @@ export class Signer extends AsyncOptionalCreatable {
   }
 }
 
-abstract class Repository extends AsyncOptionalCreatable {
+export type RepositoryOptions = {
+  ux: UX;
+  useprerelease?: string;
+};
+
+abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
+  protected options: RepositoryOptions;
   protected ux: UX;
   protected env: Env;
   protected registry: Registry;
   private stepCounter = 1;
 
-  public constructor(ux: UX) {
-    super(ux);
-    this.ux = ux;
+  public constructor(options: RepositoryOptions) {
+    super(options);
+    this.options = options;
+    this.ux = options.ux;
     this.env = new Env();
     this.registry = new Registry();
   }
@@ -276,8 +283,8 @@ export class LernaRepo extends Repository {
   // but other logs we always want to go to stdout
   private logger!: Logger;
 
-  public constructor(ux: UX) {
-    super(ux);
+  public constructor(options: RepositoryOptions) {
+    super(options);
   }
 
   public validate(): VersionValidation[] {
@@ -419,8 +426,8 @@ export class SinglePackageRepo extends Repository {
   // but other logs we always want to go to stdout
   private logger: Logger;
 
-  public constructor(ux: UX) {
-    super(ux);
+  public constructor(options: RepositoryOptions) {
+    super(options);
   }
 
   public validate(): VersionValidation {
@@ -491,7 +498,12 @@ export class SinglePackageRepo extends Repository {
       return this.package.packageJson.version;
     } else {
       this.logger.debug('Using standard-version to determine next version');
-      const result = this.execCommand('npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog', true);
+      let command = 'npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog';
+      // It can be an empty string if they want
+      if (isString(this.options.useprerelease)) {
+        command += ` --prerelease ${this.options.useprerelease}`;
+      }
+      const result = this.execCommand(command, true);
       const nextVersionRegex = /(?<=to\s)([0-9]{1,}\.|.){2,}/gi;
       return result.match(nextVersionRegex)[0];
     }
