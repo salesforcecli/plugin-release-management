@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.2...v1.7.3) (2021-02-26)
+
+### [1.7.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.1...v1.7.2) (2021-02-26)
+
+
+### Bug Fixes
+
+* stage changes to README before the commit [skip-validate-pr] ([#46](https://github.com/salesforcecli/plugin-release-management/issues/46)) ([f0aea8d](https://github.com/salesforcecli/plugin-release-management/commit/f0aea8d4f6a134c3ffd498c6720c7c2ced501914))
+
+### [1.7.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.0...v1.7.1) (2021-02-26)
+
+## [1.7.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.3...v1.7.0) (2021-02-26)
+
+
+### Features
+
+* run version script ([a6edaa5](https://github.com/salesforcecli/plugin-release-management/commit/a6edaa50c514d1374da605115acd32ee42c39338))
+
+### [1.6.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.2...v1.6.3) (2021-02-22)
+
+
+### Bug Fixes
+
+* use correct stable channel ([#42](https://github.com/salesforcecli/plugin-release-management/issues/42)) ([2be3040](https://github.com/salesforcecli/plugin-release-management/commit/2be3040b3ffff2dea64c4b9829237b3fef7e7a60))
+
+### [1.6.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.1...v1.6.2) (2021-02-20)
+
+
+### Bug Fixes
+
+* update prepack script ([c0b05e9](https://github.com/salesforcecli/plugin-release-management/commit/c0b05e9b29a278be605e4ea5a95bf962c413135d))
+
 ### [1.6.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.0...v1.6.1) (2021-02-20)
 
 
