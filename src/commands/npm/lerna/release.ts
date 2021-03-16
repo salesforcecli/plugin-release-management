@@ -67,7 +67,7 @@ export default class Release extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
 
-    const lernaRepo = await LernaRepo.create(this.ux);
+    const lernaRepo = await LernaRepo.create({ ux: this.ux });
     if (!lernaRepo.packages.length) {
       this.ux.log(messages.getMessage('NoChangesToPublish'));
       return;

@@ -43,7 +43,7 @@ export default class Update extends SfdxCommand {
     await this.updateTsVersion();
     await this.updateEsTarget();
 
-    const pkg = await SinglePackageRepo.create(this.ux);
+    const pkg = await SinglePackageRepo.create({ ux: this.ux });
     try {
       pkg.install();
       pkg.build();

@@ -55,7 +55,7 @@ describe('SinglePackageRepo', () => {
         .returns({ stdout: 'v1.0.0' })
         .withArgs(sinon.match('git log'), true)
         .returns({ stdout: buildCommitLog('chore', 'chore') });
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
     });
 
@@ -71,7 +71,7 @@ describe('SinglePackageRepo', () => {
         .returns({ stdout: 'v1.0.0' })
         .withArgs(sinon.match('git log'), true)
         .returns({ stdout: buildCommitLog('feat!', 'chore') });
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
     });
 
@@ -87,7 +87,7 @@ describe('SinglePackageRepo', () => {
         .returns({ stdout: 'v1.0.0' })
         .withArgs(sinon.match('git log'), true)
         .returns({ stdout: buildCommitLog('feat', 'chore') });
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
     });
 
@@ -103,7 +103,7 @@ describe('SinglePackageRepo', () => {
         .returns({ stdout: 'v1.0.0' })
         .withArgs(sinon.match('git log'), true)
         .returns({ stdout: buildCommitLog('fix', 'chore') });
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
     });
 
@@ -119,7 +119,7 @@ describe('SinglePackageRepo', () => {
         .returns({ stdout: 'v1.0.0' })
         .withArgs(sinon.match('git log'), true)
         .returns({ stdout: buildCommitLog('chore', 'docs', 'style', 'test', 'ci') });
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.false;
     });
   });
@@ -138,7 +138,7 @@ describe('SinglePackageRepo', () => {
         Promise.resolve({ name: pkgName, version: '2.0.0' })
       );
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.nextVersion).to.equal('2.0.0');
     });
 
@@ -148,8 +148,30 @@ describe('SinglePackageRepo', () => {
       );
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'isReleasable').returns(true);
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0');
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.nextVersion).to.equal('1.1.0');
+    });
+
+    it('should use standard-version to determine a prerelease version', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.0.0' })
+      );
+      stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'isReleasable').returns(true);
+      execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-0');
+      const repo = await SinglePackageRepo.create({ ux: uxStub, useprerelease: '' });
+      expect(repo.nextVersion).to.equal('1.1.0-0');
+      expect(execStub.args[0][0]).to.include('--prerelease');
+    });
+
+    it('should use standard-version to determine a specific prerelease version', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.0.0' })
+      );
+      stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'isReleasable').returns(true);
+      execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-beta.0');
+      const repo = await SinglePackageRepo.create({ ux: uxStub, useprerelease: 'beta' });
+      expect(repo.nextVersion).to.equal('1.1.0-beta.0');
+      expect(execStub.args[0][0]).to.include('--prerelease');
     });
   });
 
@@ -165,7 +187,7 @@ describe('SinglePackageRepo', () => {
       });
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
 
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.package.setNextVersion('2.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal({
@@ -187,7 +209,7 @@ describe('SinglePackageRepo', () => {
       });
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
 
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.package.setNextVersion('1.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal({
@@ -213,14 +235,14 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should run standard-version command with --dry-run when the dryrun option is provided', async () => {
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.prepare({ dryrun: true });
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.include('--dry-run');
     });
 
     it('should run standard-version command without --dry-run when the dryrun option is not provided', async () => {
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.prepare();
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.not.include('--dry-run');
@@ -228,7 +250,7 @@ describe('SinglePackageRepo', () => {
 
     it('should use the this.nextVersion as the value for the --release-as flag', async () => {
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'determineNextVersion').returns('2.0.0');
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.prepare({ dryrun: true });
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.include('--release-as 2.0.0');
@@ -251,7 +273,7 @@ describe('SinglePackageRepo', () => {
     it('should sign the package', async () => {
       const signerStub = stubInterface<Signer>($$.SANDBOX, {});
       stubMethod($$.SANDBOX, Signer, 'create').returns(Promise.resolve(signerStub));
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       await repo.sign();
       expect(signerStub.sign.callCount).to.equal(1);
     });
@@ -271,7 +293,7 @@ describe('SinglePackageRepo', () => {
     });
 
     it('should use sfdx-trust to verify that the package was signed', async () => {
-      const repo = await SinglePackageRepo.create(uxStub);
+      const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.verifySignature();
       expect(execStub.callCount).to.equal(1);
       expect(execStub.firstCall.args[0]).to.include('sfdx-trust');
@@ -292,7 +314,7 @@ describe('SinglePackageRepo', () => {
       });
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
       process.env.NPM_TOKEN = 'FOOBARBAZ';
-      repo = await SinglePackageRepo.create(uxStub);
+      repo = await SinglePackageRepo.create({ ux: uxStub });
     });
 
     afterEach(() => {
@@ -370,7 +392,7 @@ describe('LernaRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
       stubMethod($$.SANDBOX, LernaRepo.prototype, 'isReleasable').returns(true);
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       expect(repo.packages[0].getNextVersion()).to.equal('1.1.0');
     });
   });
@@ -381,7 +403,7 @@ describe('LernaRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       repo.packages[0].setNextVersion('2.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal([
@@ -399,7 +421,7 @@ describe('LernaRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
 
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       repo.packages[0].setNextVersion('1.0.0');
       const validation = repo.validate();
       expect(validation).to.deep.equal([
@@ -421,7 +443,7 @@ describe('LernaRepo', () => {
     });
 
     it('should run lerna with --no-git-tag-version flag when the dryrun option is provided', async () => {
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       repo.prepare({ dryrun: true });
       const cmd = execStub.secondCall.args[0];
       expect(cmd).to.include('--no-git-tag-version');
@@ -431,7 +453,7 @@ describe('LernaRepo', () => {
     });
 
     it('should run lerna without --no-git-tag-version flag when the dryrun option is not provided', async () => {
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       repo.prepare();
       const cmd = execStub.secondCall.args[0];
       expect(cmd).to.not.include('--no-git-tag-version');
@@ -451,7 +473,7 @@ describe('LernaRepo', () => {
     it('should sign the packages', async () => {
       const signerStub = stubInterface<Signer>($$.SANDBOX, {});
       stubMethod($$.SANDBOX, Signer, 'create').returns(Promise.resolve(signerStub));
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       await repo.sign([pkgName]);
       expect(signerStub.sign.callCount).to.equal(1);
     });
@@ -465,7 +487,7 @@ describe('LernaRepo', () => {
     });
 
     it('should use sfdx-trust to verify that the packages were signed', async () => {
-      const repo = await LernaRepo.create(uxStub);
+      const repo = await LernaRepo.create({ ux: uxStub });
       repo.verifySignature([pkgName]);
       expect(execStub.lastCall.args[0]).to.include('sfdx-trust');
     });
@@ -479,7 +501,7 @@ describe('LernaRepo', () => {
         Promise.resolve({ name: pkgName, version: '1.1.0' })
       );
       process.env.NPM_TOKEN = 'FOOBARBAZ';
-      repo = await LernaRepo.create(uxStub);
+      repo = await LernaRepo.create({ ux: uxStub });
     });
 
     afterEach(() => {
