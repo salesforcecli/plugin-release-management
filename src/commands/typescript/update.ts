@@ -6,13 +6,18 @@
  */
 
 import * as path from 'path';
+import * as glob from 'glob';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
-import { exec } from 'shelljs';
+import { exec, pwd, cd } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
 import { SinglePackageRepo } from '../../repository';
+
+type LernaJson = {
+  packages?: string[];
+} & AnyJson;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
@@ -32,10 +37,10 @@ export default class Update extends SfdxCommand {
     }),
   };
 
-  private typescriptPkg: NpmPackage;
+  private typescriptPkgs: NpmPackage[];
 
   public async run(): Promise<void> {
-    this.typescriptPkg = this.retrieveTsPackage();
+    this.typescriptPkgs = await this.retrieveTsPackages();
     this.validateEsTarget();
     this.validateTsVersion();
 
@@ -54,7 +59,41 @@ export default class Update extends SfdxCommand {
     }
   }
 
+  private isLernaRepo(): boolean {
+    const lernaConfigPath = path.resolve('lerna.json');
+    return fs.existsSync(lernaConfigPath);
+  }
+
+  private async getPackagePaths(): Promise<string[]> {
+    const workingDir = pwd().stdout;
+    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
+    const packageGlobs = lernaJson.packages || ['*'];
+    const packages = packageGlobs
+      .map((pGlob) => glob.sync(pGlob))
+      .reduce((x, y) => x.concat(y), [])
+      .map((pkg) => path.join(workingDir, pkg));
+    return packages;
+  }
+
   private async updateEsTarget(): Promise<void> {
+    if (this.isLernaRepo()) {
+      const packagePaths = await this.getPackagePaths();
+
+      for (let i: number; i < packagePaths.length; i++) {
+        const packagePath = packagePaths[i];
+        const tsConfigPath = path.join(packagePath, 'tsconfig.json');
+        const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
+
+        // strip out any comments that might be in the tsconfig.json
+        const commentRegex = new RegExp(/(\/\/.*)/, 'gi');
+        const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
+
+        set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
+        this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
+        await fs.writeJson(tsConfigPath, tsConfig);
+      }
+    }
+
     const tsConfigPath = path.resolve('tsconfig.json');
     const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
 
@@ -67,37 +106,78 @@ export default class Update extends SfdxCommand {
     await fs.writeJson(tsConfigPath, tsConfig);
   }
 
-  private async updateTsVersion(): Promise<void> {
-    const newVersion = this.determineNextTsVersion();
-    const pkg = await Package.create(path.resolve('.'));
-
+  private async updatePackage(packagePath: string, npmPackage: NpmPackage): Promise<void> {
+    const newVersion = this.determineNextTsVersion(npmPackage);
+    const pkg = await Package.create(path.resolve(packagePath));
     if (pkg.packageJson.devDependencies['typescript']) {
       this.ux.log(`Updating typescript version to ${newVersion}`);
       pkg.packageJson.devDependencies['typescript'] = newVersion;
       pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
       pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
     }
-
     // If the prepare script runs sf-install, the install will fail because the typescript version
     // won't match the expected version. So in that case, we delete the prepare script so that we
     // get a successful install
     if (pkg.packageJson.scripts['prepare'] === 'sf-install') {
       delete pkg.packageJson.scripts['prepare'];
     }
-
-    pkg.writePackageJson();
+    return pkg.writePackageJson();
   }
 
-  private determineNextTsVersion(): string {
+  private async updateTsVersion(): Promise<void> {
+    if (this.isLernaRepo()) {
+      const workingDir = pwd().stdout;
+      const packagePaths = await this.getPackagePaths();
+
+      for (let i: number; i < packagePaths.length; i++) {
+        const packagePath = packagePaths[i];
+        this.ux.log('packagePath:', packagePath);
+        cd(path.resolve(packagePath));
+        const runeer = exec('npm view typescript --json', { silent: true });
+        cd(workingDir);
+        if (runeer.code === 0) {
+          const npmPackage = JSON.parse(runeer.stdout) as NpmPackage;
+          await this.updatePackage(packagePath, npmPackage);
+        } else {
+          throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
+        }
+      }
+      return;
+    }
+
+    this.typescriptPkgs.map(async (typescriptPkg) => {
+      this.ux.log(typescriptPkg.version);
+      await this.updatePackage(path.resolve('.'), typescriptPkg);
+    });
+  }
+
+  private determineNextTsVersion(typescriptPkg: NpmPackage): string {
     return this.flags.version === 'latest' || !this.flags.version
-      ? getString(this.typescriptPkg, 'dist-tags.latest')
+      ? getString(typescriptPkg, 'dist-tags.latest')
       : (this.flags.version as string);
   }
 
-  private retrieveTsPackage(): NpmPackage {
-    const result = exec('npm view typescript --json', { silent: true });
-    if (result.code === 0) {
-      return JSON.parse(result.stdout) as NpmPackage;
+  private async retrieveTsPackages(): Promise<NpmPackage[]> {
+    // Process lerna repos
+    if (this.isLernaRepo()) {
+      const workingDir = pwd().stdout;
+      const lernaProjects = await this.getPackagePaths();
+      const result = lernaProjects.map((packagePath) => {
+        cd(path.resolve(packagePath));
+        const runeer = exec('npm view typescript --json', { silent: true });
+        cd(workingDir);
+        if (runeer.code === 0) {
+          return JSON.parse(runeer.stdout) as NpmPackage;
+        } else {
+          throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
+        }
+      });
+      return result;
+    }
+    // Process regular packages
+    const runeer = exec('npm view typescript --json', { silent: true });
+    if (runeer.code === 0) {
+      return [JSON.parse(runeer.stdout)] as NpmPackage[];
     } else {
       throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
     }
@@ -115,7 +195,10 @@ export default class Update extends SfdxCommand {
 
   private validateTsVersion(): boolean {
     if (this.flags.version === 'latest') return true;
-    if (this.flags.version && !this.typescriptPkg.versions.includes(this.flags.version)) {
+    if (
+      this.flags.version &&
+      !this.typescriptPkgs.some((typescriptPkg) => typescriptPkg.versions.includes(this.flags.version))
+    ) {
       throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTypescriptVersion', [
         this.flags.version,
       ]);
