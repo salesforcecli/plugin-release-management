@@ -45,17 +45,38 @@ export default class Update extends SfdxCommand {
     this.validateTsVersion();
 
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
+
     await this.updateTsVersion();
     await this.updateEsTarget();
 
-    const pkg = await SinglePackageRepo.create({ ux: this.ux });
-    try {
-      pkg.install();
-      pkg.build();
-      pkg.test();
-    } finally {
-      this.ux.log('Reverting unstaged stages');
-      pkg.revertUnstagedChanges();
+    if (this.isLernaRepo()) {
+      const packagePaths = await this.getPackagePaths();
+      const workingDir = pwd().stdout;
+
+      for (const packagePath of packagePaths) {
+        cd(path.resolve(packagePath));
+        const pkg = await SinglePackageRepo.create({ ux: this.ux });
+        try {
+          pkg.install();
+          pkg.build();
+          pkg.test();
+        } finally {
+          this.ux.log('Reverting unstaged stages');
+          cd(workingDir);
+          pkg.revertUnstagedChanges();
+        }
+        cd(workingDir);
+      }
+    } else {
+      const pkg = await SinglePackageRepo.create({ ux: this.ux });
+      try {
+        pkg.install();
+        pkg.build();
+        pkg.test();
+      } finally {
+        this.ux.log('Reverting unstaged stages');
+        pkg.revertUnstagedChanges();
+      }
     }
   }
 
@@ -75,26 +96,8 @@ export default class Update extends SfdxCommand {
     return packages;
   }
 
-  private async updateEsTarget(): Promise<void> {
-    if (this.isLernaRepo()) {
-      const packagePaths = await this.getPackagePaths();
-
-      for (let i: number; i < packagePaths.length; i++) {
-        const packagePath = packagePaths[i];
-        const tsConfigPath = path.join(packagePath, 'tsconfig.json');
-        const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
-
-        // strip out any comments that might be in the tsconfig.json
-        const commentRegex = new RegExp(/(\/\/.*)/, 'gi');
-        const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
-
-        set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
-        this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
-        await fs.writeJson(tsConfigPath, tsConfig);
-      }
-    }
-
-    const tsConfigPath = path.resolve('tsconfig.json');
+  private async updateEsTargetConfig(packagePath: string): Promise<void> {
+    const tsConfigPath = path.join(packagePath, 'tsconfig.json');
     const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
 
     // strip out any comments that might be in the tsconfig.json
@@ -104,6 +107,18 @@ export default class Update extends SfdxCommand {
     set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
     this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
     await fs.writeJson(tsConfigPath, tsConfig);
+  }
+
+  private async updateEsTarget(): Promise<void> {
+    if (this.isLernaRepo()) {
+      const packagePaths = await this.getPackagePaths();
+      for (const packagePath of packagePaths) {
+        await this.updateEsTargetConfig(packagePath);
+      }
+    } else {
+      await this.updateEsTargetConfig('.');
+    }
+    return;
   }
 
   private async updatePackage(packagePath: string, npmPackage: NpmPackage): Promise<void> {
@@ -128,15 +143,12 @@ export default class Update extends SfdxCommand {
     if (this.isLernaRepo()) {
       const workingDir = pwd().stdout;
       const packagePaths = await this.getPackagePaths();
-
-      for (let i: number; i < packagePaths.length; i++) {
-        const packagePath = packagePaths[i];
-        this.ux.log('packagePath:', packagePath);
+      for (const packagePath of packagePaths) {
         cd(path.resolve(packagePath));
-        const runeer = exec('npm view typescript --json', { silent: true });
+        const runner = exec('npm view typescript --json', { silent: true });
         cd(workingDir);
-        if (runeer.code === 0) {
-          const npmPackage = JSON.parse(runeer.stdout) as NpmPackage;
+        if (runner.code === 0) {
+          const npmPackage = JSON.parse(runner.stdout) as NpmPackage;
           await this.updatePackage(packagePath, npmPackage);
         } else {
           throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
@@ -164,10 +176,10 @@ export default class Update extends SfdxCommand {
       const lernaProjects = await this.getPackagePaths();
       const result = lernaProjects.map((packagePath) => {
         cd(path.resolve(packagePath));
-        const runeer = exec('npm view typescript --json', { silent: true });
+        const runner = exec('npm view typescript --json', { silent: true });
         cd(workingDir);
-        if (runeer.code === 0) {
-          return JSON.parse(runeer.stdout) as NpmPackage;
+        if (runner.code === 0) {
+          return JSON.parse(runner.stdout) as NpmPackage;
         } else {
           throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
         }
@@ -175,9 +187,9 @@ export default class Update extends SfdxCommand {
       return result;
     }
     // Process regular packages
-    const runeer = exec('npm view typescript --json', { silent: true });
-    if (runeer.code === 0) {
-      return [JSON.parse(runeer.stdout)] as NpmPackage[];
+    const runner = exec('npm view typescript --json', { silent: true });
+    if (runner.code === 0) {
+      return [JSON.parse(runner.stdout)] as NpmPackage[];
     } else {
       throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
     }
