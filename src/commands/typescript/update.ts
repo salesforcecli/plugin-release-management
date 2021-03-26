@@ -11,8 +11,8 @@ import { fs, Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
-import { NpmPackage, Package } from '../../package';
-import { SinglePackageRepo } from '../../repository';
+import { NpmPackage, Package, PackageJson } from '../../package';
+import { isMonoRepo, LernaRepo, SinglePackageRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
@@ -33,59 +33,83 @@ export default class Update extends SfdxCommand {
   };
 
   private typescriptPkg: NpmPackage;
+  private repo: SinglePackageRepo | LernaRepo;
+  private packages: Package[];
 
   public async run(): Promise<void> {
     this.typescriptPkg = this.retrieveTsPackage();
     this.validateEsTarget();
     this.validateTsVersion();
 
+    this.repo = (await isMonoRepo())
+      ? await LernaRepo.create({ ux: this.ux })
+      : await SinglePackageRepo.create({ ux: this.ux });
+
+    this.packages = this.getPackages();
+
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
     await this.updateTsVersion();
     await this.updateEsTarget();
 
-    const pkg = await SinglePackageRepo.create({ ux: this.ux });
     try {
-      pkg.install();
-      pkg.build();
-      pkg.test();
+      this.repo.install();
+      this.repo.build();
+      this.repo.test();
     } finally {
       this.ux.log('Reverting unstaged stages');
-      pkg.revertUnstagedChanges();
+      this.repo.revertUnstagedChanges();
     }
   }
 
+  private getPackages(): Package[] {
+    return this.repo instanceof LernaRepo ? this.repo.packages : [this.repo.package];
+  }
+
   private async updateEsTarget(): Promise<void> {
-    const tsConfigPath = path.resolve('tsconfig.json');
-    const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
+    for (const pkg of this.packages) {
+      const tsConfigPath = path.resolve(path.join(pkg.location, 'tsconfig.json'));
+      const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
 
-    // strip out any comments that might be in the tsconfig.json
-    const commentRegex = new RegExp(/(\/\/.*)/, 'gi');
-    const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
+      // strip out any comments that might be in the tsconfig.json
+      const commentRegex = new RegExp(/(\/\/.*)/, 'gi');
+      const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
 
-    set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
-    this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
-    await fs.writeJson(tsConfigPath, tsConfig);
+      set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
+      this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
+      await fs.writeJson(tsConfigPath, tsConfig);
+    }
   }
 
   private async updateTsVersion(): Promise<void> {
     const newVersion = this.determineNextTsVersion();
-    const pkg = await Package.create(path.resolve('.'));
+    for (const pkg of this.packages) {
+      if (pkg.packageJson.devDependencies['typescript']) {
+        this.ux.log(`Updating typescript version to ${newVersion}`);
+        pkg.packageJson.devDependencies['typescript'] = newVersion;
+        pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
+        pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
+      }
 
-    if (pkg.packageJson.devDependencies['typescript']) {
-      this.ux.log(`Updating typescript version to ${newVersion}`);
-      pkg.packageJson.devDependencies['typescript'] = newVersion;
-      pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
-      pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
+      // If the prepare script runs sf-install, the install will fail because the typescript version
+      // won't match the expected version. So in that case, we delete the prepare script so that we
+      // get a successful install
+      if (pkg.packageJson.scripts['prepare'] === 'sf-install') {
+        delete pkg.packageJson.scripts['prepare'];
+      }
+
+      pkg.writePackageJson(pkg.location);
     }
 
-    // If the prepare script runs sf-install, the install will fail because the typescript version
-    // won't match the expected version. So in that case, we delete the prepare script so that we
-    // get a successful install
-    if (pkg.packageJson.scripts['prepare'] === 'sf-install') {
-      delete pkg.packageJson.scripts['prepare'];
+    if (this.repo instanceof LernaRepo) {
+      const pkgJson = (await fs.readJson('package.json')) as PackageJson;
+      // If the install script runs sf-lerna-install, the install will fail because the typescript version
+      // won't match the expected version. So in that case, we delete the prepare script so that we
+      // get a successful install
+      if (pkgJson.scripts['install'] === 'sf-lerna-install') {
+        delete pkgJson.scripts['install'];
+        await fs.writeJson('package.json', pkgJson);
+      }
     }
-
-    pkg.writePackageJson();
   }
 
   private determineNextTsVersion(): string {
