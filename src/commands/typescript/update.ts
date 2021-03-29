@@ -13,7 +13,7 @@ import { exec, pwd, cd } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
-import { SinglePackageRepo } from '../../repository';
+import { SinglePackageRepo, LernaRepo } from '../../repository';
 
 type LernaJson = {
   packages?: string[];
@@ -44,6 +44,10 @@ export default class Update extends SfdxCommand {
     this.validateEsTarget();
     this.validateTsVersion();
 
+    const pkg = this.isLernaRepo()
+      ? await LernaRepo.create({ ux: this.ux })
+      : await SinglePackageRepo.create({ ux: this.ux });
+
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
     await this.updateTsVersion();
@@ -55,7 +59,6 @@ export default class Update extends SfdxCommand {
 
       for (const packagePath of packagePaths) {
         cd(path.resolve(packagePath));
-        const pkg = await SinglePackageRepo.create({ ux: this.ux });
         try {
           pkg.install();
           pkg.build();
@@ -68,7 +71,6 @@ export default class Update extends SfdxCommand {
         cd(workingDir);
       }
     } else {
-      const pkg = await SinglePackageRepo.create({ ux: this.ux });
       try {
         pkg.install();
         pkg.build();
@@ -141,18 +143,14 @@ export default class Update extends SfdxCommand {
 
   private async updateTsVersion(): Promise<void> {
     if (this.isLernaRepo()) {
-      const workingDir = pwd().stdout;
       const packagePaths = await this.getPackagePaths();
+      const runner = exec('npm view typescript --json', { silent: true });
+      if (runner.code !== 0) {
+        throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
+      }
       for (const packagePath of packagePaths) {
-        cd(path.resolve(packagePath));
-        const runner = exec('npm view typescript --json', { silent: true });
-        cd(workingDir);
-        if (runner.code === 0) {
-          const npmPackage = JSON.parse(runner.stdout) as NpmPackage;
-          await this.updatePackage(packagePath, npmPackage);
-        } else {
-          throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
-        }
+        const npmPackage = JSON.parse(runner.stdout) as NpmPackage;
+        await this.updatePackage(packagePath, npmPackage);
       }
       return;
     }
