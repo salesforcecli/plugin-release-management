@@ -25,20 +25,10 @@ workflows:
                 node_version: lts
               - os: windows
                 node_version: maintenance
-          exclude:
-            - os: windows
-              node_version: lts
-            - os: windows
-              node_version: maintenance
-      - release-management/test-package:
-          name: node-latest
-          node_version: latest
-      - release-management/test-package:
-          name: node-12
       - release-management/release-package:
           sign: true
           requires:
-            - node-latest
+            - test-package
           filters:
             branches:
               only: main
