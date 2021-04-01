@@ -27,7 +27,7 @@ workflows:
       - release-management/release-package:
           sign: true
           requires:
-            - test-package
+            - release-management/test-package
           filters:
             branches:
               only: main
