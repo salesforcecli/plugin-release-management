@@ -9,7 +9,7 @@ workflows:
           filters:
             branches:
               ignore: main
-        release-management/test-package:
+      - release-management/test-package:
           matrix:
             parameters:
               os:
