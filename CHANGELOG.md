@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.1...v1.8.2) (2021-04-02)
+
+
+### Bug Fixes
+
+* run scripts in package directory ([#88](https://github.com/salesforcecli/plugin-release-management/issues/88)) ([fd9a9b8](https://github.com/salesforcecli/plugin-release-management/commit/fd9a9b8a95d30e050dfd283a6d08a46f9db3a8be))
+
 ### [1.8.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.0...v1.8.1) (2021-04-01)
 
 
