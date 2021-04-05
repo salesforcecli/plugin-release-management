@@ -133,8 +133,12 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     this.execCommand('yarn build', silent);
   }
 
-  public run(script: string, silent = false): void {
-    this.execCommand(`yarn run ${script}`, silent);
+  public run(script: string, location?: string, silent = false): void {
+    if (location) {
+      this.execCommand(`(cd ${location} && yarn run ${script})`, silent);
+    } else {
+      this.execCommand(`(yarn run ${script})`, silent);
+    }
   }
 
   public test(): void {
@@ -296,7 +300,7 @@ export class LernaRepo extends Repository {
 
     this.packages.forEach((pkg) => {
       if (pkg.hasScript('version')) {
-        this.run('version');
+        this.run('version', pkg.location);
         this.stageChanges();
       }
     });
@@ -402,11 +406,15 @@ export class LernaRepo extends Repository {
       .split(os.EOL)
       .filter((s) => !!s)
       .reduce((res, current) => {
-        const currentVersion = current.match(currentVersionRegex)[0];
-        const nextVersion = current.match(nextVersionsRegex)[0];
-        const pkgName = current.match(pkgNameRegex)[0];
-        res[pkgName] = { currentVersion, nextVersion };
-        return res;
+        try {
+          const currentVersion = current.match(currentVersionRegex)[0];
+          const nextVersion = current.match(nextVersionsRegex)[0];
+          const pkgName = current.match(pkgNameRegex)[0];
+          res[pkgName] = { currentVersion, nextVersion };
+          return res;
+        } catch {
+          return res;
+        }
       }, {});
     this.logger.debug('determined the following version bumps:');
     this.logger.debug(result);
