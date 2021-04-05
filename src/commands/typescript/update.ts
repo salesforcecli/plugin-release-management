@@ -78,11 +78,6 @@ export default class Update extends SfdxCommand {
     }
   }
 
-  private isLernaRepo(): boolean {
-    const lernaConfigPath = path.resolve('lerna.json');
-    return fs.existsSync(lernaConfigPath);
-  }
-
   private async getPackagePaths(): Promise<string[]> {
     const workingDir = pwd().stdout;
     const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
