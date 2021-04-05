@@ -24,7 +24,7 @@ import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
 import { Registry } from './registry';
 
-type LernaJson = {
+export type LernaJson = {
   packages?: string[];
 } & AnyJson;
 

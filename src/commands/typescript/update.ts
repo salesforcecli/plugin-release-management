@@ -13,11 +13,7 @@ import { exec, pwd, cd } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
-import { SinglePackageRepo, LernaRepo } from '../../repository';
-
-type LernaJson = {
-  packages?: string[];
-} & AnyJson;
+import { SinglePackageRepo, LernaRepo, LernaJson, isMonoRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
@@ -44,7 +40,7 @@ export default class Update extends SfdxCommand {
     this.validateEsTarget();
     this.validateTsVersion();
 
-    const pkg = this.isLernaRepo()
+    const pkg = (await isMonoRepo())
       ? await LernaRepo.create({ ux: this.ux })
       : await SinglePackageRepo.create({ ux: this.ux });
 
@@ -53,7 +49,7 @@ export default class Update extends SfdxCommand {
     await this.updateTsVersion();
     await this.updateEsTarget();
 
-    if (this.isLernaRepo()) {
+    if (await isMonoRepo()) {
       const packagePaths = await this.getPackagePaths();
       const workingDir = pwd().stdout;
 
@@ -112,7 +108,7 @@ export default class Update extends SfdxCommand {
   }
 
   private async updateEsTarget(): Promise<void> {
-    if (this.isLernaRepo()) {
+    if (await isMonoRepo()) {
       const packagePaths = await this.getPackagePaths();
       for (const packagePath of packagePaths) {
         await this.updateEsTargetConfig(packagePath);
@@ -142,7 +138,7 @@ export default class Update extends SfdxCommand {
   }
 
   private async updateTsVersion(): Promise<void> {
-    if (this.isLernaRepo()) {
+    if (await isMonoRepo()) {
       const packagePaths = await this.getPackagePaths();
       const runner = exec('npm view typescript --json', { silent: true });
       if (runner.code !== 0) {
@@ -169,7 +165,7 @@ export default class Update extends SfdxCommand {
 
   private async retrieveTsPackages(): Promise<NpmPackage[]> {
     // Process lerna repos
-    if (this.isLernaRepo()) {
+    if (await isMonoRepo()) {
       const workingDir = pwd().stdout;
       const lernaProjects = await this.getPackagePaths();
       const result = lernaProjects.map((packagePath) => {
