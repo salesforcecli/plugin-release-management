@@ -6,14 +6,13 @@
  */
 
 import * as path from 'path';
-import * as glob from 'glob';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
-import { exec, pwd } from 'shelljs';
+import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package, PackageJson } from '../../package';
-import { SinglePackageRepo, LernaRepo, LernaJson, isMonoRepo } from '../../repository';
+import { SinglePackageRepo, LernaRepo, isMonoRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
@@ -67,17 +66,6 @@ export default class Update extends SfdxCommand {
     return this.repo instanceof LernaRepo ? this.repo.packages : [this.repo.package];
   }
 
-  private async getPackagePaths(): Promise<string[]> {
-    const workingDir = pwd().stdout;
-    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
-    const packageGlobs = lernaJson.packages || ['*'];
-    const packages = packageGlobs
-      .map((pGlob) => glob.sync(pGlob))
-      .reduce((x, y) => x.concat(y), [])
-      .map((pkg) => path.join(workingDir, pkg));
-    return packages;
-  }
-
   private async updateEsTargetConfig(packagePath: string): Promise<void> {
     const tsConfigPath = path.join(packagePath, 'tsconfig.json');
     const tsConfigString = await fs.readFile(tsConfigPath, 'utf-8');
@@ -93,7 +81,7 @@ export default class Update extends SfdxCommand {
 
   private async updateEsTarget(): Promise<void> {
     if (await isMonoRepo()) {
-      const packagePaths = await this.getPackagePaths();
+      const packagePaths = this.packages.map((pkg) => pkg.location);
       for (const packagePath of packagePaths) {
         await this.updateEsTargetConfig(packagePath);
       }
