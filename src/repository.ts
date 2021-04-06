@@ -489,8 +489,9 @@ export class SinglePackageRepo extends Repository {
   }
 
   protected async init(): Promise<void> {
+    const packagePath = pwd().stdout;
     this.logger = await Logger.child(this.constructor.name);
-    this.package = await Package.create();
+    this.package = await Package.create(packagePath);
     this.shouldBePublished = await this.isReleasable(this.package);
     this.nextVersion = this.determineNextVersion();
     this.package.setNextVersion(this.nextVersion);

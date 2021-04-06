@@ -95,7 +95,7 @@ export default class Update extends SfdxCommand {
     const newVersion = this.determineNextTsVersion();
     for (const pkg of this.packages) {
       if (pkg.packageJson.devDependencies['typescript']) {
-        this.ux.log(`Updating typescript version to ${newVersion}`);
+        this.ux.warn(`Updating typescript version to ${newVersion} in path ${pkg.location}`);
         pkg.packageJson.devDependencies['typescript'] = newVersion;
         pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
         pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
