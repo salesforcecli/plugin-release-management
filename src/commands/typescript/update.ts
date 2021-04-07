@@ -80,15 +80,9 @@ export default class Update extends SfdxCommand {
   }
 
   private async updateEsTarget(): Promise<void> {
-    if (await isMonoRepo()) {
-      const packagePaths = this.packages.map((pkg) => pkg.location);
-      for (const packagePath of packagePaths) {
-        await this.updateEsTargetConfig(packagePath);
-      }
-    } else {
-      await this.updateEsTargetConfig('.');
+    for (const pkg of this.packages) {
+      await this.updateEsTargetConfig(pkg.location);
     }
-    return;
   }
 
   private async updateTsVersion(): Promise<void> {
