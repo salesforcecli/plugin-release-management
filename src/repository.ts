@@ -220,6 +220,20 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   /**
+   * Returns true if the tag on the current commit matches the version passed in
+   *
+   * @returns boolean
+   */
+  protected tagMatchesPackageVersion(packageVersion: string): boolean {
+    // Get the tag pointing to the current commit
+    const currentTag = this.execCommand('git tag --points-at HEAD').trim();
+    if (!currentTag) return false;
+
+    // Remove potential leading v from version tag
+    return currentTag.replace(/^v/, '') === packageVersion;
+  }
+
+  /**
    * If the commit type isn't fix (patch bump), feat (minor bump), or breaking (major bump),
    * then standard-version always defaults to a patch bump.
    * See https://github.com/conventional-changelog/standard-version/issues/577
@@ -228,17 +242,21 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
    * the commits to see if any of them indicate that a new release should be published.
    */
   protected async isReleasable(pkg: Package, lerna = false): Promise<boolean> {
+    // If the tag on the current commit does not match the package version don't release this
+    if (!this.tagMatchesPackageVersion(pkg.packageJson.version)) return false;
+
     // Return true if the version bump is hardcoded in the package.json
     // In this scenario, we want to publish regardless of the commit types
     if (pkg.nextVersionIsHardcoded()) return true;
 
     const skippableCommitTypes = ['chore', 'style', 'docs', 'ci', 'test'];
 
-    // find the latest git tag so that we can get all the commits that have happened since
+    // TODO: Fix how lerna repos get the previousTag because this is broken now that we're only deploying on a commit with a version tag on it
+    // Find the previous git tag so that we can get all the commits that have happened since
     const tags = this.execCommand('git fetch --tags && git tag', true).stdout.split(os.EOL);
-    const latestTag = lerna
+    const previousTag = lerna
       ? tags.find((tag) => tag.includes(`${pkg.name}@${pkg.npmPackage.version}`)) || ''
-      : tags.find((tag) => tag.includes(pkg.npmPackage.version));
+      : this.execCommand('git describe --abbrev=0 $(git rev-list HEAD -n 1 --skip 1)').trim();
 
     // import the default commit parser configuration
     const defaultConfigPath = require.resolve('conventional-changelog-conventionalcommits');
@@ -247,8 +265,8 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     const commits: Commit[] = await new Promise((resolve) => {
       const DELIMITER = 'SPLIT';
       const gitLogCommand = lerna
-        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges -- ${pkg.location}`
-        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges`;
+        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${previousTag}..HEAD --no-merges -- ${pkg.location}`
+        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${previousTag}..HEAD --no-merges`;
       const gitLog = this.execCommand(gitLogCommand, true)
         .stdout.split(`${DELIMITER}${os.EOL}`)
         .filter((c) => !!c);
@@ -450,8 +468,7 @@ export class SinglePackageRepo extends Repository {
       this.stageChanges();
     }
 
-    let cmd =
-      'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
+    let cmd = 'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}}"';
     if (dryrun) cmd += ' --dry-run';
     cmd += ` --release-as ${this.nextVersion}`;
     this.execCommand(cmd);
