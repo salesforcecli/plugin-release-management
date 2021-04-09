@@ -367,12 +367,13 @@ describe('SinglePackageRepo', () => {
 describe('LernaRepo', () => {
   let uxStub: UX;
   let execStub: sinon.SinonStub;
-  let revertUnstagedChangesStub: sinon.SinonStub;
+  let revertAllChangesStub: sinon.SinonStub;
 
   beforeEach(async () => {
     uxStub = (stubInterface<UX>($$.SANDBOX, {}) as unknown) as UX;
     // if this stub doesn't exist, the test will revert all of your unstaged changes
-    revertUnstagedChangesStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);
+    stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);
+    revertAllChangesStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertAllChanges').returns(null);
     stubMethod($$.SANDBOX, LernaRepo.prototype, 'getPackagePaths').returns(
       Promise.resolve([path.join('packages', 'my-plugin')])
     );
@@ -449,7 +450,7 @@ describe('LernaRepo', () => {
       expect(cmd).to.include('--no-git-tag-version');
       // We expect 2 calls to this because the first is done during the init method
       // and the second is done after doing a dryrun prepare
-      expect(revertUnstagedChangesStub.callCount).to.equal(2);
+      expect(revertAllChangesStub.callCount).to.equal(2);
     });
 
     it('should run lerna without --no-git-tag-version flag when the dryrun option is not provided', async () => {
@@ -459,7 +460,7 @@ describe('LernaRepo', () => {
       expect(cmd).to.not.include('--no-git-tag-version');
       // We expect 1 call to this because it's called during the init method.
       // it should not be called when dryrun is not provided
-      expect(revertUnstagedChangesStub.callCount).to.equal(1);
+      expect(revertAllChangesStub.callCount).to.equal(1);
     });
   });
 
