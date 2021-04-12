@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.3...v1.8.4) (2021-04-09)
+
+
+### Bug Fixes
+
+* lerna release ([c737ee2](https://github.com/salesforcecli/plugin-release-management/commit/c737ee297dd818097e8580b51e27f91b85f3107f))
+
+### [1.8.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.2...v1.8.3) (2021-04-06)
+
+
+### Bug Fixes
+
+* jobs names [skip-validate-pr] ([aa76b39](https://github.com/salesforcecli/plugin-release-management/commit/aa76b39310183493b7bf1af8d00dc6ef45efa415))
+* leif .yml merge [skip-validate-pr] ([786abb8](https://github.com/salesforcecli/plugin-release-management/commit/786abb8434cbf93e359f73e6097147459c9562b2))
+* leif .yml merge [skip-validate-pr] ([dfbcba1](https://github.com/salesforcecli/plugin-release-management/commit/dfbcba190977e5a3e0e75728eb8046107421d588))
+* typo [skip-validate-pr] ([e9209a1](https://github.com/salesforcecli/plugin-release-management/commit/e9209a17355e30eea1c5ecd95573ecd092991e58))
+
 ### [1.8.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.1...v1.8.2) (2021-04-02)
 
 
