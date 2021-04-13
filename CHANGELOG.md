@@ -2,164 +2,157 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.8.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.1...v1.8.2) (2021-04-02)
-
+### [1.8.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.3...v1.8.4) (2021-04-09)
 
 ### Bug Fixes
 
-* run scripts in package directory ([#88](https://github.com/salesforcecli/plugin-release-management/issues/88)) ([fd9a9b8](https://github.com/salesforcecli/plugin-release-management/commit/fd9a9b8a95d30e050dfd283a6d08a46f9db3a8be))
+- lerna release ([c737ee2](https://github.com/salesforcecli/plugin-release-management/commit/c737ee297dd818097e8580b51e27f91b85f3107f))
+
+### [1.8.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.2...v1.8.3) (2021-04-06)
+
+### Bug Fixes
+
+- jobs names [skip-validate-pr] ([aa76b39](https://github.com/salesforcecli/plugin-release-management/commit/aa76b39310183493b7bf1af8d00dc6ef45efa415))
+- leif .yml merge [skip-validate-pr] ([786abb8](https://github.com/salesforcecli/plugin-release-management/commit/786abb8434cbf93e359f73e6097147459c9562b2))
+- leif .yml merge [skip-validate-pr] ([dfbcba1](https://github.com/salesforcecli/plugin-release-management/commit/dfbcba190977e5a3e0e75728eb8046107421d588))
+- typo [skip-validate-pr] ([e9209a1](https://github.com/salesforcecli/plugin-release-management/commit/e9209a17355e30eea1c5ecd95573ecd092991e58))
+
+### [1.8.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.1...v1.8.2) (2021-04-02)
+
+### Bug Fixes
+
+- run scripts in package directory ([#88](https://github.com/salesforcecli/plugin-release-management/issues/88)) ([fd9a9b8](https://github.com/salesforcecli/plugin-release-management/commit/fd9a9b8a95d30e050dfd283a6d08a46f9db3a8be))
 
 ### [1.8.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.0...v1.8.1) (2021-04-01)
 
-
 ### Bug Fixes
 
-* lerna release ([#85](https://github.com/salesforcecli/plugin-release-management/issues/85)) ([6c0f970](https://github.com/salesforcecli/plugin-release-management/commit/6c0f970b056a05f228a4f74c558f556f0b409ffa))
+- lerna release ([#85](https://github.com/salesforcecli/plugin-release-management/issues/85)) ([6c0f970](https://github.com/salesforcecli/plugin-release-management/commit/6c0f970b056a05f228a4f74c558f556f0b409ffa))
 
 ## [1.8.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.3...v1.8.0) (2021-03-16)
 
-
 ### Features
 
-* use prerelease ([#63](https://github.com/salesforcecli/plugin-release-management/issues/63)) ([c0cbf0f](https://github.com/salesforcecli/plugin-release-management/commit/c0cbf0f03a9762cf9967808890882ae747af1063))
+- use prerelease ([#63](https://github.com/salesforcecli/plugin-release-management/issues/63)) ([c0cbf0f](https://github.com/salesforcecli/plugin-release-management/commit/c0cbf0f03a9762cf9967808890882ae747af1063))
 
 ### [1.7.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.2...v1.7.3) (2021-02-26)
 
 ### [1.7.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.1...v1.7.2) (2021-02-26)
 
-
 ### Bug Fixes
 
-* stage changes to README before the commit [skip-validate-pr] ([#46](https://github.com/salesforcecli/plugin-release-management/issues/46)) ([f0aea8d](https://github.com/salesforcecli/plugin-release-management/commit/f0aea8d4f6a134c3ffd498c6720c7c2ced501914))
+- stage changes to README before the commit [skip-validate-pr] ([#46](https://github.com/salesforcecli/plugin-release-management/issues/46)) ([f0aea8d](https://github.com/salesforcecli/plugin-release-management/commit/f0aea8d4f6a134c3ffd498c6720c7c2ced501914))
 
 ### [1.7.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.7.0...v1.7.1) (2021-02-26)
 
 ## [1.7.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.3...v1.7.0) (2021-02-26)
 
-
 ### Features
 
-* run version script ([a6edaa5](https://github.com/salesforcecli/plugin-release-management/commit/a6edaa50c514d1374da605115acd32ee42c39338))
+- run version script ([a6edaa5](https://github.com/salesforcecli/plugin-release-management/commit/a6edaa50c514d1374da605115acd32ee42c39338))
 
 ### [1.6.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.2...v1.6.3) (2021-02-22)
 
-
 ### Bug Fixes
 
-* use correct stable channel ([#42](https://github.com/salesforcecli/plugin-release-management/issues/42)) ([2be3040](https://github.com/salesforcecli/plugin-release-management/commit/2be3040b3ffff2dea64c4b9829237b3fef7e7a60))
+- use correct stable channel ([#42](https://github.com/salesforcecli/plugin-release-management/issues/42)) ([2be3040](https://github.com/salesforcecli/plugin-release-management/commit/2be3040b3ffff2dea64c4b9829237b3fef7e7a60))
 
 ### [1.6.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.1...v1.6.2) (2021-02-20)
 
-
 ### Bug Fixes
 
-* update prepack script ([c0b05e9](https://github.com/salesforcecli/plugin-release-management/commit/c0b05e9b29a278be605e4ea5a95bf962c413135d))
+- update prepack script ([c0b05e9](https://github.com/salesforcecli/plugin-release-management/commit/c0b05e9b29a278be605e4ea5a95bf962c413135d))
 
 ### [1.6.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.6.0...v1.6.1) (2021-02-20)
 
-
 ### Bug Fixes
 
-* update package.json ([4cc8cee](https://github.com/salesforcecli/plugin-release-management/commit/4cc8cee600d138e7f677b67a881c64d108017cbc))
+- update package.json ([4cc8cee](https://github.com/salesforcecli/plugin-release-management/commit/4cc8cee600d138e7f677b67a881c64d108017cbc))
 
 ## [1.6.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.5.1...v1.6.0) (2021-02-19)
 
-
 ### Features
 
-* add cli:versions:inspect command [skip-validate-pr] ([#39](https://github.com/salesforcecli/plugin-release-management/issues/39)) ([2178468](https://github.com/salesforcecli/plugin-release-management/commit/21784680f0125c23ecb50b45f6862fa8b80c5b5d))
+- add cli:versions:inspect command [skip-validate-pr] ([#39](https://github.com/salesforcecli/plugin-release-management/issues/39)) ([2178468](https://github.com/salesforcecli/plugin-release-management/commit/21784680f0125c23ecb50b45f6862fa8b80c5b5d))
 
 ### [1.5.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.5.0...v1.5.1) (2021-02-04)
 
-
 ### Bug Fixes
 
-* fetch git tags before searching for latest ([#37](https://github.com/salesforcecli/plugin-release-management/issues/37)) ([8d7e0ec](https://github.com/salesforcecli/plugin-release-management/commit/8d7e0ec1419bd9c4cb4b2078538838000eeb2f18))
+- fetch git tags before searching for latest ([#37](https://github.com/salesforcecli/plugin-release-management/issues/37)) ([8d7e0ec](https://github.com/salesforcecli/plugin-release-management/commit/8d7e0ec1419bd9c4cb4b2078538838000eeb2f18))
 
 ## [1.5.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.3...v1.5.0) (2021-02-03)
 
-
 ### Features
 
-* remove fingerprint checks ([#18](https://github.com/salesforcecli/plugin-release-management/issues/18)) ([6befa55](https://github.com/salesforcecli/plugin-release-management/commit/6befa55ac257c15bd47f17652619d4fa0a7f91b7))
+- remove fingerprint checks ([#18](https://github.com/salesforcecli/plugin-release-management/issues/18)) ([6befa55](https://github.com/salesforcecli/plugin-release-management/commit/6befa55ac257c15bd47f17652619d4fa0a7f91b7))
 
 ### [1.4.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.2...v1.4.3) (2021-02-03)
 
-
 ### Bug Fixes
 
-* strip tsconfig comments before parsing as JSON ([#36](https://github.com/salesforcecli/plugin-release-management/issues/36)) ([3e16f1c](https://github.com/salesforcecli/plugin-release-management/commit/3e16f1cd4bfdaf47adafede43857f237311040a2))
+- strip tsconfig comments before parsing as JSON ([#36](https://github.com/salesforcecli/plugin-release-management/issues/36)) ([3e16f1c](https://github.com/salesforcecli/plugin-release-management/commit/3e16f1cd4bfdaf47adafede43857f237311040a2))
 
 ### [1.4.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.1...v1.4.2) (2021-01-29)
 
-
 ### Bug Fixes
 
-* throw error if git push fails ([1db3252](https://github.com/salesforcecli/plugin-release-management/commit/1db3252e92dffc5491b09056c3c23e188008e3c3))
+- throw error if git push fails ([1db3252](https://github.com/salesforcecli/plugin-release-management/commit/1db3252e92dffc5491b09056c3c23e188008e3c3))
 
 ### [1.4.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.4.0...v1.4.1) (2021-01-28)
 
-
 ### Bug Fixes
 
-* exclude merge commits when determinin if release is necessary ([02f2bc0](https://github.com/salesforcecli/plugin-release-management/commit/02f2bc0cf8706ca3c723b939d9b305dc23e48cbe))
+- exclude merge commits when determinin if release is necessary ([02f2bc0](https://github.com/salesforcecli/plugin-release-management/commit/02f2bc0cf8706ca3c723b939d9b305dc23e48cbe))
 
 ## [1.4.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.3.0...v1.4.0) (2021-01-28)
 
-
 ### Features
 
-* check commit messages to see if a new version needs to be published ([#13](https://github.com/salesforcecli/plugin-release-management/issues/13)) ([555a29d](https://github.com/salesforcecli/plugin-release-management/commit/555a29d03b7a689f7212e98775682442396c953a))
+- check commit messages to see if a new version needs to be published ([#13](https://github.com/salesforcecli/plugin-release-management/issues/13)) ([555a29d](https://github.com/salesforcecli/plugin-release-management/commit/555a29d03b7a689f7212e98775682442396c953a))
 
 ## [1.3.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.2.1...v1.3.0) (2021-01-28)
 
-
 ### Features
 
-* 🎸 @W-8712470@ add env var for target registry ([#10](https://github.com/salesforcecli/plugin-release-management/issues/10)) ([1dd1dbe](https://github.com/salesforcecli/plugin-release-management/commit/1dd1dbe2a62fba992ec50b65eae95ef4bae2f0c7))
+- 🎸 @W-8712470@ add env var for target registry ([#10](https://github.com/salesforcecli/plugin-release-management/issues/10)) ([1dd1dbe](https://github.com/salesforcecli/plugin-release-management/commit/1dd1dbe2a62fba992ec50b65eae95ef4bae2f0c7))
 
 ### [1.2.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.2.0...v1.2.1) (2021-01-19)
 
-
 ### Bug Fixes
 
-* update [@typescript-eslint](https://github.com/typescript-eslint) packages when testing new ts version ([4f2abc9](https://github.com/salesforcecli/plugin-release-management/commit/4f2abc97531b2765e8cb4e668c28ecaafe1a68ab))
+- update [@typescript-eslint](https://github.com/typescript-eslint) packages when testing new ts version ([4f2abc9](https://github.com/salesforcecli/plugin-release-management/commit/4f2abc97531b2765e8cb4e668c28ecaafe1a68ab))
 
 ## [1.2.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.2...v1.2.0) (2021-01-14)
 
-
 ### Features
 
-* add typescript:update command ([a1660e5](https://github.com/salesforcecli/plugin-release-management/commit/a1660e5d8c28dbb6626b56c3cd21c8642e9ec322))
+- add typescript:update command ([a1660e5](https://github.com/salesforcecli/plugin-release-management/commit/a1660e5d8c28dbb6626b56c3cd21c8642e9ec322))
 
 ### [1.1.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.1...v1.1.2) (2020-12-11)
 
-
 ### Bug Fixes
 
-* add ability to pin deps to specified version ([8abed1b](https://github.com/salesforcecli/plugin-release-management/commit/8abed1bec002089281f30273d43752b39e480355))
+- add ability to pin deps to specified version ([8abed1b](https://github.com/salesforcecli/plugin-release-management/commit/8abed1bec002089281f30273d43752b39e480355))
 
 ### [1.1.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.1.0...v1.1.1) (2020-12-10)
 
 ## [1.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.0.0...v1.1.0) (2020-11-24)
 
-
 ### Features
 
-* add 3 new commands and a new flag ([fbc7355](https://github.com/salesforcecli/plugin-release-management/commit/fbc735567a19e80b30a52f8715b07250f1d52941))
-
+- add 3 new commands and a new flag ([fbc7355](https://github.com/salesforcecli/plugin-release-management/commit/fbc735567a19e80b30a52f8715b07250f1d52941))
 
 ### Bug Fixes
 
-* failing unit test ([eea1ce2](https://github.com/salesforcecli/plugin-release-management/commit/eea1ce27ce3b8d41aba2310ca64ced64ad54e140))
-* lerna release ([ae79097](https://github.com/salesforcecli/plugin-release-management/commit/ae7909766f70b865cdf659c3132ac499cb008f40))
+- failing unit test ([eea1ce2](https://github.com/salesforcecli/plugin-release-management/commit/eea1ce27ce3b8d41aba2310ca64ced64ad54e140))
+- lerna release ([ae79097](https://github.com/salesforcecli/plugin-release-management/commit/ae7909766f70b865cdf659c3132ac499cb008f40))
 
 ## 1.0.0 (2020-11-13)
 
-
 ### Features
 
-* add npm:package:release and npm:lerna:release ([781775c](https://github.com/salesforcecli/plugin-release-management/commit/781775c6271d3746c7c25047eeecdc0d4af5982c))
+- add npm:package:release and npm:lerna:release ([781775c](https://github.com/salesforcecli/plugin-release-management/commit/781775c6271d3746c7c25047eeecdc0d4af5982c))
 
 ### 0.0.9 (2020-11-13)
 

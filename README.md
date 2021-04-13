@@ -93,16 +93,17 @@ sfdx plugins
 # Commands
 
 <!-- commands -->
-* [`sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circleci--t-pluginlibraryorb---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarupdate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx cli:versions:inspect -c <string> -l <string> [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliversionsinspect--c-string--l-string--d-string--s---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmdependenciespin--d--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmlernarelease--d--s-array--t-string--a-string---install---githubrelease---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmpackagerelease--d--s--t-string--a-string---install---prerelease-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx `](#sfdx-)
-* [`sfdx trust:sign -s <string> -p <string> -k <string> [-t <string> | --tarpath <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-trustsign--s-string--p-string--k-string--t-string----tarpath-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx trust:upload -f <string> -b <string> [-k <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-trustupload--f-string--b-string--k-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-* [`sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-typescriptupdate--v-string--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+
+- [`sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circleci--t-pluginlibraryorb---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarupdate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx cli:versions:inspect -c <string> -l <string> [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliversionsinspect--c-string--l-string--d-string--s---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmdependenciespin--d--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmlernarelease--d--s-array--t-string--a-string---install---githubrelease---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmpackagerelease--d--s--t-string--a-string---install---prerelease-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx `](#sfdx-)
+- [`sfdx trust:sign -s <string> -p <string> -k <string> [-t <string> | --tarpath <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-trustsign--s-string--p-string--k-string--t-string----tarpath-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx trust:upload -f <string> -b <string> [-k <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-trustupload--f-string--b-string--k-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-typescriptupdate--v-string--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
 ## `sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -110,7 +111,7 @@ list known Circle CI slugs from 'sfdx repositories'
 
 ```
 USAGE
-  $ sfdx circleci [-t plugin|library|orb] [--json] [--loglevel 
+  $ sfdx circleci [-t plugin|library|orb] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -124,7 +125,7 @@ EXAMPLE
   sfdx circleci -t plugin
 ```
 
-_See code: [src/commands/circleci/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/circleci/index.ts)_
+_See code: [src/commands/circleci/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/circleci/index.ts)_
 
 ## `sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -132,7 +133,7 @@ update environment variable(s) on Circle CI slug(s)
 
 ```
 USAGE
-  $ sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel 
+  $ sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -151,8 +152,8 @@ OPTIONS
                                                                                     this command invocation
 
 DESCRIPTION
-  Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist 
-  on the slug. You will be prompted for the environment variable values unless they already exist on the process. The 
+  Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist
+  on the slug. You will be prompted for the environment variable values unless they already exist on the process. The
   slugs can be piped in. If so, the environment variables must be on the process (prompting is disabled).
 
 EXAMPLES
@@ -161,7 +162,7 @@ EXAMPLES
   sfdx circleci -t plugin | sfdx circleci:envvar:update -e 'MY_ENV_VAR' -e 'MY_OTHER_ENV_VAR'
 ```
 
-_See code: [src/commands/circleci/envvar/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/circleci/envvar/update.ts)_
+_See code: [src/commands/circleci/envvar/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/circleci/envvar/update.ts)_
 
 ## `sfdx cli:versions:inspect -c <string> -l <string> [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -169,7 +170,7 @@ inspect the CLI version across all install paths
 
 ```
 USAGE
-  $ sfdx cli:versions:inspect -c <string> -l <string> [-d <string>] [-s] [--json] [--loglevel 
+  $ sfdx cli:versions:inspect -c <string> -l <string> [-d <string>] [-s] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -206,7 +207,7 @@ EXAMPLES
   sfdx cli:versions:inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/cli/versions/inspect.ts)_
 
 ## `sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -214,7 +215,7 @@ lock a list of dependencies to a target tag or default to 'latest', place these 
 
 ```
 USAGE
-  $ sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel 
+  $ sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -231,7 +232,7 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/npm/dependencies/pin.ts)_
 
 ## `sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -239,7 +240,7 @@ publish npm packages from a lerna repository
 
 ```
 USAGE
-  $ sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--json] 
+  $ sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--json]
   [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -266,7 +267,7 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/npm/lerna/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/npm/lerna/release.ts)_
+_See code: [src/commands/npm/lerna/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/npm/lerna/release.ts)_
 
 ## `sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -274,7 +275,7 @@ publish npm package
 
 ```
 USAGE
-  $ sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--json] 
+  $ sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--json]
   [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -304,7 +305,7 @@ OPTIONS
                                                                                     is not manually set
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/npm/package/release.ts)_
 
 ## `sfdx `
 
@@ -349,7 +350,7 @@ EXAMPLES
   sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/repositories/index.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/repositories/index.ts)_
 
 ## `sfdx trust:sign -s <string> -p <string> -k <string> [-t <string> | --tarpath <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -357,7 +358,7 @@ pack an npm package and produce a tgz file along with a corresponding digital si
 
 ```
 USAGE
-  $ sfdx trust:sign -s <string> -p <string> -k <string> [-t <string> | --tarpath <string>] [--json] [--loglevel 
+  $ sfdx trust:sign -s <string> -p <string> -k <string> [-t <string> | --tarpath <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -371,7 +372,7 @@ OPTIONS
       (required) the url location where the signature will be hosted minus the name of the actual signature file.
 
   -t, --target=target
-      the package path you want to target for signing. Helpful for signing individual packages within a multipackage 
+      the package path you want to target for signing. Helpful for signing individual packages within a multipackage
       project (e.g. lerna). Defaults to the current working directory.
 
   --json
@@ -384,7 +385,7 @@ OPTIONS
       specify the package tgz path to sign instead of generating one from the target package
 ```
 
-_See code: [src/commands/trust/sign.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/trust/sign.ts)_
+_See code: [src/commands/trust/sign.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/trust/sign.ts)_
 
 ## `sfdx trust:upload -f <string> -b <string> [-k <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -392,7 +393,7 @@ upload signature to S3. Requires AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID to 
 
 ```
 USAGE
-  $ sfdx trust:upload -f <string> -b <string> [-k <string>] [--json] [--loglevel 
+  $ sfdx trust:upload -f <string> -b <string> [-k <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -409,7 +410,7 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/trust/upload.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/trust/upload.ts)_
+_See code: [src/commands/trust/upload.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/trust/upload.ts)_
 
 ## `sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -417,7 +418,7 @@ Runs tests with updated typescript version and ES target
 
 ```
 USAGE
-  $ sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel 
+  $ sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -436,5 +437,6 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/typescript/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.1/src/commands/typescript/update.ts)_
+_See code: [src/commands/typescript/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v1.8.3/src/commands/typescript/update.ts)_
+
 <!-- commandsstop -->

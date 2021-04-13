@@ -169,8 +169,12 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
       .stdout.split(os.EOL)
       .filter((f) => !!f);
     changedFiles.forEach((file) => {
-      exec(`git checkout -- ${file}`, { silent: false });
+      exec(`npx git checkout -- ${file}`, { silent: false });
     });
+  }
+
+  public revertAllChanges(): void {
+    exec('npx git reset --hard HEAD', { silent: true });
   }
 
   public printStage(msg: string): void {
@@ -185,7 +189,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   public async writeNpmToken(): Promise<void> {
-    const home = this.env.getString('HOME');
+    const home = this.env.getString('HOME') ?? os.homedir();
     await this.registry.setNpmAuth(home);
     await this.registry.setNpmRegistry(home);
   }
@@ -301,20 +305,13 @@ export class LernaRepo extends Repository {
   public prepare(opts: PrepareOpts = {}): void {
     const { dryrun, githubRelease } = opts;
 
-    this.packages.forEach((pkg) => {
-      if (pkg.hasScript('version')) {
-        this.run('version', pkg.location);
-        this.stageChanges();
-      }
-    });
-
     let cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push';
     if (dryrun) cmd += ' --no-git-tag-version';
     if (!dryrun && githubRelease) cmd += ' --create-release github';
     if (!dryrun) cmd += ' --message "chore(release): publish [ci skip]"';
     this.execCommand(cmd);
     if (dryrun) {
-      this.revertUnstagedChanges();
+      this.revertAllChanges();
     }
   }
 
@@ -422,7 +419,7 @@ export class LernaRepo extends Repository {
     this.logger.debug('determined the following version bumps:');
     this.logger.debug(result);
     // lerna modifies the package.json files so we want to reset them
-    this.revertUnstagedChanges();
+    this.revertAllChanges();
     return result;
   }
 }
