@@ -42,7 +42,7 @@ export default class Update extends SfdxCommand {
     this.validateTsVersion();
 
     this.repo = (await isMonoRepo())
-      ? await LernaRepo.create({ ux: this.ux })
+      ? await LernaRepo.create({ ux: this.ux, shouldBePublished: true })
       : await SinglePackageRepo.create({ ux: this.ux });
 
     this.packages = this.getPackages();

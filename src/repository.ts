@@ -108,11 +108,13 @@ export class Signer extends AsyncOptionalCreatable {
 export type RepositoryOptions = {
   ux: UX;
   useprerelease?: string;
+  shouldBePublished?: boolean;
 };
 
 abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   protected options: RepositoryOptions;
   protected ux: UX;
+  protected shouldBePublished: boolean;
   protected env: Env;
   protected registry: Registry;
   private stepCounter = 1;
@@ -121,6 +123,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     super(options);
     this.options = options;
     this.ux = options.ux;
+    this.shouldBePublished = options.shouldBePublished;
     this.env = new Env();
     this.registry = new Registry();
   }
@@ -373,7 +376,7 @@ export class LernaRepo extends Repository {
     if (!isEmpty(nextVersions)) {
       for (const pkgPath of pkgPaths) {
         const pkg = await Package.create(pkgPath);
-        const shouldBePublihsed = await this.isReleasable(pkg, true);
+        const shouldBePublihsed = this.shouldBePublished || (await this.isReleasable(pkg, true));
         const nextVersion = getString(nextVersions, `${pkg.name}.nextVersion`, null);
         if (shouldBePublihsed && nextVersion) {
           pkg.setNextVersion(nextVersion);
