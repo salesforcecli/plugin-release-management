@@ -366,6 +366,15 @@ export class LernaRepo extends Repository {
     return `${header}${os.EOL}${successes}`;
   }
 
+  public async getPackages(): Promise<Package[]> {
+    const pkgPaths = await this.getPackagePaths();
+    const packages: Package[] = [];
+    for (const pkgPath of pkgPaths) {
+      packages.push(await Package.create(pkgPath));
+    }
+    return packages;
+  }
+
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     const pkgPaths = await this.getPackagePaths();
@@ -373,9 +382,9 @@ export class LernaRepo extends Repository {
     if (!isEmpty(nextVersions)) {
       for (const pkgPath of pkgPaths) {
         const pkg = await Package.create(pkgPath);
-        const shouldBePublihsed = this.shouldBePublished || (await this.isReleasable(pkg, true));
+        const shouldBePublished = this.shouldBePublished || (await this.isReleasable(pkg, true));
         const nextVersion = getString(nextVersions, `${pkg.name}.nextVersion`, null);
-        if (shouldBePublihsed && nextVersion) {
+        if (shouldBePublished && nextVersion) {
           pkg.setNextVersion(nextVersion);
           this.packages.push(pkg);
         }

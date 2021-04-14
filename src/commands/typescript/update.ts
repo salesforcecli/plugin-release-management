@@ -45,7 +45,7 @@ export default class Update extends SfdxCommand {
       ? await LernaRepo.create({ ux: this.ux, shouldBePublished: true })
       : await SinglePackageRepo.create({ ux: this.ux });
 
-    this.packages = this.getPackages();
+    this.packages = await this.getPackages();
 
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
@@ -62,8 +62,8 @@ export default class Update extends SfdxCommand {
     }
   }
 
-  private getPackages(): Package[] {
-    return this.repo instanceof LernaRepo ? this.repo.packages : [this.repo.package];
+  private async getPackages(): Promise<Package[]> {
+    return this.repo instanceof LernaRepo ? await this.repo.getPackages() : [this.repo.package];
   }
 
   private async updateEsTargetConfig(packagePath: string): Promise<void> {
