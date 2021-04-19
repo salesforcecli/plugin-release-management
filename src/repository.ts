@@ -24,7 +24,7 @@ import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
 import { Registry } from './registry';
 
-type LernaJson = {
+export type LernaJson = {
   packages?: string[];
 } & AnyJson;
 
@@ -108,11 +108,13 @@ export class Signer extends AsyncOptionalCreatable {
 export type RepositoryOptions = {
   ux: UX;
   useprerelease?: string;
+  shouldBePublished?: boolean;
 };
 
 abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   protected options: RepositoryOptions;
   protected ux: UX;
+  protected shouldBePublished: boolean;
   protected env: Env;
   protected registry: Registry;
   private stepCounter = 1;
@@ -121,6 +123,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     super(options);
     this.options = options;
     this.ux = options.ux;
+    this.shouldBePublished = options.shouldBePublished;
     this.env = new Env();
     this.registry = new Registry();
   }
@@ -363,6 +366,15 @@ export class LernaRepo extends Repository {
     return `${header}${os.EOL}${successes}`;
   }
 
+  public async getPackages(): Promise<Package[]> {
+    const pkgPaths = await this.getPackagePaths();
+    const packages: Package[] = [];
+    for (const pkgPath of pkgPaths) {
+      packages.push(await Package.create(pkgPath));
+    }
+    return packages;
+  }
+
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     const pkgPaths = await this.getPackagePaths();
@@ -370,7 +382,7 @@ export class LernaRepo extends Repository {
     if (!isEmpty(nextVersions)) {
       for (const pkgPath of pkgPaths) {
         const pkg = await Package.create(pkgPath);
-        const shouldBePublished = await this.isReleasable(pkg, true);
+        const shouldBePublished = this.shouldBePublished || (await this.isReleasable(pkg, true));
         const nextVersion = getString(nextVersions, `${pkg.name}.nextVersion`, null);
         if (shouldBePublished && nextVersion) {
           pkg.setNextVersion(nextVersion);
@@ -486,8 +498,9 @@ export class SinglePackageRepo extends Repository {
   }
 
   protected async init(): Promise<void> {
+    const packagePath = pwd().stdout;
     this.logger = await Logger.child(this.constructor.name);
-    this.package = await Package.create();
+    this.package = await Package.create(packagePath);
     this.shouldBePublished = await this.isReleasable(this.package);
     this.nextVersion = this.determineNextVersion();
     this.package.setNextVersion(this.nextVersion);
