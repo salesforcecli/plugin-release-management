@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.4...v1.9.0) (2021-04-19)
+
+
+### Features
+
+* handle lerna repo ([#68](https://github.com/salesforcecli/plugin-release-management/issues/68)) ([e2c3528](https://github.com/salesforcecli/plugin-release-management/commit/e2c3528a847c8c8fce6ceccd87190d0238160fdf))
+
 ### [1.8.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.8.3...v1.8.4) (2021-04-09)
 
 ### Bug Fixes
