@@ -121,7 +121,7 @@ describe('circleci envvar create', () => {
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
     .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
     .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '[ "gh/salesforcecli/plugin-auth" ]')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
     .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
@@ -151,7 +151,7 @@ describe('circleci envvar create', () => {
       'readPipedInput',
       async () => 'gh/salesforcecli/plugin-auth\ngh/salesforcecli/plugin-config'
     )
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
     .command([
@@ -161,7 +161,7 @@ describe('circleci envvar create', () => {
       '--envvar=MYENVVAR',
       '--json',
     ])
-    .it('should combined slugs from flags and piped input', (ctx) => {
+    .it('should combine slugs from flags and piped input', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(
         [

@@ -168,7 +168,7 @@ describe('circleci envvar update', () => {
       '--envvar=MYENVVAR',
       '--json',
     ])
-    .it('should combined slugs from flags and piped input', (ctx) => {
+    .it('should combine slugs from flags and piped input', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(
         [
