@@ -134,7 +134,7 @@ describe('circleci envvar create', () => {
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
     .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
     .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '{ "result": ["gh/salesforcecli/plugin-auth"]}')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
     .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
