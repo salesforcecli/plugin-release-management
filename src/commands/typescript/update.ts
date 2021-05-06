@@ -63,7 +63,7 @@ export default class Update extends SfdxCommand {
   }
 
   private async getPackages(): Promise<Package[]> {
-    return this.repo instanceof LernaRepo ? await this.repo.getPackages() : [this.repo.package];
+    return this.repo instanceof LernaRepo ? await LernaRepo.getPackages() : [this.repo.package];
   }
 
   private async updateEsTargetConfig(packagePath: string): Promise<void> {
