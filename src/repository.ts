@@ -395,7 +395,9 @@ export class LernaRepo extends Repository {
   private async getPackagePaths(): Promise<string[]> {
     const workingDir = pwd().stdout;
     const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
-    const packageGlobs = lernaJson.packages || ['*'];
+    // https://github.com/lerna/lerna#lernajson
+    // "By default, lerna initializes the packages list as ["packages/*"]"
+    const packageGlobs = lernaJson.packages || ['packages/*'];
     const packages = packageGlobs
       .map((pGlob) => glob.sync(pGlob))
       .reduce((x, y) => x.concat(y), [])
