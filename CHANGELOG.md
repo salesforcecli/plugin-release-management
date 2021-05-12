@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.9.2...v1.9.3) (2021-05-12)
+
+
+### Bug Fixes
+
+* lerna publish tp use correct default package dir ([#135](https://github.com/salesforcecli/plugin-release-management/issues/135)) ([4cc7dfa](https://github.com/salesforcecli/plugin-release-management/commit/4cc7dfa9d8012d4dccb3316324d5ec5c60ad9247))
+
+### [1.9.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.9.1...v1.9.2) (2021-05-10)
+
 ### [1.9.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.9.0...v1.9.1) (2021-05-03)
 
 
