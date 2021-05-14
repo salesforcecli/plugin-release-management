@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { fs, Messages, SfdxError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
 import { PackageJson } from '../../../package';
 
@@ -23,7 +23,7 @@ const STABLE_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/
 const STABLE_RC_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable-rc';
 const SALESFORCE_DEP_GLOBS = ['@salesforce/**/*', 'salesforce-alm', 'salesforcedx'];
 
-type Info = {
+export type Info = {
   origin: string;
   version: string;
   channel: Channel;
@@ -31,12 +31,12 @@ type Info = {
   dependencies?: Dependency[];
 };
 
-type Dependency = {
+export type Dependency = {
   name: string;
   version: string;
 };
 
-enum Channel {
+export enum Channel {
   LEGACY = 'legacy',
   STABLE = 'stable',
   STABLE_RC = 'stable-rc',
@@ -44,7 +44,7 @@ enum Channel {
   LATEST_RC = 'latest-rc',
 }
 
-enum Location {
+export enum Location {
   ARCHIVE = 'archive',
   NPM = 'npm',
 }
@@ -267,6 +267,8 @@ export default class Inspect extends SfdxCommand {
   }
 
   private logResults(results: Info[], locations: Location[], channels: Channel[]): void {
+    let allMatch: boolean;
+    let npmAndArchivesMatch: boolean;
     this.ux.log();
     results.forEach((result) => {
       this.ux.log(bold(`${result.origin}: ${green(result.version)}`));
@@ -282,7 +284,7 @@ export default class Inspect extends SfdxCommand {
       this.ux.log(`${'All archives match?'} ${archivesMatch ? green(archivesMatch) : yellow(archivesMatch)}`);
 
       channels.forEach((channel) => {
-        const allMatch = new Set(results.filter((r) => r.channel === channel).map((r) => r.version)).size === 1;
+        allMatch = new Set(results.filter((r) => r.channel === channel).map((r) => r.version)).size === 1;
         this.ux.log(
           `${`All ${Location.ARCHIVE}@${channel} versions match?`} ${allMatch ? green(allMatch) : red(allMatch)}`
         );
@@ -296,7 +298,7 @@ export default class Inspect extends SfdxCommand {
           const npmChannel = CHANNEL_MAPPING[Location.NPM][channel];
           const archiveChannel = CHANNEL_MAPPING[Location.ARCHIVE][channel];
 
-          const npmAndArchivesMatch =
+          npmAndArchivesMatch =
             new Set(
               results.filter((r) => r.channel === npmChannel || r.channel === archiveChannel).map((r) => r.version)
             ).size === 1;
@@ -306,6 +308,10 @@ export default class Inspect extends SfdxCommand {
             `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
           );
         });
+    }
+    // npmAndArchivesMatch can be undefined
+    if ((npmAndArchivesMatch !== undefined && !npmAndArchivesMatch) || !allMatch) {
+      throw new SfdxError('Version Mismatch');
     }
   }
 }
