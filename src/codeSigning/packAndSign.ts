@@ -460,7 +460,28 @@ export const api = {
       }
     }
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /**
+   * getAgentForUrl examines the current environment variables to determine if the user
+   * has set any of the well known http/https proxy URL variables:
+   * https_proxy
+   * HTTPS_PROXY
+   * http_proxy
+   * HTTP_PROXY
+   * no_proxy
+   * NO_PROXY
+   * The goal is to produce an instance of either http.Agent or https.Agent based on
+   * the supplied url and the values found from env vars.
+   * Deference is given to https* settings before http*
+   * The function will not produce an agent if any of the following is true
+   * - the host of the target url is present in the no_proxy env var
+   * - user has not set any of the well known proxy env vars
+   * The function will throw an error if two separate env vars have distinct
+   * urls, i.e. https_proxy=https://some.proxy.server.com and
+   * HTTPS_PROXY=https://some.other.proxy.server.com since the function can
+   * not mitigate the ambiguity.
+   *
+   * @param url
+   */
   getAgentForUri(url: string): false | Agents {
     const targetUrl = new URL(url);
     const protocol = targetUrl.protocol;
