@@ -13,6 +13,7 @@ import { isArray, isString, Dictionary, AnyJson, getArray } from '@salesforce/ts
 import { env } from '@salesforce/kit';
 import got, { Response } from 'got';
 import { green, red, bold, cyan, yellow } from 'chalk';
+import { api } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'circleci');
@@ -99,7 +100,9 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
     let response: Response<string>;
 
     try {
-      response = await got.get<string>(`${URL_BASE}/${slug}/envvar`, { headers: this.headers });
+      const url = `${URL_BASE}/${slug}/envvar`;
+      const agent = api.getAgentForUri(url);
+      response = await got.get<string>(url, { headers: this.headers, agent });
     } catch (err) {
       const error = err as SfdxError;
       return `${error.message}. Skipping...`;
@@ -148,8 +151,11 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
     if (!this.flags.dryrun) {
       try {
         // First remove the old envvar
-        await got.delete(`${envvarUrl}/${name}`, { headers: this.headers });
+        const url = `${envvarUrl}/${name}`;
+        let agent = api.getAgentForUri(url);
+        await got.delete(url, { headers: this.headers, agent });
 
+        agent = api.getAgentForUri(`${envvarUrl}`);
         await got.post(`${envvarUrl}`, {
           headers: this.headers,
           json: { name, value },

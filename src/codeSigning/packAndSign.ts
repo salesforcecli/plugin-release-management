@@ -14,10 +14,15 @@ import { basename, join as pathJoin } from 'path';
 import { sep as pathSep } from 'path';
 import { Readable } from 'stream';
 import { copyFile, createReadStream } from 'fs';
-import * as https from 'https';
+import { URL } from 'url';
+import { Agent } from 'https';
+import got, { Agents, RequestError } from 'got';
 import { UX } from '@salesforce/command';
 import { fs, Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
+import { env } from '@salesforce/kit';
+
+import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import {
   CodeSignInfo,
   CodeVerifierInfo,
@@ -166,35 +171,36 @@ export const api = {
    * @param publicKeyUrl - url for the public key
    */
   verify(tarGzStream: Readable, sigFilenameStream: Readable, publicKeyUrl: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve) => {
       const verifyInfo = new CodeVerifierInfo();
       verifyInfo.dataToVerify = tarGzStream;
       verifyInfo.signatureStream = sigFilenameStream;
 
-      const req = https.get(publicKeyUrl, { agent: false });
-
-      req.on('response', (response) => {
-        if (response && response.statusCode === 200) {
-          verifyInfo.publicKeyStream = response;
-          return resolve(verify(verifyInfo));
-        } else {
-          const statusCode: number = response.statusCode;
-          return reject(
-            new NamedError(
-              'RetrievePublicKeyFailed',
-              `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
-            )
-          );
-        }
-      });
-
-      req.on('error', (err: Error) => {
-        if (err && err['code'] === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
-          reject(new SignSignedCertError());
-        } else {
-          reject(err);
-        }
-      });
+      return resolve(
+        (async (): Promise<boolean> => {
+          try {
+            const agent = api.getAgentForUri(publicKeyUrl);
+            const response = await got.get(publicKeyUrl, { agent });
+            if (response && response.statusCode === 200) {
+              verifyInfo.publicKeyStream = Readable.from([response.body]);
+              return await verify(verifyInfo);
+            } else {
+              const statusCode: number = response.statusCode;
+              throw new NamedError(
+                'RetrievePublicKeyFailed',
+                `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
+              );
+            }
+          } catch (err) {
+            const error = err as RequestError;
+            if (error && error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
+              throw new SignSignedCertError();
+            } else {
+              throw err;
+            }
+          }
+        })()
+      );
     });
   },
 
@@ -453,5 +459,55 @@ export const api = {
         await fs.unlink(pathGetter.packageJsonBak);
       }
     }
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getAgentForUri(url: string): false | Agents {
+    const targetUrl = new URL(url);
+    const protocol = targetUrl.protocol;
+    // is target domain covered by no_proxy
+    const noProxy = env.getString('no_proxy', env.getString('NO_PROXY', ''));
+    if (noProxy.includes(targetUrl.host)) {
+      return false;
+    }
+    // https proxy settings can point to an http proxy url
+    const envEntries = env.entries();
+    const httpsProxyVars = envEntries
+      .filter(([k, v]) => /https_?proxy/.test(k.toLowerCase()) && /^https?:\/\//.test(v))
+      .reduce((a, [, v]) => {
+        a.add(v);
+        return a;
+      }, new Set());
+    const httpProxyVars = envEntries
+      .filter(([k, v]) => /http_?proxy/.test(k.toLowerCase()) && /^http:\/\//.test(v))
+      .reduce((a, [, v]) => {
+        a.add(v);
+        return a;
+      }, new Set());
+    if (httpsProxyVars.size > 1 || httpProxyVars.size > 1) {
+      throw new Error('found more than one proxy env var with different values');
+    }
+    const proxy = [...httpsProxyVars].find((v) => v) || [...httpProxyVars].find((v) => v);
+    if (!proxy) {
+      return false;
+    }
+    const agents = {} as Agents;
+    const agent = (protocol === 'https:'
+      ? new HttpsProxyAgent({
+          keepAlive: false,
+          maxSockets: 10,
+          maxFreeSockets: 10,
+          scheduling: 'lifo',
+          proxy: proxy as string,
+        })
+      : new HttpProxyAgent({
+          keepAlive: false,
+          maxSockets: 10,
+          maxFreeSockets: 10,
+          scheduling: 'lifo',
+          proxy: proxy as string,
+        })) as Agent;
+    agents.https = agent;
+    agents.http = agent;
+    return agents;
   },
 };
