@@ -34,7 +34,7 @@ export type RepositoryInfo = {
  * Get a list of known tooling repositories that include Salesforce CLI plugins, libraries, and orbs.
  */
 export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => {
-  const agent = api.getAgentForUri();
+  const agent = api.getAgentForUri(KNOWN_REPOSITORIES_URL);
   const response = await got.get(KNOWN_REPOSITORIES_URL, { agent });
   const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
 
