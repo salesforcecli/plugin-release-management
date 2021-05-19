@@ -101,7 +101,7 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
 
     try {
       const url = `${URL_BASE}/${slug}/envvar`;
-      const agent = api.getAgentForUri(url);
+      const agent = api.getAgentForUri();
       response = await got.get<string>(url, { headers: this.headers, agent });
     } catch (err) {
       const error = err as SfdxError;
@@ -152,10 +152,10 @@ export default class CircelCIEnvvarUpdate extends SfdxCommand {
       try {
         // First remove the old envvar
         const url = `${envvarUrl}/${name}`;
-        let agent = api.getAgentForUri(url);
+        let agent = api.getAgentForUri();
         await got.delete(url, { headers: this.headers, agent });
 
-        agent = api.getAgentForUri(`${envvarUrl}`);
+        agent = api.getAgentForUri();
         await got.post(`${envvarUrl}`, {
           headers: this.headers,
           json: { name, value },

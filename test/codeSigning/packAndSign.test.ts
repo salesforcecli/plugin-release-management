@@ -14,14 +14,12 @@ import { EOL } from 'os';
 import { join } from 'path';
 import { Readable } from 'stream';
 import * as fs from 'fs';
-import { URL } from 'url';
 import { core, UX } from '@salesforce/command';
 import { fs as fscore } from '@salesforce/core';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';
 import got from 'got';
-import { env } from '@salesforce/kit';
 import { SigningResponse } from '../../src/codeSigning/packAndSign';
 import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert';
 
@@ -332,81 +330,11 @@ describe('packAndSign Tests', () => {
     });
   });
 
+  // minimal test since the function getAgentForUrl delegates to proxy-agent module
   describe('getAgentForUri', () => {
-    it('should return no agent when no proxy env vars are set', () => {
+    it('should always return an agent', () => {
       const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
-      expect(agents).to.be.false;
-    });
-    it('should return no agent when no_proxy env var contains target host name', () => {
-      stubMethod($$.SANDBOX, env, 'getString').returns('somewhere.com');
-      const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
-      expect(agents).to.be.false;
-    });
-    it('should return https agent https_proxy env var is set', () => {
-      const envEntries = [['https_proxy', 'https://some.https.proxy.com:8080']];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns(envEntries[0][1]);
-      const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
-      const proxy = agents.https.proxy;
-      expect(proxy.toString()).to.equal(new URL('https://some.https.proxy.com:8080').toString());
-      expect(agents.https.protocol).to.equal('https:');
-    });
-    it('should return https agent http_proxy env var is set', () => {
-      const envEntries = [['http_proxy', 'http://some.https.proxy.com:8080']];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns(envEntries[0][1]);
-      const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
-      const proxy = agents.https.proxy;
-      expect(proxy.toString()).to.equal(new URL('http://some.https.proxy.com:8080').toString());
-      expect(agents.https.protocol).to.equal('https:');
-    });
-    it('should return https agent with both https_proxy and http_proxy env vars set', () => {
-      const envEntries = [
-        ['https_proxy', 'https://some.https.proxy.com:8080'],
-        ['http_proxy', 'http://some.other.http.proxy.com:8080'],
-      ];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns('');
-      const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
-      const proxy = agents.https.proxy;
-      expect(proxy.toString()).to.equal(new URL('https://some.https.proxy.com:8080').toString());
-      expect(agents.https.protocol).to.equal('https:');
-    });
-    it('should return http agent https_proxy env var is set with target protocol http', () => {
-      const envEntries = [['https_proxy', 'https://some.https.proxy.com:8080']];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns('');
-      const agents = packAndSignApi.getAgentForUri('http://somewhere.com');
-      const proxy = agents.https.proxy;
-      expect(proxy.toString()).to.equal(new URL('https://some.https.proxy.com:8080').toString());
-      expect(agents.https.protocol).to.equal('http:');
-    });
-    it('should return http agent http_proxy env var is set with target protocol http', () => {
-      const envEntries = [['http_proxy', 'http://some.http.proxy.com:8080']];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns(envEntries[0][1]);
-      const agents = packAndSignApi.getAgentForUri('http://somewhere.com');
-      const proxy = agents.https.proxy;
-      expect(proxy.toString()).to.equal(new URL('http://some.http.proxy.com:8080').toString());
-      expect(agents.https.protocol).to.equal('http:');
-    });
-    it('should throw if https_proxy and HTTPS_PROXY are set with different urls', () => {
-      const envEntries = [
-        ['HTTPS_PROXY', 'https://some.https.proxy.com:8080'],
-        ['https_proxy', 'https://some.other.https.proxy.com:8080'],
-      ];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns(envEntries[0][1]);
-      expect(() => packAndSignApi.getAgentForUri('http://somewhere.com')).to.throw(Error);
-    });
-    it('should throw if http_proxy and HTTP_PROXY are set with different urls', () => {
-      const envEntries = [
-        ['HTTP_PROXY', 'http://some.https.proxy.com:8080'],
-        ['http_proxy', 'http://some.other.https.proxy.com:8080'],
-      ];
-      stubMethod($$.SANDBOX, env, 'entries').returns(envEntries);
-      stubMethod($$.SANDBOX, env, 'getString').returns(envEntries[0][1]);
-      expect(() => packAndSignApi.getAgentForUri('http://somewhere.com')).to.throw(Error);
+      expect(agents).to.be.ok;
     });
   });
 });

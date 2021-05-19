@@ -14,15 +14,13 @@ import { basename, join as pathJoin } from 'path';
 import { sep as pathSep } from 'path';
 import { Readable } from 'stream';
 import { copyFile, createReadStream } from 'fs';
-import { URL } from 'url';
 import { Agent } from 'https';
 import got, { Agents, RequestError } from 'got';
 import { UX } from '@salesforce/command';
 import { fs, Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
-import { env } from '@salesforce/kit';
+import * as ProxyAgent from 'proxy-agent';
 
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import {
   CodeSignInfo,
   CodeVerifierInfo,
@@ -179,7 +177,7 @@ export const api = {
       return resolve(
         (async (): Promise<boolean> => {
           try {
-            const agent = api.getAgentForUri(publicKeyUrl);
+            const agent = api.getAgentForUri();
             const response = await got.get(publicKeyUrl, { agent });
             if (response && response.statusCode === 200) {
               verifyInfo.publicKeyStream = Readable.from([response.body]);
@@ -460,75 +458,9 @@ export const api = {
       }
     }
   },
-  /**
-   * getAgentForUrl examines the current environment variables to determine if the user
-   * has set any of the well known http/https proxy URL variables:
-   * https_proxy
-   * HTTPS_PROXY
-   * http_proxy
-   * HTTP_PROXY
-   * no_proxy
-   * NO_PROXY
-   * The goal is to produce an instance of either http.Agent or https.Agent based on
-   * the supplied url and the values found from env vars.
-   * Deference is given to https* settings before http*
-   * The function will not produce an agent if any of the following is true
-   * - the host of the target url is present in the no_proxy env var
-   * - user has not set any of the well known proxy env vars
-   * The function will throw an error if two separate env vars have distinct
-   * urls, i.e. https_proxy=https://some.proxy.server.com and
-   * HTTPS_PROXY=https://some.other.proxy.server.com since the function can
-   * not mitigate the ambiguity.
-   *
-   * @param url
-   */
-  getAgentForUri(url: string): false | Agents {
-    const targetUrl = new URL(url);
-    const protocol = targetUrl.protocol;
-    // is target domain covered by no_proxy
-    const noProxy = env.getString('no_proxy', env.getString('NO_PROXY', ''));
-    if (noProxy.includes(targetUrl.host)) {
-      return false;
-    }
-    // https proxy settings can point to an http proxy url
-    const envEntries = env.entries();
-    const httpsProxyVars = envEntries
-      .filter(([k, v]) => /https_?proxy/.test(k.toLowerCase()) && /^https?:\/\//.test(v))
-      .reduce((a, [, v]) => {
-        a.add(v);
-        return a;
-      }, new Set());
-    const httpProxyVars = envEntries
-      .filter(([k, v]) => /http_?proxy/.test(k.toLowerCase()) && /^http:\/\//.test(v))
-      .reduce((a, [, v]) => {
-        a.add(v);
-        return a;
-      }, new Set());
-    if (httpsProxyVars.size > 1 || httpProxyVars.size > 1) {
-      throw new Error('found more than one proxy env var with different values');
-    }
-    const proxy = [...httpsProxyVars].find((v) => v) || [...httpProxyVars].find((v) => v);
-    if (!proxy) {
-      return false;
-    }
-    const agents = {} as Agents;
-    const agent = (protocol === 'https:'
-      ? new HttpsProxyAgent({
-          keepAlive: false,
-          maxSockets: 10,
-          maxFreeSockets: 10,
-          scheduling: 'lifo',
-          proxy: proxy as string,
-        })
-      : new HttpProxyAgent({
-          keepAlive: false,
-          maxSockets: 10,
-          maxFreeSockets: 10,
-          scheduling: 'lifo',
-          proxy: proxy as string,
-        })) as Agent;
-    agents.https = agent;
-    agents.http = agent;
-    return agents;
+
+  getAgentForUri(): false | Agents {
+    const agent = ProxyAgent() as Agent;
+    return { https: agent, http: agent };
   },
 };
