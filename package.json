@@ -22,7 +22,6 @@
     "fast-glob": "^3.2.5",
     "glob": "^7.1.6",
     "got": "^11.8.0",
-    "hpagent": "^0.1.1",
     "netmask": "^2.0.2",
     "proxy-agent": "^4.0.1",
     "shelljs": "^0.8.4",
