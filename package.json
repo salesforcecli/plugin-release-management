@@ -123,6 +123,9 @@
           },
           "package": {
             "description": "work with npm projects"
+          },
+          "release": {
+            "description": "validate npm releases"
           }
         }
       },

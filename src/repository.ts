@@ -7,7 +7,6 @@
 
 import * as path from 'path';
 import * as os from 'os';
-import { Readable } from 'stream';
 import * as glob from 'glob';
 import { pwd } from 'shelljs';
 import { AnyJson, ensureString, getString } from '@salesforce/ts-types';
@@ -15,14 +14,13 @@ import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
-import { Nullable, isString } from '@salesforce/ts-types';
+import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
-import * as conventionalCommitsParser from 'conventional-commits-parser';
-import * as conventionalChangelogPresetLoader from 'conventional-changelog-preset-loader';
 import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
 import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
 import { Registry } from './registry';
+import { inspectCommits } from './inspectCommits';
 
 export type LernaJson = {
   packages?: string[];
@@ -47,12 +45,6 @@ interface VersionsByPackage {
     currentVersion: string;
     nextVersion: string;
   };
-}
-
-interface Commit {
-  type: Nullable<string>;
-  header: Nullable<string>;
-  body: Nullable<string>;
 }
 
 type PollFunction = () => boolean;
@@ -235,46 +227,8 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
    * the commits to see if any of them indicate that a new release should be published.
    */
   protected async isReleasable(pkg: Package, lerna = false): Promise<boolean> {
-    // Return true if the version bump is hardcoded in the package.json
-    // In this scenario, we want to publish regardless of the commit types
-    if (pkg.nextVersionIsHardcoded()) return true;
-
-    const skippableCommitTypes = ['chore', 'style', 'docs', 'ci', 'test'];
-
-    // find the latest git tag so that we can get all the commits that have happened since
-    const tags = this.execCommand('git fetch --tags && git tag', true).stdout.split(os.EOL);
-    const latestTag = lerna
-      ? tags.find((tag) => tag.includes(`${pkg.name}@${pkg.npmPackage.version}`)) || ''
-      : tags.find((tag) => tag.includes(pkg.npmPackage.version));
-
-    // import the default commit parser configuration
-    const defaultConfigPath = require.resolve('conventional-changelog-conventionalcommits');
-    const configuration = await conventionalChangelogPresetLoader({ name: defaultConfigPath });
-
-    const commits: Commit[] = await new Promise((resolve) => {
-      const DELIMITER = 'SPLIT';
-      const gitLogCommand = lerna
-        ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges -- ${pkg.location}`
-        : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges`;
-      const gitLog = this.execCommand(gitLogCommand, true)
-        .stdout.split(`${DELIMITER}${os.EOL}`)
-        .filter((c) => !!c);
-      const readable = Readable.from(gitLog);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore because the type exported from conventionalCommitsParser is wrong
-      const parser = readable.pipe(conventionalCommitsParser(configuration.parserOpts));
-      const allCommits: Commit[] = [];
-      parser.on('data', (commit: Commit) => allCommits.push(commit));
-      parser.on('finish', () => resolve(allCommits));
-    });
-
-    const commitsThatWarrantRelease = commits.filter((commit) => {
-      const headerIndicatesMajorChange = !!commit.header && commit.header.includes('!');
-      const bodyIndicatesMajorChange = !!commit.body && commit.body.includes('BREAKING');
-      const typeIsSkippable = skippableCommitTypes.includes(commit.type);
-      return !typeIsSkippable || bodyIndicatesMajorChange || headerIndicatesMajorChange;
-    });
-    return commitsThatWarrantRelease.length > 0;
+    const commitInspection = await inspectCommits(pkg, lerna);
+    return commitInspection.shouldRelease;
   }
 
   public abstract getSuccessMessage(): string;
@@ -296,6 +250,28 @@ export class LernaRepo extends Repository {
 
   public constructor(options: RepositoryOptions) {
     super(options);
+  }
+
+  public static async getPackages(): Promise<Package[]> {
+    const pkgPaths = await LernaRepo.getPackagePaths();
+    const packages: Package[] = [];
+    for (const pkgPath of pkgPaths) {
+      packages.push(await Package.create(pkgPath));
+    }
+    return packages;
+  }
+
+  public static async getPackagePaths(): Promise<string[]> {
+    const workingDir = pwd().stdout;
+    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
+    // https://github.com/lerna/lerna#lernajson
+    // "By default, lerna initializes the packages list as ["packages/*"]"
+    const packageGlobs = lernaJson.packages || ['*'];
+    const packages = packageGlobs
+      .map((pGlob) => glob.sync(pGlob))
+      .reduce((x, y) => x.concat(y), [])
+      .map((pkg) => path.join(workingDir, pkg));
+    return packages;
   }
 
   public validate(): VersionValidation[] {
@@ -366,18 +342,9 @@ export class LernaRepo extends Repository {
     return `${header}${os.EOL}${successes}`;
   }
 
-  public async getPackages(): Promise<Package[]> {
-    const pkgPaths = await this.getPackagePaths();
-    const packages: Package[] = [];
-    for (const pkgPath of pkgPaths) {
-      packages.push(await Package.create(pkgPath));
-    }
-    return packages;
-  }
-
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
-    const pkgPaths = await this.getPackagePaths();
+    const pkgPaths = await LernaRepo.getPackagePaths();
     const nextVersions = this.determineNextVersionByPackage();
     if (!isEmpty(nextVersions)) {
       for (const pkgPath of pkgPaths) {
@@ -390,19 +357,6 @@ export class LernaRepo extends Repository {
         }
       }
     }
-  }
-
-  private async getPackagePaths(): Promise<string[]> {
-    const workingDir = pwd().stdout;
-    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
-    // https://github.com/lerna/lerna#lernajson
-    // "By default, lerna initializes the packages list as ["packages/*"]"
-    const packageGlobs = lernaJson.packages || ['packages/*'];
-    const packages = packageGlobs
-      .map((pGlob) => glob.sync(pGlob))
-      .reduce((x, y) => x.concat(y), [])
-      .map((pkg) => path.join(workingDir, pkg));
-    return packages;
   }
 
   private determineNextVersionByPackage(): VersionsByPackage {
@@ -502,9 +456,8 @@ export class SinglePackageRepo extends Repository {
   }
 
   protected async init(): Promise<void> {
-    const packagePath = pwd().stdout;
     this.logger = await Logger.child(this.constructor.name);
-    this.package = await Package.create(packagePath);
+    this.package = await Package.create();
     this.shouldBePublished = await this.isReleasable(this.package);
     this.nextVersion = this.determineNextVersion();
     this.package.setNextVersion(this.nextVersion);

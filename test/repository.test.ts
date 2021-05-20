@@ -7,6 +7,7 @@
 
 import * as os from 'os';
 import * as path from 'path';
+import * as shelljs from 'shelljs';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
@@ -66,10 +67,13 @@ describe('SinglePackageRepo', () => {
 
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand')
         .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0')
-        .withArgs(sinon.match('git tag'), true)
+        .returns('1.0.0 to 1.1.0');
+      stubMethod($$.SANDBOX, shelljs, 'exec')
+        .withArgs(sinon.match('npm config'))
+        .returns({ stdout: 'https://registry.npmjs.org/' })
+        .withArgs(sinon.match('git tag'), { silent: true })
         .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), true)
+        .withArgs(sinon.match('git log'), { silent: true })
         .returns({ stdout: buildCommitLog('feat!', 'chore') });
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
@@ -82,10 +86,13 @@ describe('SinglePackageRepo', () => {
 
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand')
         .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0')
-        .withArgs(sinon.match('git tag'), true)
+        .returns('1.0.0 to 1.1.0');
+      stubMethod($$.SANDBOX, shelljs, 'exec')
+        .withArgs(sinon.match('npm config'))
+        .returns({ stdout: 'https://registry.npmjs.org/' })
+        .withArgs(sinon.match('git tag'), { silent: true })
         .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), true)
+        .withArgs(sinon.match('git log'), { silent: true })
         .returns({ stdout: buildCommitLog('feat', 'chore') });
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
@@ -98,10 +105,13 @@ describe('SinglePackageRepo', () => {
 
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand')
         .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0')
-        .withArgs(sinon.match('git tag'), true)
+        .returns('1.0.0 to 1.1.0');
+      stubMethod($$.SANDBOX, shelljs, 'exec')
+        .withArgs(sinon.match('npm config'))
+        .returns({ stdout: 'https://registry.npmjs.org/' })
+        .withArgs(sinon.match('git tag'), { silent: true })
         .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), true)
+        .withArgs(sinon.match('git log'), { silent: true })
         .returns({ stdout: buildCommitLog('fix', 'chore') });
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.true;
@@ -114,10 +124,13 @@ describe('SinglePackageRepo', () => {
 
       stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand')
         .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0')
-        .withArgs(sinon.match('git tag'), true)
+        .returns('1.0.0 to 1.1.0');
+      stubMethod($$.SANDBOX, shelljs, 'exec')
+        .withArgs(sinon.match('npm config'))
+        .returns({ stdout: 'https://registry.npmjs.org/' })
+        .withArgs(sinon.match('git tag'), { silent: true })
         .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), true)
+        .withArgs(sinon.match('git log'), { silent: true })
         .returns({ stdout: buildCommitLog('chore', 'docs', 'style', 'test', 'ci') });
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       expect(repo.shouldBePublished).to.be.false;
@@ -374,9 +387,7 @@ describe('LernaRepo', () => {
     // if this stub doesn't exist, the test will revert all of your unstaged changes
     stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);
     revertAllChangesStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertAllChanges').returns(null);
-    stubMethod($$.SANDBOX, LernaRepo.prototype, 'getPackagePaths').returns(
-      Promise.resolve([path.join('packages', 'my-plugin')])
-    );
+    stubMethod($$.SANDBOX, LernaRepo, 'getPackagePaths').returns(Promise.resolve([path.join('packages', 'my-plugin')]));
     stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
       name: pkgName,
       version: '1.0.0',

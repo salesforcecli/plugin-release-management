@@ -36,7 +36,7 @@ describe('Package', () => {
         name: pkgName,
         version: '1.0.0',
       });
-      expect(readStub.firstCall.calledWith('package.json')).be.true;
+      expect(readStub.firstCall.firstArg.endsWith('package.json')).be.true;
     });
 
     it('should read the package.json in the package location', async () => {
