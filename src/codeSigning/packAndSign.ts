@@ -12,12 +12,18 @@ import { exec } from 'child_process';
 import { EOL } from 'os';
 import { basename, join as pathJoin } from 'path';
 import { sep as pathSep } from 'path';
+// import { URL } from 'url';
 import { Readable } from 'stream';
 import { copyFile, createReadStream } from 'fs';
-import * as https from 'https';
+import { Agent } from 'https';
+import got, { Agents, RequestError } from 'got';
 import { UX } from '@salesforce/command';
 import { fs, Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
+import * as ProxyAgent from 'proxy-agent';
+import { getProxyForUrl } from 'proxy-from-env';
+
+// import { AgentOptions } from 'agent-base';
 import {
   CodeSignInfo,
   CodeVerifierInfo,
@@ -166,35 +172,36 @@ export const api = {
    * @param publicKeyUrl - url for the public key
    */
   verify(tarGzStream: Readable, sigFilenameStream: Readable, publicKeyUrl: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve) => {
       const verifyInfo = new CodeVerifierInfo();
       verifyInfo.dataToVerify = tarGzStream;
       verifyInfo.signatureStream = sigFilenameStream;
 
-      const req = https.get(publicKeyUrl, { agent: false });
-
-      req.on('response', (response) => {
-        if (response && response.statusCode === 200) {
-          verifyInfo.publicKeyStream = response;
-          return resolve(verify(verifyInfo));
-        } else {
-          const statusCode: number = response.statusCode;
-          return reject(
-            new NamedError(
-              'RetrievePublicKeyFailed',
-              `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
-            )
-          );
-        }
-      });
-
-      req.on('error', (err: Error) => {
-        if (err && err['code'] === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
-          reject(new SignSignedCertError());
-        } else {
-          reject(err);
-        }
-      });
+      return resolve(
+        (async (): Promise<boolean> => {
+          try {
+            const agent = api.getAgentForUri(publicKeyUrl);
+            const response = await got.get(publicKeyUrl, { agent });
+            if (response && response.statusCode === 200) {
+              verifyInfo.publicKeyStream = Readable.from([response.body]);
+              return await verify(verifyInfo);
+            } else {
+              const statusCode: number = response.statusCode;
+              throw new NamedError(
+                'RetrievePublicKeyFailed',
+                `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
+              );
+            }
+          } catch (err) {
+            const error = err as RequestError;
+            if (error && error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
+              throw new SignSignedCertError();
+            } else {
+              throw err;
+            }
+          }
+        })()
+      );
     });
   },
 
@@ -453,5 +460,12 @@ export const api = {
         await fs.unlink(pathGetter.packageJsonBak);
       }
     }
+  },
+
+  getAgentForUri(url: string): false | Agents {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const proxyUrl: string = getProxyForUrl(url) as string;
+    const agent = ProxyAgent(proxyUrl) as Agent;
+    return { https: agent, http: agent };
   },
 };

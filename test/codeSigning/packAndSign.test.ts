@@ -10,29 +10,24 @@
 /* eslint-disable camelcase */
 
 import child_process = require('child_process');
-import * as events from 'events';
 import { EOL } from 'os';
 import { join } from 'path';
 import { Readable } from 'stream';
 import * as fs from 'fs';
-import * as https from 'https';
 import { core, UX } from '@salesforce/command';
 import { fs as fscore } from '@salesforce/core';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';
+import got from 'got';
 import { SigningResponse } from '../../src/codeSigning/packAndSign';
 import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert';
 
 const $$ = testSetup();
 
 const _getCertResponse = (path: string, e?: Error, statusCode?: number) => {
-  const response = new Readable({
-    read() {
-      this.push(CERTIFICATE);
-      this.push(null);
-    },
-  });
+  const response = {};
+  (response as any).body = CERTIFICATE;
 
   if (statusCode) {
     (response as any).statusCode = statusCode;
@@ -40,17 +35,10 @@ const _getCertResponse = (path: string, e?: Error, statusCode?: number) => {
     (response as any).statusCode = 200;
   }
 
-  const requestEmitter = new events.EventEmitter();
-
-  process.nextTick(() => {
-    if (e) {
-      requestEmitter.emit('error', e);
-    } else {
-      requestEmitter.emit('response', response);
-    }
-  });
-
-  return requestEmitter;
+  if (e) {
+    throw e;
+  }
+  return response;
 };
 
 let packAndSignApi: any;
@@ -60,6 +48,10 @@ const REJECT_ERROR = new Error('Should have been rejected');
 describe('doPackAndSign', () => {
   before(() => {
     let signature: string;
+
+    stubMethod($$.SANDBOX, got, 'get').callsFake(async (path: string) => {
+      return _getCertResponse(path);
+    });
 
     $$.SANDBOX.stub(console, 'log');
     $$.SANDBOX.stub(console, 'info');
@@ -103,10 +95,6 @@ describe('doPackAndSign', () => {
 
     stubMethod($$.SANDBOX, child_process, 'exec').callsFake((command, opts, cb) => {
       cb(null, `foo.tgz${EOL}`);
-    });
-
-    stubMethod($$.SANDBOX, https, 'get').callsFake((path: any) => {
-      return _getCertResponse(path);
     });
 
     packAndSignApi = require('../../src/codeSigning/packAndSign').api;
@@ -223,7 +211,7 @@ describe('packAndSign Tests', () => {
   describe('verify', () => {
     it('verify flow - false', () => {
       let url: string;
-      stubMethod($$.SANDBOX, https, 'get').callsFake((_url: string) => {
+      stubMethod($$.SANDBOX, got, 'get').callsFake(async (_url: string) => {
         url = _url;
         return _getCertResponse(_url);
       });
@@ -246,14 +234,14 @@ describe('packAndSign Tests', () => {
         packAndSignApi = require('../../src/codeSigning/packAndSign').api;
       }
 
-      return packAndSignApi.verify(tarGz, signature, 'baz').then((authentic: boolean) => {
+      return packAndSignApi.verify(tarGz, signature, 'https://baz').then((authentic: boolean) => {
         expect(authentic).to.be.equal(false);
-        expect(url).to.be.equal('baz');
+        expect(url).to.be.equal('https://baz');
       });
     });
 
     it('verify flow - self signed', () => {
-      stubMethod($$.SANDBOX, https, 'get').callsFake((_url: string) => {
+      stubMethod($$.SANDBOX, got, 'get').callsFake(async (_url: string) => {
         const e: any = new Error();
         e.code = 'DEPTH_ZERO_SELF_SIGNED_CERT';
         return _getCertResponse(_url, e);
@@ -278,7 +266,7 @@ describe('packAndSign Tests', () => {
       }
 
       return packAndSignApi
-        .verify(tarGz, signature, 'baz')
+        .verify(tarGz, signature, 'https://baz.com')
         .then(() => {
           throw new Error('This should never happen');
         })
@@ -288,7 +276,7 @@ describe('packAndSign Tests', () => {
     });
 
     it('verify flow - http 500', () => {
-      stubMethod($$.SANDBOX, https, 'get').callsFake((_url: string) => {
+      stubMethod($$.SANDBOX, got, 'get').callsFake((_url: string) => {
         return _getCertResponse(_url, undefined, 500);
       });
 
@@ -311,7 +299,7 @@ describe('packAndSign Tests', () => {
       }
 
       return packAndSignApi
-        .verify(tarGz, signature, 'baz')
+        .verify(tarGz, signature, 'https://baz')
         .then(() => {
           throw new Error('This should never happen');
         })
@@ -339,6 +327,14 @@ describe('packAndSign Tests', () => {
     });
     it('has expected patterns', () => {
       expect(packAndSignApi.validateNpmIgnorePatterns('*.tgz*.sigpackage.json.bak')).to.be.equal(undefined);
+    });
+  });
+
+  // minimal test since the function getAgentForUrl delegates to proxy-agent module
+  describe('getAgentForUri', () => {
+    it('should always return an agent', () => {
+      const agents = packAndSignApi.getAgentForUri('https://somewhere.com');
+      expect(agents).to.be.ok;
     });
   });
 });

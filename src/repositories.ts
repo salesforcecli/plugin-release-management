@@ -6,6 +6,7 @@
  */
 
 import got from 'got';
+import { api } from './codeSigning/packAndSign';
 
 const KNOWN_REPOSITORIES_URL = 'https://raw.githubusercontent.com/salesforcecli/status/main/repositories.json';
 const PACKAGE_REGISTRY_BASE_URL = 'https://www.npmjs.com/package';
@@ -33,7 +34,8 @@ export type RepositoryInfo = {
  * Get a list of known tooling repositories that include Salesforce CLI plugins, libraries, and orbs.
  */
 export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => {
-  const response = await got.get(KNOWN_REPOSITORIES_URL);
+  const agent = api.getAgentForUri(KNOWN_REPOSITORIES_URL);
+  const response = await got.get(KNOWN_REPOSITORIES_URL, { agent });
   const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
 
   return repositories.map((repository) => {
