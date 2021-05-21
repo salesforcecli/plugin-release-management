@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
-import { exec } from 'shelljs';
+import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable } from '@salesforce/kit';
 import { AnyJson, get } from '@salesforce/ts-types';
@@ -57,9 +57,9 @@ export class Package extends AsyncOptionalCreatable {
   private nextVersion: string;
   private registry: Registry;
 
-  public constructor(location?: string) {
+  public constructor(location: string) {
     super();
-    this.location = location;
+    this.location = location || pwd().stdout;
     this.registry = new Registry();
   }
 
