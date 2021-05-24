@@ -35,6 +35,11 @@
     "flags": ["dryrun", "install", "json", "loglevel", "npmaccess", "npmtag", "prerelease", "sign"]
   },
   {
+    "command": "npm:release:validate",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "loglevel", "verbose"]
+  },
+  {
     "command": "repositories",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["columns", "csv", "extended", "filter", "json", "loglevel", "no-header", "no-truncate", "output", "sort"]

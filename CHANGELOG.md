@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.0...v1.10.1) (2021-05-24)
+
+
+### Bug Fixes
+
+* add proxy support for got ([eb96775](https://github.com/salesforcecli/plugin-release-management/commit/eb96775d9b562cb67ec9a7eb9ab8c63b475e03f7))
+
+## [1.10.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.9.4...v1.10.0) (2021-05-20)
+
+
+### Features
+
+* add npm:release:validate command ([#122](https://github.com/salesforcecli/plugin-release-management/issues/122)) ([418ca2e](https://github.com/salesforcecli/plugin-release-management/commit/418ca2ec3b9f2e9749448d8f9938bd390b52998c))
+
 ### [1.9.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.9.3...v1.9.4) (2021-05-12)
 
 

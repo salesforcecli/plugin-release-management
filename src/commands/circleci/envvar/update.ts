@@ -103,8 +103,11 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
     if (!this.flags.dryrun) {
       try {
         // First remove the old envvar
-        await got.delete(`${envvarUrl}/${name}`, { headers: this.headers });
+        const url = `${envvarUrl}/${name}`;
+        let agent = api.getAgentForUri(url);
+        await got.delete(url, { headers: this.headers, agent });
 
+        agent = api.getAgentForUri(`${envvarUrl}`);
         await got.post(`${envvarUrl}`, {
           headers: this.headers,
           json: { name, value },
