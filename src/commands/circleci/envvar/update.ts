@@ -12,6 +12,7 @@ import { Dictionary } from '@salesforce/ts-types';
 import got from 'got';
 import { yellow } from 'chalk';
 import { CircleCiEnvvars, EnvvarModificationStatus } from '../../../circleCiEnvvars';
+import { api } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'circleci');
@@ -111,6 +112,7 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
         await got.post(`${envvarUrl}`, {
           headers: this.headers,
           json: { name, value },
+          agent,
         });
       } catch (err) {
         const error = err as SfdxError;
