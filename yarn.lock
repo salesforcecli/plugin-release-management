@@ -523,10 +523,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^0.0.25":
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.25.tgz#b8d295c0f0e35746a594e51b0077b745e32b914f"
-  integrity sha512-a9PJ0ceOmrh36T64M6ceHqui5UxfHwKeptTyCpUYntr9U9VdiQcMvzfDpf7gm+2C9rcCi7QXDjcguSG4nfzYZA==
+"@salesforce/cli-plugins-testkit@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.1.2.tgz#0e45c75024a100358e229a5096ba8a97cb0cccf6"
+  integrity sha512-MA02kz4ZFS2srewhk1pvFgxKtC1OrCAXvHegtJ1wO+QISwLv1ioo4KrE5zbxTYY5MeebCMQOnhwi/zQxSX/yzw==
   dependencies:
     "@salesforce/core" "^2.20.3"
     "@salesforce/kit" "^1.4.5"
@@ -660,14 +660,7 @@
     sinon "5.1.1"
     tslib "^1.10.0"
 
-"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.3", "@salesforce/ts-types@^1.5.5":
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.5.tgz#cf6d0fe12a8ba48d79b57f63c54b5592c312e0ba"
-  integrity sha512-d4YdsA3MBTJcC6ZdqHe2+yv7MWKsoYmgjTlc56SOy8sROrQ9RjJYaUnj1h1Zi1aWGgkGaNCCAOBomcrhMa4crw==
-  dependencies:
-    tslib "^1.10.0"
-
-"@salesforce/ts-types@^1.5.12":
+"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.3", "@salesforce/ts-types@^1.5.12", "@salesforce/ts-types@^1.5.5":
   version "1.5.12"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.12.tgz#cf6ef6252e7893f624254ee4c141244f1a0d8875"
   integrity sha512-sGEPHFGzslctS0NgdUMDMpZ+ht6XmwcrxUUrUIxnBBmeEz/B80sa5GMP67cZnfVQVBlhqR8fQQRnE1pU3mUoeQ==
