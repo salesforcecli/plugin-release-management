@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.1...v1.10.2) (2021-05-25)
+
+
+### Bug Fixes
+
+* do not use release-as during prerelease ([#148](https://github.com/salesforcecli/plugin-release-management/issues/148)) ([1597c5c](https://github.com/salesforcecli/plugin-release-management/commit/1597c5cf5ab34085da315b1ba15934e5613e81b6))
+
 ### [1.10.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.0...v1.10.1) (2021-05-24)
 
 
