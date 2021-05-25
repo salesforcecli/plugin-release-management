@@ -419,8 +419,12 @@ export class SinglePackageRepo extends Repository {
     let cmd =
       'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
     if (dryrun) cmd += ' --dry-run';
-    cmd += ` --release-as ${this.nextVersion}`;
-    if (useprerelease) cmd += ` --prelease ${useprerelease}`;
+
+    if (useprerelease) {
+      cmd += ` --prelease ${useprerelease}`;
+    } else {
+      cmd += ` --release-as ${this.nextVersion}`;
+    }
     this.execCommand(cmd);
   }
 
