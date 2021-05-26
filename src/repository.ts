@@ -409,7 +409,6 @@ export class SinglePackageRepo extends Repository {
 
   public prepare(opts: PrepareOpts = {}): void {
     const { dryrun } = opts;
-    const { useprerelease } = this.options;
 
     if (this.package.hasScript('version')) {
       this.run('version');
@@ -420,11 +419,7 @@ export class SinglePackageRepo extends Repository {
       'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
     if (dryrun) cmd += ' --dry-run';
 
-    if (useprerelease) {
-      cmd += ` --prelease ${useprerelease}`;
-    } else {
-      cmd += ` --release-as ${this.nextVersion}`;
-    }
+    cmd += ` --release-as ${this.nextVersion}`;
     this.execCommand(cmd);
   }
 
