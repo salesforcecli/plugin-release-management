@@ -523,10 +523,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^0.0.25":
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.25.tgz#b8d295c0f0e35746a594e51b0077b745e32b914f"
-  integrity sha512-a9PJ0ceOmrh36T64M6ceHqui5UxfHwKeptTyCpUYntr9U9VdiQcMvzfDpf7gm+2C9rcCi7QXDjcguSG4nfzYZA==
+"@salesforce/cli-plugins-testkit@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.1.5.tgz#d4ff270e3dce6bc9b2abdb9fbd7c315a24be541c"
+  integrity sha512-FgUsyQlP6y8sqBD6k7loj1i+xbuKlRI6LDKU7R1YCdRH5rSRJejrO3jheaasLeT3uoWerAyqrfmvQTV/GlDywQ==
   dependencies:
     "@salesforce/core" "^2.20.3"
     "@salesforce/kit" "^1.4.5"
@@ -535,7 +535,7 @@
     debug "^4.3.1"
     shelljs "^0.8.4"
     sinon "^10.0.0"
-    strip-ansi "^6.0.0"
+    strip-ansi "6.0.0"
 
 "@salesforce/command@^3.0.0", "@salesforce/command@^3.0.5":
   version "3.1.0"
@@ -660,14 +660,7 @@
     sinon "5.1.1"
     tslib "^1.10.0"
 
-"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.3", "@salesforce/ts-types@^1.5.5":
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.5.tgz#cf6d0fe12a8ba48d79b57f63c54b5592c312e0ba"
-  integrity sha512-d4YdsA3MBTJcC6ZdqHe2+yv7MWKsoYmgjTlc56SOy8sROrQ9RjJYaUnj1h1Zi1aWGgkGaNCCAOBomcrhMa4crw==
-  dependencies:
-    tslib "^1.10.0"
-
-"@salesforce/ts-types@^1.5.12":
+"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.3", "@salesforce/ts-types@^1.5.12", "@salesforce/ts-types@^1.5.5":
   version "1.5.12"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.12.tgz#cf6ef6252e7893f624254ee4c141244f1a0d8875"
   integrity sha512-sGEPHFGzslctS0NgdUMDMpZ+ht6XmwcrxUUrUIxnBBmeEz/B80sa5GMP67cZnfVQVBlhqR8fQQRnE1pU3mUoeQ==
@@ -6735,6 +6728,13 @@ stringify-package@^1.0.1:
   resolved "https://registry.npmjs.org/stringify-package/-/stringify-package-1.0.1.tgz#e5aa3643e7f74d0f28628b72f3dad5cecfc3ba85"
   integrity sha512-sa4DUQsYciMP1xhKWGuFM04fB0LG/9DlluZoSVywUMRNvzid6XucHK0/90xGxRoHrAaROrcHK1aPKaijCtSrhg==
 
+strip-ansi@6.0.0, strip-ansi@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.0.tgz#0b1571dd7669ccd4f3e06e14ef1eed26225ae532"
+  integrity sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
+  dependencies:
+    ansi-regex "^5.0.0"
+
 strip-ansi@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
@@ -6748,13 +6748,6 @@ strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
-
-strip-ansi@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.0.tgz#0b1571dd7669ccd4f3e06e14ef1eed26225ae532"
-  integrity sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
-  dependencies:
-    ansi-regex "^5.0.0"
 
 strip-bom@4.0.0, strip-bom@^4.0.0:
   version "4.0.0"
