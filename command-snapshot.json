@@ -1,57 +1,147 @@
 [
-  {
-    "command": "circleci",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["contains-package-type", "json", "loglevel"]
-  },
-  {
-    "command": "circleci:envvar:update",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "envvar", "json", "loglevel", "slug"]
-  },
-  {
-    "command": "cli:versions:inspect",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["channels", "dependencies", "json", "locations", "loglevel", "salesforce"]
-  },
-  {
-    "command": "npm:dependencies:pin",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "json", "loglevel", "tag"]
-  },
-  {
-    "command": "npm:lerna:release",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "githubrelease", "install", "json", "loglevel", "npmaccess", "npmtag", "sign"]
-  },
-  {
-    "command": "npm:package:release",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "install", "json", "loglevel", "npmaccess", "npmtag", "prerelease", "sign"]
-  },
-  {
-    "command": "npm:release:validate",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel", "verbose"]
-  },
-  {
-    "command": "repositories",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["columns", "csv", "extended", "filter", "json", "loglevel", "no-header", "no-truncate", "output", "sort"]
-  },
-  {
-    "command": "trust:sign",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel", "privatekeypath", "publickeyurl", "signatureurl", "target", "tarpath"]
-  },
-  {
-    "command": "trust:upload",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["bucket", "json", "keyprefix", "loglevel", "signature"]
-  },
-  {
-    "command": "typescript:update",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel", "target", "version"]
-  }
+    {
+        "command": "circleci",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "contains-package-type",
+            "json",
+            "loglevel"
+        ]
+    },
+    {
+        "command": "circleci:envvar:update",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "dryrun",
+            "envvar",
+            "json",
+            "loglevel",
+            "slug"
+        ]
+    },
+    {
+        "command": "cli:versions:inspect",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "channels",
+            "dependencies",
+            "json",
+            "locations",
+            "loglevel",
+            "salesforce"
+        ]
+    },
+    {
+        "command": "dependabot:consolidate",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "base-branch",
+            "dryrun",
+            "ignore",
+            "json",
+            "loglevel",
+            "max-version-bump",
+            "no-pr",
+            "owner",
+            "repo",
+            "target-branch"
+        ]
+    },
+    {
+        "command": "npm:dependencies:pin",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "dryrun",
+            "json",
+            "loglevel",
+            "tag"
+        ]
+    },
+    {
+        "command": "npm:lerna:release",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "dryrun",
+            "githubrelease",
+            "install",
+            "json",
+            "loglevel",
+            "npmaccess",
+            "npmtag",
+            "sign"
+        ]
+    },
+    {
+        "command": "npm:package:release",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "dryrun",
+            "install",
+            "json",
+            "loglevel",
+            "npmaccess",
+            "npmtag",
+            "prerelease",
+            "sign"
+        ]
+    },
+    {
+        "command": "npm:release:validate",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "json",
+            "loglevel",
+            "verbose"
+        ]
+    },
+    {
+        "command": "repositories",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "columns",
+            "csv",
+            "extended",
+            "filter",
+            "json",
+            "loglevel",
+            "no-header",
+            "no-truncate",
+            "output",
+            "sort"
+        ]
+    },
+    {
+        "command": "trust:sign",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "json",
+            "loglevel",
+            "privatekeypath",
+            "publickeyurl",
+            "signatureurl",
+            "target",
+            "tarpath"
+        ]
+    },
+    {
+        "command": "trust:upload",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "bucket",
+            "json",
+            "keyprefix",
+            "loglevel",
+            "signature"
+        ]
+    },
+    {
+        "command": "typescript:update",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "json",
+            "loglevel",
+            "target",
+            "version"
+        ]
+    }
 ]
