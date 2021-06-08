@@ -118,6 +118,9 @@
           }
         }
       },
+      "dependabot": {
+        "description": "interact with dependabot PRs"
+      },
       "npm": {
         "description": "release npm packages",
         "subtopics": {
