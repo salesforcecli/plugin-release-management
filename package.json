@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@oclif/config": "^1",
+    "@octokit/core": "^3.4.0",
     "@salesforce/command": "^3.0.5",
     "@salesforce/core": "^2.23.2",
     "@salesforce/kit": "^1.3.3",
     "@salesforce/ts-types": "^1.4.3",
+    "@types/semver": "^7.3.6",
     "agent-base": "^6.0.2",
     "aws-sdk": "^2.920.0",
     "chalk": "^4.1.0",
@@ -25,6 +27,7 @@
     "got": "^11.8.0",
     "proxy-agent": "^4.0.1",
     "proxy-from-env": "^1.1.0",
+    "semver": "^7.3.5",
     "shelljs": "^0.8.4",
     "standard-version": "^9.0.0",
     "tslib": "^2"
@@ -119,7 +122,7 @@
         "description": "release npm packages",
         "subtopics": {
           "dependencies": {
-            "description": "pin dependenices to a specific version in package.json"
+            "description": "pin dependencies to a specific version in package.json"
           },
           "lerna": {
             "description": "work with lerna npm projects"
