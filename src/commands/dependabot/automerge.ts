@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call*/
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, camelcase*/
 
 import { SfdxCommand, FlagsConfig, flags } from '@salesforce/command';
 import { Octokit } from '@octokit/core';
@@ -19,7 +19,6 @@ interface PullRequest {
   user: {
     login: string;
   };
-  // eslint-disable-next-line camelcase
   html_url: string;
   number: number;
   head: {
@@ -58,7 +57,6 @@ export default class AutoMerge extends SfdxCommand {
 
   public async run(): Promise<void> {
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.octokit = new Octokit({ auth });
     this.baseRepoObject = {
       owner: this.flags.owner as string,
@@ -94,7 +92,6 @@ export default class AutoMerge extends SfdxCommand {
       this.ux.log('starting merge');
       const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
         ...this.baseRepoObject,
-        // eslint-disable-next-line camelcase
         pull_number: mergeablePRs[0].number,
       });
       this.ux.logJson(mergeResult);
@@ -114,7 +111,6 @@ export default class AutoMerge extends SfdxCommand {
   private async isMergeable(pr: PullRequest): Promise<PullRequest | undefined> {
     const statusResponse = await this.octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
       ...this.baseRepoObject,
-      // eslint-disable-next-line camelcase
       pull_number: pr.number,
     });
     // mergeable_state of 'blocked' is ok because that's just missing an approval
