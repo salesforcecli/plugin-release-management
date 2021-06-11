@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.3...v1.11.0) (2021-06-11)
+
+
+### Features
+
+* add command for consolidating dependabot PRs ([#170](https://github.com/salesforcecli/plugin-release-management/issues/170)) ([8464f39](https://github.com/salesforcecli/plugin-release-management/commit/8464f3980f51b8c199139a1124d1eaaf8c96cb46))
+
 ### [1.10.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.2...v1.10.3) (2021-05-26)
 
 
