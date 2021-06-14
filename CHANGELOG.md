@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.0...v1.1.0) (2021-06-14)
+
+### Features
+
+- automerge 1 PR ([f7ae153](https://github.com/salesforcecli/plugin-release-management/commit/f7ae1536d9ce10da7444706d4fd8df60e75f2c96))
+
 ## [1.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.3...v1.11.0) (2021-06-11)
 
 ### Features
