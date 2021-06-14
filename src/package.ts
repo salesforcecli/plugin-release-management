@@ -19,6 +19,7 @@ export type PackageJson = {
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
+  repository?: string;
 } & AnyJson;
 
 export type ChangedPackageVersions = Array<{
