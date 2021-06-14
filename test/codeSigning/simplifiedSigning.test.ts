@@ -6,7 +6,7 @@
  */
 import { writeFile, unlink } from 'fs/promises';
 import { expect } from 'chai';
-import { sign, BASE_URL, SECURITY_PATH } from '../../src/codeSigning/SimplifiedSigning';
+import { signVerifyUpload, BASE_URL, SECURITY_PATH } from '../../src/codeSigning/SimplifiedSigning';
 
 describe('end-to-end signing locally', () => {
   const filepath = 'filepath.tgz';
@@ -24,7 +24,22 @@ describe('end-to-end signing locally', () => {
       packageVersion: '1.0.0',
       targetFileToSign: filepath,
     };
-    const signResult = await sign(request);
+    const signResult = await signVerifyUpload(request);
+    expect(signResult).to.include.keys(['publicKeyContents', 'signatureContents']);
+    expect(signResult.packageJsonSfdxProperty).to.deep.equal({
+      publicKeyUrl: `${BASE_URL}/${SECURITY_PATH}/${request.packageName}/${request.packageVersion}.crt`,
+      signatureUrl: `${BASE_URL}/${SECURITY_PATH}/${request.packageName}/${request.packageVersion}.sig`,
+    });
+  });
+
+  it('with namespace', async () => {
+    const request = {
+      upload: false, // we don't really want to send things to AWS
+      packageName: '@salesforce/has-namespace',
+      packageVersion: '1.0.0',
+      targetFileToSign: filepath,
+    };
+    const signResult = await signVerifyUpload(request);
     expect(signResult).to.include.keys(['publicKeyContents', 'signatureContents']);
     expect(signResult.packageJsonSfdxProperty).to.deep.equal({
       publicKeyUrl: `${BASE_URL}/${SECURITY_PATH}/${request.packageName}/${request.packageVersion}.crt`,

@@ -9,7 +9,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
-import { SigningResponse } from '../../../codeSigning/packAndSign';
+import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
@@ -96,10 +96,8 @@ export default class Release extends SfdxCommand {
 
     let signature: SigningResponse;
     if (this.flags.sign && !this.flags.dryrun) {
-      pkg.printStage('Sign');
+      pkg.printStage('Sign and Upload');
       signature = await pkg.sign();
-      pkg.printStage('Upload Signature');
-      await pkg.uploadSignature(signature);
     }
 
     if (!this.flags.dryrun) {
@@ -116,7 +114,7 @@ export default class Release extends SfdxCommand {
     });
 
     if (!this.flags.dryrun) {
-      pkg.printStage('Waiting For Availablity');
+      pkg.printStage('Waiting For Availability');
       const found = await pkg.waitForAvailability();
       if (!found) {
         this.ux.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);

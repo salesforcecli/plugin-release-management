@@ -14,13 +14,11 @@ import { EOL } from 'os';
 import { join } from 'path';
 import { Readable } from 'stream';
 import * as fs from 'fs';
-import { core, UX } from '@salesforce/command';
 import { fs as fscore } from '@salesforce/core';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';
 import got from 'got';
-import { SigningResponse } from '../../src/codeSigning/packAndSign';
 import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert';
 
 const $$ = testSetup();
@@ -98,20 +96,6 @@ describe('doPackAndSign', () => {
     });
 
     packAndSignApi = require('../../src/codeSigning/packAndSign').api;
-  });
-
-  it('Steel Thread', async () => {
-    const flags = {
-      signatureurl: 'https://developer.salesforce.com/signatureUrlValue',
-      publickeyurl: 'https://developer.salesforce.com/publicKeyUrlValue',
-      privatekeypath: 'privateKeyPathUrl',
-    };
-
-    const ux: UX = new UX(await core.Logger.child('packAndSignTests'));
-    packAndSignApi.setUx(ux);
-    return packAndSignApi.doPackAndSign(flags).then((result: SigningResponse) => {
-      expect(result.verified).to.be.equal(true);
-    });
   });
 });
 

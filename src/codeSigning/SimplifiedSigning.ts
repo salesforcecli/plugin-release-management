@@ -44,7 +44,7 @@ interface KeyPair {
   privateKey: string;
 }
 
-export const sign = async (signingRequest: SigningRequest): Promise<SigningResponse> => {
+export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<SigningResponse> => {
   const { publicKey, privateKey } = await getOneTimeUseKeys();
   const { packageName, packageVersion } = signingRequest;
   const fullPathNoExtension = `${BASE_URL}/${SECURITY_PATH}/${packageName}/${packageVersion}`;
@@ -128,7 +128,7 @@ const verify = async (dataToSignFilePath: string, publicKey: string, signature: 
     const dataToVerifyStream = createReadStream(dataToSignFilePath, { encoding: 'binary' });
     dataToVerifyStream.pipe(verifier);
     dataToVerifyStream.on('end', () => {
-      if (verifier.verify(publicKey, signature)) {
+      if (verifier.verify(publicKey, signature, 'base64')) {
         return resolve(true);
       }
       return reject('The signature did not verify');

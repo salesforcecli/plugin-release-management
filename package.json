@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "1.10.3",
+  "version": "2.0.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -64,6 +64,7 @@
     "shx": "0.3.3",
     "sinon": "^11.1.1",
     "ts-node": "^8.10.2",
+    "ts-prune": "^0.9.1",
     "typescript": "^4.1.3"
   },
   "config": {
@@ -119,7 +120,7 @@
         "description": "release npm packages",
         "subtopics": {
           "dependencies": {
-            "description": "pin dependenices to a specific version in package.json"
+            "description": "pin dependencies to a specific version in package.json"
           },
           "lerna": {
             "description": "work with lerna npm projects"
@@ -131,9 +132,6 @@
             "description": "validate npm releases"
           }
         }
-      },
-      "trust": {
-        "description": "commands for signing plugins"
       },
       "typescript": {
         "description": "test updates to typescript version"

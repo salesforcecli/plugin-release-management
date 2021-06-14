@@ -8,10 +8,9 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import * as chalk from 'chalk';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, LernaRepo } from '../../../repository';
-import { SigningResponse } from '../../../codeSigning/packAndSign';
+import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.lerna.release');
@@ -104,13 +103,8 @@ export default class Release extends SfdxCommand {
 
     let signatures: SigningResponse[] = [];
     if (this.flags.sign && !this.flags.dryrun) {
-      lernaRepo.printStage('Sign');
+      lernaRepo.printStage('Sign and Upload Signatures');
       signatures = await lernaRepo.sign(this.flags.sign);
-      lernaRepo.printStage('Upload Signatures');
-      for (const signature of signatures) {
-        this.ux.log(chalk.dim(signature.name));
-        await lernaRepo.uploadSignature(signature);
-      }
     }
 
     if (!this.flags.dryrun) {
