@@ -24,6 +24,7 @@ describe('SinglePackageRepo', () => {
   let execStub: sinon.SinonStub;
 
   beforeEach(async () => {
+    // eslint-disable-next-line prettier/prettier
     uxStub = stubInterface<UX>($$.SANDBOX, {}) as unknown as UX;
   });
 
@@ -371,6 +372,7 @@ describe('LernaRepo', () => {
   let revertAllChangesStub: sinon.SinonStub;
 
   beforeEach(async () => {
+    // eslint-disable-next-line prettier/prettier
     uxStub = stubInterface<UX>($$.SANDBOX, {}) as unknown as UX;
     // if this stub doesn't exist, the test will revert all of your unstaged changes
     stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);

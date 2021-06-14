@@ -15,6 +15,22 @@
     "flags": ["channels", "dependencies", "json", "locations", "loglevel", "salesforce"]
   },
   {
+    "command": "dependabot:consolidate",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": [
+      "base-branch",
+      "dryrun",
+      "ignore",
+      "json",
+      "loglevel",
+      "max-version-bump",
+      "no-pr",
+      "owner",
+      "repo",
+      "target-branch"
+    ]
+  },
+  {
     "command": "npm:dependencies:pin",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "json", "loglevel", "tag"]
