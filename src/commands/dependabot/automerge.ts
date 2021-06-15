@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, camelcase*/
-
+import * as os from 'os';
 import { SfdxCommand, FlagsConfig, flags } from '@salesforce/command';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
@@ -13,7 +13,11 @@ import { ensureString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
 import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
+const messagesFromConsolidate = Messages.loadMessages(
+  '@salesforce/plugin-release-management',
+  'dependabot.consolidate'
+);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.automerge');
 
 interface PullRequest {
   state: string;
@@ -28,19 +32,22 @@ interface PullRequest {
   };
 }
 export default class AutoMerge extends SfdxCommand {
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+
   public static readonly flagsConfig: FlagsConfig = {
     owner: flags.string({
       char: 'o',
-      description: messages.getMessage('owner'),
+      description: messagesFromConsolidate.getMessage('owner'),
     }),
     repo: flags.string({
       char: 'r',
-      description: messages.getMessage('repo'),
+      description: messagesFromConsolidate.getMessage('repo'),
       dependsOn: ['owner'],
     }),
     'max-version-bump': maxVersionBumpFlag,
     dryrun: flags.boolean({
-      description: messages.getMessage('dryrun'),
+      description: messagesFromConsolidate.getMessage('dryrun'),
       char: 'd',
       default: false,
     }),
