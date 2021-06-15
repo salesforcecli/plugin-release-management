@@ -15,6 +15,11 @@
     "flags": ["channels", "dependencies", "json", "locations", "loglevel", "salesforce"]
   },
   {
+    "command": "dependabot:automerge",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["dryrun", "json", "loglevel", "max-version-bump", "owner", "repo"]
+  },
+  {
     "command": "dependabot:consolidate",
     "plugin": "@salesforce/plugin-release-management",
     "flags": [

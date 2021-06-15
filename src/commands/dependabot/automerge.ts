@@ -9,10 +9,12 @@
 import { SfdxCommand, FlagsConfig, flags } from '@salesforce/command';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
-import { diff, ReleaseType } from 'semver';
 import { ensureString } from '@salesforce/ts-types';
+import { Messages } from '@salesforce/core';
+import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
-export type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
+
 interface PullRequest {
   state: string;
   title: string;
@@ -29,21 +31,16 @@ export default class AutoMerge extends SfdxCommand {
   public static readonly flagsConfig: FlagsConfig = {
     owner: flags.string({
       char: 'o',
-      description: 'github username of the repo owner',
+      description: messages.getMessage('owner'),
     }),
     repo: flags.string({
       char: 'r',
-      description: 'github repo name',
+      description: messages.getMessage('repo'),
+      dependsOn: ['owner'],
     }),
-    'max-version-bump': flags.enum({
-      description: 'how big of version bumps to allow',
-      char: 'm',
-      options: ['major', 'minor', 'patch'],
-      default: 'minor',
-      required: true,
-    }),
+    'max-version-bump': maxVersionBumpFlag,
     dryrun: flags.boolean({
-      description: 'queries github to find mergeale PRs but does not merge',
+      description: messages.getMessage('dryrun'),
       char: 'd',
       default: false,
     }),
@@ -57,16 +54,21 @@ export default class AutoMerge extends SfdxCommand {
 
   public async run(): Promise<void> {
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
+    const { owner, repo } = await getOwnerAndRepo(this.flags.owner, this.flags.repo);
+
     this.octokit = new Octokit({ auth });
     this.baseRepoObject = {
-      owner: this.flags.owner as string,
-      repo: this.flags.repo as string,
+      owner,
+      repo,
     };
 
     const eligiblePRs = (
       await this.octokit.request('GET /repos/{owner}/{repo}/pulls', this.baseRepoObject)
     ).data.filter(
-      (pr) => pr.state === 'open' && pr.user.login === 'dependabot[bot]' && this.meetsVersionCriteria(pr.title)
+      (pr) =>
+        pr.state === 'open' &&
+        pr.user.login === 'dependabot[bot]' &&
+        meetsVersionCriteria(pr.title, this.flags['max-version-bump'])
     ) as PullRequest[];
 
     const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter((pr) => pr !== undefined);
@@ -113,25 +115,11 @@ export default class AutoMerge extends SfdxCommand {
       ...this.baseRepoObject,
       pull_number: pr.number,
     });
-    // mergeable_state of 'blocked' is ok because that's just missing an approval
+    // mergeable_state of 'blocked' is ok because that's just missing an approval.
+    // We're screening out 'behind' which might be merge conflicts.
+    // Dependabot should rebase this PR eventually
     if (statusResponse.data.mergeable === true && statusResponse.data.mergeable_state !== 'behind') {
       return pr;
     }
-  }
-
-  private meetsVersionCriteria(title: string): boolean {
-    const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
-    const [from, to] = title.match(versionsRegex);
-
-    const bumpType = diff(from, to);
-    const inclusionMap = {
-      major: ['major', 'minor', 'patch'] as BumpType[],
-      minor: ['minor', 'patch'] as BumpType[],
-      patch: ['patch'] as BumpType[],
-    };
-
-    const maxVersionBump = this.flags['max-version-bump'];
-    const includeBumps = inclusionMap[maxVersionBump];
-    return includeBumps.includes(bumpType) as boolean;
   }
 }
