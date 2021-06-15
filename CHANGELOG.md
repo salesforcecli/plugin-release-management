@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.0...v1.11.1) (2021-06-15)
+
+
+### Bug Fixes
+
+* add proxy support for aws upload ([#198](https://github.com/salesforcecli/plugin-release-management/issues/198)) ([9a3bbd7](https://github.com/salesforcecli/plugin-release-management/commit/9a3bbd72cd689fa660b31e6f813bedeb31779068))
+
 ## [1.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.3...v1.11.0) (2021-06-11)
 
 
