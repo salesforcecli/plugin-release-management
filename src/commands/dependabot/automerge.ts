@@ -83,13 +83,13 @@ export default class AutoMerge extends SfdxCommand {
       (pr) => pr !== undefined
     );
 
-    this.ux.log('green, mergeable PRs:');
     this.ux.table(mergeablePRs, {
       columns: [
-        { key: 'title', label: 'PR' },
+        { key: 'title', label: 'Green, Mergeable PR' },
         { key: 'html_url', label: 'Link' },
       ],
     });
+    this.ux.log('');
 
     if (mergeablePRs.length === 0) {
       this.ux.log('No PRs can be automerged');
