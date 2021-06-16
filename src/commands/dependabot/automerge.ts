@@ -106,7 +106,7 @@ export default class AutoMerge extends SfdxCommand {
       });
       this.ux.logJson(mergeResult);
     } else {
-       this.ux.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);
+      this.ux.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);
     }
   }
 
