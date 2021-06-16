@@ -116,7 +116,7 @@ export default class Release extends SfdxCommand {
     });
 
     if (!this.flags.dryrun) {
-      pkg.printStage('Waiting For Availablity');
+      pkg.printStage('Waiting For Availability');
       const found = await pkg.waitForAvailability();
       if (!found) {
         this.ux.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);

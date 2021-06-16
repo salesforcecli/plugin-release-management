@@ -5,32 +5,23 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
-import { diff, ReleaseType } from 'semver';
 import { bold, cyan, green } from 'chalk';
 import { exec } from 'shelljs';
-import { ensureString, isString } from '@salesforce/ts-types';
-import { PackageJson } from '../../package';
+import { ensureString } from '@salesforce/ts-types';
+import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
-
-export type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 
 export default class Consolidate extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flagsConfig: FlagsConfig = {
-    'max-version-bump': flags.enum({
-      description: messages.getMessage('maxVersionBump'),
-      char: 'm',
-      options: ['major', 'minor', 'patch'],
-      default: 'minor',
-      required: true,
-    }),
+    'max-version-bump': maxVersionBumpFlag,
     'base-branch': flags.string({
       description: messages.getMessage('baseBranch'),
       char: 'b',
@@ -63,26 +54,24 @@ export default class Consolidate extends SfdxCommand {
     repo: flags.string({
       description: messages.getMessage('repo'),
       char: 'r',
+      dependsOn: ['owner'],
     }),
   };
 
   public async run(): Promise<void> {
-    const { owner, repo } = await this.getOwnerAndRepo();
+    const baseRepoObject = await getOwnerAndRepo(this.flags.owner, this.flags.repo);
     const baseBranch = ensureString(this.flags['base-branch']);
     const targetBranch = ensureString(this.flags['target-branch']);
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
 
     const octokit = new Octokit({ auth });
-    const pullRequests = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
-      owner,
-      repo,
-    });
+    const pullRequests = await octokit.request('GET /repos/{owner}/{repo}/pulls', baseRepoObject);
 
     const dependabotPRs = pullRequests.data.filter(
       (d) =>
         d.state === 'open' &&
         d.user.login === 'dependabot[bot]' &&
-        this.meetsVersionCriteria(d.title) &&
+        meetsVersionCriteria(d.title, this.flags['max-version-bump']) &&
         !this.shouldBeIgnored(d.title)
     );
 
@@ -121,8 +110,7 @@ export default class Consolidate extends SfdxCommand {
         if (!this.flags['no-pr']) {
           this.exec(`git push -u origin ${targetBranch} --no-verify`);
           const response = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
-            owner,
-            repo,
+            ...baseRepoObject,
             head: targetBranch,
             base: baseBranch,
             body: prBody,
@@ -137,35 +125,6 @@ export default class Consolidate extends SfdxCommand {
         this.error(err);
       }
     }
-  }
-
-  private async getOwnerAndRepo(): Promise<{ owner: string; repo: string }> {
-    const pkgJson = (await fs.readJson('package.json')) as PackageJson;
-    if (pkgJson.repository && isString(pkgJson.repository)) {
-      const [owner, repo] = pkgJson.repository?.split('/');
-      return { owner, repo };
-    } else {
-      return {
-        owner: ensureString(this.flags.owner, 'You must specify an owner'),
-        repo: ensureString(this.flags.repo, 'You must specify a respository'),
-      };
-    }
-  }
-
-  private meetsVersionCriteria(title: string): boolean {
-    const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
-    const [from, to] = title.match(versionsRegex);
-
-    const bumpType = diff(from, to) as BumpType;
-    const inclusionMap = {
-      major: ['major', 'minor', 'patch'] as BumpType[],
-      minor: ['minor', 'patch'] as BumpType[],
-      patch: ['patch'] as BumpType[],
-    };
-
-    const maxVersionBump = this.flags['max-version-bump'] as BumpType;
-    const includeBumps = inclusionMap[maxVersionBump];
-    return includeBumps.includes(bumpType);
   }
 
   private shouldBeIgnored(title: string): boolean {
