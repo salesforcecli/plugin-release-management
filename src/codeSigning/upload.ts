@@ -10,13 +10,13 @@ import { fs } from '@salesforce/core';
 import * as AWS from 'aws-sdk';
 import { Agents } from 'got';
 import { WebIdentityCredentials } from 'aws-sdk';
-import { api } from '../codeSigning/packAndSign';
+import { api } from './packAndSign';
 import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
 export async function putObject(bucket: string, key: string, body: string): Promise<AWS.S3.PutObjectOutput> {
   return new Promise((resolve, reject) => {
     const agent = api.getAgentForUri('https://s3.amazonaws.com') as Agents;
-    const s3 = new AWS.S3({ httpsOptions: { agent: [agent.http, agent.https] } } as ClientConfiguration);
+    const s3 = new AWS.S3({ httpsOptions: { agent: agent.https } } as ClientConfiguration);
     s3.putObject({ Bucket: bucket, Key: key, Body: body }, (err, resp) => {
       if (err) reject(err);
       if (resp) resolve(resp);
