@@ -16,27 +16,35 @@ export const BASE_URL = 'https://developer.salesforce.com';
 export const SECURITY_PATH = 'media/salesforce-cli/security';
 
 interface SigningRequest {
-  targetFileToSign: string; // path to the file on local FS
-  packageName: string; // npm name, including namespace
-  packageVersion: string; // npm version
-  upload: boolean; // do you want the key/sig uploaded to AWS
+  /** path to the file on local FS */
+  targetFileToSign: string;
+  /** npm name, including namespace */
+  packageName: string;
+  /** npm version */
+  packageVersion: string;
+  /** if true, uploads the signature and key file to AWS */
+  upload: boolean;
 }
 
 export interface SigningResponse {
   publicKeyContents: string;
   signatureContents: string;
-  // matches this pattern for npm meta
-  // "sfdx": {
-  //     "publicKeyUrl": "https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt",
-  //     "signatureUrl": "https://developer.salesforce.com/media/salesforce-cli/signatures/salesforce-plugin-user-1.3.0.sig"
-  //   },
+  /**
+   * matches this pattern for npm meta
+   * "sfdx": {
+   * "publicKeyUrl": "https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt",
+   * "signatureUrl": "https://developer.salesforce.com/media/salesforce-cli/signatures/salesforce-plugin-user-1.3.0.sig"
+   * },
+   */
   packageJsonSfdxProperty: {
     publicKeyUrl: string;
     signatureUrl: string;
   };
   fileTarPath: string;
-  packageName: string; // npm name, including namespace
-  packageVersion: string; // npm version
+  /** npm name, including namespace */
+  packageName: string;
+  /** npm version, like 1.0.0 */
+  packageVersion: string;
 }
 
 interface KeyPair {
@@ -70,7 +78,9 @@ export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<
   return output;
 };
 
-// save the security items to AWS based on the generates filenames
+/**
+ * Save the security items (publicKey and .sig file) to AWS based on the generates filenames
+ */
 const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> => {
   return Promise.all([
     // signature file
