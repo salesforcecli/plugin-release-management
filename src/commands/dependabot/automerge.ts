@@ -97,19 +97,16 @@ export default class AutoMerge extends SfdxCommand {
     }
 
     const prToMerge = mergeablePRs[0];
-    this.ux.log(
-      `will merge PR ${prToMerge.number.toString()} | ${prToMerge.title} if not dryrun [${
-        this.flags.dryrun as string
-      }] is not true`
-    );
 
     if (this.flags.dryrun === false) {
-      this.ux.log('starting merge');
+      this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
       const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
         ...this.baseRepoObject,
-        pull_number: mergeablePRs[0].number,
+        pull_number: prToMerge.number,
       });
       this.ux.logJson(mergeResult);
+    } else {
+       this.ux.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);
     }
   }
 
