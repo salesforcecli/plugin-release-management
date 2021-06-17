@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.0...v1.12.1) (2021-06-17)
+
+
+### Bug Fixes
+
+* s3 does not take an array of agents ([#202](https://github.com/salesforcecli/plugin-release-management/issues/202)) ([4ac5d57](https://github.com/salesforcecli/plugin-release-management/commit/4ac5d57eb6560548a0d39a6aed1d046f07447724))
+
 ## [1.12.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.1...v1.12.0) (2021-06-16)
 
 
