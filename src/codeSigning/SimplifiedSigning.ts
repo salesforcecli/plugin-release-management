@@ -9,7 +9,7 @@ import { generateKeyPair, createSign, createVerify } from 'crypto';
 import { createReadStream } from 'fs';
 import { S3 } from 'aws-sdk';
 import { putObject } from '../codeSigning/upload';
-
+import { PackageJsonSfdxProperty } from '../package';
 const CRYPTO_LEVEL = 'RSA-SHA256';
 const BUCKET = 'dfc-data-production';
 export const BASE_URL = 'https://developer.salesforce.com';
@@ -36,10 +36,7 @@ export interface SigningResponse {
    * "signatureUrl": "https://developer.salesforce.com/media/salesforce-cli/signatures/salesforce-plugin-user-1.3.0.sig"
    * },
    */
-  packageJsonSfdxProperty: {
-    publicKeyUrl: string;
-    signatureUrl: string;
-  };
+  packageJsonSfdxProperty: PackageJsonSfdxProperty;
   fileTarPath: string;
   /** npm name, including namespace */
   packageName: string;

@@ -96,13 +96,8 @@ export default class Release extends SfdxCommand {
 
     let signature: SigningResponse;
     if (this.flags.sign && !this.flags.dryrun) {
-      pkg.printStage('Sign and Upload');
+      pkg.printStage('Sign and Upload Security Files');
       signature = await pkg.sign();
-    }
-
-    if (!this.flags.dryrun) {
-      pkg.printStage('Push Changes to Git');
-      pkg.pushChangesToGit();
     }
 
     pkg.printStage('Publish');
@@ -124,6 +119,12 @@ export default class Release extends SfdxCommand {
     if (this.flags.sign && !this.flags.dryrun) {
       pkg.printStage('Verify Signed Packaged');
       pkg.verifySignature();
+    }
+
+    if (!this.flags.dryrun) {
+      await pkg.revertChanges();
+      pkg.printStage('Push Changes to Git');
+      pkg.pushChangesToGit();
     }
 
     this.ux.log(pkg.getSuccessMessage());

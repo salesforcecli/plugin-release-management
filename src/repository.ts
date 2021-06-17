@@ -377,6 +377,10 @@ export class SinglePackageRepo extends Repository {
     return packAndSignApi.packSignVerifyModifyPackageJSON(this.package.location);
   }
 
+  public async revertChanges(): Promise<void> {
+    return packAndSignApi.revertPackageJsonIfExists();
+  }
+
   public verifySignature(): void {
     const cmd = `sfdx-trust plugins:trust:verify --npm ${this.name}@${this.nextVersion}`;
     this.execCommand(cmd);
@@ -386,8 +390,7 @@ export class SinglePackageRepo extends Repository {
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
-    const tarPath = getString(signatures, '0.fileTarPath', null);
-    if (tarPath) cmd += ` ${tarPath}`;
+    if (signatures[0]?.fileTarPath) cmd += ` ${signatures[0]?.fileTarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
     cmd += ` ${this.registry.getRegistryParameter()}`;

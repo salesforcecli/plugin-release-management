@@ -203,7 +203,7 @@ export const api = {
   },
 
   /**
-   * write the signature to a '.sig' file. this file is to be deployed to signatureurk
+   * write the signature to a '.sig' file. this file is to be deployed to signatureurl
    *
    * @param filePath - the file path to the tgz file
    * @param signature - the computed signature
@@ -306,6 +306,14 @@ export const api = {
     return fs.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
   },
 
+  async revertPackageJsonIfExists(): Promise<void> {
+    // Restore the package.json file so it doesn't show a git diff.
+    if (fs.existsSync(pathGetter.packageJsonBak)) {
+      cliUx.log('Restoring package.json');
+      await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
+      await fs.unlink(pathGetter.packageJsonBak);
+    }
+  },
   /**
    * main method to pack and sign an npm.
    *
@@ -315,13 +323,12 @@ export const api = {
    */
   async packSignVerifyModifyPackageJSON(targetPackagePath: string): Promise<SigningResponse> {
     const logger = await Logger.child('packAndSign');
-    let packageDotJsonBackedUp = false;
     pathGetter = new PathGetter(targetPackagePath);
 
     try {
       // read package.json info
       const packageJsonContent: string = await api.retrievePackageJson();
-      let packageJson = JSON.parse(packageJsonContent) as PackageJson;
+      const packageJson = JSON.parse(packageJsonContent) as PackageJson;
       logger.debug('parsed the package.json content');
 
       if (packageJson.files) {
@@ -355,9 +362,10 @@ export const api = {
       await api.copyPackageDotJson(pathGetter.packageJson, pathGetter.packageJsonBak);
       logger.debug('made a backup of the package.json file.');
       cliUx.log(`Backed up ${pathGetter.packageJson} to ${pathGetter.packageJsonBak}`);
-      packageDotJsonBackedUp = true;
 
       const filepath = await api.pack();
+      cliUx.log(`Packed tgz to ${filepath}`);
+
       const signResponse = await sign2({
         upload: true,
         targetFileToSign: filepath,
@@ -365,20 +373,16 @@ export const api = {
         packageVersion: npmName.tag,
       });
 
-      packageJson = Object.assign(packageJson, {
-        sfdx: signResponse.packageJsonSfdxProperty,
-      }) as PackageJson;
-      cliUx.log('Successfully updated package.json with public key and signature file locations.');
       // update the package.json object with the signature urls and write it to disk.
+      packageJson.sfdx = signResponse.packageJsonSfdxProperty;
       await api.writePackageJson(packageJson);
+      cliUx.log('Successfully updated package.json with public key and signature file locations.');
+      cliUx.logJson(packageJson);
       return signResponse;
-    } finally {
-      // Restore the package.json file so it doesn't show a git diff.
-      if (packageDotJsonBackedUp) {
-        cliUx.log('Restoring package.json');
-        await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
-        await fs.unlink(pathGetter.packageJsonBak);
-      }
+    } catch (error) {
+      cliUx.error(error);
+      // if anything went wrong, we back out those changes
+      await api.revertPackageJsonIfExists();
     }
   },
 
