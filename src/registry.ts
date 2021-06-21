@@ -102,7 +102,7 @@ export class Registry {
     }
 
     const npmrc = await fs.readFile(path.join(packageDir, '.npmrc'), 'utf8');
-    const npmrcLines = npmrc.split(os.EOL);
+    const npmrcLines: string[] = npmrc.split(os.EOL);
     return [...new Set(npmrcLines).values()].filter((line) => line?.length);
   }
 

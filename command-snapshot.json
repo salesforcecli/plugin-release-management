@@ -15,6 +15,11 @@
     "flags": ["channels", "dependencies", "json", "locations", "loglevel", "salesforce"]
   },
   {
+    "command": "dependabot:automerge",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["dryrun", "json", "loglevel", "max-version-bump", "owner", "repo"]
+  },
+  {
     "command": "dependabot:consolidate",
     "plugin": "@salesforce/plugin-release-management",
     "flags": [
@@ -39,6 +44,11 @@
     "command": "npm:lerna:release",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "githubrelease", "install", "json", "loglevel", "npmaccess", "npmtag", "sign"]
+  },
+  {
+    "command": "npm:package:promote",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["candidate", "dryrun", "json", "loglevel", "target"]
   },
   {
     "command": "npm:package:release",

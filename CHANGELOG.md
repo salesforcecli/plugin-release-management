@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.0...v1.13.1) (2021-06-21)
+
+### Bug Fixes
+
+- forgot to load the messageDir ([95a6766](https://github.com/salesforcecli/plugin-release-management/commit/95a6766244fb4843aea7029e243e948797ed9277))
+
+## [1.13.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.1...v1.13.0) (2021-06-21)
+
+### Features
+
+- add npm:package:promote command ([#191](https://github.com/salesforcecli/plugin-release-management/issues/191)) ([344891d](https://github.com/salesforcecli/plugin-release-management/commit/344891dec209e8942ece8a3ac73d5c92b78a21bd))
+
+### [1.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.0...v1.12.1) (2021-06-17)
+
+### Bug Fixes
+
+- s3 does not take an array of agents ([#202](https://github.com/salesforcecli/plugin-release-management/issues/202)) ([4ac5d57](https://github.com/salesforcecli/plugin-release-management/commit/4ac5d57eb6560548a0d39a6aed1d046f07447724))
+
+## [1.12.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.1...v1.12.0) (2021-06-16)
+
+### Features
+
+- automerge 1 PR ([f7ae153](https://github.com/salesforcecli/plugin-release-management/commit/f7ae1536d9ce10da7444706d4fd8df60e75f2c96))
+- dependabout automerging ([0e6b6fb](https://github.com/salesforcecli/plugin-release-management/commit/0e6b6fbd975a1cf6d716791360f54031a6364730))
+
+### [1.11.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.0...v1.11.1) (2021-06-15)
+
+### Bug Fixes
+
+- add proxy support for aws upload ([#198](https://github.com/salesforcecli/plugin-release-management/issues/198)) ([9a3bbd7](https://github.com/salesforcecli/plugin-release-management/commit/9a3bbd72cd689fa660b31e6f813bedeb31779068))
+
+## [1.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.3...v1.11.0) (2021-06-11)
+
+- automerge 1 PR ([f7ae153](https://github.com/salesforcecli/plugin-release-management/commit/f7ae1536d9ce10da7444706d4fd8df60e75f2c96))
+
 ## [1.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.10.3...v1.11.0) (2021-06-11)
 
 ### Features
