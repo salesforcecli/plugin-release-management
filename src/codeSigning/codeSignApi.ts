@@ -8,9 +8,7 @@
 /* eslint-disable no-underscore-dangle */
 import * as crypto from 'crypto';
 import { Readable } from 'stream';
-import { parse as parseUrl, UrlWithStringQuery } from 'url';
 import { NamedError } from '@salesforce/kit';
-import { Nullable } from '@salesforce/ts-types';
 
 const CRYPTO_LEVEL = 'RSA-SHA256';
 
@@ -18,19 +16,6 @@ const SALESFORCE_URL_PATTERNS: RegExp[] = [/developer\.salesforce\.com/];
 
 if (process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING === 'true') {
   SALESFORCE_URL_PATTERNS.push(/(.salesforce.com)$/);
-}
-
-export function validSalesforceHostname(url: Nullable<string>): boolean {
-  if (!url) {
-    return false;
-  }
-  const parsedUrl: UrlWithStringQuery = parseUrl(url);
-
-  if (process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING === 'true') {
-    return parsedUrl.hostname && /(\.salesforce\.com)$/.test(parsedUrl.hostname);
-  } else {
-    return parsedUrl.protocol === 'https:' && parsedUrl.hostname && parsedUrl.hostname === 'developer.salesforce.com';
-  }
 }
 
 export class CodeSignInfo {

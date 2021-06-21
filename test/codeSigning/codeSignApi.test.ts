@@ -8,66 +8,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Readable } from 'stream';
 import { expect } from 'chai';
-import {
-  CodeSignInfo,
-  CodeVerifierInfo,
-  default as sign,
-  validSalesforceHostname,
-  verify,
-} from '../../src/codeSigning/codeSignApi';
+import { CodeSignInfo, CodeVerifierInfo, default as sign, verify } from '../../src/codeSigning/codeSignApi';
 import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert';
 
 describe('Sign Tests', () => {
-  describe('validSalesforceHostname', () => {
-    const currentCertSigVar = process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING;
-    before(() => {
-      delete process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING;
-    });
-    after(() => {
-      if (currentCertSigVar) {
-        process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING = currentCertSigVar;
-      }
-    });
-    it('falsy url', () => {
-      expect(validSalesforceHostname(null)).to.be.equal(false);
-    });
-
-    it('salesforce http url', () => {
-      expect(validSalesforceHostname('http://developer.salesforce.com')).to.be.equal(false);
-    });
-
-    it('salesforce https url', () => {
-      expect(validSalesforceHostname('https://developer.salesforce.com')).to.be.equal(true);
-    });
-    it('jibber', () => {
-      expect(validSalesforceHostname('jj')).to.be.equal(false);
-    });
-
-    it('evildoers', () => {
-      expect(validSalesforceHostname('salesforce.com-evildoers-r-us.com')).to.be.equal(false);
-    });
-
-    it('salesforce.com no env', () => {
-      expect(validSalesforceHostname('salesforce.com-evildoers-r-us.com')).to.be.equal(false);
-    });
-
-    it('salesforce.com port', () => {
-      expect(validSalesforceHostname('https://developer.salesforce.com:9797')).to.be.equal(true);
-    });
-
-    it('salesforce.com env var true', () => {
-      process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING = 'true';
-      expect(validSalesforceHostname('https://tnoonan-wsm2.internal.salesforce.com')).to.be.equal(true);
-      delete process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING;
-    });
-
-    it('salesforce.com env var falsy', () => {
-      process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING = 'jj';
-      expect(validSalesforceHostname('https://tnoonan-wsm2.internal.salesforce.com')).to.be.equal(false);
-      delete process.env.SFDX_ALLOW_ALL_SALESFORCE_CERTSIG_HOSTING;
-    });
-  });
-
   it('steel thread', async () => {
     const info = new CodeSignInfo();
 
