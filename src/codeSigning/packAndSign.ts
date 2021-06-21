@@ -11,28 +11,17 @@
 import { exec } from 'child_process';
 import { EOL } from 'os';
 import { join as pathJoin } from 'path';
-import { sep as pathSep } from 'path';
-// import { URL } from 'url';
-import { Readable } from 'stream';
 import { copyFile } from 'fs';
 import { Agent } from 'https';
-import got, { Agents, RequestError } from 'got';
+import { Agents } from 'got';
 import { UX } from '@salesforce/command';
 import { fs, Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
-// import { AgentOptions } from 'agent-base';
-import {
-  CodeSignInfo,
-  CodeVerifierInfo,
-  default as sign,
-  validSalesforceHostname,
-  verify,
-} from '../codeSigning/codeSignApi';
 import { PackageJson } from '../package';
 import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
-import { ExecProcessFailed, InvalidUrlError, SignSignedCertError } from './error';
+import { ExecProcessFailed } from './error';
 import { NpmName } from './NpmName';
 
 class PathGetter {
@@ -86,30 +75,6 @@ export const api = {
   },
 
   /**
-   * Validates that a url is a valid salesforce url.
-   *
-   * @param url - The url to validate.
-   */
-  validateUrl(url: string): void {
-    try {
-      // new URL throws if a host cannot be parsed out.
-      if (!validSalesforceHostname(url)) {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new NamedError(
-          'NotASalesforceHost',
-          'Signing urls must have the hostname developer.salesforce.com and use https.'
-        );
-      }
-    } catch (e) {
-      if (e instanceof NamedError) {
-        throw e;
-      } else {
-        throw new InvalidUrlError(url, e);
-      }
-    }
-  },
-
-  /**
    * call out to npm pack;
    */
   pack(): Promise<string> {
@@ -146,79 +111,6 @@ export const api = {
         }
       );
     });
-  },
-
-  /**
-   * verify a signature against a public key and tgz content
-   *
-   * @param tarGzStream - Tar file to validate
-   * @param sigFilenameStream - Computed signature
-   * @param publicKeyUrl - url for the public key
-   */
-  verify(tarGzStream: Readable, sigFilenameStream: Readable, publicKeyUrl: string): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      const verifyInfo = new CodeVerifierInfo();
-      verifyInfo.dataToVerify = tarGzStream;
-      verifyInfo.signatureStream = sigFilenameStream;
-
-      return resolve(
-        (async (): Promise<boolean> => {
-          try {
-            const agent = api.getAgentForUri(publicKeyUrl);
-            const response = await got.get(publicKeyUrl, { agent });
-            if (response && response.statusCode === 200) {
-              verifyInfo.publicKeyStream = Readable.from([response.body]);
-              return await verify(verifyInfo);
-            } else {
-              const statusCode: number = response.statusCode;
-              throw new NamedError(
-                'RetrievePublicKeyFailed',
-                `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
-              );
-            }
-          } catch (err) {
-            const error = err as RequestError;
-            if (error && error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
-              throw new SignSignedCertError();
-            } else {
-              throw err;
-            }
-          }
-        })()
-      );
-    });
-  },
-
-  /**
-   * sign a tgz file stream
-   *
-   * @param fileStream - the tgz file stream to sign
-   * @param privateKeyStream - the certificate's private key
-   */
-  retrieveSignature(fileStream: Readable, privateKeyStream: Readable): Promise<string> {
-    const info = new CodeSignInfo();
-    info.dataToSignStream = fileStream;
-    info.privateKeyStream = privateKeyStream;
-    return sign(info);
-  },
-
-  /**
-   * write the signature to a '.sig' file. this file is to be deployed to signatureurl
-   *
-   * @param filePath - the file path to the tgz file
-   * @param signature - the computed signature
-   */
-  async writeSignatureFile(filePath: string, signature: string): Promise<string> {
-    if (!filePath.endsWith('tgz')) {
-      throw new NamedError('UnexpectedTgzName', `The file path ${filePath} is unexpected. It should be a tgz file.`);
-    }
-    if (!pathGetter) pathGetter = new PathGetter();
-    cliUx.log(`Signing file at: ${filePath}`);
-    const pathComponents: string[] = filePath.split(pathSep);
-    const filenamePart: string = pathComponents[pathComponents.length - 1];
-    const sigFilename = filenamePart.replace('.tgz', '.sig');
-    await fs.writeFile(pathGetter.getFile(sigFilename), signature);
-    return sigFilename;
   },
 
   /**

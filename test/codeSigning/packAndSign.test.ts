@@ -106,23 +106,6 @@ describe('packAndSign Tests', () => {
     }
   });
 
-  describe('validate url', () => {
-    it('with host', () => {
-      const TEST = 'https://developer.salesforce.com/foo/bar';
-      expect(() => packAndSignApi.validateUrl(TEST)).to.not.throw(Error);
-    });
-
-    it('with host', () => {
-      const TEST = 'https://www.example.com/foo/bar';
-      expect(() => packAndSignApi.validateUrl(TEST)).to.throw(Error);
-    });
-
-    it('no host', () => {
-      const TEST = 'foo/bar';
-      expect(() => packAndSignApi.validateUrl(TEST)).to.throw(Error);
-    });
-  });
-
   describe('pack', () => {
     it('Process Failed', () => {
       stubMethod($$.SANDBOX, child_process, 'exec').callsFake((command: string, opts: any, cb: any) => {
@@ -175,19 +158,6 @@ describe('packAndSign Tests', () => {
         .catch((err: Error) => {
           expect(err.message).to.include('npm utility');
           expect(err).to.have.property('name', 'UnexpectedNpmFormat');
-        });
-    });
-  });
-
-  describe('writeSignatureFile', () => {
-    it('no tgz', () => {
-      return packAndSignApi
-        .writeSignatureFile('foo')
-        .then(() => {
-          throw new Error("This shouldn't happen");
-        })
-        .catch((e) => {
-          expect(e).to.have.property('name', 'UnexpectedTgzName');
         });
     });
   });
