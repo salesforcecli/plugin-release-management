@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.1...v1.13.0) (2021-06-21)
+
+
+### Features
+
+* add npm:package:promote command ([#191](https://github.com/salesforcecli/plugin-release-management/issues/191)) ([344891d](https://github.com/salesforcecli/plugin-release-management/commit/344891dec209e8942ece8a3ac73d5c92b78a21bd))
+
 ### [1.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.0...v1.12.1) (2021-06-17)
 
 
