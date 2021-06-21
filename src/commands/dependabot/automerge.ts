@@ -13,6 +13,7 @@ import { ensureString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
 import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
+Messages.importMessagesDirectory(__dirname);
 const messagesFromConsolidate = Messages.loadMessages(
   '@salesforce/plugin-release-management',
   'dependabot.consolidate'
