@@ -381,9 +381,8 @@ export const api = {
       });
 
       return signResponse;
-    } catch (error) {
-      cliUx.error(error);
-      // if anything went wrong, we back out those changes
+    } finally {
+      // prevent any publish-time changes from persisting to git
       await api.revertPackageJsonIfExists();
     }
   },

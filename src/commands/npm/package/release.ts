@@ -122,7 +122,6 @@ export default class Release extends SfdxCommand {
     }
 
     if (!this.flags.dryrun) {
-      await pkg.revertChanges();
       pkg.printStage('Push Changes to Git');
       pkg.pushChangesToGit();
     }
