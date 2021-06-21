@@ -390,7 +390,7 @@ export class SinglePackageRepo extends Repository {
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
-    if (signatures[0]?.fileTarPath) cmd += ` ${signatures[0]?.fileTarPath}`;
+    if (signatures?.[0]?.fileTarPath) cmd += ` ${signatures[0]?.fileTarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
     cmd += ` ${this.registry.getRegistryParameter()}`;
