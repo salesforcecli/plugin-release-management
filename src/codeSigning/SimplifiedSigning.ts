@@ -49,10 +49,17 @@ interface KeyPair {
   privateKey: string;
 }
 
+export const getSfdxProperty = (packageName: string, packageVersion: string): PackageJsonSfdxProperty => {
+  const fullPathNoExtension = `${BASE_URL}/${SECURITY_PATH}/${packageName}/${packageVersion}`;
+  return {
+    publicKeyUrl: `${fullPathNoExtension}.crt`,
+    signatureUrl: `${fullPathNoExtension}.sig`,
+  };
+};
+
 export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<SigningResponse> => {
   const { publicKey, privateKey } = await getOneTimeUseKeys();
   const { packageName, packageVersion } = signingRequest;
-  const fullPathNoExtension = `${BASE_URL}/${SECURITY_PATH}/${packageName}/${packageVersion}`;
   const signatureContents = await getSignature(privateKey, signingRequest.targetFileToSign);
 
   // verify that signature/key/data worked properly
@@ -60,10 +67,7 @@ export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<
   const output: SigningResponse = {
     publicKeyContents: publicKey,
     signatureContents,
-    packageJsonSfdxProperty: {
-      publicKeyUrl: `${fullPathNoExtension}.crt`,
-      signatureUrl: `${fullPathNoExtension}.sig`,
-    },
+    packageJsonSfdxProperty: getSfdxProperty(packageName, packageVersion),
     fileTarPath: signingRequest.targetFileToSign,
     packageName,
     packageVersion,

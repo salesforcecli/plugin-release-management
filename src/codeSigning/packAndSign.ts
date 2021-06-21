@@ -31,7 +31,7 @@ import {
   verify,
 } from '../codeSigning/codeSignApi';
 import { PackageJson } from '../package';
-import { signVerifyUpload as sign2, SigningResponse } from './SimplifiedSigning';
+import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
 import { ExecProcessFailed, InvalidUrlError, SignSignedCertError } from './error';
 import { NpmName } from './NpmName';
 
@@ -363,6 +363,13 @@ export const api = {
       logger.debug('made a backup of the package.json file.');
       cliUx.log(`Backed up ${pathGetter.packageJson} to ${pathGetter.packageJsonBak}`);
 
+      // we have to modify package.json with security URLs BEFORE packing
+      // update the package.json object with the signature urls and write it to disk.
+      packageJson.sfdx = getSfdxProperty(npmName.name, npmName.tag);
+      await api.writePackageJson(packageJson);
+      cliUx.log('Successfully updated package.json with public key and signature file locations.');
+      cliUx.logJson(packageJson);
+
       const filepath = await api.pack();
       cliUx.log(`Packed tgz to ${filepath}`);
 
@@ -373,11 +380,6 @@ export const api = {
         packageVersion: npmName.tag,
       });
 
-      // update the package.json object with the signature urls and write it to disk.
-      packageJson.sfdx = signResponse.packageJsonSfdxProperty;
-      await api.writePackageJson(packageJson);
-      cliUx.log('Successfully updated package.json with public key and signature file locations.');
-      cliUx.logJson(packageJson);
       return signResponse;
     } catch (error) {
       cliUx.error(error);
