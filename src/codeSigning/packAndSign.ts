@@ -201,7 +201,7 @@ export const api = {
   async revertPackageJsonIfExists(): Promise<void> {
     // Restore the package.json file so it doesn't show a git diff.
     if (fs.existsSync(pathGetter.packageJsonBak)) {
-      cliUx.log('Restoring package.json');
+      cliUx.log(`Restoring package.json for ${pathGetter.packageJsonBak}`);
       await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
       await fs.unlink(pathGetter.packageJsonBak);
     }
@@ -255,12 +255,13 @@ export const api = {
       logger.debug('made a backup of the package.json file.');
       cliUx.log(`Backed up ${pathGetter.packageJson} to ${pathGetter.packageJsonBak}`);
 
+      const packageNameWithOrWithoutScope = npmName.scope ? `@${npmName.scope}/${npmName.name}` : npmName.name;
       // we have to modify package.json with security URLs BEFORE packing
       // update the package.json object with the signature urls and write it to disk.
-      packageJson.sfdx = getSfdxProperty(npmName.name, npmName.tag);
+      packageJson.sfdx = getSfdxProperty(packageNameWithOrWithoutScope, npmName.tag);
       await api.writePackageJson(packageJson);
       cliUx.log('Successfully updated package.json with public key and signature file locations.');
-      cliUx.logJson(packageJson);
+      cliUx.logJson(packageJson.sfdx);
 
       const filepath = await api.pack();
       cliUx.log(`Packed tgz to ${filepath}`);
@@ -268,7 +269,7 @@ export const api = {
       const signResponse = await sign2({
         upload: true,
         targetFileToSign: filepath,
-        packageName: npmName.name,
+        packageName: packageNameWithOrWithoutScope,
         packageVersion: npmName.tag,
       });
 

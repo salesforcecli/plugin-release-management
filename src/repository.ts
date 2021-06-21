@@ -241,6 +241,11 @@ export class LernaRepo extends Repository {
   }
 
   public async sign(packageNames: string[]): Promise<SigningResponse[]> {
+    this.ux.log(
+      `Command asked to sign packages ${packageNames.join(', ')}.  The repo contains ${this.packages
+        .map((pkg) => `${pkg.name} (${pkg.location})`)
+        .join(', ')}`
+    );
     const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
     const responses: SigningResponse[] = [];
     packAndSignApi.setUx(this.ux);
@@ -261,6 +266,7 @@ export class LernaRepo extends Repository {
     }, {});
     for (const pkg of this.packages) {
       const tarPath = tarPathsByPkgName[pkg.name];
+      this.ux.log(`Will publish ${pkg.name} which is at ${tarPath}`);
       let cmd = 'npm publish';
       if (tarPath) cmd += ` ${tarPath}`;
       if (tag) cmd += ` --tag ${tag}`;
