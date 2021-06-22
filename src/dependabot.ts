@@ -42,6 +42,9 @@ export const getOwnerAndRepo = async (
   ownerFlag: string,
   repoFlag: string
 ): Promise<{ owner: string; repo: string }> => {
+  if (ownerFlag && repoFlag) {
+    return { owner: ownerFlag, repo: repoFlag };
+  }
   const pkgJson = (await fs.readJson('package.json')) as PackageJson;
   if (pkgJson.repository && isString(pkgJson.repository)) {
     const [owner, repo] = pkgJson.repository?.split('/');
