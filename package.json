@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "1.10.1",
+  "version": "1.13.2",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "@oclif/config": "^1",
+    "@octokit/core": "^3.4.0",
     "@salesforce/command": "^3.0.5",
-    "@salesforce/core": "^2.15.2",
+    "@salesforce/core": "^2.23.2",
     "@salesforce/kit": "^1.3.3",
     "@salesforce/ts-types": "^1.4.3",
+    "@types/semver": "^7.3.6",
+    "@types/sinon": "10.0.2",
     "agent-base": "^6.0.2",
-    "aws-sdk": "^2.782.0",
+    "aws-sdk": "^2.920.0",
     "chalk": "^4.1.0",
     "cli-ux": "^5.5.1",
     "conventional-changelog-conventionalcommits": "^4.5.0",
@@ -25,6 +28,7 @@
     "got": "^11.8.0",
     "proxy-agent": "^4.0.1",
     "proxy-from-env": "^1.1.0",
+    "semver": "^7.3.5",
     "shelljs": "^0.8.4",
     "standard-version": "^9.0.0",
     "tslib": "^2"
@@ -32,7 +36,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@oclif/plugin-command-snapshot": "^2.0.0",
-    "@salesforce/cli-plugins-testkit": "^0.0.25",
+    "@salesforce/cli-plugins-testkit": "^1.1.5",
     "@salesforce/dev-config": "^2.1.2",
     "@salesforce/dev-scripts": "^0.9.11",
     "@salesforce/plugin-command-reference": "^1.3.0",
@@ -40,30 +44,33 @@
     "@salesforce/ts-sinon": "1.3.12",
     "@types/conventional-changelog-preset-loader": "^2.3.1",
     "@types/conventional-commits-parser": "^3.0.1",
+    "@types/graceful-fs": "^4.1.5",
+    "@types/jsforce": "^1.9.29",
+    "@types/semver": "^7.3.6",
     "@types/shelljs": "^0.8.8",
-    "@typescript-eslint/eslint-plugin": "^4.2.0",
-    "@typescript-eslint/parser": "^4.2.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
     "aws-sdk-mock": "^5.1.0",
     "chai": "^4.2.0",
     "cz-conventional-changelog": "^3.2.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-salesforce": "^0.1.6",
     "eslint-config-salesforce-license": "^0.1.6",
     "eslint-config-salesforce-typescript": "^0.2.7",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jsdoc": "^27.0.3",
+    "eslint-plugin-jsdoc": "^35.1.2",
     "eslint-plugin-prettier": "^3.1.3",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.2",
-    "mocha": "^8.3.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^11.0.0",
+    "mocha": "^8.4.0",
     "nyc": "^15.1.0",
     "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1",
+    "pretty-quick": "^3.1.0",
     "shx": "0.3.3",
-    "sinon": "^9.0.2",
-    "ts-node": "^8.10.2",
+    "sinon": "10.0.0",
+    "ts-node": "^10.0.0",
     "typescript": "^4.1.3"
   },
   "config": {
@@ -115,11 +122,14 @@
           }
         }
       },
+      "dependabot": {
+        "description": "interact with dependabot PRs"
+      },
       "npm": {
         "description": "release npm packages",
         "subtopics": {
           "dependencies": {
-            "description": "pin dependenices to a specific version in package.json"
+            "description": "pin dependencies to a specific version in package.json"
           },
           "lerna": {
             "description": "work with lerna npm projects"
