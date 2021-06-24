@@ -40,17 +40,13 @@ describe('registry tests', () => {
 });
 describe('npmrc tests', () => {
   let packageDir;
-  before(() => {
-    packageDir = path.join(os.tmpdir(), new Date().getMilliseconds().toString());
-    fs.mkdirpSync(packageDir);
+  beforeEach(() => {
+    packageDir = os.tmpdir();
   });
   afterEach(() => {
     if (fs.fileExistsSync(path.join(packageDir, '.npmrc'))) {
       fs.unlinkSync(path.join(packageDir, '.npmrc'));
     }
-  });
-  after(async () => {
-    await fs.remove(packageDir);
   });
   it('should NOT WRITE npmrc registry for registry defaults', async () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
