@@ -201,7 +201,7 @@ export const api = {
   async revertPackageJsonIfExists(): Promise<void> {
     // Restore the package.json file so it doesn't show a git diff.
     if (fs.existsSync(pathGetter.packageJsonBak)) {
-      cliUx.log(`Restoring package.json for ${pathGetter.packageJsonBak}`);
+      cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
       await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
       await fs.unlink(pathGetter.packageJsonBak);
     }
