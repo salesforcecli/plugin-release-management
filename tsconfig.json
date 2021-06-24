@@ -4,6 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "allowSyntheticDefaultImports": true
+    // "target": "es6"
   },
   "include": ["./src/**/*.ts"]
 }

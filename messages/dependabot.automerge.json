@@ -1,0 +1,8 @@
+{
+  "description": "automatically merge one green, mergeable PR up to the specified maximum bump type",
+  "examples": [
+    "<%= config.bin %> <%= command.id %> --max-version-bump patch",
+    "<%= config.bin %> <%= command.id %> --max-version-bump minor",
+    "<%= config.bin %> <%= command.id %> --max-version-bump major"
+  ]
+}
