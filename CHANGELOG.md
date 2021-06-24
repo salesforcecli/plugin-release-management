@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.1...v1.13.2) (2021-06-22)
+
+### Bug Fixes
+
+- load messages for shared dependabot flag ([ca33483](https://github.com/salesforcecli/plugin-release-management/commit/ca33483940a68f2db9fa7f09d312090ef3895164))
+- load messages for shared dependabot flag ([b80d85b](https://github.com/salesforcecli/plugin-release-management/commit/b80d85b6c3acc2ee1a11572f3cefc2ccb0e08ab9))
+
 ### [1.13.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.0...v1.13.1) (2021-06-21)
 
 ### Bug Fixes

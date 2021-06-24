@@ -14,11 +14,12 @@ import { Messages } from '@salesforce/core';
 import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
 Messages.importMessagesDirectory(__dirname);
+
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.automerge');
 const messagesFromConsolidate = Messages.loadMessages(
   '@salesforce/plugin-release-management',
   'dependabot.consolidate'
 );
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.automerge');
 
 interface PullRequest {
   state: string;
