@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.2...v1.13.3) (2021-06-25)
+
+
+### Bug Fixes
+
+* add httpOptions agent entry for s3 ([#214](https://github.com/salesforcecli/plugin-release-management/issues/214)) ([e40153e](https://github.com/salesforcecli/plugin-release-management/commit/e40153eb1d02201a979c089e2c25675d72c77082))
+* try to get proxy to s3 to work ([#210](https://github.com/salesforcecli/plugin-release-management/issues/210)) ([2f83ada](https://github.com/salesforcecli/plugin-release-management/commit/2f83adac64cb450fbda6e770c148d4a215a37c3b))
+
 ### [1.13.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.1...v1.13.2) (2021-06-22)
 
 
