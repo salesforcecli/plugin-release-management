@@ -32,7 +32,7 @@ export type NpmPackage = {
   name: string;
   version: string;
   versions: string[];
-  'dist-tags': string[];
+  'dist-tags': Record<string, string>;
 } & AnyJson;
 
 export interface VersionValidation {
@@ -172,7 +172,7 @@ export class Package extends AsyncOptionalCreatable {
       name: this.name,
       version: this.packageJson.version,
       versions: [],
-      'dist-tags': [],
+      'dist-tags': {},
     };
   }
 }

@@ -12,6 +12,7 @@ import { PackageJson } from './package';
 
 type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 
+Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
 
 export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
