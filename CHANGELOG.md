@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.3...v1.13.4) (2021-06-25)
+
+
+### Bug Fixes
+
+* some of our projects use GH_TOKEN, some GITHUB_TOKEN ([55b6b83](https://github.com/salesforcecli/plugin-release-management/commit/55b6b83742804e42e1913898004e9d7f00f477d8))
+
 ### [1.13.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.2...v1.13.3) (2021-06-25)
 
 
