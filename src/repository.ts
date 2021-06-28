@@ -216,11 +216,10 @@ export class LernaRepo extends Repository {
     // https://github.com/lerna/lerna#lernajson
     // "By default, lerna initializes the packages list as ["packages/*"]"
     const packageGlobs = lernaJson.packages || ['*'];
-    const packages = packageGlobs
+    return packageGlobs
       .map((pGlob) => glob.sync(pGlob))
       .reduce((x, y) => x.concat(y), [])
       .map((pkg) => path.join(workingDir, pkg));
-    return packages;
   }
 
   public validate(): VersionValidation[] {
@@ -286,7 +285,9 @@ export class LernaRepo extends Repository {
   public verifySignature(packageNames: string[]): void {
     const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
     for (const pkg of packages) {
-      const cmd = `sfdx-trust plugins:trust:verify --npm ${pkg.name}@${pkg.getNextVersion()}`;
+      const cmd = `sfdx-trust plugins:trust:verify --npm ${
+        pkg.name
+      }@${pkg.getNextVersion()}  ${this.registry.getRegistryParameter()}`;
       this.execCommand(cmd);
     }
   }
@@ -388,7 +389,9 @@ export class SinglePackageRepo extends Repository {
   }
 
   public verifySignature(): void {
-    const cmd = `sfdx-trust plugins:trust:verify --npm ${this.name}@${this.nextVersion}`;
+    const cmd = `sfdx-trust plugins:trust:verify --npm ${this.name}@${
+      this.nextVersion
+    } ${this.registry.getRegistryParameter()}`;
     this.execCommand(cmd);
   }
 
