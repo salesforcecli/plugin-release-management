@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.5](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.4...v1.13.5) (2021-06-28)
+
+
+### Bug Fixes
+
+* add registry param to sfdx-trust calls ([#215](https://github.com/salesforcecli/plugin-release-management/issues/215)) ([237e2f2](https://github.com/salesforcecli/plugin-release-management/commit/237e2f2e677a6833fb103e102ff1da8a768f33e1))
+
 ### [1.13.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.3...v1.13.4) (2021-06-25)
 
 
