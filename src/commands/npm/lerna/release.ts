@@ -78,6 +78,8 @@ export default class Release extends SfdxCommand {
       return;
     }
 
+    await lernaRepo.writeNpmToken();
+
     lernaRepo.printStage('Validate Next Version');
     const pkgValidations = lernaRepo.validate();
 
@@ -90,8 +92,6 @@ export default class Release extends SfdxCommand {
       this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
       this.ux.log(`Next Version: ${pkgValidation.nextVersion}${os.EOL}`);
     });
-
-    await lernaRepo.writeNpmToken();
 
     if (this.flags.install) {
       lernaRepo.printStage('Install');

@@ -76,6 +76,8 @@ export default class Release extends SfdxCommand {
       return;
     }
 
+    await pkg.writeNpmToken();
+
     pkg.printStage('Validate Next Version');
     const pkgValidation = pkg.validate();
     if (!pkgValidation.valid) {
@@ -85,8 +87,6 @@ export default class Release extends SfdxCommand {
     this.ux.log(`Name: ${pkgValidation.name}`);
     this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
     this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
-
-    await pkg.writeNpmToken();
 
     if (this.flags.install) {
       pkg.printStage('Install');
