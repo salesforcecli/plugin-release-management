@@ -50,6 +50,11 @@ export default class Release extends SfdxCommand {
     prerelease: flags.string({
       description: messages.getMessage('prerelease'),
     }),
+    verify: flags.boolean({
+      description: messages.getMessage('verify'),
+      default: true,
+      allowNo: true,
+    }),
   };
 
   public async run(): Promise<ReleaseResult> {
@@ -115,7 +120,7 @@ export default class Release extends SfdxCommand {
       dryrun: this.flags.dryrun as boolean,
     });
 
-    if (!this.flags.dryrun) {
+    if (!this.flags.dryrun && this.flags.verify) {
       pkg.printStage('Waiting For Availability');
       const found = await pkg.waitForAvailability();
       if (!found) {
@@ -123,7 +128,7 @@ export default class Release extends SfdxCommand {
       }
     }
 
-    if (this.flags.sign && !this.flags.dryrun) {
+    if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
       pkg.printStage('Verify Signed Packaged');
       pkg.verifySignature();
     }
