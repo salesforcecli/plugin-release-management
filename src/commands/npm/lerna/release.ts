@@ -116,6 +116,11 @@ export default class Release extends SfdxCommand {
     });
 
     if (!this.flags.dryrun) {
+      lernaRepo.printStage('Push Changes to Git');
+      lernaRepo.pushChangesToGit();
+    }
+
+    if (!this.flags.dryrun) {
       lernaRepo.printStage('Waiting For Availability');
       const found = await lernaRepo.waitForAvailability();
       if (!found) {
@@ -126,11 +131,6 @@ export default class Release extends SfdxCommand {
     if (this.flags.sign && !this.flags.dryrun) {
       lernaRepo.printStage('Verify Signed Packaged');
       lernaRepo.verifySignature(this.flags.sign);
-    }
-
-    if (!this.flags.dryrun) {
-      lernaRepo.printStage('Push Changes to Git');
-      lernaRepo.pushChangesToGit();
     }
 
     this.ux.log(lernaRepo.getSuccessMessage());
