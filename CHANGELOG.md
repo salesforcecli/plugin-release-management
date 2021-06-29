@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.7](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.6...v1.13.7) (2021-06-29)
+
+
+### Bug Fixes
+
+* move write of npmrc files up ([#219](https://github.com/salesforcecli/plugin-release-management/issues/219)) ([bcdcd9d](https://github.com/salesforcecli/plugin-release-management/commit/bcdcd9d00f14279466e949ced577d5f27246fc4c))
+
 ### [1.13.6](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.5...v1.13.6) (2021-06-29)
 
 
