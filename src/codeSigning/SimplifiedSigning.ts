@@ -5,6 +5,22 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/**
+ * Signed npm packages have two fields that point plugin-trust to the URLs for the public key and signature file
+ * see src/package.ts/#PackageJsonSfdxProperty
+ *
+ * This code generates a keypair using node's crypto library,
+ * signs the tarball,
+ * verifies the signature
+ * and uploads the .sig and .crt (public key) to their AWS bucket
+ *
+ * The private key is never persisted to disk and ephemeral (exists only during this signing process)
+ * There are no security issues returning the sig/pubKey contents because those will be public
+ *
+ * This verification uses the sig/crt in memory--it verifies the match before uploading.  Other code verifies it from S3.
+ *
+ * For security reasons, the url paths and bucket are hardcoded.
+ */
 import { generateKeyPair, createSign, createVerify } from 'crypto';
 import { createReadStream } from 'fs';
 import { S3 } from 'aws-sdk';
