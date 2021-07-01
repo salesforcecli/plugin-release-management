@@ -51,6 +51,11 @@ export default class Release extends SfdxCommand {
       default: false,
       description: messages.getMessage('githubRelease'),
     }),
+    verify: flags.boolean({
+      description: messages.getMessage('verify'),
+      default: true,
+      allowNo: true,
+    }),
   };
 
   public async run(): Promise<ReleaseResult[]> {
@@ -72,6 +77,8 @@ export default class Release extends SfdxCommand {
       return;
     }
 
+    await lernaRepo.writeNpmToken();
+
     lernaRepo.printStage('Validate Next Version');
     const pkgValidations = lernaRepo.validate();
 
@@ -84,8 +91,6 @@ export default class Release extends SfdxCommand {
       this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
       this.ux.log(`Next Version: ${pkgValidation.nextVersion}${os.EOL}`);
     });
-
-    await lernaRepo.writeNpmToken();
 
     if (this.flags.install) {
       lernaRepo.printStage('Install');
@@ -128,7 +133,7 @@ export default class Release extends SfdxCommand {
       }
     }
 
-    if (this.flags.sign && !this.flags.dryrun) {
+    if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
       lernaRepo.printStage('Verify Signed Packaged');
       lernaRepo.verifySignature(this.flags.sign);
     }

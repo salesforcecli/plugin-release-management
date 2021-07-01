@@ -43,7 +43,7 @@
   {
     "command": "npm:lerna:release",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "githubrelease", "install", "json", "loglevel", "npmaccess", "npmtag", "sign"]
+    "flags": ["dryrun", "githubrelease", "install", "json", "loglevel", "npmaccess", "npmtag", "sign", "verify"]
   },
   {
     "command": "npm:package:promote",
@@ -53,7 +53,7 @@
   {
     "command": "npm:package:release",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "install", "json", "loglevel", "npmaccess", "npmtag", "prerelease", "sign"]
+    "flags": ["dryrun", "install", "json", "loglevel", "npmaccess", "npmtag", "prerelease", "sign", "verify"]
   },
   {
     "command": "npm:release:validate",
