@@ -4,76 +4,66 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.13.7](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.6...v1.13.7) (2021-06-29)
 
-
 ### Bug Fixes
 
-* move write of npmrc files up ([#219](https://github.com/salesforcecli/plugin-release-management/issues/219)) ([bcdcd9d](https://github.com/salesforcecli/plugin-release-management/commit/bcdcd9d00f14279466e949ced577d5f27246fc4c))
+- move write of npmrc files up ([#219](https://github.com/salesforcecli/plugin-release-management/issues/219)) ([bcdcd9d](https://github.com/salesforcecli/plugin-release-management/commit/bcdcd9d00f14279466e949ced577d5f27246fc4c))
 
 ### [1.13.6](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.5...v1.13.6) (2021-06-29)
 
-
 ### Bug Fixes
 
-* add verify flag ([#218](https://github.com/salesforcecli/plugin-release-management/issues/218)) ([30b3b6e](https://github.com/salesforcecli/plugin-release-management/commit/30b3b6ecc176ef2240726077e79a5d1ba6506714))
+- add verify flag ([#218](https://github.com/salesforcecli/plugin-release-management/issues/218)) ([30b3b6e](https://github.com/salesforcecli/plugin-release-management/commit/30b3b6ecc176ef2240726077e79a5d1ba6506714))
 
 ### [1.13.5](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.4...v1.13.5) (2021-06-28)
 
-
 ### Bug Fixes
 
-* add registry param to sfdx-trust calls ([#215](https://github.com/salesforcecli/plugin-release-management/issues/215)) ([237e2f2](https://github.com/salesforcecli/plugin-release-management/commit/237e2f2e677a6833fb103e102ff1da8a768f33e1))
+- add registry param to sfdx-trust calls ([#215](https://github.com/salesforcecli/plugin-release-management/issues/215)) ([237e2f2](https://github.com/salesforcecli/plugin-release-management/commit/237e2f2e677a6833fb103e102ff1da8a768f33e1))
 
 ### [1.13.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.3...v1.13.4) (2021-06-25)
 
-
 ### Bug Fixes
 
-* some of our projects use GH_TOKEN, some GITHUB_TOKEN ([55b6b83](https://github.com/salesforcecli/plugin-release-management/commit/55b6b83742804e42e1913898004e9d7f00f477d8))
+- some of our projects use GH_TOKEN, some GITHUB_TOKEN ([55b6b83](https://github.com/salesforcecli/plugin-release-management/commit/55b6b83742804e42e1913898004e9d7f00f477d8))
 
 ### [1.13.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.2...v1.13.3) (2021-06-25)
 
-
 ### Bug Fixes
 
-* add httpOptions agent entry for s3 ([#214](https://github.com/salesforcecli/plugin-release-management/issues/214)) ([e40153e](https://github.com/salesforcecli/plugin-release-management/commit/e40153eb1d02201a979c089e2c25675d72c77082))
-* try to get proxy to s3 to work ([#210](https://github.com/salesforcecli/plugin-release-management/issues/210)) ([2f83ada](https://github.com/salesforcecli/plugin-release-management/commit/2f83adac64cb450fbda6e770c148d4a215a37c3b))
+- add httpOptions agent entry for s3 ([#214](https://github.com/salesforcecli/plugin-release-management/issues/214)) ([e40153e](https://github.com/salesforcecli/plugin-release-management/commit/e40153eb1d02201a979c089e2c25675d72c77082))
+- try to get proxy to s3 to work ([#210](https://github.com/salesforcecli/plugin-release-management/issues/210)) ([2f83ada](https://github.com/salesforcecli/plugin-release-management/commit/2f83adac64cb450fbda6e770c148d4a215a37c3b))
 
 ### [1.13.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.1...v1.13.2) (2021-06-22)
 
-
 ### Bug Fixes
 
-* load messages for shared dependabot flag ([ca33483](https://github.com/salesforcecli/plugin-release-management/commit/ca33483940a68f2db9fa7f09d312090ef3895164))
-* load messages for shared dependabot flag ([b80d85b](https://github.com/salesforcecli/plugin-release-management/commit/b80d85b6c3acc2ee1a11572f3cefc2ccb0e08ab9))
+- load messages for shared dependabot flag ([ca33483](https://github.com/salesforcecli/plugin-release-management/commit/ca33483940a68f2db9fa7f09d312090ef3895164))
+- load messages for shared dependabot flag ([b80d85b](https://github.com/salesforcecli/plugin-release-management/commit/b80d85b6c3acc2ee1a11572f3cefc2ccb0e08ab9))
 
 ### [1.13.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.0...v1.13.1) (2021-06-21)
 
-
 ### Bug Fixes
 
-* forgot to load the messageDir ([95a6766](https://github.com/salesforcecli/plugin-release-management/commit/95a6766244fb4843aea7029e243e948797ed9277))
+- forgot to load the messageDir ([95a6766](https://github.com/salesforcecli/plugin-release-management/commit/95a6766244fb4843aea7029e243e948797ed9277))
 
 ## [1.13.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.1...v1.13.0) (2021-06-21)
 
-
 ### Features
 
-* add npm:package:promote command ([#191](https://github.com/salesforcecli/plugin-release-management/issues/191)) ([344891d](https://github.com/salesforcecli/plugin-release-management/commit/344891dec209e8942ece8a3ac73d5c92b78a21bd))
+- add npm:package:promote command ([#191](https://github.com/salesforcecli/plugin-release-management/issues/191)) ([344891d](https://github.com/salesforcecli/plugin-release-management/commit/344891dec209e8942ece8a3ac73d5c92b78a21bd))
 
 ### [1.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.12.0...v1.12.1) (2021-06-17)
 
-
 ### Bug Fixes
 
-* s3 does not take an array of agents ([#202](https://github.com/salesforcecli/plugin-release-management/issues/202)) ([4ac5d57](https://github.com/salesforcecli/plugin-release-management/commit/4ac5d57eb6560548a0d39a6aed1d046f07447724))
+- s3 does not take an array of agents ([#202](https://github.com/salesforcecli/plugin-release-management/issues/202)) ([4ac5d57](https://github.com/salesforcecli/plugin-release-management/commit/4ac5d57eb6560548a0d39a6aed1d046f07447724))
 
 ## [1.12.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.1...v1.12.0) (2021-06-16)
 
-
 ### Features
 
-* automerge 1 PR ([f7ae153](https://github.com/salesforcecli/plugin-release-management/commit/f7ae1536d9ce10da7444706d4fd8df60e75f2c96))
-* dependabout automerging ([0e6b6fb](https://github.com/salesforcecli/plugin-release-management/commit/0e6b6fbd975a1cf6d716791360f54031a6364730))
+- automerge 1 PR ([f7ae153](https://github.com/salesforcecli/plugin-release-management/commit/f7ae1536d9ce10da7444706d4fd8df60e75f2c96))
+- dependabout automerging ([0e6b6fb](https://github.com/salesforcecli/plugin-release-management/commit/0e6b6fbd975a1cf6d716791360f54031a6364730))
 
 ### [1.11.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.11.0...v1.11.1) (2021-06-15)
 

@@ -28,7 +28,7 @@ describe('Upload', () => {
     AWSMock.mock('S3', 'putObject', (params, callback) => {
       callback(null, { ETag: '12345' });
     });
-    const response = await upload.upload('my-plugin-1.0.0.sig', 'my-bucket', 'media/signatures');
+    const response = await upload.putObject('my-plugin-1.0.0.sig', 'my-bucket', 'media/signatures');
     expect(response).to.deep.equal({ ETag: '12345' });
   });
 });

@@ -16,12 +16,11 @@ import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
-import { api as packAndSignApi, SigningResponse } from './codeSigning/packAndSign';
-import { upload } from './codeSigning/upload';
 import { Package, VersionValidation } from './package';
 import { Registry } from './registry';
 import { inspectCommits } from './inspectCommits';
-
+import { SigningResponse } from './codeSigning/SimplifiedSigning';
+import { api as packAndSignApi } from './codeSigning/packAndSign';
 export type LernaJson = {
   packages?: string[];
 } & AnyJson;
@@ -51,50 +50,6 @@ type PollFunction = () => boolean;
 
 export async function isMonoRepo(): Promise<boolean> {
   return fs.fileExists('lerna.json');
-}
-
-export class Signer extends AsyncOptionalCreatable {
-  public static DEFAULT_PUBLIC_KEY_URL = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli-03032020.crt';
-  public static DEFAULT_SIGNATURE_URL = 'https://developer.salesforce.com/media/salesforce-cli/signatures';
-  public keyPath: string;
-  public publicKeyUrl: string;
-  public signatureUrl: string;
-
-  private logger: Logger;
-  private ux: UX;
-  private env: Env;
-
-  public constructor(ux: UX) {
-    super(ux);
-    this.ux = ux;
-    this.env = new Env();
-    this.publicKeyUrl = this.env.getString('SFDX_PUBLIC_KEY_URL', Signer.DEFAULT_PUBLIC_KEY_URL);
-    this.signatureUrl = this.env.getString('SFDX_SIGNATURE_URL', Signer.DEFAULT_SIGNATURE_URL);
-  }
-
-  public async prepare(): Promise<void> {
-    const key = Buffer.from(this.env.getString('SALESFORCE_KEY'), 'base64').toString();
-    this.keyPath = path.join(os.tmpdir(), 'salesforce-cli.key');
-    await fs.writeFile(this.keyPath, key);
-    this.logger.debug(`Wrote key to ${this.keyPath}`);
-  }
-
-  public async sign(target?: string): Promise<SigningResponse> {
-    packAndSignApi.setUx(this.ux);
-    const repsonse = await packAndSignApi.doPackAndSign({
-      signatureurl: this.signatureUrl,
-      publickeyurl: this.publicKeyUrl,
-      privatekeypath: this.keyPath,
-      target,
-    });
-    await fs.unlink(this.keyPath);
-    return repsonse;
-  }
-
-  protected async init(): Promise<void> {
-    this.logger = await Logger.child(this.constructor.name);
-    await this.prepare();
-  }
 }
 
 export type RepositoryOptions = {
@@ -172,12 +127,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   public printStage(msg: string): void {
     this.ux.log(chalk.green.bold(`${os.EOL}${this.stepCounter}) ${msg}`));
     this.stepCounter += 1;
-  }
-
-  public async uploadSignature(signResult: SigningResponse): Promise<void> {
-    const result = await upload(signResult.filename, 'dfc-data-production', 'media/salesforce-cli/signatures');
-    this.ux.log(`ETag: ${result.ETag}`);
-    this.ux.log(`VersionId: ${result.VersionId}`);
   }
 
   public async writeNpmToken(): Promise<void> {
@@ -291,12 +240,17 @@ export class LernaRepo extends Repository {
   }
 
   public async sign(packageNames: string[]): Promise<SigningResponse[]> {
+    this.ux.log(
+      `Command asked to sign packages ${packageNames.join(', ')}.  The repo contains ${this.packages
+        .map((pkg) => `${pkg.name} (${pkg.location})`)
+        .join(', ')}`
+    );
     const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
     const responses: SigningResponse[] = [];
-    const signer = await Signer.create(this.ux);
+    packAndSignApi.setUx(this.ux);
     for (const pkg of packages) {
       this.ux.log(chalk.dim(`Signing ${pkg.name} at ${pkg.location}`));
-      const response = await signer.sign(pkg.location);
+      const response = await packAndSignApi.packSignVerifyModifyPackageJSON(pkg.location);
       responses.push(response);
     }
     return responses;
@@ -306,11 +260,12 @@ export class LernaRepo extends Repository {
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     const tarPathsByPkgName: { [key: string]: string } = (signatures || []).reduce((res, curr) => {
-      res[curr.name] = curr.tarPath;
+      res[curr.packageName] = curr.fileTarPath;
       return res;
     }, {});
     for (const pkg of this.packages) {
       const tarPath = tarPathsByPkgName[pkg.name];
+      this.ux.log(`Will publish ${pkg.name} which is at ${tarPath}`);
       let cmd = 'npm publish';
       if (tarPath) cmd += ` ${tarPath}`;
       if (tag) cmd += ` --tag ${tag}`;
@@ -425,8 +380,12 @@ export class SinglePackageRepo extends Repository {
   }
 
   public async sign(): Promise<SigningResponse> {
-    const signer = await Signer.create(this.ux);
-    return signer.sign();
+    packAndSignApi.setUx(this.ux);
+    return packAndSignApi.packSignVerifyModifyPackageJSON(this.package.location);
+  }
+
+  public async revertChanges(): Promise<void> {
+    return packAndSignApi.revertPackageJsonIfExists();
   }
 
   public verifySignature(): void {
@@ -440,8 +399,7 @@ export class SinglePackageRepo extends Repository {
     const { dryrun, signatures, access, tag } = opts;
     if (!dryrun) await this.writeNpmToken();
     let cmd = 'npm publish';
-    const tarPath = getString(signatures, '0.tarPath', null);
-    if (tarPath) cmd += ` ${tarPath}`;
+    if (signatures?.[0]?.fileTarPath) cmd += ` ${signatures[0]?.fileTarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
     cmd += ` ${this.registry.getRegistryParameter()}`;

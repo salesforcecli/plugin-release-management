@@ -29,7 +29,7 @@ parameters:
     default: ''
     type: string
   repo_tag:
-    description: 'The tag of the module repo to checkout, '''' defaults to branch/PR'
+    description: "The tag of the module repo to checkout, '' defaults to branch/PR"
     default: ''
     type: string
   npm_module_name:
@@ -54,12 +54,9 @@ workflows:
               node_version:
                 - latest
                 - lts
-                - maintenance
             exclude:
               - os: windows
                 node_version: lts
-              - os: windows
-                node_version: maintenance
       - release-management/release-package:
           sign: true
           requires:

@@ -43,11 +43,6 @@ const DEPENDENCIES: Dependency[] = [
     condition: (flags): boolean => !!flags.sign,
   },
   {
-    name: 'SALESFORCE_KEY',
-    type: 'env',
-    condition: (flags): boolean => !!flags.sign,
-  },
-  {
     name: 'NPM_TOKEN',
     type: 'env',
     condition: (flags): boolean => !flags.dryrun,
