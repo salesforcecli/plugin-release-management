@@ -111,6 +111,9 @@
         "subtopics": {
           "versions": {
             "description": "view CLI versions"
+          },
+          "tarballs": {
+            "description": "CLI tarballs"
           }
         }
       },
