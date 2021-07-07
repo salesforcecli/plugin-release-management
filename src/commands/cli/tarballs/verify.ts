@@ -73,7 +73,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async execute(msg: string, validate: () => Promise<boolean>): Promise<boolean> {
+  public async execute(msg: string, validate: () => Promise<boolean>): Promise<boolean> {
     this.ux.cli.action.start(`[${this.step}/${this.totalSteps}] ${msg}`);
     if (!(await validate())) {
       this.ux.cli.action.stop(FAILED);
@@ -84,7 +84,7 @@ export default class Verify extends SfdxCommand {
     return true;
   }
 
-  private async ensureNoWebDriverIO(): Promise<void> {
+  public async ensureNoWebDriverIO(): Promise<void> {
     const webDriverIo = path.join(this.baseDir, 'node_modules', 'webdriverio', 'test');
     const validate = async (): Promise<boolean> => {
       return !(await fs.fileExists(webDriverIo));
@@ -95,7 +95,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureNoHerokuCliUtilNyc(): Promise<void> {
+  public async ensureNoHerokuCliUtilNyc(): Promise<void> {
     const herokuCliUtil = path.join(
       this.baseDir,
       'node_modules',
@@ -129,7 +129,7 @@ export default class Verify extends SfdxCommand {
    * this leaves us a relatively comfortable maximum windows username length of 48 characters with a hard maximum path length of 144 characters
    * - then scan the cleaned build output directory for paths exceding this threshold, and exit with an error if detected
    */
-  private async ensureWindowsPathLengths(): Promise<void> {
+  public async ensureWindowsPathLengths(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const warningLength = 124;
       const maxLength = 146;
@@ -160,7 +160,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureApexNode(): Promise<void> {
+  public async ensureApexNode(): Promise<void> {
     const apexNodePath = path.join(this.baseDir, 'node_modules', '@salesforce', 'apex-node', 'lib', 'src', 'tests');
     const validate = async (): Promise<boolean> => fs.fileExists(apexNodePath);
     const passed = await this.execute('Ensure apex-node exists', validate);
@@ -169,7 +169,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensurePluginGenerateTestTemplates(): Promise<void> {
+  public async ensurePluginGenerateTestTemplates(): Promise<void> {
     const pluginGeneratorTestPath = path.join(
       this.baseDir,
       'node_modules',
@@ -186,7 +186,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureTemplatesCommands(): Promise<void> {
+  public async ensureTemplatesCommands(): Promise<void> {
     const templatesPath = path.join(this.baseDir, 'node_modules', '@salesforce', 'plugin-templates');
     const validate = async (): Promise<boolean> => fs.fileExists(templatesPath);
     const passed = await this.execute('Ensure templates commands exist', validate);
@@ -195,7 +195,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureNoDistTestsOrMaps(): Promise<void> {
+  public async ensureNoDistTestsOrMaps(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const files = await fg([`${this.baseDir}/dist/*.test.js`, `${this.baseDir}/dist/*.js.map`]);
       if (files.length) {
@@ -211,7 +211,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureNoUnexpectedfiles(): Promise<void> {
+  public async ensureNoUnexpectedfiles(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const expectedFileGlobs = [
         `${this.baseDir}/package.json`,
@@ -242,7 +242,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async ensureSfIsIncluded(): Promise<void> {
+  public async ensureSfIsIncluded(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const sfBin = path.join(this.baseDir, 'bin', 'sf');
       const sfBinExists = await fs.fileExists(sfBin);
