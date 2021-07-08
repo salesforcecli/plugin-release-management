@@ -61,9 +61,10 @@ export default class Verify extends SfdxCommand {
         // this.ensureSfIsIncluded.bind(this),
       ],
       [CLI.SF]: [
-        this.ensureWindowsPathLengths.bind(this),
         this.ensureNoDistTestsOrMaps.bind(this),
         this.ensureNoUnexpectedfiles.bind(this),
+        // TODO: add this back before R1
+        // this.ensureWindowsPathLengths.bind(this),
       ],
     };
 
