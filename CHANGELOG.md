@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.8...v1.14.0) (2021-07-08)
+
+
+### Features
+
+* add commands to support sf release build ([#231](https://github.com/salesforcecli/plugin-release-management/issues/231)) ([d57b5be](https://github.com/salesforcecli/plugin-release-management/commit/d57b5be28054bdafc573454a0646ebcb1b57de46))
+
 ### [1.13.8](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.7...v1.13.8) (2021-07-06)
 
 
