@@ -110,10 +110,10 @@
         "description": "get information on the cli",
         "subtopics": {
           "versions": {
-            "description": "view CLI versions"
+            "description": "interact with CLI versions"
           },
           "tarballs": {
-            "description": "CLI tarballs"
+            "description": "interact with CLI tarballs"
           }
         }
       },
