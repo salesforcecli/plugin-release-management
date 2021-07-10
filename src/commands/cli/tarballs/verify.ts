@@ -11,7 +11,7 @@ import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
-import { ensure } from '@salesforce/ts-types';
+import { ensure, ensureNumber } from '@salesforce/ts-types';
 import { red, yellow, green } from 'chalk';
 
 Messages.importMessagesDirectory(__dirname);
@@ -38,6 +38,11 @@ export default class Verify extends SfdxCommand {
       default: 'sfdx',
       char: 'c',
     }),
+    ['windows-username-buffer']: flags.number({
+      description: messages.getMessage('windowsUsernameBuffer'),
+      default: 41,
+      char: 'w',
+    }),
   };
 
   private baseDir!: string;
@@ -63,8 +68,7 @@ export default class Verify extends SfdxCommand {
       [CLI.SF]: [
         this.ensureNoDistTestsOrMaps.bind(this),
         this.ensureNoUnexpectedfiles.bind(this),
-        // TODO: add this back before R1
-        // this.ensureWindowsPathLengths.bind(this),
+        this.ensureWindowsPathLengths.bind(this),
       ],
     };
 
@@ -118,32 +122,51 @@ export default class Verify extends SfdxCommand {
   }
 
   /**
-   * Make sure cleaning was not too aggressive and that path lengths in the build tree are as windows-safe as they can be
+   * Ensure that the path lengths in the build tree are as windows safe as possible.
    *
-   * Check for potentially overflowing windows paths:
-   * - assume a max practical windows username length of 64 characters (https://technet.microsoft.com/it-it/library/bb726984(en-us).aspx)
-   * - add characters to account for the root sfdx client tmp untar path for a total of 135
-   * e.g. C:\Users\<username>\AppData\Local\sfdx\tmp\sfdx-cli-v7.xx.yy-abcdef-windows-x64\
-   * - subtract those 135 characters from the max windows path length of 259 to yield the allowable length of 124 path characters
-   * - considering that we currently have some dependencies in the built output that exceed 124 characters (up to 139 in salesforce-lightning-cli)
-   * we will consider the maximum path length of 139, plus 5 as a buffer, as the hard upper limit to our allowable path length;
-   * this leaves us a relatively comfortable maximum windows username length of 48 characters with a hard maximum path length of 144 characters
-   * - then scan the cleaned build output directory for paths exceding this threshold, and exit with an error if detected
+   * The check fails if the path lengths DO NOT allow for a username longer than the --windows-username-buffer
+   *
+   * Warnings will be emitted for any path that does not allow for a username longer than 48 characters
    */
   public async ensureWindowsPathLengths(): Promise<void> {
     const validate = async (): Promise<boolean> => {
-      const warningLength = 124;
-      const maxLength = 146;
+      const maxWindowsPath = 259;
+      const cli = ensure<CLI>(this.flags.cli);
+
+      const supportedUsernameLength = ensureNumber(this.flags['windows-username-buffer']);
+      const fakeSupportedUsername = 'u'.repeat(supportedUsernameLength);
+      const supportedBaseWindowsPath = `C:\\Users\\${fakeSupportedUsername}\\AppData\\Local\\${cli}\\tmp\\${cli}-cli-v1.xxx.yyy-abcdef-windows-x64\\`;
+
+      const maxUsernameLength = 64;
+      const fakeMaxUsername = 'u'.repeat(maxUsernameLength);
+      const maxBaseWindowsPath = `C:\\Users\\${fakeMaxUsername}\\AppData\\Local\\${cli}\\tmp\\${cli}-cli-v1.xxx.yyy-abcdef-windows-x64\\`;
+
+      const supportedWindowsPathLength = maxWindowsPath - supportedBaseWindowsPath.length;
+      const maxWindowsPathLength = maxWindowsPath - maxBaseWindowsPath.length;
+
+      this.log('Windows Path Length Test:');
+      this.log(`  - max windows path length: ${maxWindowsPath}`);
+      this.log('  ---- Upper Limit ----');
+      this.log(`  - ${cli} max username length: ${maxUsernameLength}`);
+      this.log(`  - ${cli} max base path length: ${maxBaseWindowsPath.length}`);
+      this.log(`  - ${cli} max allowable path length: ${maxWindowsPathLength}`);
+      this.log('  ---- Supported Limit ----');
+      this.log(`  - ${cli} supported username length: ${supportedUsernameLength}`);
+      this.log(`  - ${cli} supported base path length: ${supportedBaseWindowsPath.length}`);
+      this.log(`  - ${cli} supported allowable path length: ${supportedWindowsPathLength}`);
+
       const paths = (await fg(`${this.baseDir}/node_modules/**/*`)).map((p) =>
         p.replace(`${this.baseDir}${path.sep}`, '')
       );
-      const warnPaths = paths.filter((p) => p.length >= warningLength && p.length < maxLength).sort();
-      const errorPaths = paths.filter((p) => p.length >= maxLength).sort();
+      const warnPaths = paths
+        .filter((p) => p.length >= maxWindowsPathLength && p.length < supportedWindowsPathLength)
+        .sort();
+      const errorPaths = paths.filter((p) => p.length >= supportedWindowsPathLength).sort();
       if (warnPaths.length) {
         this.log(
           `${yellow.bold(
             'WARNING:'
-          )} Some paths could result in update errors for Windows users with usernames greater than 48 characters!`
+          )} Some paths could result in errors for Windows users with usernames that are ${maxUsernameLength} characters!`
         );
         warnPaths.forEach((p) => this.log(`${p.length} - ${p}`));
       }
