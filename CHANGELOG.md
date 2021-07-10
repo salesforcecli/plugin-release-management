@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.14.0...v1.15.0) (2021-07-10)
+
+
+### Features
+
+* improve windows path lengths test ([1777031](https://github.com/salesforcecli/plugin-release-management/commit/1777031c699434d8f13c48af159afd9f4218660d))
+
 ## [1.14.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.8...v1.14.0) (2021-07-08)
 
 
