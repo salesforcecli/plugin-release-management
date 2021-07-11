@@ -46,27 +46,29 @@ export default class Verify extends SfdxCommand {
     this.remove(jsForceTestSuite, 'JSforceTestSuite files');
 
     // Module readmes and other markdown docs not found in template directories
-    const markdownFiles = await this.find(`${baseDirGlob}/**/*.md`, { excludeDirectory: 'templates' });
+    const markdownFiles = await this.find(`${baseDirGlob}/**/*.md`, {
+      excludeDirectories: ['templates', 'messages'],
+    });
     this.remove(markdownFiles, '.md files');
 
     // Module .gitignore not found in template directories
-    const gitignore = await this.find(`${baseDirGlob}/**/.gitignore`, { excludeDirectory: 'templates' });
+    const gitignore = await this.find(`${baseDirGlob}/**/.gitignore`, { excludeDirectories: ['templates'] });
     this.remove(gitignore, '.gitignore files');
 
     // Module .gitattributes not found in template directories
-    const gitattributes = await this.find(`${baseDirGlob}/**/.gitattributes`, { excludeDirectory: 'templates' });
+    const gitattributes = await this.find(`${baseDirGlob}/**/.gitattributes`, { excludeDirectories: ['templates'] });
     this.remove(gitattributes, '.gitattributes files');
 
     // Module .eslintrc not found in template directories
-    const eslintrc = await this.find(`${baseDirGlob}/**/.eslintrc`, { excludeDirectory: 'templates' });
+    const eslintrc = await this.find(`${baseDirGlob}/**/.eslintrc`, { excludeDirectories: ['templates'] });
     this.remove(eslintrc, '.eslintrc files');
 
     // Module appveyor.yml not found in template directories
-    const appveyor = await this.find(`${baseDirGlob}/**/appveyor.yml`, { excludeDirectory: 'templates' });
+    const appveyor = await this.find(`${baseDirGlob}/**/appveyor.yml`, { excludeDirectories: ['templates'] });
     this.remove(appveyor, 'appveyor.yml files');
 
     // Module circle.yml not found in template directories
-    const circle = await this.find(`${baseDirGlob}/**/circle.yml`, { excludeDirectory: 'templates' });
+    const circle = await this.find(`${baseDirGlob}/**/circle.yml`, { excludeDirectories: ['templates'] });
     this.remove(circle, 'circle.yml files');
 
     // Module test dirs, except in salesforce-alm, which includes production source code in such a dir
@@ -105,16 +107,21 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  private async find(globPattern: string, options: fg.Options & { excludeDirectory?: string } = {}): Promise<string[]> {
+  private async find(
+    globPattern: string,
+    options: fg.Options & { excludeDirectories?: string[] } = {}
+  ): Promise<string[]> {
     const patterns = [globPattern];
-    if (options.excludeDirectory) {
-      const parts = globPattern.split('/');
+    if (options.excludeDirectories) {
+      const parts = globPattern.split('/').slice();
       const lastPart = parts.pop();
-      parts.push(options.excludeDirectory, '**', lastPart);
-      const exclusionPattern = `!${parts.join('/')}`;
-      patterns.push(exclusionPattern);
+      for (const dir of options.excludeDirectories) {
+        const patternParts = parts.concat([dir, '**', lastPart]);
+        const exclusionPattern = `!${patternParts.join('/')}`;
+        patterns.push(exclusionPattern);
+      }
     }
-    if (options?.excludeDirectory) delete options.excludeDirectory;
+    if (options?.excludeDirectories) delete options.excludeDirectories;
     return fg(patterns, options);
   }
 
