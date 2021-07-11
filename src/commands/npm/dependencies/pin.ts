@@ -31,7 +31,7 @@ export default class Pin extends SfdxCommand {
     const pkg = packageJson.pinDependencyVersions(this.flags.tag);
 
     if (this.flags.dryrun) {
-      process.emitWarning('Running in --dryrun mode. No changes will be written to the package.json.');
+      this.warn('Running in --dryrun mode. No changes will be written to the package.json.');
     } else {
       packageJson.writePackageJson();
     }
@@ -41,6 +41,7 @@ export default class Pin extends SfdxCommand {
         { key: 'name', label: 'Name' },
         { key: 'version', label: 'Version' },
         { key: 'tag', label: 'Tag' },
+        { key: 'alias', label: 'Alias' },
       ],
     });
 
