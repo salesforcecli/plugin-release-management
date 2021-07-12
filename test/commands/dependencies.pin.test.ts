@@ -28,7 +28,7 @@ function setupStub(alias?: string): void {
   // we don't need all members of what exec returns, just the stdout
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  $$.SANDBOX.stub(shell, 'exec').returns({ stdout: '{"latest":"1.4.4","test":"0.0.6"}' });
+  $$.SANDBOX.stub(shell, 'exec').returns({ stdout: '{"latest":"1.4.4","latest-rc":"1.5.0"}' });
 }
 
 describe('dependencies:pin', () => {
@@ -77,13 +77,13 @@ describe('dependencies:pin', () => {
       setupStub();
     })
     .stdout()
-    .command(['npm:dependencies:pin', '--tag', 'test', '--json'])
+    .command(['npm:dependencies:pin', '--tag', 'latest-rc', '--json'])
     .it('should update the package.json with the target release version', (ctx) => {
       const expected = [
         {
           name: '@salesforce/plugin-auth',
-          tag: 'test',
-          version: '0.0.6',
+          tag: 'latest-rc',
+          version: '1.5.0',
           alias: null,
         },
       ];

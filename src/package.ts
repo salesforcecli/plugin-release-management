@@ -5,9 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
+import * as semver from 'semver';
+import { cli } from 'cli-ux';
 import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable } from '@salesforce/kit';
+import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
 import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
@@ -128,11 +130,15 @@ export class Package extends AsyncOptionalCreatable {
       if (version.startsWith('npm:')) {
         return {
           name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
-          version: version.replace(/(.*?)@/, ''),
+          version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
           alias: d,
         };
       } else {
-        return { name: d, version, alias: null };
+        return {
+          name: d,
+          version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+          alias: null,
+        };
       }
     });
 
@@ -150,7 +156,19 @@ export class Package extends AsyncOptionalCreatable {
         tag = 'latest';
       }
 
-      const version = versions[tag];
+      // If the version in package.json is greater than the version of the requested tag, then we
+      // assume that this is on purpose - so we don't overwrite it. For example, we might want to
+      // include a latest-rc version for a single plugin but everything else we want latest.
+      let version: string;
+      if (semver.gt(dep.version, versions[tag])) {
+        cli.warn(
+          `${dep.name} is currently pinned at ${dep.version} which is higher than ${tag} (${versions[tag]}). Assuming that this is intentional...`
+        );
+        version = dep.version;
+        tag = findKey(versions, (v) => v === version);
+      } else {
+        version = versions[tag];
+      }
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
       if (dep.alias) {
