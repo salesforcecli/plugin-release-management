@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.2...v1.16.3) (2021-07-12)
+
+
+### Bug Fixes
+
+* recursive mkdirp ([42217b4](https://github.com/salesforcecli/plugin-release-management/commit/42217b489b0b8f63d7636df9147e88bf01197ced))
+
 ### [1.16.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.1...v1.16.2) (2021-07-12)
 
 
