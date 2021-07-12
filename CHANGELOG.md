@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.0...v1.16.1) (2021-07-12)
+
+
+### Bug Fixes
+
+* allow for pinned deps to be hardcoded at a version higher than the requested tag ([b7e1c60](https://github.com/salesforcecli/plugin-release-management/commit/b7e1c60b6d1c1d369eb08409dae2e0a833019f48))
+
 ## [1.16.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.15.0...v1.16.0) (2021-07-12)
 
 
