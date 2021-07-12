@@ -127,7 +127,7 @@ export class Package extends AsyncOptionalCreatable {
       const version = dependencies[d];
       if (version.startsWith('npm:')) {
         return {
-          name: version.replace('npm:', '').replace(/@(\^|~)?[0-9].[0-9].[0-9](.*?)$/, ''),
+          name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
           version: version.replace(/(.*?)@/, ''),
           alias: d,
         };
