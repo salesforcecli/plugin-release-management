@@ -54,7 +54,7 @@ describe('dependencies:pin', () => {
 
   test
     .do(() => {
-      setupStub();
+      setupStub('auth');
     })
     .stdout()
     .command(['npm:dependencies:pin', '--json'])
