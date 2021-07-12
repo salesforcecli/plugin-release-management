@@ -169,7 +169,7 @@ export default class Inspect extends SfdxCommand {
     }),
   };
 
-  public workingDir = path.join(os.tmpdir(), 'cli_inspection');
+  public workingDir = path.join('tmp', 'cli_inspection');
   public archives: Archives;
 
   public async run(): Promise<Info[]> {
