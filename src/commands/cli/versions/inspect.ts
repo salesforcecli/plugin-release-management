@@ -187,7 +187,7 @@ export default class Inspect extends SfdxCommand {
     this.ux.log(`Working Directory: ${this.workingDir}`);
     // ensure that we are starting with a clean directory
     await fs.rmdir(this.workingDir, { recursive: true });
-    await fs.mkdirp(this.workingDir);
+    await fs.mkdirp(this.workingDir, { recursive: true });
 
     this.initArchives();
 
