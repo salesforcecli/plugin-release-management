@@ -11,7 +11,7 @@ import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
-import { ensure, ensureNumber } from '@salesforce/ts-types';
+import { ensure, ensureNumber, get } from '@salesforce/ts-types';
 import { red, yellow, green } from 'chalk';
 
 Messages.importMessagesDirectory(__dirname);
@@ -69,6 +69,7 @@ export default class Verify extends SfdxCommand {
         this.ensureNoDistTestsOrMaps.bind(this),
         this.ensureNoUnexpectedfiles.bind(this),
         this.ensureWindowsPathLengths.bind(this),
+        this.ensureMdMessagesExist.bind(this),
       ],
     };
 
@@ -263,6 +264,20 @@ export default class Verify extends SfdxCommand {
     const passed = await this.execute('Ensure no unexpected files', validate);
     if (!passed) {
       throw new SfdxError('Unexpected file found in base build dir!');
+    }
+  }
+
+  public async ensureMdMessagesExist(): Promise<void> {
+    const validate = async (): Promise<boolean> => {
+      const packageJson = await fs.readJson(path.join(this.baseDir, 'package.json'));
+      const plugins = get(packageJson, 'oclif.plugins', []) as string[];
+      const globs = plugins.map((p) => `${this.baseDir}/node_modules/${p}/messages/*.md`);
+      const files = await fg(globs);
+      return Boolean(files.length);
+    };
+    const passed = await this.execute('Ensure .md messages exist', validate);
+    if (!passed) {
+      throw new SfdxError('Found no .md message files. Was the clean too aggresive?');
     }
   }
 

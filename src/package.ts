@@ -8,14 +8,14 @@ import * as path from 'path';
 import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable } from '@salesforce/kit';
-import { AnyJson, get } from '@salesforce/ts-types';
+import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
 export type PackageJson = {
   name: string;
   version: string;
-  dependencies: AnyJson;
-  devDependencies: AnyJson;
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
@@ -46,6 +46,7 @@ interface PinnedPackage {
   name: string;
   version: string;
   tag: string;
+  alias: Nullable<string>;
 }
 
 export class Package extends AsyncOptionalCreatable {
@@ -121,11 +122,24 @@ export class Package extends AsyncOptionalCreatable {
         'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
       );
     }
-    const dependencies: string[] = this.packageJson.pinnedDependencies;
+    const { pinnedDependencies, dependencies } = this.packageJson;
+    const deps = pinnedDependencies.map((d) => {
+      const version = dependencies[d];
+      if (version.startsWith('npm:')) {
+        return {
+          name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
+          version: version.replace(/(.*?)@/, ''),
+          alias: d,
+        };
+      } else {
+        return { name: d, version, alias: null };
+      }
+    });
+
     const pinnedPackages: PinnedPackage[] = [];
-    dependencies.forEach((name) => {
+    deps.forEach((dep) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      const result = exec(`npm view ${dep.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
         silent: true,
       });
       const versions = JSON.parse(result.stdout) as Record<string, string>;
@@ -139,10 +153,13 @@ export class Package extends AsyncOptionalCreatable {
       const version = versions[tag];
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
-      this.packageJson['dependencies'][name] = version;
-
+      if (dep.alias) {
+        this.packageJson['dependencies'][dep.alias] = `npm:${dep.name}@${version}`;
+      } else {
+        this.packageJson['dependencies'][dep.name] = version;
+      }
       // accumulate information to return
-      pinnedPackages.push({ name, version, tag });
+      pinnedPackages.push({ name: dep.name, version, tag, alias: dep.alias });
     });
 
     return pinnedPackages;
