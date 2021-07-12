@@ -169,7 +169,7 @@ export default class Inspect extends SfdxCommand {
     }),
   };
 
-  public workingDir = path.join('tmp', 'cli_inspection');
+  public workingDir = path.join(os.tmpdir(), 'cli_inspection');
   public archives: Archives;
 
   public async run(): Promise<Info[]> {
@@ -185,8 +185,13 @@ export default class Inspect extends SfdxCommand {
     }
 
     this.ux.log(`Working Directory: ${this.workingDir}`);
+
     // ensure that we are starting with a clean directory
-    await fs.rmdir(this.workingDir, { recursive: true });
+    try {
+      await fs.remove(this.workingDir);
+    } catch {
+      // error means that folder doesn't exist which is okay
+    }
     await fs.mkdirp(this.workingDir, { recursive: true });
 
     this.initArchives();
