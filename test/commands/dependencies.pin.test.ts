@@ -8,15 +8,23 @@ import { $$, expect, test } from '@salesforce/command/lib/test';
 import * as shell from 'shelljs';
 import { fs } from '@salesforce/core';
 
-function setupStub(): void {
+function setupStub(alias?: string): void {
   // prevent it from writing back to the package.json
   $$.SANDBOX.stub(fs, 'writeJsonSync');
-  $$.SANDBOX.stub(fs, 'readJson').resolves({
-    name: 'test',
-    version: '1.0.0',
-    dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
-    pinnedDependencies: ['@salesforce/plugin-auth'],
-  });
+  const pJson = alias
+    ? {
+        name: 'test',
+        version: '1.0.0',
+        dependencies: { [alias]: 'npm:@salesforce/plugin-auth@^1.4.0' },
+        pinnedDependencies: [alias],
+      }
+    : {
+        name: 'test',
+        version: '1.0.0',
+        dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
+        pinnedDependencies: ['@salesforce/plugin-auth'],
+      };
+  $$.SANDBOX.stub(fs, 'readJson').resolves(pJson);
   // we don't need all members of what exec returns, just the stdout
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -36,6 +44,27 @@ describe('dependencies:pin', () => {
           name: '@salesforce/plugin-auth',
           tag: 'latest',
           version: '1.4.4',
+          alias: null,
+        },
+      ];
+
+      const result = JSON.parse(ctx.stdout).result;
+      expect(result).to.deep.equal(expected);
+    });
+
+  test
+    .do(() => {
+      setupStub();
+    })
+    .stdout()
+    .command(['npm:dependencies:pin', '--json'])
+    .it('should update the package.json with pinned versions for an aliased package', (ctx) => {
+      const expected = [
+        {
+          name: '@salesforce/plugin-auth',
+          tag: 'latest',
+          version: '1.4.4',
+          alias: 'auth',
         },
       ];
 
@@ -55,6 +84,7 @@ describe('dependencies:pin', () => {
           name: '@salesforce/plugin-auth',
           tag: 'test',
           version: '0.0.6',
+          alias: null,
         },
       ];
 
