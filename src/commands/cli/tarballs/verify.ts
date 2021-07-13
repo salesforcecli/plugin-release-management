@@ -61,13 +61,12 @@ export default class Verify extends SfdxCommand {
         this.ensurePluginGenerateTestTemplates.bind(this),
         this.ensureTemplatesCommands.bind(this),
         this.ensureNoDistTestsOrMaps.bind(this),
-        this.ensureNoUnexpectedfiles.bind(this),
-        // TODO: add this once https://github.com/salesforcecli/sfdx-cli/pull/195 is merged
-        // this.ensureSfIsIncluded.bind(this),
+        this.ensureNoUnexpectedFiles.bind(this),
+        this.ensureSfIsIncluded.bind(this),
       ],
       [CLI.SF]: [
         this.ensureNoDistTestsOrMaps.bind(this),
-        this.ensureNoUnexpectedfiles.bind(this),
+        this.ensureNoUnexpectedFiles.bind(this),
         this.ensureWindowsPathLengths.bind(this),
         this.ensureMdMessagesExist.bind(this),
       ],
@@ -236,7 +235,7 @@ export default class Verify extends SfdxCommand {
     }
   }
 
-  public async ensureNoUnexpectedfiles(): Promise<void> {
+  public async ensureNoUnexpectedFiles(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const expectedFileGlobs = [
         `${this.baseDir}/package.json`,
