@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.5](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.4...v1.16.5) (2021-07-13)
+
+
+### Bug Fixes
+
+* add ensureSfIsIncluded test ([b2e614a](https://github.com/salesforcecli/plugin-release-management/commit/b2e614ae92feb2b8fd9da427e665556cfca5620d))
+
 ### [1.16.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.3...v1.16.4) (2021-07-12)
 
 
