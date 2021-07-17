@@ -19,9 +19,9 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 const URL_BASE = 'https://circleci.com/api/v2/project';
 
-export type CircelCIEnvvarUpdateStatus = Dictionary<string | EnvvarModificationStatus[]>;
+export type CircelCIEnvvarCreateStatus = Dictionary<string | EnvvarModificationStatus[]>;
 
-export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
+export default class CircleCIEnvvarCreate extends CircleCiEnvvars {
   public static readonly description = messages.getMessage('envvar.update.description');
   public static readonly examples = messages.getMessage('envvar.update.examples').split(EOL);
 
@@ -42,7 +42,7 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
     }),
   };
 
-  public async run(): Promise<CircelCIEnvvarUpdateStatus> {
+  public async run(): Promise<CircelCIEnvvarCreateStatus> {
     if (this.flags.dryrun) {
       this.ux.log(
         yellow('Dryrun mode set. All validation will occur but the environment variables will NOT be updated.') + EOL
@@ -53,9 +53,9 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
 
     await this.resolveEnvvarValues();
 
-    const status: CircelCIEnvvarUpdateStatus = {};
+    const status: CircelCIEnvvarCreateStatus = {};
     for (const slug of slugs) {
-      const batch = await this.updateEnvvars(slug);
+      const batch = await this.createEnvvars(slug);
       status[slug] = batch;
       this.printStatus(slug, batch);
     }
@@ -71,24 +71,23 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
     return await super.readPipedInput();
   }
 
-  private async updateEnvvars(slug: string): Promise<string | EnvvarModificationStatus[]> {
+  private async createEnvvars(slug: string): Promise<string | EnvvarModificationStatus[]> {
     const envvarNames: string[] = this.getFlagAsArray('envvar');
     try {
       const existingEnvvars = await this.getCircleCiEnvvars(slug);
-
-      const notFoundEnvvars = envvarNames.filter(
-        (envvarName) => !existingEnvvars.find((existingEnvvar) => existingEnvvar.name === envvarName)
+      const foundEnvvars = envvarNames.filter((envvarName) =>
+        existingEnvvars.find((existingEnvvar) => existingEnvvar.name === envvarName)
       );
 
-      if (notFoundEnvvars.length > 0) {
+      if (foundEnvvars.length > 0) {
         const envvarList = envvarNames.join(', ');
-        const notFoundList = notFoundEnvvars.join(', ');
-        return `Envvars [${envvarList}] not set. ALL specified envvars [${notFoundList}] must be set on the slug. Skipping...`;
+        const foundList = foundEnvvars.join(', ');
+        return `Envvars [${envvarList}] are already set. ALL specified envvars [${foundList}] cannot be set on the slug. Skipping...`;
       }
 
       const status: EnvvarModificationStatus[] = [];
       for (const name of envvarNames) {
-        status.push(await this.updateEnvvar(slug, name, this.envvarValues[name]));
+        status.push(await this.createEnvvar(slug, name, this.envvarValues[name]));
       }
       return status;
     } catch (err) {
@@ -97,18 +96,13 @@ export default class CircleCIEnvvarUpdate extends CircleCiEnvvars {
     }
   }
 
-  private async updateEnvvar(slug: string, name: string, value: string): Promise<EnvvarModificationStatus> {
+  private async createEnvvar(slug: string, name: string, value: string): Promise<EnvvarModificationStatus> {
     const envvarUrl = `${URL_BASE}/${slug}/envvar`;
 
     // Only try to delete and create if we are doing an actual run
     if (!this.flags.dryrun) {
       try {
-        // First remove the old envvar
-        const url = `${envvarUrl}/${name}`;
-        let agent = api.getAgentForUri(url);
-        await got.delete(url, { headers: this.headers, agent });
-
-        agent = api.getAgentForUri(`${envvarUrl}`);
+        const agent = api.getAgentForUri(envvarUrl);
         await got.post(`${envvarUrl}`, {
           headers: this.headers,
           json: { name, value },

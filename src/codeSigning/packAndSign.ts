@@ -463,9 +463,10 @@ export const api = {
   },
 
   getAgentForUri(url: string): false | Agents {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    /* eslint-disable @typescript-eslint/no-unsafe-call */
     const proxyUrl: string = getProxyForUrl(url) as string;
     const agent = ProxyAgent(proxyUrl) as Agent;
+    /* eslint-disable @typescript-eslint/no-unsafe-call */
     return { https: agent, http: agent };
   },
 };

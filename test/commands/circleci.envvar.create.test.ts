@@ -11,8 +11,9 @@ import { env } from '@salesforce/kit';
 import got from 'got';
 import { load } from '@oclif/config';
 import chalk = require('chalk');
-import CircleCIEnvvarUpdate, { CircelCIEnvvarUpdateStatus } from '../../src/commands/circleci/envvar/update';
 import { EnvvarModificationStatus } from '../../lib/circleCiEnvvars';
+import { CircelCIEnvvarCreateStatus } from '../../lib/commands/circleci/envvar/create';
+import CircleCIEnvvarCreate from '../../src/commands/circleci/envvar/create';
 
 const FAKE_ENVVAR_VALUE = 'test value';
 
@@ -21,21 +22,21 @@ const FAKE_ENVVAR_VALUE = 'test value';
  *
  * @param stdout the stdout of a command
  */
-function getResults(stdout: string): CircelCIEnvvarUpdateStatus {
+function getResults(stdout: string): CircelCIEnvvarCreateStatus {
   // Output should not contain envvar values
   expect(stdout).to.not.contain(FAKE_ENVVAR_VALUE);
-  const output = JSON.parse(stdout) as { message: string; stack: string; result: CircelCIEnvvarUpdateStatus };
+  const output = JSON.parse(stdout) as { message: string; stack: string; result: CircelCIEnvvarCreateStatus };
   expect(output.message, `${output.message}: ${output.stack}`).to.be.undefined;
   return output.result;
 }
 
 /**
- * Expect slug status from a CircelCIEnvvarUpdateStatus object.
+ * Expect slug status from a CircelCIEnvvarCreateStatus object.
  *
  * @param slugs a list of slugs
  * @param result a command result
  */
-function expectSlugStatus(slugs: string[], result: CircelCIEnvvarUpdateStatus) {
+function expectSlugStatus(slugs: string[], result: CircelCIEnvvarCreateStatus) {
   const updatedSlugs = Object.keys(result);
   expect(updatedSlugs.length).to.equal(slugs.length);
   const matchedUpdates = updatedSlugs.filter((repo) => {
@@ -58,27 +59,14 @@ before(async function () {
   process.env['CIRCLE_CI_TOKEN'] = '123456';
 });
 
-describe('circleci envvar update', () => {
+describe('circleci envvar create', () => {
   test
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should update envvar on slug from process envvar', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
-
-  test
-    .stub(UX.prototype, 'prompt', () => Promise.resolve(FAKE_ENVVAR_VALUE))
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:update', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should update envvar on slug from prompt', (ctx) => {
+    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
+    .it('should create envvar on slug from process envvar', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
     });
@@ -86,36 +74,44 @@ describe('circleci envvar update', () => {
   test
     .stub(UX.prototype, 'prompt', () => Promise.resolve(FAKE_ENVVAR_VALUE))
     .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should error if ennvar not set on circle', (ctx) => {
+    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
+    .it('should create envvar on slug from prompt', (ctx) => {
+      const result = getResults(ctx.stdout);
+      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+    });
+
+  test
+    .stub(UX.prototype, 'prompt', () => Promise.resolve(FAKE_ENVVAR_VALUE))
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
+    .stub(got, 'post', () => Promise.resolve())
+    .stdout()
+    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
+    .it('should error if ennvar is set on circle', (ctx) => {
       const result = getResults(ctx.stdout);
       expect(result['gh/salesforcecli/plugin-auth']).to.contain('Skipping...');
     });
 
   test
-    .stub(CircleCIEnvvarUpdate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarUpdate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
+    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--envvar=MYENVVAR', '--json'])
+    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
     .it('should error if no envvar are provided with piped input', (ctx) => {
       expect(ctx.stdout).to.contain('missing envvar value');
     });
 
   test
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarUpdate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarUpdate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
+    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--envvar=MYENVVAR', '--json'])
+    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
     .it('should read slugs from piped input', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
@@ -123,13 +119,12 @@ describe('circleci envvar update', () => {
 
   test
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarUpdate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarUpdate.prototype, 'readPipedInput', async () => '[ "gh/salesforcecli/plugin-auth" ]')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
+    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '[ "gh/salesforcecli/plugin-auth" ]')
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--envvar=MYENVVAR', '--json'])
+    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
     .it('should read slugs from piped json input', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
@@ -137,13 +132,12 @@ describe('circleci envvar update', () => {
 
   test
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarUpdate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarUpdate.prototype, 'readPipedInput', async () => '{ "result": ["gh/salesforcecli/plugin-auth"]}')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
+    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '{ "result": ["gh/salesforcecli/plugin-auth"]}')
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
-    .command(['circleci:envvar:update', '--envvar=MYENVVAR', '--json'])
+    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
     .it('should read slugs from piped command json input', (ctx) => {
       const result = getResults(ctx.stdout);
       expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
@@ -151,18 +145,17 @@ describe('circleci envvar update', () => {
 
   test
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarUpdate.prototype, 'isPipedIn', async () => true)
+    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
     .stub(
-      CircleCIEnvvarUpdate.prototype,
+      CircleCIEnvvarCreate.prototype,
       'readPipedInput',
       async () => 'gh/salesforcecli/plugin-auth\ngh/salesforcecli/plugin-config'
     )
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'delete', () => Promise.resolve())
+    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
     .stdout()
     .command([
-      'circleci:envvar:update',
+      'circleci:envvar:create',
       '--slug=gh/salesforcecli/plugin-user',
       '--slug=gh/salesforcecli/plugin-trust',
       '--envvar=MYENVVAR',
