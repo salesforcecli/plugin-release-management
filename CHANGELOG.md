@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.5](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.4...v1.16.5) (2021-07-13)
+
+### Bug Fixes
+
+- add ensureSfIsIncluded test ([b2e614a](https://github.com/salesforcecli/plugin-release-management/commit/b2e614ae92feb2b8fd9da427e665556cfca5620d))
+
+### [1.16.4](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.3...v1.16.4) (2021-07-12)
+
+### Bug Fixes
+
+- catch errors on rmdir ([ac8157e](https://github.com/salesforcecli/plugin-release-management/commit/ac8157e88b9d47ccdcf7fa700f31e1d5ce6c669c))
+
+### [1.16.3](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.2...v1.16.3) (2021-07-12)
+
+### Bug Fixes
+
+- recursive mkdirp ([42217b4](https://github.com/salesforcecli/plugin-release-management/commit/42217b489b0b8f63d7636df9147e88bf01197ced))
+
+### [1.16.2](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.1...v1.16.2) (2021-07-12)
+
+### Bug Fixes
+
+- cli:versions:inspect in CI ([790b39d](https://github.com/salesforcecli/plugin-release-management/commit/790b39d34052fb024a7e9fb0b5e79833f7daf896))
+
+### [1.16.1](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.0...v1.16.1) (2021-07-12)
+
+### Bug Fixes
+
+- allow for pinned deps to be hardcoded at a version higher than the requested tag ([b7e1c60](https://github.com/salesforcecli/plugin-release-management/commit/b7e1c60b6d1c1d369eb08409dae2e0a833019f48))
+
+## [1.16.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.15.0...v1.16.0) (2021-07-12)
+
+### Features
+
+- support sf releases ([#232](https://github.com/salesforcecli/plugin-release-management/issues/232)) ([966bda3](https://github.com/salesforcecli/plugin-release-management/commit/966bda30106a76794d7ab66fd32d790b47a4abd5))
+
+## [1.15.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.14.0...v1.15.0) (2021-07-10)
+
+### Features
+
+- improve windows path lengths test ([1777031](https://github.com/salesforcecli/plugin-release-management/commit/1777031c699434d8f13c48af159afd9f4218660d))
+
+## [1.14.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.8...v1.14.0) (2021-07-08)
+
+### Features
+
+- add commands to support sf release build ([#231](https://github.com/salesforcecli/plugin-release-management/issues/231)) ([d57b5be](https://github.com/salesforcecli/plugin-release-management/commit/d57b5be28054bdafc573454a0646ebcb1b57de46))
+
+### [1.13.8](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.7...v1.13.8) (2021-07-06)
+
+### Bug Fixes
+
+- write npmrc file before promote ([#230](https://github.com/salesforcecli/plugin-release-management/issues/230)) ([555e685](https://github.com/salesforcecli/plugin-release-management/commit/555e6858a70e9723ebc444bf6c8c7576dfc07728))
+
 ### [1.13.7](https://github.com/salesforcecli/plugin-release-management/compare/v1.13.6...v1.13.7) (2021-06-29)
 
 ### Bug Fixes
