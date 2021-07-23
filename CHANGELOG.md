@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.5...v1.17.0) (2021-07-23)
+
+
+### Features
+
+* allow pinned dependencies to be tagged ([#234](https://github.com/salesforcecli/plugin-release-management/issues/234)) ([542badb](https://github.com/salesforcecli/plugin-release-management/commit/542badb6d54ddd4c45f831307e06afba8fc7c194))
+
 ### [1.16.5](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.4...v1.16.5) (2021-07-13)
 
 
