@@ -50,13 +50,9 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
               node_version:
                 - latest
                 - lts
-            exclude:
-              - os: windows
-                node_version: lts
       - release-management/release-package:
           sign: true
           requires:
