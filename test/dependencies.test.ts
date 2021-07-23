@@ -23,7 +23,6 @@ describe('Depedencies', () => {
       { name: 'sfdx-trust', type: 'bin', passed: true },
       { name: 'AWS_ACCESS_KEY_ID', type: 'env', passed: true },
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
-      { name: 'SALESFORCE_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
       { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);
@@ -33,7 +32,7 @@ describe('Depedencies', () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(null);
     $$.SANDBOX.stub(shelljs, 'which').returns('foobar' as shelljs.ShellString);
     const validation = verifyDependencies({ sign: true });
-    expect(validation.failures).to.equal(4);
+    expect(validation.failures).to.equal(3);
     expect(validation.results).to.deep.equal([
       { name: 'sfdx-trust', type: 'bin', passed: true },
       {
@@ -47,12 +46,6 @@ describe('Depedencies', () => {
         type: 'env',
         passed: false,
         message: 'Set AWS_SECRET_ACCESS_KEY environment variable',
-      },
-      {
-        name: 'SALESFORCE_KEY',
-        type: 'env',
-        passed: false,
-        message: 'Set SALESFORCE_KEY environment variable',
       },
       {
         name: 'NPM_TOKEN',
@@ -78,7 +71,6 @@ describe('Depedencies', () => {
       },
       { name: 'AWS_ACCESS_KEY_ID', type: 'env', passed: true },
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
-      { name: 'SALESFORCE_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
       { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);

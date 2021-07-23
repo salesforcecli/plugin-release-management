@@ -14,7 +14,7 @@ import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import * as sinon from 'sinon';
 import { UX } from '@salesforce/command';
 import { Package } from '../src/package';
-import { LernaRepo, SinglePackageRepo, Signer } from '../src/repository';
+import { LernaRepo, SinglePackageRepo } from '../src/repository';
 
 const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
@@ -271,28 +271,6 @@ describe('SinglePackageRepo', () => {
     });
   });
 
-  describe('sign', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-      execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('');
-    });
-
-    it('should sign the package', async () => {
-      const signerStub = stubInterface<Signer>($$.SANDBOX, {});
-      stubMethod($$.SANDBOX, Signer, 'create').returns(Promise.resolve(signerStub));
-      const repo = await SinglePackageRepo.create({ ux: uxStub });
-      await repo.sign();
-      expect(signerStub.sign.callCount).to.equal(1);
-    });
-  });
-
   describe('verifySignature', () => {
     beforeEach(async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
@@ -351,7 +329,17 @@ describe('SinglePackageRepo', () => {
       await repo.publish({
         dryrun: true,
         signatures: [
-          { tarPath: 'tarfile.tar', verified: true, version: '1.1.0', name: pkgName, filename: 'signature.sig' },
+          {
+            fileTarPath: 'tarfile.tar',
+            packageVersion: '1.1.0',
+            packageName: pkgName,
+            publicKeyContents: 'blah',
+            signatureContents: 'blah',
+            packageJsonSfdxProperty: {
+              publicKeyUrl: 'blah',
+              signatureUrl: 'blah',
+            },
+          },
         ],
       });
       const cmd = execStub.firstCall.args[0];
@@ -477,22 +465,6 @@ describe('LernaRepo', () => {
     });
   });
 
-  describe('sign', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-    });
-
-    it('should sign the packages', async () => {
-      const signerStub = stubInterface<Signer>($$.SANDBOX, {});
-      stubMethod($$.SANDBOX, Signer, 'create').returns(Promise.resolve(signerStub));
-      const repo = await LernaRepo.create({ ux: uxStub });
-      await repo.sign([pkgName]);
-      expect(signerStub.sign.callCount).to.equal(1);
-    });
-  });
-
   describe('verifySignature', () => {
     beforeEach(async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
@@ -538,7 +510,17 @@ describe('LernaRepo', () => {
       await repo.publish({
         dryrun: true,
         signatures: [
-          { tarPath: 'tarfile.tar', verified: true, version: '1.1.0', name: pkgName, filename: 'signature.sig' },
+          {
+            fileTarPath: 'tarfile.tar',
+            packageVersion: '1.1.0',
+            packageName: pkgName,
+            publicKeyContents: 'blah',
+            signatureContents: 'blah',
+            packageJsonSfdxProperty: {
+              publicKeyUrl: 'blah',
+              signatureUrl: 'blah',
+            },
+          },
         ],
       });
       const cmd = execStub.lastCall.args[0];

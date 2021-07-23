@@ -76,16 +76,6 @@
     "flags": ["columns", "csv", "extended", "filter", "json", "loglevel", "no-header", "no-truncate", "output", "sort"]
   },
   {
-    "command": "trust:sign",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel", "privatekeypath", "publickeyurl", "signatureurl", "target", "tarpath"]
-  },
-  {
-    "command": "trust:upload",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["bucket", "json", "keyprefix", "loglevel", "signature"]
-  },
-  {
     "command": "typescript:update",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["json", "loglevel", "target", "version"]

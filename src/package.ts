@@ -22,7 +22,13 @@ export type PackageJson = {
   files?: string[];
   pinnedDependencies?: string[];
   repository?: string;
+  sfdx?: PackageJsonSfdxProperty;
 } & AnyJson;
+
+export type PackageJsonSfdxProperty = {
+  publicKeyUrl: string;
+  signatureUrl: string;
+};
 
 export type ChangedPackageVersions = Array<{
   name: string;
