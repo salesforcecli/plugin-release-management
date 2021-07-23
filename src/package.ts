@@ -126,18 +126,24 @@ export class Package extends AsyncOptionalCreatable {
     }
     const { pinnedDependencies, dependencies } = this.packageJson;
     const deps = pinnedDependencies.map((d) => {
-      const version = dependencies[d];
+      const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
+      const [tag] = tagRegex.exec(d) || [];
+      const name = tag ? d.replace(new RegExp(`@${tag}$`), '') : d;
+      const version = dependencies[name];
+
       if (version.startsWith('npm:')) {
         return {
           name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
           version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-          alias: d,
+          alias: name,
+          tag: tag || targetTag,
         };
       } else {
         return {
-          name: d,
+          name,
           version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
           alias: null,
+          tag: tag || targetTag,
         };
       }
     });
@@ -149,7 +155,7 @@ export class Package extends AsyncOptionalCreatable {
         silent: true,
       });
       const versions = JSON.parse(result.stdout) as Record<string, string>;
-      let tag = targetTag;
+      let tag = dep.tag;
 
       // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
       if (!versions[tag]) {
