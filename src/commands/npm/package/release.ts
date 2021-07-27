@@ -121,14 +121,16 @@ export default class Release extends SfdxCommand {
       }
     }
 
-    if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
-      pkg.printStage('Verify Signed Packaged');
-      pkg.verifySignature();
-    }
-
-    if (!this.flags.dryrun) {
-      pkg.printStage('Push Changes to Git');
-      pkg.pushChangesToGit();
+    try {
+      if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
+        pkg.printStage('Verify Signed Packaged');
+        pkg.verifySignature();
+      }
+    } finally {
+      if (!this.flags.dryrun) {
+        pkg.printStage('Push Changes to Git');
+        pkg.pushChangesToGit();
+      }
     }
 
     this.ux.log(pkg.getSuccessMessage());
