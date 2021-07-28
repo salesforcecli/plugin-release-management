@@ -131,28 +131,34 @@ export class Package extends AsyncOptionalCreatable {
       );
     }
     const { pinnedDependencies, dependencies } = this.packageJson;
-    const deps = pinnedDependencies.map((d) => {
-      const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
-      const [tag] = tagRegex.exec(d) || [];
-      const name = tag ? d.replace(new RegExp(`@${tag}$`), '') : d;
-      const version = dependencies[name];
+    const deps = pinnedDependencies
+      .map((d) => {
+        const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
+        const [tag] = tagRegex.exec(d) || [];
+        const name = tag ? d.replace(new RegExp(`@${tag}$`), '') : d;
+        if (!dependencies[name]) {
+          cli.warn(`${name} was not found in the dependencies section of your package.json. Skipping...`);
+          return;
+        }
+        const version = dependencies[name];
 
-      if (version.startsWith('npm:')) {
-        return {
-          name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
-          version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-          alias: name,
-          tag: tag || targetTag,
-        };
-      } else {
-        return {
-          name,
-          version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-          alias: null,
-          tag: tag || targetTag,
-        };
-      }
-    });
+        if (version.startsWith('npm:')) {
+          return {
+            name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
+            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+            alias: name,
+            tag: tag || targetTag,
+          };
+        } else {
+          return {
+            name,
+            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+            alias: null,
+            tag: tag || targetTag,
+          };
+        }
+      })
+      .filter((d) => !!d);
 
     const pinnedPackages: PinnedPackage[] = [];
     deps.forEach((dep) => {
