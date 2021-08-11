@@ -124,7 +124,11 @@ describe('Package', () => {
     });
 
     it('should return false if the next version is not listed yet', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns(null);
+      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
+        name: pkgName,
+        version: '1.0.0',
+        versions: ['0.0.1', '0.0.5', '1.0.0'],
+      });
       const pkg = await Package.create();
       pkg.setNextVersion('1.1.0');
       expect(pkg.nextVersionIsAvailable()).to.equal(false);
