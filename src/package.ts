@@ -78,9 +78,8 @@ export class Package extends AsyncOptionalCreatable {
     return (await fs.readJson(pkgJsonPath)) as PackageJson;
   }
 
-  public retrieveNpmPackage(requiredVersion = ''): NpmPackage {
-    const pacakgeName = requiredVersion ? `${this.name}@${requiredVersion}` : `${this.name}`;
-    const result = exec(`npm view ${pacakgeName} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+  public retrieveNpmPackage(): NpmPackage {
+    const result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     return result.code === 0 ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
 
@@ -114,8 +113,9 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public nextVersionIsAvailable(): boolean {
-    const pkg = this.retrieveNpmPackage(this.nextVersion);
-    return pkg?.version === this.nextVersion;
+    const pkg = this.retrieveNpmPackage();
+    const versions = get(pkg, 'versions', []) as string[];
+    return versions.includes(this.nextVersion);
   }
 
   public writePackageJson(rootDir?: string): void {
