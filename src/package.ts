@@ -115,7 +115,7 @@ export class Package extends AsyncOptionalCreatable {
 
   public nextVersionIsAvailable(): boolean {
     const pkg = this.retrieveNpmPackage(this.nextVersion);
-    return pkg?.version === this.nextVersion;
+    return pkg != null && pkg.version === this.nextVersion;
   }
 
   public writePackageJson(rootDir?: string): void {
