@@ -284,11 +284,11 @@ describe('SinglePackageRepo', () => {
       execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('success');
     });
 
-    it('should use sfdx-trust to verify that the package was signed', async () => {
+    it('should use plugin-trust to verify that the package was signed', async () => {
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.verifySignature();
       expect(execStub.callCount).to.equal(1);
-      expect(execStub.firstCall.args[0]).to.include('sfdx-trust');
+      expect(execStub.firstCall.args[0]).to.include('sfdx plugins:trust:verify');
     });
   });
 
@@ -472,10 +472,10 @@ describe('LernaRepo', () => {
       );
     });
 
-    it('should use sfdx-trust to verify that the packages were signed', async () => {
+    it('should use plugin-trust to verify that the packages were signed', async () => {
       const repo = await LernaRepo.create({ ux: uxStub });
       repo.verifySignature([pkgName]);
-      expect(execStub.lastCall.args[0]).to.include('sfdx-trust');
+      expect(execStub.lastCall.args[0]).to.include('sfdx plugins:trust:verify');
     });
   });
 
