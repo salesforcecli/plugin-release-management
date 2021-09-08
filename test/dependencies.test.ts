@@ -13,14 +13,14 @@ import { verifyDependencies } from '../src/dependencies';
 
 const $$ = testSetup();
 
-describe('Depedencies', () => {
+describe('Dependencies', () => {
   it('should pass when all required env variables and bin scripts exist', () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns('foobar');
     $$.SANDBOX.stub(shelljs, 'which').returns('foobar' as shelljs.ShellString);
     const validation = verifyDependencies({ sign: true });
     expect(validation.failures).to.equal(0);
     expect(validation.results).to.deep.equal([
-      { name: 'sfdx-trust', type: 'bin', passed: true },
+      { name: 'sfdx', type: 'bin', passed: true },
       { name: 'AWS_ACCESS_KEY_ID', type: 'env', passed: true },
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
@@ -34,7 +34,7 @@ describe('Depedencies', () => {
     const validation = verifyDependencies({ sign: true });
     expect(validation.failures).to.equal(3);
     expect(validation.results).to.deep.equal([
-      { name: 'sfdx-trust', type: 'bin', passed: true },
+      { name: 'sfdx', type: 'bin', passed: true },
       {
         name: 'AWS_ACCESS_KEY_ID',
         type: 'env',
@@ -64,8 +64,8 @@ describe('Depedencies', () => {
     expect(validation.failures).to.equal(1);
     expect(validation.results).to.deep.equal([
       {
-        message: 'Install sfdx-trust',
-        name: 'sfdx-trust',
+        message: 'Install sfdx',
+        name: 'sfdx',
         type: 'bin',
         passed: false,
       },
