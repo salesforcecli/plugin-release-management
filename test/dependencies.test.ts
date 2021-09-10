@@ -20,7 +20,7 @@ describe('Dependencies', () => {
     const validation = verifyDependencies({ sign: true });
     expect(validation.failures).to.equal(0);
     expect(validation.results).to.deep.equal([
-      { name: 'sfdx', type: 'bin', passed: true },
+      { name: 'sf-trust', type: 'bin', passed: true },
       { name: 'AWS_ACCESS_KEY_ID', type: 'env', passed: true },
       { name: 'AWS_SECRET_ACCESS_KEY', type: 'env', passed: true },
       { name: 'NPM_TOKEN', type: 'env', passed: true },
@@ -34,7 +34,7 @@ describe('Dependencies', () => {
     const validation = verifyDependencies({ sign: true });
     expect(validation.failures).to.equal(3);
     expect(validation.results).to.deep.equal([
-      { name: 'sfdx', type: 'bin', passed: true },
+      { name: 'sf-trust', type: 'bin', passed: true },
       {
         name: 'AWS_ACCESS_KEY_ID',
         type: 'env',
@@ -64,8 +64,8 @@ describe('Dependencies', () => {
     expect(validation.failures).to.equal(1);
     expect(validation.results).to.deep.equal([
       {
-        message: 'Install sfdx',
-        name: 'sfdx',
+        message: 'Install sf-trust',
+        name: 'sf-trust',
         type: 'bin',
         passed: false,
       },

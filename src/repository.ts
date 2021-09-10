@@ -285,7 +285,7 @@ export class LernaRepo extends Repository {
   public verifySignature(packageNames: string[]): void {
     const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
     for (const pkg of packages) {
-      const cmd = `sfdx plugins:trust:verify --npm ${
+      const cmd = `sf-trust plugins:trust:verify --npm ${
         pkg.name
       }@${pkg.getNextVersion()}  ${this.registry.getRegistryParameter()}`;
       this.execCommand(cmd);
@@ -389,7 +389,7 @@ export class SinglePackageRepo extends Repository {
   }
 
   public verifySignature(): void {
-    const cmd = `sfdx plugins:trust:verify --npm ${this.name}@${
+    const cmd = `sf-trust plugins:trust:verify --npm ${this.name}@${
       this.nextVersion
     } ${this.registry.getRegistryParameter()}`;
     this.execCommand(cmd);

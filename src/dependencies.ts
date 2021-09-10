@@ -28,7 +28,7 @@ interface Result {
 
 const DEPENDENCIES: Dependency[] = [
   {
-    name: 'sfdx',
+    name: 'sf-trust',
     type: 'bin',
     condition: (flags): boolean => !!flags.sign,
   },

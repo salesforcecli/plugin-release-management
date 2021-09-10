@@ -288,7 +288,7 @@ describe('SinglePackageRepo', () => {
       const repo = await SinglePackageRepo.create({ ux: uxStub });
       repo.verifySignature();
       expect(execStub.callCount).to.equal(1);
-      expect(execStub.firstCall.args[0]).to.include('sfdx plugins:trust:verify');
+      expect(execStub.firstCall.args[0]).to.include('sf-trust plugins:trust:verify');
     });
   });
 
@@ -475,7 +475,7 @@ describe('LernaRepo', () => {
     it('should use plugin-trust to verify that the packages were signed', async () => {
       const repo = await LernaRepo.create({ ux: uxStub });
       repo.verifySignature([pkgName]);
-      expect(execStub.lastCall.args[0]).to.include('sfdx plugins:trust:verify');
+      expect(execStub.lastCall.args[0]).to.include('sf-trust plugins:trust:verify');
     });
   });
 
