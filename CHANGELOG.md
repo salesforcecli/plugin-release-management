@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.5](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.3...v2.0.5) (2021-09-14)
+
+
+### Bug Fixes
+
+* replace sfdx with bundled plugin-trust ([#278](https://github.com/salesforcecli/plugin-release-management/issues/278)) ([b44c430](https://github.com/salesforcecli/plugin-release-management/commit/b44c430a3c4d1207dd693be5d5861788856f6eca))
+* replace sfdx-trust with plugin-trust ([24c2a3c](https://github.com/salesforcecli/plugin-release-management/commit/24c2a3c0d28f842b3d939a24a74b91dd79f95719))
+
 ### [2.0.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.2...v2.0.3) (2021-08-11)
 
 
