@@ -46,6 +46,12 @@ interface VersionsByPackage {
   };
 }
 
+export interface PackageInfo {
+  name: string;
+  nextVersion: string;
+  registryParam: string;
+}
+
 type PollFunction = () => boolean;
 
 export async function isMonoRepo(): Promise<boolean> {
@@ -183,7 +189,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
-  public abstract verifySignature(packageNames?: string[]): void;
+  public abstract getPkgInfo(packageNames?: string[]): PackageInfo | PackageInfo[];
   public abstract publish(options: PublishOpts): Promise<void>;
   public abstract sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
   public abstract waitForAvailability(): Promise<boolean>;
@@ -282,14 +288,19 @@ export class LernaRepo extends Repository {
     });
   }
 
-  public verifySignature(packageNames: string[]): void {
+  public getPkgInfo(packageNames: string[]): PackageInfo[] {
     const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
+    let pkgsInfo: PackageInfo[];
+
     for (const pkg of packages) {
-      const cmd = `sfdx plugins:trust:verify --npm ${
-        pkg.name
-      }@${pkg.getNextVersion()}  ${this.registry.getRegistryParameter()}`;
-      this.execCommand(cmd);
+      pkgsInfo.push({
+        name: pkg.name,
+        nextVersion: pkg.getNextVersion(),
+        registryParam: this.registry.getRegistryParameter(),
+      });
     }
+
+    return pkgsInfo;
   }
 
   public getSuccessMessage(): string {
@@ -388,11 +399,12 @@ export class SinglePackageRepo extends Repository {
     return packAndSignApi.revertPackageJsonIfExists();
   }
 
-  public verifySignature(): void {
-    const cmd = `sfdx plugins:trust:verify --npm ${this.name}@${
-      this.nextVersion
-    } ${this.registry.getRegistryParameter()}`;
-    this.execCommand(cmd);
+  public getPkgInfo(): PackageInfo {
+    return {
+      name: this.name,
+      nextVersion: this.nextVersion,
+      registryParam: this.registry.getRegistryParameter(),
+    };
   }
 
   public async publish(opts: PublishOpts = {}): Promise<void> {
