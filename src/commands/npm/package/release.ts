@@ -5,8 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as os from 'os';
+import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
+import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
@@ -124,7 +127,7 @@ export default class Release extends SfdxCommand {
     try {
       if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
         pkg.printStage('Verify Signed Packaged');
-        pkg.verifySignature();
+        await this.verifySign(pkg.getPkgInfo());
       }
     } finally {
       if (!this.flags.dryrun) {
@@ -139,5 +142,17 @@ export default class Release extends SfdxCommand {
       version: pkg.nextVersion,
       name: pkg.name,
     };
+  }
+
+  protected async verifySign(pkgInfo: PackageInfo): Promise<void> {
+    const cmd = 'trust:plugins:verify';
+    const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
+
+    this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
+    try {
+      await this.config.runCommand(cmd, argv.split(' '));
+    } catch (err) {
+      throw new SfdxError(err, 'FailedCommandExecution');
+    }
   }
 }

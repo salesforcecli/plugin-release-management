@@ -71,6 +71,11 @@
     "flags": ["json", "loglevel", "verbose"]
   },
   {
+    "command": "plugins:trust:verify",
+    "plugin": "@salesforce/plugin-trust",
+    "flags": ["json", "loglevel", "npm", "registry"]
+  },
+  {
     "command": "repositories",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["columns", "csv", "extended", "filter", "json", "loglevel", "no-header", "no-truncate", "output", "sort"]

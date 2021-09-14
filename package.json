@@ -101,6 +101,9 @@
     "commands": "./lib/commands",
     "node": "14.15.4",
     "bin": "sfdx",
+    "plugins": [
+      "@salesforce/plugin-trust"
+    ],
     "devPlugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-command-snapshot",
