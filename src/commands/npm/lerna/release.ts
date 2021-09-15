@@ -152,7 +152,7 @@ export default class Release extends SfdxCommand {
   }
 
   protected async verifySign(pkgInfo: PackageInfo): Promise<void> {
-    const cmd = 'trust:plugins:verify';
+    const cmd = 'plugins:trust:verify';
     const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
 
     this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
