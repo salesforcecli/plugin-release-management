@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.7](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.6...v2.0.7) (2021-09-16)
+
+
+### Bug Fixes
+
+* debug verifySign method ([9ab15bc](https://github.com/salesforcecli/plugin-release-management/commit/9ab15bc3d69cf9192cc20950170288ddbde55d4f))
+
 ### [2.0.6](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.5...v2.0.6) (2021-09-15)
 
 
