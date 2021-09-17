@@ -31,6 +31,7 @@ interface PullRequest {
   number: number;
   head: {
     sha: string;
+    ref: string;
   };
 }
 export default class AutoMerge extends SfdxCommand {
@@ -51,6 +52,11 @@ export default class AutoMerge extends SfdxCommand {
     dryrun: flags.boolean({
       description: messagesFromConsolidate.getMessage('dryrun'),
       char: 'd',
+      default: false,
+    }),
+    'skip-ci': flags.boolean({
+      description: messages.getMessage('skipCi'),
+      char: 's',
       default: false,
     }),
   };
@@ -105,10 +111,14 @@ export default class AutoMerge extends SfdxCommand {
 
     if (this.flags.dryrun === false) {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
-      const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
+      const opts: { owner: string; repo: string; pull_number: number; commit_title?: string } = {
         ...this.baseRepoObject,
         pull_number: prToMerge.number,
-      });
+      };
+      if (this.flags['skip-ci']) {
+        opts.commit_title = `Merge pull request #${prToMerge.number} from ${prToMerge.head.ref} [skip ci]`;
+      }
+      const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', opts);
       this.ux.logJson(mergeResult);
     } else {
       this.ux.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);
