@@ -9,6 +9,7 @@ import * as os from 'os';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
+import { exec } from 'shelljs';
 import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, LernaRepo } from '../../../repository';
@@ -140,7 +141,7 @@ export default class Release extends SfdxCommand {
       const pkgs = lernaRepo.getPkgInfo(this.flags.sign);
 
       for (const pkg of pkgs) {
-        await this.verifySign(pkg);
+        this.verifySign(pkg);
       }
     }
 
@@ -151,13 +152,14 @@ export default class Release extends SfdxCommand {
     });
   }
 
-  protected async verifySign(pkgInfo: PackageInfo): Promise<void> {
+  protected verifySign(pkgInfo: PackageInfo): void {
     const cmd = 'plugins:trust:verify';
     const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
 
     this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
-      await this.config.runCommand(cmd, argv.split(' '));
+      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
     } catch (err) {
       throw new SfdxError(err, 'FailedCommandExecution');
     }

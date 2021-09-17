@@ -902,10 +902,10 @@
     handlebars "^4.7.3"
     tslib "^1"
 
-"@salesforce/plugin-trust@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-1.0.6.tgz#5539cc985b7d5923c829785ff51a9bbaf1556925"
-  integrity sha512-G4kQVy3UjKGf2J4Tn0h/aWtATj2Rv/g6nwpyZep7jBQUo4Sqs/CLuCfUdifM/+pDnJcaZPAr2WPxebttzFzHHg==
+"@salesforce/plugin-trust@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/@salesforce/plugin-trust/-/plugin-trust-1.0.7.tgz#6708f52636a3be98584fe30a2e8751679c12ded0"
+  integrity sha512-WKBLprbqfg0FUlTpOKV8xl5UEsMjdGIqRovHG33RfPHDyhgVmwhWk9fQ3T9IE2Vr2kP+u9vezhFVg5NyYLIoXQ==
   dependencies:
     "@oclif/config" "^1.17.0"
     "@salesforce/command" "^3.0.5"

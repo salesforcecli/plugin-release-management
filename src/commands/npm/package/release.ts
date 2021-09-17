@@ -128,7 +128,7 @@ export default class Release extends SfdxCommand {
     try {
       if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
         pkg.printStage('Verify Signed Packaged');
-        await this.verifySign(pkg.getPkgInfo());
+        this.verifySign(pkg.getPkgInfo());
       }
     } finally {
       if (!this.flags.dryrun) {
@@ -145,15 +145,14 @@ export default class Release extends SfdxCommand {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  protected async verifySign(pkgInfo: PackageInfo): Promise<void> {
+  protected verifySign(pkgInfo: PackageInfo): void {
     const cmd = 'plugins:trust:verify';
     const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
 
     this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
-      // await this.config.runCommand(cmd, argv.split(' '));
-      exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
     } catch (err) {
       throw new SfdxError(err, 'FailedCommandExecution');
     }
