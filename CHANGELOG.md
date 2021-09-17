@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.8...v2.1.0) (2021-09-17)
+
+
+### Features
+
+* add --skip-ci flag to automerge ([#289](https://github.com/salesforcecli/plugin-release-management/issues/289)) ([d1b12ed](https://github.com/salesforcecli/plugin-release-management/commit/d1b12edb07058da35361e457f6296a021d7edb63))
+
 ### [2.0.8](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.7...v2.0.8) (2021-09-17)
 
 
