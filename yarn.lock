@@ -1637,9 +1637,9 @@ at-least-node@^1.0.0:
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
 aws-sdk-mock@^5.1.0:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/aws-sdk-mock/-/aws-sdk-mock-5.2.1.tgz#126d4d5362c96b7d1d0bd87708a99d626c19ffd4"
-  integrity sha512-dY7zA1p/lX335V4/aOJ2L8ggXC3a5zokTJFZlZVW3uU+Zej7u+V7WrEcN5TVaJAnk4auT263T6EK/OHW4WjKhw==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk-mock/-/aws-sdk-mock-5.3.0.tgz#6a6433af40b7799322b86e57b480284f9749d9ce"
+  integrity sha512-zT6Kd7I8PHzXRoFNYH9F1l1ZvwVFIft9vqX0ILaFcNbj7DaIZl7ktaUgZlak/dBbJvStsxOg1TK9+Wo0yYudpw==
   dependencies:
     aws-sdk "^2.928.0"
     sinon "^11.1.1"
