@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -13,6 +13,7 @@
     "@salesforce/command": "^3.0.5",
     "@salesforce/core": "^2.23.2",
     "@salesforce/kit": "^1.3.3",
+    "@salesforce/plugin-trust": "^1.0.7",
     "@salesforce/ts-types": "^1.4.3",
     "@types/semver": "^7.3.6",
     "@types/sinon": "10.0.2",
@@ -41,7 +42,7 @@
     "@salesforce/dev-scripts": "^0.9.11",
     "@salesforce/plugin-command-reference": "^1.3.0",
     "@salesforce/prettier-config": "^0.0.2",
-    "@salesforce/ts-sinon": "1.3.18",
+    "@salesforce/ts-sinon": "1.3.21",
     "@types/conventional-changelog-preset-loader": "^2.3.1",
     "@types/conventional-commits-parser": "^3.0.1",
     "@types/graceful-fs": "^4.1.5",
@@ -100,6 +101,9 @@
     "commands": "./lib/commands",
     "node": "14.15.4",
     "bin": "sfdx",
+    "plugins": [
+      "@salesforce/plugin-trust"
+    ],
     "devPlugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-command-snapshot",

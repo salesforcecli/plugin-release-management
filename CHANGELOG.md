@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.8...v2.1.0) (2021-09-17)
+
+
+### Features
+
+* add --skip-ci flag to automerge ([#289](https://github.com/salesforcecli/plugin-release-management/issues/289)) ([d1b12ed](https://github.com/salesforcecli/plugin-release-management/commit/d1b12edb07058da35361e457f6296a021d7edb63))
+
+### [2.0.8](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.7...v2.0.8) (2021-09-17)
+
+
+### Bug Fixes
+
+* update plugin-trust ([8330028](https://github.com/salesforcecli/plugin-release-management/commit/833002895af10eb3a79e4e6022c20c50acf9826f))
+
+### [2.0.7](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.6...v2.0.7) (2021-09-16)
+
+
+### Bug Fixes
+
+* debug verifySign method ([9ab15bc](https://github.com/salesforcecli/plugin-release-management/commit/9ab15bc3d69cf9192cc20950170288ddbde55d4f))
+
+### [2.0.6](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.5...v2.0.6) (2021-09-15)
+
+
+### Bug Fixes
+
+* use correct command to verify signed plugin ([#287](https://github.com/salesforcecli/plugin-release-management/issues/287)) ([602e489](https://github.com/salesforcecli/plugin-release-management/commit/602e489afd23a6df41a92216b646f61892819dd7))
+
+### [2.0.5](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.3...v2.0.5) (2021-09-14)
+
+
+### Bug Fixes
+
+* replace sfdx with bundled plugin-trust ([#278](https://github.com/salesforcecli/plugin-release-management/issues/278)) ([b44c430](https://github.com/salesforcecli/plugin-release-management/commit/b44c430a3c4d1207dd693be5d5861788856f6eca))
+* replace sfdx-trust with plugin-trust ([24c2a3c](https://github.com/salesforcecli/plugin-release-management/commit/24c2a3c0d28f842b3d939a24a74b91dd79f95719))
+
+### [2.0.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.2...v2.0.3) (2021-08-11)
+
+
+### Bug Fixes
+
+* availability change ([357d011](https://github.com/salesforcecli/plugin-release-management/commit/357d0111d02ddac3a4b311cfc87e464946250a8b))
+* next version check function change ([1ad04e5](https://github.com/salesforcecli/plugin-release-management/commit/1ad04e5ff157c46f01eb50b9f1177160f5ebba38))
+
+### [2.0.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.1...v2.0.2) (2021-07-28)
+
+
+### Bug Fixes
+
+* warn and skip any pinned deps that are not in package.json ([#238](https://github.com/salesforcecli/plugin-release-management/issues/238)) ([3239b3e](https://github.com/salesforcecli/plugin-release-management/commit/3239b3e98f016a0e2e61dfb7b70dce24ace888de))
+
+### [2.0.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.0...v2.0.1) (2021-07-27)
+
+
+### Bug Fixes
+
+* push to github even if signing verification fails ([#237](https://github.com/salesforcecli/plugin-release-management/issues/237)) ([3353626](https://github.com/salesforcecli/plugin-release-management/commit/3353626f6c94ccf48b42d2561ddb0e8efd463d94))
+
 ## [2.0.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.17.0...v2.0.0) (2021-07-23)
 
 ## [1.17.0](https://github.com/salesforcecli/plugin-release-management/compare/v1.16.5...v1.17.0) (2021-07-23)

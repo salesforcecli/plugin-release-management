@@ -5,8 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as os from 'os';
+import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
+import { exec } from 'shelljs';
+import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
@@ -121,14 +125,16 @@ export default class Release extends SfdxCommand {
       }
     }
 
-    if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
-      pkg.printStage('Verify Signed Packaged');
-      pkg.verifySignature();
-    }
-
-    if (!this.flags.dryrun) {
-      pkg.printStage('Push Changes to Git');
-      pkg.pushChangesToGit();
+    try {
+      if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
+        pkg.printStage('Verify Signed Packaged');
+        this.verifySign(pkg.getPkgInfo());
+      }
+    } finally {
+      if (!this.flags.dryrun) {
+        pkg.printStage('Push Changes to Git');
+        pkg.pushChangesToGit();
+      }
     }
 
     this.ux.log(pkg.getSuccessMessage());
@@ -137,5 +143,18 @@ export default class Release extends SfdxCommand {
       version: pkg.nextVersion,
       name: pkg.name,
     };
+  }
+
+  protected verifySign(pkgInfo: PackageInfo): void {
+    const cmd = 'plugins:trust:verify';
+    const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
+
+    this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
+    try {
+      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
+    } catch (err) {
+      throw new SfdxError(err, 'FailedCommandExecution');
+    }
   }
 }

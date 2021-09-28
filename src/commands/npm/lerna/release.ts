@@ -6,8 +6,11 @@
  */
 
 import * as os from 'os';
+import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
+import { exec } from 'shelljs';
+import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, LernaRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
@@ -135,7 +138,11 @@ export default class Release extends SfdxCommand {
 
     if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
       lernaRepo.printStage('Verify Signed Packaged');
-      lernaRepo.verifySignature(this.flags.sign);
+      const pkgs = lernaRepo.getPkgInfo(this.flags.sign);
+
+      for (const pkg of pkgs) {
+        this.verifySign(pkg);
+      }
     }
 
     this.ux.log(lernaRepo.getSuccessMessage());
@@ -143,5 +150,18 @@ export default class Release extends SfdxCommand {
     return lernaRepo.packages.map((pkg) => {
       return { name: pkg.name, version: pkg.getNextVersion() };
     });
+  }
+
+  protected verifySign(pkgInfo: PackageInfo): void {
+    const cmd = 'plugins:trust:verify';
+    const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
+
+    this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
+    try {
+      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
+    } catch (err) {
+      throw new SfdxError(err, 'FailedCommandExecution');
+    }
   }
 }

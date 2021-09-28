@@ -271,27 +271,6 @@ describe('SinglePackageRepo', () => {
     });
   });
 
-  describe('verifySignature', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-      execStub = stubMethod($$.SANDBOX, SinglePackageRepo.prototype, 'execCommand').returns('success');
-    });
-
-    it('should use sfdx-trust to verify that the package was signed', async () => {
-      const repo = await SinglePackageRepo.create({ ux: uxStub });
-      repo.verifySignature();
-      expect(execStub.callCount).to.equal(1);
-      expect(execStub.firstCall.args[0]).to.include('sfdx-trust');
-    });
-  });
-
   describe('publish', () => {
     let repo: SinglePackageRepo;
 
@@ -462,20 +441,6 @@ describe('LernaRepo', () => {
       // We expect 1 call to this because it's called during the init method.
       // it should not be called when dryrun is not provided
       expect(revertAllChangesStub.callCount).to.equal(1);
-    });
-  });
-
-  describe('verifySignature', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-    });
-
-    it('should use sfdx-trust to verify that the packages were signed', async () => {
-      const repo = await LernaRepo.create({ ux: uxStub });
-      repo.verifySignature([pkgName]);
-      expect(execStub.lastCall.args[0]).to.include('sfdx-trust');
     });
   });
 
