@@ -55,11 +55,11 @@ workflows:
                 - lts
       - release-management/release-package:
           sign: true
-          prerelease: true
+          tag: dev
           requires:
             - release-management/test-package
           filters:
-            branches:
+            branches: 
               only: circleci-editor/re/expect_sf-cli
           github-release: false
   test-ts-update:
