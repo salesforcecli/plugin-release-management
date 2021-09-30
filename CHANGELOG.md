@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.1.0...v2.1.1) (2021-09-30)
+
+
+### Bug Fixes
+
+* allow sf-cli ([62978e9](https://github.com/salesforcecli/plugin-release-management/commit/62978e9960055593d90b125b56e326f7931a5f95))
+
 ## [2.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.8...v2.1.0) (2021-09-17)
 
 
