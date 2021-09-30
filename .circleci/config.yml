@@ -61,7 +61,7 @@ workflows:
           filters:
             branches:
               only: circleci-editor/re/expect_sf-cli
-          github-release: true
+          github-release: false
   test-ts-update:
     triggers:
       - schedule:
