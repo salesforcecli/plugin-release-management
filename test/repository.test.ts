@@ -6,15 +6,14 @@
  */
 
 import * as os from 'os';
-import * as path from 'path';
 import * as shelljs from 'shelljs';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
-import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
+import { stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import * as sinon from 'sinon';
 import { UX } from '@salesforce/command';
 import { Package } from '../src/package';
-import { LernaRepo, SinglePackageRepo } from '../src/repository';
+import { SinglePackageRepo } from '../src/repository';
 
 const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
@@ -340,173 +339,6 @@ describe('SinglePackageRepo', () => {
         access: 'restricted',
       });
       const cmd = execStub.firstCall.args[0];
-      expect(cmd).to.include('--access restricted');
-    });
-  });
-});
-
-describe('LernaRepo', () => {
-  let uxStub: UX;
-  let execStub: sinon.SinonStub;
-  let revertAllChangesStub: sinon.SinonStub;
-
-  beforeEach(async () => {
-    // eslint-disable-next-line prettier/prettier
-    uxStub = stubInterface<UX>($$.SANDBOX, {}) as unknown as UX;
-    // if this stub doesn't exist, the test will revert all of your unstaged changes
-    stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertUnstagedChanges').returns(null);
-    revertAllChangesStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'revertAllChanges').returns(null);
-    stubMethod($$.SANDBOX, LernaRepo, 'getPackagePaths').returns(Promise.resolve([path.join('packages', 'my-plugin')]));
-    stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-      name: pkgName,
-      version: '1.0.0',
-      versions: ['1.0.0'],
-    });
-    execStub = stubMethod($$.SANDBOX, LernaRepo.prototype, 'execCommand').returns(
-      `Changes:${os.EOL} - ${pkgName}: 1.0.0 => 1.1.0`
-    );
-  });
-
-  describe('determineNextVersionByPackage', () => {
-    it('should use lerna to determine the next version number', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-      stubMethod($$.SANDBOX, LernaRepo.prototype, 'isReleasable').returns(true);
-      const repo = await LernaRepo.create({ ux: uxStub });
-      expect(repo.packages[0].getNextVersion()).to.equal('1.1.0');
-    });
-  });
-
-  describe('validate', () => {
-    it('should validate that next version is valid', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-
-      const repo = await LernaRepo.create({ ux: uxStub });
-      repo.packages[0].setNextVersion('2.0.0');
-      const validation = repo.validate();
-      expect(validation).to.deep.equal([
-        {
-          nextVersion: '2.0.0',
-          currentVersion: '1.0.0',
-          valid: true,
-          name: pkgName,
-        },
-      ]);
-    });
-
-    it('should invalidate the next version when it already exists', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-
-      const repo = await LernaRepo.create({ ux: uxStub });
-      repo.packages[0].setNextVersion('1.0.0');
-      const validation = repo.validate();
-      expect(validation).to.deep.equal([
-        {
-          nextVersion: '1.0.0',
-          currentVersion: '1.0.0',
-          valid: false,
-          name: pkgName,
-        },
-      ]);
-    });
-  });
-
-  describe('prepare', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-    });
-
-    it('should run lerna with --no-git-tag-version flag when the dryrun option is provided', async () => {
-      const repo = await LernaRepo.create({ ux: uxStub });
-      repo.prepare({ dryrun: true });
-      const cmd = execStub.secondCall.args[0];
-      expect(cmd).to.include('--no-git-tag-version');
-      // We expect 2 calls to this because the first is done during the init method
-      // and the second is done after doing a dryrun prepare
-      expect(revertAllChangesStub.callCount).to.equal(2);
-    });
-
-    it('should run lerna without --no-git-tag-version flag when the dryrun option is not provided', async () => {
-      const repo = await LernaRepo.create({ ux: uxStub });
-      repo.prepare();
-      const cmd = execStub.secondCall.args[0];
-      expect(cmd).to.not.include('--no-git-tag-version');
-      // We expect 1 call to this because it's called during the init method.
-      // it should not be called when dryrun is not provided
-      expect(revertAllChangesStub.callCount).to.equal(1);
-    });
-  });
-
-  describe('publish', () => {
-    let repo: LernaRepo;
-
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      process.env.NPM_TOKEN = 'FOOBARBAZ';
-      repo = await LernaRepo.create({ ux: uxStub });
-    });
-
-    afterEach(() => {
-      delete process.env.NPM_TOKEN;
-    });
-
-    it('should use the --dry-run flag when the dryrun option is provided', async () => {
-      await repo.publish({ dryrun: true });
-      const cmd = execStub.lastCall.args[0];
-      expect(cmd).to.include('--dry-run');
-    });
-
-    it('should not use the --dry-run flag when the dryrun option is not provided', async () => {
-      await repo.publish();
-      const cmd = execStub.lastCall.args[0];
-      expect(cmd).to.not.include('--dry-run');
-    });
-
-    it('should publish the tarfile when a signature is provided in the options', async () => {
-      await repo.publish({
-        dryrun: true,
-        signatures: [
-          {
-            fileTarPath: 'tarfile.tar',
-            packageVersion: '1.1.0',
-            packageName: pkgName,
-            publicKeyContents: 'blah',
-            signatureContents: 'blah',
-            packageJsonSfdxProperty: {
-              publicKeyUrl: 'blah',
-              signatureUrl: 'blah',
-            },
-          },
-        ],
-      });
-      const cmd = execStub.lastCall.args[0];
-      expect(cmd).to.include('tarfile.tar');
-    });
-
-    it('should publish the package with the specified tag', async () => {
-      await repo.publish({
-        dryrun: true,
-        tag: 'test',
-      });
-      const cmd = execStub.lastCall.args[0];
-      expect(cmd).to.include('--tag test');
-    });
-
-    it('should publish the package with the specified access level', async () => {
-      await repo.publish({
-        dryrun: true,
-        access: 'restricted',
-      });
-      const cmd = execStub.lastCall.args[0];
       expect(cmd).to.include('--access restricted');
     });
   });

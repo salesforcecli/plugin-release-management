@@ -10,9 +10,8 @@ import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
-import { PackageInfo } from '../../../repository';
+import { Access, PackageInfo, SinglePackageRepo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
-import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
 
 Messages.importMessagesDirectory(__dirname);
@@ -62,11 +61,6 @@ export default class Release extends SfdxCommand {
   };
 
   public async run(): Promise<ReleaseResult> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfdxError(messages.getMessage(errType), errType);
-    }
-
     const deps = verifyDependencies(this.flags);
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';

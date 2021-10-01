@@ -4,7 +4,6 @@
   "dryrun": "If true, only show what would happen",
   "candidate": "the npm tag that you want to promote",
   "target": "the npm tag that you are promoting to",
-  "InvalidRepoType": "Cannot run this command on a monorepo.",
   "InvalidToken": "This command requries an npm publish token.",
   "InvalidTag": "the %s tag does not exist in npm."
 }

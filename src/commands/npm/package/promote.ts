@@ -12,7 +12,7 @@ import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo, SinglePackageRepo } from '../../../repository';
+import { SinglePackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.promote');
@@ -46,11 +46,6 @@ export default class Promote extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfdxError(messages.getMessage(errType), errType);
-    }
-
     const pkg = await SinglePackageRepo.create({ ux: this.ux });
     await pkg.writeNpmToken();
 

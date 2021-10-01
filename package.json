@@ -60,7 +60,7 @@
     "eslint-config-salesforce-license": "^0.1.6",
     "eslint-config-salesforce-typescript": "^0.2.7",
     "eslint-plugin-header": "^3.0.0",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-import": "2.24.2",
     "eslint-plugin-jsdoc": "^35.1.2",
     "eslint-plugin-prettier": "^3.1.3",
     "husky": "^4.3.8",
@@ -137,9 +137,6 @@
         "subtopics": {
           "dependencies": {
             "description": "pin dependencies to a specific version in package.json"
-          },
-          "lerna": {
-            "description": "work with lerna npm projects"
           },
           "package": {
             "description": "work with npm projects"
