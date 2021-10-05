@@ -45,7 +45,7 @@ namespace Method {
   }
 
   export abstract class Base {
-    public static TESTABLES = {
+    private static TEST_TARGETS = {
       [CLI.SF]: [CLI.SF],
       [CLI.SFDX]: [CLI.SFDX, CLI.SF],
     };
@@ -80,6 +80,10 @@ namespace Method {
     protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
       this.ux.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
+    }
+
+    protected getTargets(): CLI[] {
+      return Base.TEST_TARGETS[this.options.cli];
     }
 
     public abstract darwin(): Promise<Results>;
@@ -174,7 +178,9 @@ class Tarball extends Method.Base {
         }
         results[tarball] = testResults;
       } catch {
-        results[tarball][this.options.cli] = false;
+        for (const cli of this.getTargets()) {
+          results[tarball][cli] = false;
+        }
       }
       this.ux.log();
     }
@@ -227,12 +233,12 @@ class Tarball extends Method.Base {
 
   private test(directory: string): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
-    for (const testable of Method.Base.TESTABLES[this.options.cli]) {
-      const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${testable}.cmd` : testable);
+    for (const cli of this.getTargets()) {
+      const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${cli}.cmd` : cli);
       this.ux.log(`Testing ${chalk.cyan(executable)}`);
       const result = exec(`${executable} --version`, { silent: true });
       this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-      results[testable] = result.code === 0;
+      results[cli] = result.code === 0;
     }
     return results;
   }
@@ -295,12 +301,12 @@ class Npm extends Method.Base {
 
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
-    for (const testable of Method.Base.TESTABLES[this.options.cli]) {
-      const executable = path.join(this.options.directory, 'node_modules', '.bin', testable);
+    for (const cli of this.getTargets()) {
+      const executable = path.join(this.options.directory, 'node_modules', '.bin', cli);
       this.ux.log(`Testing ${chalk.cyan(executable)}`);
       const result = exec(`${executable} --version`, { silent: true });
       this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-      results[testable] = result.code === 0;
+      results[cli] = result.code === 0;
     }
     return results;
   }
