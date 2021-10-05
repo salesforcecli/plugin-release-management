@@ -126,7 +126,13 @@ class Tarball extends Method.Base {
   private s3: AmazonS3;
   private paths = {
     darwin: ['x64.tar.gz', 'x64.tar.xz'],
-    win32: ['x64.tar.gz', 'x64.tar.xz', 'x86.tar.gz', 'x86.tar.xz'],
+    win32: [
+      'x64.tar.gz',
+      'x86.tar.gz',
+      // .xz is not supported by powershell's tar command
+      // 'x64.tar.xz',
+      // 'x86.tar.xz'
+    ],
     linux: ['x64.tar.gz', 'x64.tar.xz'],
     'linux-arm': ['arm.tar.gz', 'arm.tar.xz'],
   };
@@ -140,9 +146,8 @@ class Tarball extends Method.Base {
     return this.installAndTest('darwin');
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async win32(): Promise<Results> {
-    throw new Error('Tarballs not supported for windows.');
+    return this.installAndTest('win32');
   }
 
   public async linux(): Promise<Results> {
@@ -187,17 +192,27 @@ class Tarball extends Method.Base {
   }
 
   private async extract(file: string): Promise<string> {
-    const dir = path.join(this.options.directory, path.basename(file).split('.').reverse()[0]);
+    const dir = path.join(this.options.directory, path.basename(file).replace(/./g, '-'));
     await fs.mkdirp(dir);
     return new Promise((resolve, reject) => {
       this.ux.startSpinner(`Unpacking ${chalk.cyan(path.basename(file))}`);
-      const cmd = `tar -xf ${file} -C ${dir} --strip-components 1`;
-      exec(cmd, { silent: true, async: true }, (code: number) => {
+      const cmd =
+        process.platform === 'win32'
+          ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
+          : `tar -xf ${file} -C ${dir} --strip-components 1`;
+      const opts =
+        process.platform === 'win32'
+          ? { silent: true, async: true, shell: 'powershell.exe' }
+          : { silent: true, async: true };
+      exec(cmd, opts, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
           this.ux.stopSpinner();
           resolve(dir);
         } else {
           this.ux.stopSpinner('Failed');
+          this.ux.log('code:', code.toString());
+          this.ux.log('stdout:', stdout);
+          this.ux.log('stderr:', stderr);
           reject();
         }
       });
@@ -205,7 +220,11 @@ class Tarball extends Method.Base {
   }
 
   private test(directory: string): boolean {
-    const executable = path.join(directory, 'bin', this.options.cli);
+    const executable = path.join(
+      directory,
+      'bin',
+      process.platform === 'win32' ? `${this.options.cli}.cmd` : this.options.cli
+    );
     this.ux.log(`Testing ${chalk.cyan(executable)}`);
     const result = exec(`${executable} --version`, { silent: false });
     this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));

@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   release-management: salesforce/npm-release-management@4
-
 parameters:
   run-auto-workflows:
     description: >
@@ -37,7 +36,6 @@ parameters:
     description: 'The fully qualified npm module name, i.e. @salesforce/plugins-data'
     default: ''
     type: string
-
 workflows:
   version: 2
   test-and-release:
