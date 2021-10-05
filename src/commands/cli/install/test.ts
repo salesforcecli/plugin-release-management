@@ -7,7 +7,6 @@
 
 import * as path from 'path';
 import * as os from 'os';
-// import { execSync } from 'child_process';
 import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
