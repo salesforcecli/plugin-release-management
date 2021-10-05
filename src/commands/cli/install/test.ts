@@ -55,7 +55,8 @@ namespace Method {
     public async execute(): Promise<Results> {
       const { service, available } = await this.ping();
       if (!available) {
-        throw new Error(`${service} is not currently available. Unable to run installation tests...`);
+        this.ux.warn(`${service} is not currently available. Unable to run installation tests...`);
+        return {};
       }
       switch (process.platform) {
         case 'darwin': {
@@ -449,7 +450,9 @@ export default class Test extends SfdxCommand {
         break;
     }
 
-    const hasFailures = Object.values(results).some((r) => !r);
+    const hasFailures = Object.values(results)
+      .flatMap(Object.values)
+      .some((r) => !r);
     if (hasFailures) process.exitCode = 1;
     return results;
   }
