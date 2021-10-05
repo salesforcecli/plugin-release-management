@@ -118,6 +118,9 @@
           },
           "tarballs": {
             "description": "interact with CLI tarballs"
+          },
+          "install": {
+            "description": "utilities for CLI installation"
           }
         }
       },
