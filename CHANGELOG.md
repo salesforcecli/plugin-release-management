@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.1.0...v2.2.0) (2021-10-05)
+
+
+### Features
+
+* add cli:install:test command ([#309](https://github.com/salesforcecli/plugin-release-management/issues/309)) ([c83d53b](https://github.com/salesforcecli/plugin-release-management/commit/c83d53b3ab73816c1f35428533281eb7fab74da7))
+
 ## [2.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.0.8...v2.1.0) (2021-09-17)
 
 
