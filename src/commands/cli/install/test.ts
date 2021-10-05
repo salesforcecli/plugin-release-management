@@ -27,7 +27,7 @@ enum Channel {
   STABLE_RC = 'stable-rc',
 }
 
-export type Results = Record<string, boolean>;
+export type Results = Record<string, Record<CLI, boolean>>;
 export type ServiceAvailability = { service: string; available: boolean };
 
 namespace Method {
@@ -45,6 +45,11 @@ namespace Method {
   }
 
   export abstract class Base {
+    private static TEST_TARGETS = {
+      [CLI.SF]: [CLI.SF],
+      [CLI.SFDX]: [CLI.SFDX, CLI.SF],
+    };
+
     public constructor(protected options: Method.Options, protected ux: UX) {}
 
     public async execute(): Promise<Results> {
@@ -72,10 +77,13 @@ namespace Method {
       return Promise.resolve({ available: true, service: 'Service' });
     }
 
-    protected logResult(success: boolean): void {
+    protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
-      this.ux.log(`${chalk.bold('Success')}: ${msg}`);
-      this.ux.log();
+      this.ux.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
+    }
+
+    protected getTargets(): CLI[] {
+      return Base.TEST_TARGETS[this.options.cli];
     }
 
     public abstract darwin(): Promise<Results>;
@@ -164,12 +172,17 @@ class Tarball extends Method.Base {
       try {
         await this.s3.download(tarball, location);
         const extracted = await this.extract(location);
-        const success = this.test(extracted);
-        this.logResult(success);
-        results[tarball] = success;
+        const testResults = this.test(extracted);
+        for (const [cli, success] of Object.entries(testResults)) {
+          this.logResult(cli as CLI, success);
+        }
+        results[tarball] = testResults;
       } catch {
-        results[tarball] = false;
+        for (const cli of this.getTargets()) {
+          results[tarball][cli] = false;
+        }
       }
+      this.ux.log();
     }
     return results;
   }
@@ -218,16 +231,16 @@ class Tarball extends Method.Base {
     });
   }
 
-  private test(directory: string): boolean {
-    const executable = path.join(
-      directory,
-      'bin',
-      process.platform === 'win32' ? `${this.options.cli}.cmd` : this.options.cli
-    );
-    this.ux.log(`Testing ${chalk.cyan(executable)}`);
-    const result = exec(`${executable} --version`, { silent: false });
-    this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-    return result.code === 0;
+  private test(directory: string): Record<CLI, boolean> {
+    const results = {} as Record<CLI, boolean>;
+    for (const cli of this.getTargets()) {
+      const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${cli}.cmd` : cli);
+      this.ux.log(`Testing ${chalk.cyan(executable)}`);
+      const result = exec(`${executable} --version`, { silent: true });
+      this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+      results[cli] = result.code === 0;
+    }
+    return results;
   }
 }
 
@@ -263,9 +276,12 @@ class Npm extends Method.Base {
 
   private async installAndTest(): Promise<Results> {
     await this.install();
-    const success = this.test();
-    this.logResult(success);
-    return { [this.package]: true };
+    const testResults = this.test();
+    for (const [cli, success] of Object.entries(testResults)) {
+      this.logResult(cli as CLI, success);
+    }
+    this.ux.log();
+    return { [this.package]: testResults };
   }
 
   private async install(): Promise<void> {
@@ -283,12 +299,16 @@ class Npm extends Method.Base {
     });
   }
 
-  private test(): boolean {
-    const executable = path.join(this.options.directory, 'node_modules', '.bin', this.options.cli);
-    this.ux.log(`Testing ${chalk.cyan(executable)}`);
-    const result = exec(`${executable} --version`, { silent: true });
-    this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-    return result.code === 0;
+  private test(): Record<CLI, boolean> {
+    const results = {} as Record<CLI, boolean>;
+    for (const cli of this.getTargets()) {
+      const executable = path.join(this.options.directory, 'node_modules', '.bin', cli);
+      this.ux.log(`Testing ${chalk.cyan(executable)}`);
+      const result = exec(`${executable} --version`, { silent: true });
+      this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+      results[cli] = result.code === 0;
+    }
+    return results;
   }
 }
 
@@ -309,11 +329,13 @@ class Installer extends Method.Base {
 
     if (result.code === 0) {
       const success = this.nixTest();
-      this.logResult(success);
-      return { [url]: success };
+      this.logResult(this.options.cli, success);
+      this.ux.log();
+      return { [url]: { [this.options.cli]: success } } as Results;
     } else {
-      this.logResult(false);
-      return { [url]: false };
+      this.logResult(this.options.cli, false);
+      this.ux.log();
+      return { [url]: { [this.options.cli]: false } } as Results;
     }
   }
 
@@ -331,11 +353,13 @@ class Installer extends Method.Base {
 
       if (result.code === 0) {
         const success = this.win32Test(installLocation);
-        this.logResult(success);
-        results[url] = success;
+        this.logResult(this.options.cli, success);
+        this.ux.log();
+        return { [url]: { [this.options.cli]: success } } as Results;
       } else {
-        this.logResult(false);
-        results[url] = false;
+        this.logResult(this.options.cli, false);
+        this.ux.log();
+        return { [url]: { [this.options.cli]: false } } as Results;
       }
     }
 
