@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.2.0...v2.2.1) (2021-10-05)
+
+
+### Bug Fixes
+
+* test that sf is installed alongside sfdx ([#314](https://github.com/salesforcecli/plugin-release-management/issues/314)) ([47686c0](https://github.com/salesforcecli/plugin-release-management/commit/47686c0ec05ff241ac166e4af8fe3397a9ae6ea1))
+
 ## [2.2.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.1.0...v2.2.0) (2021-10-05)
 
 
