@@ -59,8 +59,9 @@ workflows:
             - release-management/test-package
           filters:
             branches:
-              only: main
-          github-release: true
+              only: re/expect_sf-cli
+          github-release: false
+          tag: dev
   test-ts-update:
     triggers:
       - schedule:
