@@ -7,11 +7,13 @@
 
 import * as os from 'os';
 import * as path from 'path';
+import * as util from 'util';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
+import { ensure } from '@salesforce/ts-types';
 import { PackageJson } from '../../../package';
 
 Messages.importMessagesDirectory(__dirname);
@@ -19,8 +21,6 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
 const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
-const STABLE_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable';
-const STABLE_RC_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable-rc';
 const SALESFORCE_DEP_GLOBS = ['@salesforce/**/*', 'salesforce-alm', 'salesforcedx'];
 
 export type Info = {
@@ -49,51 +49,57 @@ export enum Location {
   NPM = 'npm',
 }
 
+export enum CLI {
+  SF = 'sf',
+  SFDX = 'sfdx',
+}
+
 type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.LEGACY>;
 type Archives = Record<ArchiveChannel, string[]>;
+type ChannelMapping = Record<Location, Record<Channel, Channel>>;
 
 const ARCHIVES: Archives = {
   [Channel.STABLE]: [
-    `${STABLE_PATH}/sfdx-darwin-x64.tar.gz`,
-    `${STABLE_PATH}/sfdx-darwin-x64.tar.xz`,
-    `${STABLE_PATH}/sfdx-linux-arm.tar.gz`,
-    `${STABLE_PATH}/sfdx-linux-arm.tar.xz`,
-    `${STABLE_PATH}/sfdx-linux-x64.tar.gz`,
-    `${STABLE_PATH}/sfdx-linux-x64.tar.xz`,
-    `${STABLE_PATH}/sfdx-win32-x64.tar.gz`,
-    `${STABLE_PATH}/sfdx-win32-x64.tar.xz`,
-    `${STABLE_PATH}/sfdx-win32-x86.tar.gz`,
-    `${STABLE_PATH}/sfdx-win32-x86.tar.xz`,
+    '%s/%s-darwin-x64.tar.gz',
+    '%s/%s-darwin-x64.tar.xz',
+    '%s/%s-linux-arm.tar.gz',
+    '%s/%s-linux-arm.tar.xz',
+    '%s/%s-linux-x64.tar.gz',
+    '%s/%s-linux-x64.tar.xz',
+    '%s/%s-win32-x64.tar.gz',
+    '%s/%s-win32-x64.tar.xz',
+    '%s/%s-win32-x86.tar.gz',
+    '%s/%s-win32-x86.tar.xz',
   ],
   [Channel.STABLE_RC]: [
-    `${STABLE_RC_PATH}/sfdx-darwin-x64.tar.gz`,
-    `${STABLE_RC_PATH}/sfdx-darwin-x64.tar.xz`,
-    `${STABLE_RC_PATH}/sfdx-linux-arm.tar.gz`,
-    `${STABLE_RC_PATH}/sfdx-linux-arm.tar.xz`,
-    `${STABLE_RC_PATH}/sfdx-linux-x64.tar.gz`,
-    `${STABLE_RC_PATH}/sfdx-linux-x64.tar.xz`,
-    `${STABLE_RC_PATH}/sfdx-win32-x64.tar.gz`,
-    `${STABLE_RC_PATH}/sfdx-win32-x64.tar.xz`,
-    `${STABLE_RC_PATH}/sfdx-win32-x86.tar.gz`,
-    `${STABLE_RC_PATH}/sfdx-win32-x86.tar.xz`,
+    '%s/%s-darwin-x64.tar.gz',
+    '%s/%s-darwin-x64.tar.xz',
+    '%s/%s-linux-arm.tar.gz',
+    '%s/%s-linux-arm.tar.xz',
+    '%s/%s-linux-x64.tar.gz',
+    '%s/%s-linux-x64.tar.xz',
+    '%s/%s-win32-x64.tar.gz',
+    '%s/%s-win32-x64.tar.xz',
+    '%s/%s-win32-x86.tar.gz',
+    '%s/%s-win32-x86.tar.xz',
   ],
   [Channel.LEGACY]: [
-    `${LEGACY_PATH}/sfdx-cli-darwin-x64.tar.gz`,
-    `${LEGACY_PATH}/sfdx-cli-darwin-x64.tar.xz`,
-    `${LEGACY_PATH}/sfdx-cli-linux-arm.tar.gz`,
-    `${LEGACY_PATH}/sfdx-cli-linux-arm.tar.xz`,
-    `${LEGACY_PATH}/sfdx-cli-linux-x64.tar.gz`,
-    `${LEGACY_PATH}/sfdx-cli-linux-x64.tar.xz`,
-    `${LEGACY_PATH}/sfdx-cli-windows-x64.tar.gz`,
-    `${LEGACY_PATH}/sfdx-cli-windows-x64.tar.xz`,
-    `${LEGACY_PATH}/sfdx-cli-windows-x86.tar.gz`,
-    `${LEGACY_PATH}/sfdx-cli-windows-x86.tar.xz`,
-    `${LEGACY_TOP_LEVEL_PATH}/sfdx-linux-amd64.tar.gz`,
-    `${LEGACY_TOP_LEVEL_PATH}/sfdx-linux-amd64.tar.xz`,
+    `${LEGACY_PATH}/%s-darwin-x64.tar.gz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-darwin-x64.tar.xz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-linux-arm.tar.gz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-linux-arm.tar.xz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-linux-x64.tar.gz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-linux-x64.tar.xz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-windows-x64.tar.gz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-windows-x64.tar.xz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-windows-x86.tar.gz`, // sfdx-cli
+    `${LEGACY_PATH}/%s-windows-x86.tar.xz`, // sfdx-cli
+    `${LEGACY_TOP_LEVEL_PATH}/%s-linux-amd64.tar.gz`,
+    `${LEGACY_TOP_LEVEL_PATH}/%s-linux-amd64.tar.xz`,
   ],
 };
 
-const CHANNEL_MAPPING: Record<Location, Record<Channel, Channel>> = {
+const CHANNEL_MAPPING: ChannelMapping = {
   [Location.NPM]: {
     [Channel.STABLE_RC]: Channel.LATEST_RC,
     [Channel.STABLE]: Channel.LATEST,
@@ -107,6 +113,19 @@ const CHANNEL_MAPPING: Record<Location, Record<Channel, Channel>> = {
     [Channel.STABLE_RC]: Channel.STABLE_RC,
     [Channel.STABLE]: Channel.STABLE,
     [Channel.LEGACY]: Channel.LEGACY,
+  },
+};
+
+const CLI_META = {
+  [CLI.SFDX]: {
+    npm: 'https://www.npmjs.com/package/sfdx-cli',
+    repoName: 'sfdx-cli',
+    packageName: 'sfdx-cli',
+  },
+  [CLI.SF]: {
+    npm: 'https://www.npmjs.com/package/@salesforce/cli',
+    repoName: 'cli',
+    packageName: '@salesforce/cli',
   },
 };
 
@@ -142,19 +161,42 @@ export default class Inspect extends SfdxCommand {
       required: true,
       multiple: true,
     }),
+    cli: flags.enum({
+      description: messages.getMessage('cli'),
+      options: Object.values(CLI),
+      default: CLI.SFDX,
+      required: true,
+    }),
   };
 
   public workingDir = path.join(os.tmpdir(), 'cli_inspection');
+  public archives: Archives;
 
   public async run(): Promise<Info[]> {
-    this.ux.log(`Working Directory: ${this.workingDir}`);
-    // ensure that we are starting with a clean directory
-    await fs.rmdir(this.workingDir, { recursive: true });
-    await fs.mkdirp(this.workingDir);
-
-    const results: Info[] = [];
     const locations = toArray(this.flags.locations) as Location[];
     const channels = toArray(this.flags.channels) as Channel[];
+
+    if (this.flags.cli === CLI.SF && channels.includes(Channel.LEGACY)) {
+      throw new SfdxError('the sf CLI does not have a legacy channel');
+    }
+
+    if (this.flags.cli === CLI.SF && channels.includes(Channel.STABLE_RC)) {
+      throw new SfdxError('the sf CLI does not have a stable-rc channel');
+    }
+
+    this.ux.log(`Working Directory: ${this.workingDir}`);
+
+    // ensure that we are starting with a clean directory
+    try {
+      await fs.remove(this.workingDir);
+    } catch {
+      // error means that folder doesn't exist which is okay
+    }
+    await fs.mkdirp(this.workingDir, { recursive: true });
+
+    this.initArchives();
+
+    const results: Info[] = [];
 
     if (locations.includes(Location.ARCHIVE)) {
       results.push(...(await this.inspectArchives(channels)));
@@ -169,12 +211,34 @@ export default class Inspect extends SfdxCommand {
     return results;
   }
 
+  private initArchives(): void {
+    const cli = ensure<CLI>(this.flags.cli);
+    const stablePath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable`;
+    const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
+    this.archives = {} as Archives;
+    for (const [channel, paths] of Object.entries(ARCHIVES)) {
+      if (channel === Channel.LEGACY && cli === CLI.SFDX) {
+        this.archives[channel] = paths.map((p) => {
+          if (p.includes('amd64')) {
+            return util.format(p, this.flags.cli);
+          } else {
+            return util.format(p, CLI_META[this.flags.cli as CLI].packageName);
+          }
+        });
+      } else if (channel === Channel.STABLE) {
+        this.archives[channel] = paths.map((p) => util.format(p, stablePath, this.flags.cli));
+      } else if (channel === Channel.STABLE_RC) {
+        this.archives[channel] = paths.map((p) => util.format(p, stableRcPath, this.flags.cli));
+      }
+    }
+  }
+
   private async inspectArchives(channels: Channel[]): Promise<Info[]> {
     const tarDir = await this.mkdir(this.workingDir, 'tar');
 
     const pathsByChannel = channels.reduce((res, current) => {
       const channel = CHANNEL_MAPPING[Location.ARCHIVE][current] as ArchiveChannel;
-      return Object.assign(res, { [channel]: ARCHIVES[channel] });
+      return Object.assign(res, { [channel]: this.archives[channel] });
     }, {} as Archives);
 
     const results: Info[] = [];
@@ -211,20 +275,21 @@ export default class Inspect extends SfdxCommand {
   }
 
   private async inspectNpm(channels: Channel[]): Promise<Info[]> {
+    const cliMeta = CLI_META[this.flags.cli as CLI];
     const npmDir = await this.mkdir(this.workingDir, 'npm');
     const results: Info[] = [];
     const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);
     for (const tag of tags) {
       this.ux.log(`---- ${Location.NPM} ${tag} ----`);
       const installDir = await this.mkdir(npmDir, tag);
-      const name = `sfdx-cli@${tag}`;
+      const name = `${cliMeta.packageName}@${tag}`;
       this.ux.startSpinner(`Installing: ${cyan(name)}`);
       exec(`npm install ${name}`, { cwd: installDir, silent: true });
       this.ux.stopSpinner();
-      const pkgJson = await this.readPackageJson(path.join(installDir, 'node_modules', 'sfdx-cli'));
+      const pkgJson = await this.readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
       results.push({
         dependencies: await this.getDependencies(installDir),
-        origin: `https://www.npmjs.com/package/sfdx-cli/v/${pkgJson.version}`,
+        origin: `${cliMeta.npm}/v/${pkgJson.version}`,
         channel: tag,
         location: Location.NPM,
         version: pkgJson.version,

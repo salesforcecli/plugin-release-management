@@ -12,8 +12,7 @@ import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo } from '../../../repository';
-import { Package } from '../../../package';
+import { isMonoRepo, SinglePackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.promote');
@@ -52,6 +51,9 @@ export default class Promote extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType);
     }
 
+    const pkg = await SinglePackageRepo.create({ ux: this.ux });
+    await pkg.writeNpmToken();
+
     const token = ensureString(new Env().getString('NPM_TOKEN'), 'NPM_TOKEN must be set in the environment');
     const tokens = JSON.parse(exec('npm token list --json', { silent: true }).stdout) as Token[];
     const publishTokens = tokens.filter((t) => t.readonly === false && t.automation === false);
@@ -61,8 +63,8 @@ export default class Promote extends SfdxCommand {
       const errType = 'InvalidToken';
       throw new SfdxError(messages.getMessage(errType), errType);
     }
-    const pkg = await Package.create();
-    const tags = pkg.npmPackage['dist-tags'];
+
+    const tags = pkg.package.npmPackage['dist-tags'];
     const candidate = ensureString(this.flags.candidate);
     const target = ensureString(this.flags.target);
 

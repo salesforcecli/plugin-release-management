@@ -4,6 +4,7 @@
   "salesforce": "show versions of salesforce owned dependencies",
   "channels": "the channel you want to inspect (for achives, latest and latest-rc are translated to stable and stable-rc. And vice-versa for npm)",
   "locations": "the location you want to inspect",
+  "cli": "the CLI you want to inspect",
   "examples": [
     "<%= config.bin %> <%= command.id %> -l archive -c stable",
     "<%= config.bin %> <%= command.id %> -l archive -c stable-rc",

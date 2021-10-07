@@ -6,12 +6,14 @@
  */
 
 import * as os from 'os';
+import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import * as chalk from 'chalk';
+import { exec } from 'shelljs';
+import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, isMonoRepo, LernaRepo } from '../../../repository';
-import { SigningResponse } from '../../../codeSigning/packAndSign';
+import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.lerna.release');
@@ -52,6 +54,11 @@ export default class Release extends SfdxCommand {
       default: false,
       description: messages.getMessage('githubRelease'),
     }),
+    verify: flags.boolean({
+      description: messages.getMessage('verify'),
+      default: true,
+      allowNo: true,
+    }),
   };
 
   public async run(): Promise<ReleaseResult[]> {
@@ -73,6 +80,8 @@ export default class Release extends SfdxCommand {
       return;
     }
 
+    await lernaRepo.writeNpmToken();
+
     lernaRepo.printStage('Validate Next Version');
     const pkgValidations = lernaRepo.validate();
 
@@ -85,8 +94,6 @@ export default class Release extends SfdxCommand {
       this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
       this.ux.log(`Next Version: ${pkgValidation.nextVersion}${os.EOL}`);
     });
-
-    await lernaRepo.writeNpmToken();
 
     if (this.flags.install) {
       lernaRepo.printStage('Install');
@@ -104,18 +111,8 @@ export default class Release extends SfdxCommand {
 
     let signatures: SigningResponse[] = [];
     if (this.flags.sign && !this.flags.dryrun) {
-      lernaRepo.printStage('Sign');
+      lernaRepo.printStage('Sign and Upload Signatures');
       signatures = await lernaRepo.sign(this.flags.sign);
-      lernaRepo.printStage('Upload Signatures');
-      for (const signature of signatures) {
-        this.ux.log(chalk.dim(signature.name));
-        await lernaRepo.uploadSignature(signature);
-      }
-    }
-
-    if (!this.flags.dryrun) {
-      lernaRepo.printStage('Push Changes to Git');
-      lernaRepo.pushChangesToGit();
     }
 
     lernaRepo.printStage('Publish');
@@ -127,16 +124,25 @@ export default class Release extends SfdxCommand {
     });
 
     if (!this.flags.dryrun) {
-      lernaRepo.printStage('Waiting For Availablity');
+      lernaRepo.printStage('Push Changes to Git');
+      lernaRepo.pushChangesToGit();
+    }
+
+    if (!this.flags.dryrun) {
+      lernaRepo.printStage('Waiting For Availability');
       const found = await lernaRepo.waitForAvailability();
       if (!found) {
         this.ux.warn('Exceeded timeout waiting for packages to become available');
       }
     }
 
-    if (this.flags.sign && !this.flags.dryrun) {
+    if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
       lernaRepo.printStage('Verify Signed Packaged');
-      lernaRepo.verifySignature(this.flags.sign);
+      const pkgs = lernaRepo.getPkgInfo(this.flags.sign);
+
+      for (const pkg of pkgs) {
+        this.verifySign(pkg);
+      }
     }
 
     this.ux.log(lernaRepo.getSuccessMessage());
@@ -144,5 +150,18 @@ export default class Release extends SfdxCommand {
     return lernaRepo.packages.map((pkg) => {
       return { name: pkg.name, version: pkg.getNextVersion() };
     });
+  }
+
+  protected verifySign(pkgInfo: PackageInfo): void {
+    const cmd = 'plugins:trust:verify';
+    const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
+
+    this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
+    try {
+      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
+    } catch (err) {
+      throw new SfdxError(err, 'FailedCommandExecution');
+    }
   }
 }
