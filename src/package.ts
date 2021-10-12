@@ -9,7 +9,7 @@ import * as semver from 'semver';
 import { cli } from 'cli-ux';
 import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
+import { AsyncOptionalCreatable, findKey, toNumber } from '@salesforce/kit';
 import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
@@ -21,6 +21,7 @@ export type PackageJson = {
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
+  resolutions?: Record<string, string>;
   repository?: string;
   sfdx?: PackageJsonSfdxProperty;
 } & AnyJson;
@@ -121,6 +122,31 @@ export class Package extends AsyncOptionalCreatable {
   public writePackageJson(rootDir?: string): void {
     const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
     fs.writeJsonSync(pkgJsonPath, this.packageJson);
+  }
+
+  public bumpResolutions(tag: string): void {
+    if (!this.packageJson.resolutions) {
+      throw new SfdxError('Bumping resolutions requires property "resolutions" to be present in package.json');
+    }
+
+    Object.keys(this.packageJson.resolutions).map((key: string) => {
+      const result = exec(`npm view ${key} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+        silent: true,
+      });
+      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      this.packageJson.resolutions[key] = versions[tag];
+    });
+  }
+
+  public getNextRCVersion(): string {
+    const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      silent: true,
+    });
+    const versions = JSON.parse(result.stdout) as Record<string, string>;
+
+    const versionParts = versions['latest-rc'].split('.');
+    const newPatch = toNumber(versionParts[1]) + 1;
+    return `${versionParts[0]}.${newPatch}.0`;
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
