@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "2.2.2",
+  "version": "2.2.5",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -16,7 +16,7 @@
     "@salesforce/plugin-trust": "^1.0.7",
     "@salesforce/ts-types": "^1.4.3",
     "@types/semver": "^7.3.6",
-    "@types/sinon": "10.0.2",
+    "@types/sinon": "10.0.4",
     "agent-base": "^6.0.2",
     "aws-sdk": "^2.920.0",
     "chalk": "^4.1.0",

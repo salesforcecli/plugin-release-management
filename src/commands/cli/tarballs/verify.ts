@@ -249,6 +249,7 @@ export default class Verify extends SfdxCommand {
         `${this.baseDir}/dist/builtins/package.json`,
         `${this.baseDir}/scripts/clean-for-tarballs`,
         `${this.baseDir}/scripts/include-sf.js`,
+        `${this.baseDir}/sf-cli/**/*`,
       ];
       const expectedFiles = await fg(expectedFileGlobs);
       const allFiles = await fg([`${this.baseDir}/**/*`, `!${this.baseDir}/node_modules/**/*`]);
@@ -290,7 +291,7 @@ export default class Verify extends SfdxCommand {
       const help = exec(`${sfBin} --help`, { silent: false });
       return sfBinExists && sfCmdExists && version.code === 0 && help.code === 0;
     };
-    const passed = await this.execute('Ensure sf is included', validate);
+    const passed = await this.execute('Ensure sf is included\n', validate);
     if (!passed) {
       throw new SfdxError('sf was not included! Did include-sf.js succeed?');
     }
