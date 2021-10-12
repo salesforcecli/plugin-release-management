@@ -9,7 +9,7 @@ import * as semver from 'semver';
 import { cli } from 'cli-ux';
 import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, findKey, toNumber } from '@salesforce/kit';
+import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
 import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
@@ -138,15 +138,14 @@ export class Package extends AsyncOptionalCreatable {
     });
   }
 
-  public getNextRCVersion(): string {
+  public getNextRCVersion(tag: string): string {
     const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
     const versions = JSON.parse(result.stdout) as Record<string, string>;
 
-    const versionParts = versions['latest-rc'].split('.');
-    const newPatch = toNumber(versionParts[1]) + 1;
-    return `${versionParts[0]}.${newPatch}.0`;
+    const version = semver.parse(versions[tag]);
+    return `${version.major}.${version.minor + 1}.0`;
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {

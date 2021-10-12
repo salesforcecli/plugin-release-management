@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { SfdxCommand } from '@salesforce/command';
+import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { exec, ExecOptions } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -18,6 +18,12 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 export default class build extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
+  public static readonly flagsConfig: FlagsConfig = {
+    rctag: flags.string({
+      description: messages.getMessage('flags.rctag'),
+      default: 'latest-rc',
+    }),
+  };
   public async run(): Promise<void> {
     const auth = ensureString(
       new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
@@ -26,7 +32,7 @@ export default class build extends SfdxCommand {
     // get the current version and implement the patch version for a default rc build
     const repo = await SinglePackageRepo.create({ ux: this.ux });
 
-    const nextRCVersion = repo.package.getNextRCVersion();
+    const nextRCVersion = repo.package.getNextRCVersion(this.flags.rctag);
     repo.nextVersion = nextRCVersion;
 
     this.ux.log(`starting on main and will checkout ${repo.nextVersion}`);
@@ -50,24 +56,22 @@ export default class build extends SfdxCommand {
     repo.package.pinDependencyVersions('latest-rc');
     repo.package.writePackageJson();
 
-    // compare the command-snapshot and regenerate if they're changes, they'll be part of the PR
-    try {
-      this.exec('yarn snapshot-compare', { fatal: true, silent: true });
-    } catch {
-      this.exec('yarn snapshot-generate');
-    }
-
     this.exec('yarn install');
+
+    this.exec('yarn snapshot-generate');
 
     // commit package.json/yarn.lock and potentially command-snapshot changes
     this.exec('git add .');
     this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
     this.exec(`git push --set-upstream origin ${nextRCVersion}`);
 
+    const repoOwner = repo.package.packageJson.repository.split('/')[0];
+    const repoName = repo.package.packageJson.repository.split('/')[1];
+
     const octokit = new Octokit({ auth });
-    await octokit.request('POST /repos/salesforcecli/sfdx-cli/pulls', {
-      owner: 'salesforcecli',
-      repo: 'sfdx-cli',
+    await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
+      owner: repoOwner,
+      repo: repoName,
       head: nextRCVersion,
       base: 'main',
       title: `Release v${nextRCVersion} as latest-rc`,

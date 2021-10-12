@@ -17,7 +17,7 @@
   {
     "command": "cli:latestrc:build",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel"]
+    "flags": ["json", "loglevel", "rctag"]
   },
   {
     "command": "cli:tarballs:prepare",

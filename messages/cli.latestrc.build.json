@@ -1,3 +1,6 @@
 {
-  "description": "creates a PR to sfdx-cli to release a latest-rc build"
+  "description": "creates a PR to the repository property defined in the package.json to release a latest-rc build",
+  "flags": {
+    "rctag": "the tag name that corresponds to the npm RC build, usually latest-rc or stable-rc"
+  }
 }
