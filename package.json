@@ -121,6 +121,9 @@
           },
           "install": {
             "description": "utilities for CLI installation"
+          },
+          "latestrc": {
+            "description": "utilities for building CLI releases"
           }
         }
       },

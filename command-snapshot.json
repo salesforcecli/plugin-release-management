@@ -15,6 +15,11 @@
     "flags": ["channel", "cli", "json", "loglevel", "method"]
   },
   {
+    "command": "cli:latestrc:build",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "loglevel"]
+  },
+  {
     "command": "cli:tarballs:prepare",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "json", "loglevel", "types", "verbose"]

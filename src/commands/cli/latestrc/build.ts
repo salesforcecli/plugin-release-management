@@ -10,9 +10,14 @@ import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { bold } from 'chalk';
+import { Messages } from '@salesforce/core';
 import { SinglePackageRepo } from '../../../repository';
 
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.latestrc.build');
+
 export default class build extends SfdxCommand {
+  public static readonly description = messages.getMessage('description');
   public async run(): Promise<void> {
     const auth = ensureString(
       new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
