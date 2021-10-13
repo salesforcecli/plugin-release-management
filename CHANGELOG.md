@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.2.6...v2.3.0) (2021-10-13)
+
+
+### Features
+
+* add circleci envvar create command ([0d35493](https://github.com/salesforcecli/plugin-release-management/commit/0d354934d00cd08e270c205bbb29a3d49be85bbc))
+
 ### [2.2.6](https://github.com/salesforcecli/plugin-release-management/compare/v2.2.5...v2.2.6) (2021-10-12)
 
 

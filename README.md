@@ -100,6 +100,7 @@ sfdx plugins
 
 <!-- commands -->
 * [`sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circleci--t-pluginlibraryorb---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarcreate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarupdate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx cli:install:test -c <string> -m <string> [--channel <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliinstalltest--c-string--m-string---channel-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx cli:tarballs:prepare [-d] [-t] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballsprepare--d--t---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -139,6 +140,46 @@ EXAMPLE
 ```
 
 _See code: [src/commands/circleci/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v2.2.6/src/commands/circleci/index.ts)_
+
+## `sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+update environment variable(s) on Circle CI slug(s)
+
+```
+update environment variable(s) on Circle CI slug(s)
+Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist on the slug. You will be prompted for the environment variable values unless they already exist on the process. The slugs can be piped in. If so, the environment variables must be on the process (prompting is disabled).
+
+USAGE
+  $ sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel 
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -e, --envvar=envvar                                                               (required) a environment variables
+                                                                                    to set on the given circle slug(s)
+
+  -s, --slug=slug                                                                   a circle ci slugs in the format
+                                                                                    <vcs>/<org name>/<repo name>
+
+  --dryrun                                                                          do validation but do not update the
+                                                                                    environment variable values
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+DESCRIPTION
+  Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist 
+  on the slug. You will be prompted for the environment variable values unless they already exist on the process. The 
+  slugs can be piped in. If so, the environment variables must be on the process (prompting is disabled).
+
+EXAMPLES
+  sfdx circleci:envvar:create -e 'MY_ENV_VAR' -s 'gh/<org>/<repository>'
+  echo "gh/<org>/<repository>" | sfdx circleci:envvar:create -e 'MY_ENV_VAR'
+  sfdx circleci -t plugin | sfdx circleci:envvar:create -e 'MY_ENV_VAR' -e 'MY_OTHER_ENV_VAR'
+```
+
+_See code: [src/commands/circleci/envvar/create.ts](https://github.com/salesforcecli/plugin-release-management/blob/v2.2.6/src/commands/circleci/envvar/create.ts)_
 
 ## `sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
