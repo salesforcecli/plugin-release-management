@@ -5,22 +5,30 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
+import * as semver from 'semver';
+import { cli } from 'cli-ux';
 import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable } from '@salesforce/kit';
-import { AnyJson, get } from '@salesforce/ts-types';
+import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
+import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
 export type PackageJson = {
   name: string;
   version: string;
-  dependencies: AnyJson;
-  devDependencies: AnyJson;
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
   repository?: string;
+  sfdx?: PackageJsonSfdxProperty;
 } & AnyJson;
+
+export type PackageJsonSfdxProperty = {
+  publicKeyUrl: string;
+  signatureUrl: string;
+};
 
 export type ChangedPackageVersions = Array<{
   name: string;
@@ -46,6 +54,7 @@ interface PinnedPackage {
   name: string;
   version: string;
   tag: string;
+  alias: Nullable<string>;
 }
 
 export class Package extends AsyncOptionalCreatable {
@@ -121,28 +130,72 @@ export class Package extends AsyncOptionalCreatable {
         'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
       );
     }
-    const dependencies: string[] = this.packageJson.pinnedDependencies;
+    const { pinnedDependencies, dependencies } = this.packageJson;
+    const deps = pinnedDependencies
+      .map((d) => {
+        const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
+        const [tag] = tagRegex.exec(d) || [];
+        const name = tag ? d.replace(new RegExp(`@${tag}$`), '') : d;
+        if (!dependencies[name]) {
+          cli.warn(`${name} was not found in the dependencies section of your package.json. Skipping...`);
+          return;
+        }
+        const version = dependencies[name];
+
+        if (version.startsWith('npm:')) {
+          return {
+            name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
+            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+            alias: name,
+            tag: tag || targetTag,
+          };
+        } else {
+          return {
+            name,
+            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+            alias: null,
+            tag: tag || targetTag,
+          };
+        }
+      })
+      .filter((d) => !!d);
+
     const pinnedPackages: PinnedPackage[] = [];
-    dependencies.forEach((name) => {
+    deps.forEach((dep) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      const result = exec(`npm view ${dep.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
         silent: true,
       });
       const versions = JSON.parse(result.stdout) as Record<string, string>;
-      let tag = targetTag;
+      let tag = dep.tag;
 
       // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
       if (!versions[tag]) {
         tag = 'latest';
       }
 
-      const version = versions[tag];
+      // If the version in package.json is greater than the version of the requested tag, then we
+      // assume that this is on purpose - so we don't overwrite it. For example, we might want to
+      // include a latest-rc version for a single plugin but everything else we want latest.
+      let version: string;
+      if (semver.gt(dep.version, versions[tag])) {
+        cli.warn(
+          `${dep.name} is currently pinned at ${dep.version} which is higher than ${tag} (${versions[tag]}). Assuming that this is intentional...`
+        );
+        version = dep.version;
+        tag = findKey(versions, (v) => v === version);
+      } else {
+        version = versions[tag];
+      }
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
-      this.packageJson['dependencies'][name] = version;
-
+      if (dep.alias) {
+        this.packageJson['dependencies'][dep.alias] = `npm:${dep.name}@${version}`;
+      } else {
+        this.packageJson['dependencies'][dep.name] = version;
+      }
       // accumulate information to return
-      pinnedPackages.push({ name, version, tag });
+      pinnedPackages.push({ name: dep.name, version, tag, alias: dep.alias });
     });
 
     return pinnedPackages;

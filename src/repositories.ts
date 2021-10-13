@@ -21,10 +21,6 @@ type SourceRepositoryDefinition = {
   packages: SourcePackageDefinition[];
 };
 
-export type PackageInfo = {
-  url: string;
-} & SourcePackageDefinition;
-
 export type RepositoryInfo = {
   organization: string;
   name: string;

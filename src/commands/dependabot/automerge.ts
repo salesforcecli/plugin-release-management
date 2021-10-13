@@ -31,6 +31,7 @@ interface PullRequest {
   number: number;
   head: {
     sha: string;
+    ref: string;
   };
 }
 export default class AutoMerge extends SfdxCommand {
@@ -53,6 +54,11 @@ export default class AutoMerge extends SfdxCommand {
       char: 'd',
       default: false,
     }),
+    'skip-ci': flags.boolean({
+      description: messages.getMessage('skipCi'),
+      char: 's',
+      default: false,
+    }),
   };
 
   private octokit: Octokit;
@@ -62,7 +68,10 @@ export default class AutoMerge extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
+    const auth = ensureString(
+      new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
+      'GH_TOKEN is required to be set in the environment'
+    );
     const { owner, repo } = await getOwnerAndRepo(this.flags.owner, this.flags.repo);
 
     this.octokit = new Octokit({ auth });
@@ -102,10 +111,14 @@ export default class AutoMerge extends SfdxCommand {
 
     if (this.flags.dryrun === false) {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
-      const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
+      const opts: { owner: string; repo: string; pull_number: number; commit_title?: string } = {
         ...this.baseRepoObject,
         pull_number: prToMerge.number,
-      });
+      };
+      if (this.flags['skip-ci']) {
+        opts.commit_title = `Merge pull request #${prToMerge.number} from ${prToMerge.head.ref} [skip ci]`;
+      }
+      const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', opts);
       this.ux.logJson(mergeResult);
     } else {
       this.ux.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);

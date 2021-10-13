@@ -10,29 +10,18 @@
 
 import { exec } from 'child_process';
 import { EOL } from 'os';
-import { basename, join as pathJoin } from 'path';
-import { sep as pathSep } from 'path';
-// import { URL } from 'url';
-import { Readable } from 'stream';
-import { copyFile, createReadStream } from 'fs';
+import { join as pathJoin } from 'path';
+import { copyFile } from 'fs';
 import { Agent } from 'https';
-import got, { Agents, RequestError } from 'got';
+import { Agents } from 'got';
 import { UX } from '@salesforce/command';
 import { fs, Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
-
-// import { AgentOptions } from 'agent-base';
-import {
-  CodeSignInfo,
-  CodeVerifierInfo,
-  default as sign,
-  validSalesforceHostname,
-  verify,
-} from '../codeSigning/codeSignApi';
 import { PackageJson } from '../package';
-import { ExecProcessFailed, InvalidUrlError, SignSignedCertError } from './error';
+import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
+import { ExecProcessFailed } from './error';
 import { NpmName } from './NpmName';
 
 class PathGetter {
@@ -80,49 +69,9 @@ class PathGetter {
 let cliUx: UX;
 let pathGetter: PathGetter;
 
-export interface SigningResponse {
-  tarPath: string;
-  filename: string;
-  verified: boolean;
-  version?: string;
-  name?: string;
-}
-
-export interface SigningOpts {
-  publickeyurl: string;
-  signatureurl: string;
-  privatekeypath: string;
-  target?: string;
-  tarpath?: string;
-}
-
 export const api = {
   setUx(ux: UX): void {
     cliUx = ux;
-  },
-
-  /**
-   * Validates that a url is a valid salesforce url.
-   *
-   * @param url - The url to validate.
-   */
-  validateUrl(url: string): void {
-    try {
-      // new URL throws if a host cannot be parsed out.
-      if (!validSalesforceHostname(url)) {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new NamedError(
-          'NotASalesforceHost',
-          'Signing urls must have the hostname developer.salesforce.com and use https.'
-        );
-      }
-    } catch (e) {
-      if (e instanceof NamedError) {
-        throw e;
-      } else {
-        throw new InvalidUrlError(url, e);
-      }
-    }
   },
 
   /**
@@ -162,79 +111,6 @@ export const api = {
         }
       );
     });
-  },
-
-  /**
-   * verify a signature against a public key and tgz content
-   *
-   * @param tarGzStream - Tar file to validate
-   * @param sigFilenameStream - Computed signature
-   * @param publicKeyUrl - url for the public key
-   */
-  verify(tarGzStream: Readable, sigFilenameStream: Readable, publicKeyUrl: string): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      const verifyInfo = new CodeVerifierInfo();
-      verifyInfo.dataToVerify = tarGzStream;
-      verifyInfo.signatureStream = sigFilenameStream;
-
-      return resolve(
-        (async (): Promise<boolean> => {
-          try {
-            const agent = api.getAgentForUri(publicKeyUrl);
-            const response = await got.get(publicKeyUrl, { agent });
-            if (response && response.statusCode === 200) {
-              verifyInfo.publicKeyStream = Readable.from([response.body]);
-              return await verify(verifyInfo);
-            } else {
-              const statusCode: number = response.statusCode;
-              throw new NamedError(
-                'RetrievePublicKeyFailed',
-                `Couldn't retrieve public key at url: ${publicKeyUrl} error code: ${statusCode}`
-              );
-            }
-          } catch (err) {
-            const error = err as RequestError;
-            if (error && error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
-              throw new SignSignedCertError();
-            } else {
-              throw err;
-            }
-          }
-        })()
-      );
-    });
-  },
-
-  /**
-   * sign a tgz file stream
-   *
-   * @param fileStream - the tgz file stream to sign
-   * @param privateKeyStream - the certificate's private key
-   */
-  retrieveSignature(fileStream: Readable, privateKeyStream: Readable): Promise<string> {
-    const info = new CodeSignInfo();
-    info.dataToSignStream = fileStream;
-    info.privateKeyStream = privateKeyStream;
-    return sign(info);
-  },
-
-  /**
-   * write the signature to a '.sig' file. this file is to be deployed to signatureurk
-   *
-   * @param filePath - the file path to the tgz file
-   * @param signature - the computed signature
-   */
-  async writeSignatureFile(filePath: string, signature: string): Promise<string> {
-    if (!filePath.endsWith('tgz')) {
-      throw new NamedError('UnexpectedTgzName', `The file path ${filePath} is unexpected. It should be a tgz file.`);
-    }
-    if (!pathGetter) pathGetter = new PathGetter();
-    cliUx.log(`Signing file at: ${filePath}`);
-    const pathComponents: string[] = filePath.split(pathSep);
-    const filenamePart: string = pathComponents[pathComponents.length - 1];
-    const sigFilename = filenamePart.replace('.tgz', '.sig');
-    await fs.writeFile(pathGetter.getFile(sigFilename), signature);
-    return sigFilename;
   },
 
   /**
@@ -322,61 +198,14 @@ export const api = {
     return fs.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
   },
 
-  async doSign(args: SigningOpts, packageJson?: { name: string; version: string }): Promise<SigningResponse> {
-    const logger = await Logger.child('packAndSign');
-    const filepath = args.tarpath;
-
-    if (!filepath) {
-      throw new NamedError('MissingTarFile', 'A tgz file to sign was not specified.');
-    }
-
-    // create the signature file
-    const signature = await api.retrieveSignature(
-      createReadStream(filepath, { encoding: 'binary' }),
-      createReadStream(args.privatekeypath)
-    );
-    logger.debug('created the digital signature');
-    if (signature && signature.length > 0) {
-      // write the signature file to disk
-      const sigFilename = await api.writeSignatureFile(filepath, signature);
-
-      cliUx.log(`Artifact signed and saved in ${sigFilename}`);
-
-      let verified: boolean;
-      try {
-        // verify the signature with the public key url
-        verified = await api.verify(
-          createReadStream(filepath, { encoding: 'binary' }),
-          createReadStream(sigFilename),
-          args.publickeyurl
-        );
-      } catch (e) {
-        cliUx.error(e);
-        throw new NamedError(
-          'VerificationError',
-          'An error occurred trying to validate the signature. Check the public key url and try again.',
-          e
-        );
-      }
-      if (verified) {
-        cliUx.log(`Successfully verified signature with public key at: ${args.publickeyurl}`);
-        return {
-          tarPath: filepath,
-          filename: sigFilename,
-          verified,
-          name: packageJson?.name,
-          version: packageJson?.version,
-        };
-      } else {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new NamedError('FailedToVerifySignature', 'Failed to verify signature with tar gz content');
-      }
-    } else {
-      // noinspection ExceptionCaughtLocallyJS
-      throw new NamedError('EmptySignature', 'The generated signature is empty. Verify the private key and try again');
+  async revertPackageJsonIfExists(): Promise<void> {
+    // Restore the package.json file so it doesn't show a git diff.
+    if (fs.existsSync(pathGetter.packageJsonBak)) {
+      cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
+      await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
+      await fs.unlink(pathGetter.packageJsonBak);
     }
   },
-
   /**
    * main method to pack and sign an npm.
    *
@@ -384,20 +213,14 @@ export const api = {
    * @param ux - The cli ux interface usually provided by oclif.
    * @return {Promise<SigningResponse>} The SigningResponse
    */
-  async doPackAndSign(args: SigningOpts): Promise<SigningResponse> {
+  async packSignVerifyModifyPackageJSON(targetPackagePath: string): Promise<SigningResponse> {
     const logger = await Logger.child('packAndSign');
-    let packageDotJsonBackedUp = false;
-    pathGetter = new PathGetter(args.target);
+    pathGetter = new PathGetter(targetPackagePath);
 
     try {
-      logger.debug(`validating args.signatureurl: ${args.signatureurl}`);
-      logger.debug(`validating args.publickeyurl: ${args.publickeyurl}`);
-      api.validateUrl(args.signatureurl);
-      api.validateUrl(args.publickeyurl);
-
       // read package.json info
       const packageJsonContent: string = await api.retrievePackageJson();
-      let packageJson = JSON.parse(packageJsonContent) as PackageJson;
+      const packageJson = JSON.parse(packageJsonContent) as PackageJson;
       logger.debug('parsed the package.json content');
 
       if (packageJson.files) {
@@ -422,43 +245,38 @@ export const api = {
         );
       }
 
-      // compute the name of the signature file
+      // get the packageJson name/version
       const npmName: NpmName = NpmName.parse(packageJson.name);
       logger.debug(`parsed the following npmName components: ${JSON.stringify(npmName, null, 4)}`);
       npmName.tag = packageJson.version;
-      const sigFilename = pathGetter.getFile(npmName.toFilename('.sig'));
-      logger.debug(`using sigFilename: ${sigFilename}`);
 
-      // make a backup of the signature file
+      // make a backup of the packageJson
       await api.copyPackageDotJson(pathGetter.packageJson, pathGetter.packageJsonBak);
       logger.debug('made a backup of the package.json file.');
-
-      packageDotJsonBackedUp = true;
       cliUx.log(`Backed up ${pathGetter.packageJson} to ${pathGetter.packageJsonBak}`);
 
+      const packageNameWithOrWithoutScope = npmName.scope ? `@${npmName.scope}/${npmName.name}` : npmName.name;
+      // we have to modify package.json with security URLs BEFORE packing
       // update the package.json object with the signature urls and write it to disk.
-      const sigUrl = `${args.signatureurl}${args.signatureurl.endsWith('/') ? '' : '/'}${basename(sigFilename)}`;
-      logger.debug(`sigUrl: ${sigUrl}`);
-      packageJson = Object.assign(packageJson, {
-        sfdx: {
-          publicKeyUrl: args.publickeyurl,
-          signatureUrl: `${sigUrl}`,
-        },
-      }) as PackageJson;
+      packageJson.sfdx = getSfdxProperty(packageNameWithOrWithoutScope, npmName.tag);
       await api.writePackageJson(packageJson);
-
       cliUx.log('Successfully updated package.json with public key and signature file locations.');
+      cliUx.logJson(packageJson.sfdx);
 
       const filepath = await api.pack();
-      args.tarpath = filepath;
-      return api.doSign(args);
+      cliUx.log(`Packed tgz to ${filepath}`);
+
+      const signResponse = await sign2({
+        upload: true,
+        targetFileToSign: filepath,
+        packageName: packageNameWithOrWithoutScope,
+        packageVersion: npmName.tag,
+      });
+
+      return signResponse;
     } finally {
-      // Restore the package.json file so it doesn't show a git diff.
-      if (packageDotJsonBackedUp) {
-        cliUx.log('Restoring package.json');
-        await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
-        await fs.unlink(pathGetter.packageJsonBak);
-      }
+      // prevent any publish-time changes from persisting to git
+      await api.revertPackageJsonIfExists();
     }
   },
 
