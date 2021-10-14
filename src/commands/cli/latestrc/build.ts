@@ -75,7 +75,7 @@ export default class build extends SfdxCommand {
       head: nextRCVersion,
       base: 'main',
       title: `Release v${nextRCVersion} as latest-rc`,
-      body: 'Building latest-rc',
+      body: 'Building latest-rc @W-0@',
     });
   }
 
