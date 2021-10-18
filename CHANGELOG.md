@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.0...v2.3.1) (2021-10-18)
+
+
+### Bug Fixes
+
+* automates latest-rc build of sfdx-cli ([6260314](https://github.com/salesforcecli/plugin-release-management/commit/626031490dcab9232f172856a5384d323b39358f))
+* automates latest-rc build of sfdx-cli ([9f78931](https://github.com/salesforcecli/plugin-release-management/commit/9f78931a92cd3bf6155c2df8042dd094eef7628d))
+
 ## [2.3.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.2.6...v2.3.0) (2021-10-13)
 
 
