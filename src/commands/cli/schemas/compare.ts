@@ -10,7 +10,7 @@ import * as os from 'os';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import cli from 'cli-ux';
-import * as fg from 'fast-glob';
+import { SchemaUtils } from './collect';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.compare');
@@ -23,16 +23,16 @@ export type Results = {
   };
 };
 
-export default class Test extends SfdxCommand {
+export default class Compare extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flagsConfig: FlagsConfig = {};
 
   public async run(): Promise<Results> {
     // The "existing schema" is the schema that is stored at the CLI level
-    const existing = await this.readExistingSchema();
+    const existing = await SchemaUtils.getLatestSchemaFiles();
     // The "latest schema" is the schema that is found in the node_modules
-    const latest = await this.readLatestSchema();
+    const latest = await SchemaUtils.getExistingSchemaFiles();
 
     // If there are more latest schema than existing schema, that means that new
     // schema was added without also being added at the CLI level.
@@ -90,18 +90,6 @@ export default class Test extends SfdxCommand {
       );
     }
     return results;
-  }
-
-  private async readExistingSchema(): Promise<string[]> {
-    const globs = ['schemas/**/*.json'];
-    const schemaFiles = await fg(globs);
-    return schemaFiles;
-  }
-
-  private async readLatestSchema(): Promise<string[]> {
-    const globs = ['node_modules/@sf/**/schemas/**/*.json', 'node_modules/@salesforce/**/schemas/**/*.json'];
-    const schemaFiles = (await fg(globs)).filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
-    return schemaFiles;
   }
 
   private normalizeFilename(file: string): string {
