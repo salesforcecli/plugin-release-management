@@ -21,6 +21,7 @@ export type PackageJson = {
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
+  resolutions?: Record<string, string>;
   repository?: string;
   sfdx?: PackageJsonSfdxProperty;
 } & AnyJson;
@@ -121,6 +122,30 @@ export class Package extends AsyncOptionalCreatable {
   public writePackageJson(rootDir?: string): void {
     const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
     fs.writeJsonSync(pkgJsonPath, this.packageJson);
+  }
+
+  public bumpResolutions(tag: string): void {
+    if (!this.packageJson.resolutions) {
+      throw new SfdxError('Bumping resolutions requires property "resolutions" to be present in package.json');
+    }
+
+    Object.keys(this.packageJson.resolutions).map((key: string) => {
+      const result = exec(`npm view ${key} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+        silent: true,
+      });
+      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      this.packageJson.resolutions[key] = versions[tag];
+    });
+  }
+
+  public getNextRCVersion(tag: string): string {
+    const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      silent: true,
+    });
+    const versions = JSON.parse(result.stdout) as Record<string, string>;
+
+    const version = semver.parse(versions[tag]);
+    return `${version.major}.${version.minor + 1}.0`;
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
