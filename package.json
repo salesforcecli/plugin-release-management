@@ -125,6 +125,9 @@
           },
           "latestrc": {
             "description": "utilities for building CLI releases"
+          },
+          "schemas": {
+            "description": "utilities for comparing command schemas"
           }
         }
       },

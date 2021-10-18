@@ -25,6 +25,16 @@
     "flags": ["json", "loglevel", "rctag"]
   },
   {
+    "command": "cli:schemas:collect",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "loglevel"]
+  },
+  {
+    "command": "cli:schemas:compare",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "loglevel"]
+  },
+  {
     "command": "cli:tarballs:prepare",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "json", "loglevel", "types", "verbose"]
