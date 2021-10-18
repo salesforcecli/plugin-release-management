@@ -5,6 +5,11 @@
     "flags": ["contains-package-type", "json", "loglevel"]
   },
   {
+    "command": "circleci:envvar:create",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["dryrun", "envvar", "json", "loglevel", "slug"]
+  },
+  {
     "command": "circleci:envvar:update",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "envvar", "json", "loglevel", "slug"]
