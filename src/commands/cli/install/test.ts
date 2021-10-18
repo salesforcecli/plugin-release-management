@@ -16,7 +16,7 @@ import * as chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
 
 enum CLI {
   SF = 'sf',
