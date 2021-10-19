@@ -8,17 +8,17 @@ import { Env } from '@salesforce/kit';
 import { OutputFlags } from '@oclif/parser';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Flags = OutputFlags<any>;
+export type Flags = OutputFlags<any>;
 type ConditionFn = (flags: Flags) => boolean;
 type DependencyType = 'env';
 
-interface Dependency {
+export interface Dependency {
   name: string;
   type: DependencyType;
   condition?: ConditionFn;
 }
 
-interface Result {
+export interface Result {
   name: string;
   type: DependencyType;
   passed: boolean;
@@ -48,16 +48,20 @@ const DEPENDENCIES: Dependency[] = [
   },
 ];
 
-export function verifyDependencies(args: Flags): { failures: number; results: Result[] } {
+export function verifyDependencies(
+  args: Flags,
+  depFilter = (dep: Dependency): boolean => !!dep,
+  condition = (a): boolean => !!a && false
+): { failures: number; results: Result[] } {
   const env = new Env();
   const results: Result[] = [];
-  for (const dep of DEPENDENCIES) {
+  for (const dep of DEPENDENCIES.filter(depFilter)) {
     const result: Result = {
       name: dep.name,
       type: dep.type,
       passed: true,
     };
-    if (dep.condition(args)) {
+    if (condition(args) || dep.condition(args)) {
       result.passed = !!env.getString(dep.name);
       if (!result.passed) {
         result.message = `Set ${dep.name} environment variable`;

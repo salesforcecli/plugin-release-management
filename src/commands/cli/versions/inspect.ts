@@ -15,6 +15,7 @@ import { fs, Messages, SfdxError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
 import { ensure } from '@salesforce/ts-types';
 import { PackageJson } from '../../../package';
+import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
@@ -47,11 +48,6 @@ export enum Channel {
 export enum Location {
   ARCHIVE = 'archive',
   NPM = 'npm',
-}
-
-export enum CLI {
-  SF = 'sf',
-  SFDX = 'sfdx',
 }
 
 type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.LEGACY>;

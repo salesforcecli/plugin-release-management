@@ -1,0 +1,20 @@
+{
+  "description": "promote a s3 channel",
+  "examples": [
+    "<%= config.bin %> <%= command.id %> --candidate latest-rc --target latest --platform win --platform mac"
+  ],
+  "dryrun": "If true, only show what would happen",
+  "candidate": "the channel name that you want to promote",
+  "target": "the channel name that you are promoting to",
+  "cli": "the cli name to promote",
+  "platform": "the platform to promote",
+  "sha": "the short sha to promote",
+  "maxage": "the max age of the s3 cache",
+  "InvalidRepoType": "Cannot run this command on a monorepo.",
+  "InvalidToken": "This command requires a valid amazon s3 login",
+  "InvalidTag": "the %s channel does not exist in Amazon",
+  "MissingSourceOfPromote": "You must provide a value for candidate or sha.",
+  "CannotPromoteToSameChannel": "Candidate and target channels cannot the same.",
+  "DryRunMessage": "Dry run results.\nPromoting cli %s version %s commit %s to channel %s for platforms %s",
+  "MissingDependencies": "Missing required environment variables or utilities"
+}

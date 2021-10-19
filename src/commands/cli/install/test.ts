@@ -13,22 +13,13 @@ import { ensure } from '@salesforce/ts-types';
 import got from 'got';
 import { exec } from 'shelljs';
 import * as chalk from 'chalk';
+import { Channel, CLI, ServiceAvailability } from '../../../types';
+import { AmazonS3 } from '../../../amazonS3';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
 
-enum CLI {
-  SF = 'sf',
-  SFDX = 'sfdx',
-}
-
-enum Channel {
-  STABLE = 'stable',
-  STABLE_RC = 'stable-rc',
-}
-
 export type Results = Record<string, Record<CLI, boolean>>;
-export type ServiceAvailability = { service: string; available: boolean };
 
 namespace Method {
   export enum Type {
@@ -90,43 +81,6 @@ namespace Method {
     public abstract darwin(): Promise<Results>;
     public abstract win32(): Promise<Results>;
     public abstract linux(): Promise<Results>;
-  }
-}
-
-class AmazonS3 {
-  public static STATUS_URL = 'https://s3.amazonaws.com';
-
-  public directory: string;
-
-  public constructor(cli: CLI, channel: Channel, private ux: UX) {
-    this.directory = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/${channel}`;
-  }
-
-  public async ping(): Promise<ServiceAvailability> {
-    const { statusCode } = await got.get(AmazonS3.STATUS_URL);
-    return { service: 'Amazon S3', available: statusCode >= 200 && statusCode < 300 };
-  }
-
-  public async download(url: string, location: string): Promise<void> {
-    const downloadStream = got.stream(url);
-    const fileWriterStream = fs.createWriteStream(location);
-    return new Promise((resolve) => {
-      downloadStream.on('error', (error) => {
-        this.ux.error(`Download failed: ${error.message}`);
-      });
-
-      fileWriterStream
-        .on('error', (error) => {
-          this.ux.stopSpinner('Failed');
-          this.ux.error(`Could not write file to system: ${error.message}`);
-        })
-        .on('finish', () => {
-          this.ux.stopSpinner();
-          resolve();
-        });
-      this.ux.startSpinner(`Downloading ${chalk.cyan(url)}`);
-      downloadStream.pipe(fileWriterStream);
-    });
   }
 }
 
@@ -417,7 +371,7 @@ export default class Test extends SfdxCommand {
     }),
     channel: flags.string({
       description: messages.getMessage('channelFlag'),
-      options: Object.values(Channel),
+      options: [Channel.STABLE, Channel.STABLE_RC],
       default: 'stable',
     }),
   };

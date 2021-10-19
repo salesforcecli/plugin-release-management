@@ -8,7 +8,7 @@
   "githubRelease": "create release in github based on the package changes",
   "verify": "verify npm registry has new version after publish and digital signature",
   "InvalidNextVersion": "%s already exists in the public npm registry",
-  "MissingDependencies": "Missing requred environment variables or utilites",
+  "MissingDependencies": "Missing required environment variables or utilities",
   "InvalidRepoType": "Cannot run this command on a non-monorepo. Use sfdx npm:package:release instead.",
   "NoChangesToPublish": "No changes to publish"
 }
