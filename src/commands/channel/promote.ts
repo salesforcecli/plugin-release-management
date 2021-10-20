@@ -6,16 +6,16 @@
  */
 
 import * as os from 'os';
-import * as path from 'path';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
-import { exec } from 'shelljs';
+import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
 import { isMonoRepo, SinglePackageRepo } from '../../repository';
 import { Channel, CLI, S3Manifest } from '../../types';
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
+import { PluginCommand } from '../../pluginCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
@@ -93,12 +93,23 @@ export default class Promote extends SfdxCommand {
       .join(' ');
 
     if (!this.flags.dryrun) {
-      const oclifPath = path.join('node_modules', 'oclif', 'bin', process.platform === 'win32' ? 'run.cmd' : 'run');
-      this.ux.log(
-        exec(
-          `"${oclifPath}" promote --help --version ${version} --sha ${sha} --channel ${target} --max-age ${maxAge} ${platforms}`
-        )
-      );
+      const oclifPlugin = new PluginCommand({ commandBin: 'oclif', npmName: 'oclif', cliRoot: this.config.root });
+      const results = oclifPlugin.runPluginCmd({
+        command: 'promote',
+        parameters: [
+          '--help',
+          ' --version',
+          version,
+          '--sha',
+          sha,
+          '--channel',
+          target,
+          '--max-age',
+          `${maxAge}`,
+          platforms,
+        ],
+      }) as ShellString;
+      this.ux.log(results.stdout);
     } else {
       this.log(
         messages.getMessage(
