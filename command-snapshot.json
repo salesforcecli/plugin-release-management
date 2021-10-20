@@ -2,7 +2,20 @@
   {
     "command": "channel:promote",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["candidate", "cli", "dryrun", "json", "loglevel", "maxage", "platform", "sha", "target"]
+    "flags": [
+      "candidate",
+      "cli",
+      "dryrun",
+      "indexes",
+      "json",
+      "loglevel",
+      "maxage",
+      "platform",
+      "sha",
+      "target",
+      "targets",
+      "xz"
+    ]
   },
   {
     "command": "circleci",

@@ -12,8 +12,9 @@ import * as path from 'path';
 import npmRunPath from 'npm-run-path';
 import * as shelljs from 'shelljs';
 
-import { SfdxError, fs } from '@salesforce/core';
+import { SfdxError, fs, Logger } from '@salesforce/core';
 import { ShellString } from 'shelljs';
+import { AsyncCreatable } from '@salesforce/kit';
 
 export type PluginShowResults = {
   versions: string[];
@@ -50,21 +51,29 @@ type PluginPackage = {
   };
 };
 
-export class PluginCommand {
-  private readonly pkgPath: string;
-  private readonly nodeExecutable: string;
-  private readonly bin: string;
+export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
+  private pkgPath: string;
+  private nodeExecutable: string;
+  private bin: string;
   private pkg: PluginPackage;
+  private logger: Logger;
+
   public constructor(private options: PluginCommandOptions) {
-    this.pkgPath = require.resolve(path.join(this.options.npmName, 'package.json'));
+    super(options);
+  }
+
+  public async init(): Promise<void> {
+    this.logger = await Logger.child(this.constructor.name);
+    this.pkgPath = require.resolve(path.join(this.options.npmName, 'package.json'), { paths: [this.options.cliRoot] });
     this.pkg = fs.readJsonSync(this.pkgPath) as PluginPackage;
-    this.nodeExecutable = this.findNode(options.cliRoot);
+    this.nodeExecutable = this.findNode(this.options.cliRoot);
     this.bin = this.getBin();
   }
   public runPluginCmd(options: PluginRunOptions): PluginCommandResult | ShellString {
     const command = `"${this.nodeExecutable}" "${this.bin}" ${options.command} ${options.parameters
       .map((p) => `"${p}"`)
       .join(' ')}`;
+    this.logger.debug(`Running plugin comand ${command}`);
     const showResult = shelljs.exec(command, {
       ...options,
       silent: true,
@@ -73,8 +82,10 @@ export class PluginCommand {
       env: npmRunPath.env({ env: process.env }),
     });
     if (showResult.code !== 0) {
+      this.logger.debug(`Plugin command ${command} failed`, showResult.stderr);
       throw new SfdxError(showResult.stderr, 'ShellExecError');
     }
+    this.logger.debug(`Plugin command ${command} succeeded`, showResult);
     try {
       if (options.parameters?.includes('--json')) {
         return JSON.parse(showResult.stdout) as PluginCommandResult;
@@ -82,7 +93,9 @@ export class PluginCommand {
         return showResult;
       }
     } catch (error) {
-      throw new SfdxError(error, 'ShellParseError');
+      const sfdxError = new SfdxError(error, 'ShellParseError');
+      this.logger.debug(`Plugin command ${command} threw eception`, sfdxError);
+      throw sfdxError;
     }
   }
 
@@ -98,6 +111,13 @@ export class PluginCommand {
   private getBin(): string {
     const pkgPath = this.packagePath();
     const prjPath = pkgPath.substring(0, pkgPath.lastIndexOf(path.sep));
+    if (!this.pkg.bin[this.options.commandBin]) {
+      const sfdxError = new SfdxError(
+        `Could not locate commandBin ${this.options.commandBin} in package at path ${pkgPath}`
+      );
+      this.logger.debug(sfdxError);
+      throw sfdxError;
+    }
     return path.join(prjPath, this.pkg.bin[this.options.commandBin]);
   }
 

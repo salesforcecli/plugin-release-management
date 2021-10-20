@@ -19,6 +19,7 @@ import { PluginCommand } from '../../pluginCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
+const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64'];
 export default class Promote extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -63,6 +64,23 @@ export default class Promote extends SfdxCommand {
       description: messages.getMessage('maxage'),
       default: 300,
     }),
+    indexes: flags.boolean({
+      char: 'i',
+      description: messages.getMessage('indexes'),
+      default: true,
+      allowNo: true,
+    }),
+    xz: flags.boolean({
+      char: 'x',
+      description: messages.getMessage('xz'),
+      default: true,
+      allowNo: true,
+    }),
+    targets: flags.array({
+      char: 'T',
+      description: messages.getMessage('targets'),
+      options: TARGETS,
+    }),
   };
   private pkg: SinglePackageRepo;
 
@@ -78,6 +96,9 @@ export default class Promote extends SfdxCommand {
     const cli = this.flags.cli as CLI;
     const target = ensureString(this.flags.target);
     const maxAge = ensureNumber(this.flags.maxage);
+    const indexes = this.flags.indexes ? '--indexes' : '';
+    const xz = this.flags.xz ? '--xz' : '--no-xz';
+    const targets = this.flags.targets ? `--targets ${ensureArray(this.flags.targets).join(',')}` : '';
     let version: string;
     if (this.flags.candidate) {
       const manifest = await this.findManifestForCandidate(cli, this.flags.candidate);
@@ -93,11 +114,14 @@ export default class Promote extends SfdxCommand {
       .join(' ');
 
     if (!this.flags.dryrun) {
-      const oclifPlugin = new PluginCommand({ commandBin: 'oclif', npmName: 'oclif', cliRoot: this.config.root });
+      const oclifPlugin = await PluginCommand.create({
+        commandBin: 'oclif',
+        npmName: 'oclif',
+        cliRoot: this.config.root,
+      });
       const results = oclifPlugin.runPluginCmd({
         command: 'promote',
         parameters: [
-          '--help',
           ' --version',
           version,
           '--sha',
@@ -107,6 +131,9 @@ export default class Promote extends SfdxCommand {
           '--max-age',
           `${maxAge}`,
           platforms,
+          targets,
+          indexes,
+          xz,
         ],
       }) as ShellString;
       this.ux.log(results.stdout);
