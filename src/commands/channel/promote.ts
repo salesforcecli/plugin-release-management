@@ -33,13 +33,13 @@ export default class Promote extends SfdxCommand {
       char: 't',
       default: Channel.STABLE,
       description: messages.getMessage('target'),
-      options: Object.values(Channel),
+      // options: Object.values(Channel),
       required: true,
     }),
     candidate: flags.string({
-      char: 'c',
+      char: 'C',
       description: messages.getMessage('candidate'),
-      options: Object.values(Channel),
+      // options: Object.values(Channel),
       exclusive: ['sha'],
     }),
     platform: flags.array({
