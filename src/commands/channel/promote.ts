@@ -47,6 +47,7 @@ export default class Promote extends SfdxCommand {
       description: messages.getMessage('platform'),
       required: true,
       options: ['win', 'macos', 'deb'],
+      multiple: true,
     }),
     cli: flags.enum({
       char: 'c',
