@@ -24,11 +24,14 @@ export default class build extends SfdxCommand {
       default: 'latest-rc',
     }),
   };
+
   public async run(): Promise<void> {
     const auth = ensureString(
       new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
       'GH_TOKEN is required to be set in the environment'
     );
+    const octokit = new Octokit({ auth });
+
     // get the current version and implement the patch version for a default rc build
     const repo = await SinglePackageRepo.create({ ux: this.ux });
 
@@ -60,6 +63,12 @@ export default class build extends SfdxCommand {
 
     this.exec('yarn snapshot-generate');
 
+    const user = await octokit.request('GET /user');
+
+    // required for committing in Circle
+    this.exec(`git config user.email "${user.data.email}"`);
+    this.exec(`git config user.name "${user.data.name}"`);
+
     // commit package.json/yarn.lock and potentially command-snapshot changes
     this.exec('git add .');
     this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
@@ -68,7 +77,6 @@ export default class build extends SfdxCommand {
     const repoOwner = repo.package.packageJson.repository.split('/')[0];
     const repoName = repo.package.packageJson.repository.split('/')[1];
 
-    const octokit = new Octokit({ auth });
     await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
       owner: repoOwner,
       repo: repoName,
