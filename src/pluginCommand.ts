@@ -94,7 +94,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
         return showResult;
       }
     } catch (error) {
-      const sfdxError = new SfdxError(error, 'ShellParseError');
+      const sfdxError = new SfdxError(error, 'JsonParseError');
       this.logger.debug(`Plugin command ${command} threw eception`, sfdxError);
       throw sfdxError;
     }
