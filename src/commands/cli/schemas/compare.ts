@@ -30,9 +30,9 @@ export default class Compare extends SfdxCommand {
 
   public async run(): Promise<Results> {
     // The "existing schema" is the schema that is stored at the CLI level
-    const existing = await SchemaUtils.getLatestSchemaFiles();
+    const existing = await SchemaUtils.getExistingSchemaFiles();
     // The "latest schema" is the schema that is found in the node_modules
-    const latest = await SchemaUtils.getExistingSchemaFiles();
+    const latest = await SchemaUtils.getLatestSchemaFiles();
 
     // If there are more latest schema than existing schema, that means that new
     // schema was added without also being added at the CLI level.
