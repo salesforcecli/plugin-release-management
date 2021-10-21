@@ -277,7 +277,16 @@ class Npm extends Method.Base {
   }
 
   private async installAndTest(): Promise<Results> {
-    await this.install();
+    try {
+      await this.install();
+    } catch {
+      const results = {} as Record<CLI, boolean>;
+      for (const cli of this.getTargets()) {
+        results[cli] = false;
+      }
+      return { [this.package]: results };
+    }
+
     const testResults = this.test();
     for (const [cli, success] of Object.entries(testResults)) {
       this.logResult(cli as CLI, success);
