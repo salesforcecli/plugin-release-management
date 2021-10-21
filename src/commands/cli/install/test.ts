@@ -11,8 +11,9 @@ import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ensure, Nullable } from '@salesforce/ts-types';
 import got from 'got';
-import { exec } from 'shelljs';
+import { exec, which } from 'shelljs';
 import * as chalk from 'chalk';
+import stripAnsi = require('strip-ansi');
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
@@ -303,7 +304,10 @@ class Npm extends Method.Base {
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
-      const executable = path.join(this.options.directory, 'node_modules', '.bin', cli);
+      const executable =
+        this.options.cli === CLI.SFDX && cli === CLI.SF
+          ? which(CLI.SF).stdout
+          : path.join(this.options.directory, 'node_modules', '.bin', cli);
       this.logger.log(`Testing ${chalk.cyan(executable)}`);
       const result = exec(`${executable} --version`, { silent: true });
       this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
@@ -404,12 +408,12 @@ class Logger {
   public constructor(public ux: UX) {}
 
   public log(...args: string[]): void {
-    this.logs.push(...args);
+    this.logs.push(...args.map((a) => stripAnsi(a)));
     this.ux.log(...args);
   }
 
   public warn(msg?: Nullable<string>): void {
-    this.logs.push(msg);
+    this.logs.push(stripAnsi(msg));
     this.ux.warn(msg);
   }
 }
