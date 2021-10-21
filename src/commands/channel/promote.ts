@@ -169,7 +169,7 @@ export default class Promote extends SfdxCommand {
       (args: Flags) => !args.dryrun
     );
     if (deps.failures > 0) {
-      const errType = 'MissingDependencies';
+      const errType = 'MissingEnvVars';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
