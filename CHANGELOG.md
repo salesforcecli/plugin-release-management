@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.4](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.3...v2.3.4) (2021-10-21)
+
+
+### Bug Fixes
+
+* improve npm install test ([#333](https://github.com/salesforcecli/plugin-release-management/issues/333)) ([749ae88](https://github.com/salesforcecli/plugin-release-management/commit/749ae889586e274b624077884af9ca7fc9ca700b))
+
 ### [2.3.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.2...v2.3.3) (2021-10-21)
 
 
