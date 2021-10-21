@@ -12,7 +12,8 @@ import * as path from 'path';
 import npmRunPath from 'npm-run-path';
 import * as shelljs from 'shelljs';
 
-import { SfdxError, fs, Logger } from '@salesforce/core';
+import * as fs from 'fs/promises';
+import { SfdxError, Logger } from '@salesforce/core';
 import { ShellString } from 'shelljs';
 import { AsyncCreatable } from '@salesforce/kit';
 
