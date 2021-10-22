@@ -22,11 +22,6 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 export type Results = Record<string, Record<CLI, boolean>>;
 
-function makeOsSafe(executable: string): string {
-  if (process.platform === 'win32') return `& "${executable}"`;
-  else return executable;
-}
-
 namespace Method {
   export enum Type {
     INSTALLER = 'installer',
@@ -195,9 +190,12 @@ class Tarball extends Method.Base {
   private test(directory: string): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
-      const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${cli}.cmd` : cli);
+      const executable = path.join(directory, 'bin', cli);
       this.logger.log(`Testing ${chalk.cyan(executable)}`);
-      const result = exec(`${makeOsSafe(executable)} --version`, { silent: true });
+      const result =
+        process.platform === 'win32'
+          ? exec(`& "${executable}.cmd" --version`, { silent: true, shell: 'powershell.exe' })
+          : exec(`${executable} --version`, { silent: true });
       this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }
@@ -277,7 +275,11 @@ class Npm extends Method.Base {
           ? which(CLI.SF).stdout
           : path.join(this.options.directory, 'node_modules', '.bin', cli);
       this.logger.log(`Testing ${chalk.cyan(executable)}`);
-      const result = exec(`${makeOsSafe(executable)} --version`, { silent: true });
+
+      const result =
+        process.platform === 'win32'
+          ? exec(`& "${executable}" --version`, { silent: true, shell: 'powershell.exe' })
+          : exec(`${executable} --version`, { silent: true });
       this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }

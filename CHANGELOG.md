@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.7](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.6...v2.3.7) (2021-10-22)
+
+
+### Bug Fixes
+
+* improve windows testing ([#334](https://github.com/salesforcecli/plugin-release-management/issues/334)) ([bb84b80](https://github.com/salesforcecli/plugin-release-management/commit/bb84b8064eae91d07d953e6e9e964960ec3e268e))
+
+### [2.3.6](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.5...v2.3.6) (2021-10-22)
+
+
+### Bug Fixes
+
+* make executables OS safe ([4b5aeab](https://github.com/salesforcecli/plugin-release-management/commit/4b5aeabdfa5b96376705a50cc1f22c5929a686c3))
+
 ### [2.3.5](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.4...v2.3.5) (2021-10-22)
 
 
