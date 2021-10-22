@@ -101,7 +101,7 @@ class Tarball extends Method.Base {
 
   public constructor(protected options: Method.Options, protected ux: UX) {
     super(options, ux);
-    this.s3 = new AmazonS3(options.cli, options.channel, ux);
+    this.s3 = new AmazonS3({});
   }
 
   public async darwin(): Promise<Results> {
@@ -272,7 +272,8 @@ class Installer extends Method.Base {
 
   public constructor(protected options: Method.Options, protected ux: UX) {
     super(options, ux);
-    this.s3 = new AmazonS3(options.cli, options.channel, ux);
+    // options.cli, options.channel, ux
+    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux });
   }
 
   public async darwin(): Promise<Results> {

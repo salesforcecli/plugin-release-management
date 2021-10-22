@@ -12,7 +12,7 @@ import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
 import { isMonoRepo, SinglePackageRepo } from '../../repository';
-import { Channel, CLI, S3Manifest } from '../../types';
+import { Channel, CLI, S3Manifest, VersionShaContents } from '../../types';
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
 import { PluginCommand } from '../../pluginCommand';
@@ -82,6 +82,11 @@ export default class Promote extends SfdxCommand {
       description: messages.getMessage('targets'),
       options: TARGETS,
     }),
+    version: flags.string({
+      char: 'T',
+      description: messages.getMessage('version'),
+      exclusive: ['sha', 'candidate'],
+    }),
   };
   private pkg: SinglePackageRepo;
 
@@ -93,22 +98,13 @@ export default class Promote extends SfdxCommand {
 
     this.pkg = await SinglePackageRepo.create({ ux: this.ux });
     this.validateFlags();
-    let sha: string;
     const cli = this.flags.cli as CLI;
     const target = ensureString(this.flags.target);
     const maxAge = ensureNumber(this.flags.maxage);
     const indexes = this.flags.indexes ? '--indexes' : '';
     const xz = this.flags.xz ? '--xz' : '--no-xz';
     const targets = this.flags.targets ? `--targets ${ensureArray(this.flags.targets).join(',')}` : '';
-    let version: string;
-    if (this.flags.candidate) {
-      const manifest = await this.findManifestForCandidate(cli, this.flags.candidate);
-      sha = manifest.sha;
-      version = manifest.version;
-    } else {
-      sha = ensureString(this.flags.sha);
-      version = this.pkg.package.npmPackage.version;
-    }
+    const { sha, version } = await this.determineShaAndVersion(cli);
 
     const platforms = ensureArray(this.flags.platform)
       .map((p: string) => `--${p}`)
@@ -139,12 +135,14 @@ export default class Promote extends SfdxCommand {
       }) as ShellString;
       this.ux.log(results.stdout);
     } else {
-      this.log(
-        messages.getMessage(
-          'DryRunMessage',
-          [cli, version, sha, target, ensureArray(this.flags.platform).join(', ')].map((s) => bold(s))
-        )
-      );
+      if (!this.flags.json) {
+        this.log(
+          messages.getMessage(
+            'DryRunMessage',
+            [cli, version, sha, target, ensureArray(this.flags.platform).join(', ')].map((s) => bold(s))
+          )
+        );
+      }
     }
     return {
       dryRun: !!this.flags.dryrun,
@@ -156,8 +154,21 @@ export default class Promote extends SfdxCommand {
     };
   }
 
+  private async determineShaAndVersion(cli: CLI): Promise<{ sha: string; version: string }> {
+    if (this.flags.candidate) {
+      const manifest = await this.findManifestForCandidate(cli, this.flags.candidate);
+      return { sha: manifest.sha, version: manifest.version };
+    } else if (this.flags.version) {
+      const sha = await this.findShaForVersion(cli, ensureString(this.flags.version));
+      return { sha, version: ensureString(this.flags.version) };
+    } else {
+      return { sha: ensureString(this.flags.sha), version: this.pkg.package.npmPackage.version };
+    }
+    throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
+  }
+
   private validateFlags(): void {
-    if (!this.flags.sha && !this.flags.candidate) {
+    if (!this.flags.version && !this.flags.sha && !this.flags.candidate) {
       throw new SfdxError(messages.getMessage('MissingSourceOfPromote'));
     }
     if (this.flags.candidate && this.flags.candidate === this.flags.target) {
@@ -169,14 +180,52 @@ export default class Promote extends SfdxCommand {
       (args: Flags) => !args.dryrun
     );
     if (deps.failures > 0) {
-      const errType = 'MissingEnvVars';
+      const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
       throw new SfdxError(messages.getMessage(errType), errType, missing);
     }
   }
 
   private async findManifestForCandidate(cli: CLI, channel: Channel): Promise<S3Manifest> {
-    const amazonS3 = new AmazonS3(cli, channel, this.ux);
-    return await amazonS3.getManifest();
+    const amazonS3 = new AmazonS3({});
+    return await amazonS3.getManifestFromChannel(channel);
+  }
+
+  private async findShaForVersion(cli: CLI, version: string): Promise<string> {
+    const amazonS3 = new AmazonS3({ cli });
+    this.ux.log(version);
+    const versions = await amazonS3.listCommonPrefixes('versions');
+    const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
+    this.logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
+    const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
+    this.logger.debug(`Looking for version ${version} for cli ${cli} shas. Found ${versionShas.length} entries`);
+    const manifestForMostRecentSha = (
+      (
+        await Promise.all(
+          versionShas.map(async (versionSha) => {
+            const versionShaContents = (await amazonS3.listKeyContents(versionSha.Prefix)) as VersionShaContents[];
+            return versionShaContents.map((content) => {
+              return { ...content, ...{ LastModifiedDate: new Date(content.LastModified) } };
+            });
+          })
+        )
+      ).flat() as VersionShaContents[]
+    )
+      .filter((content) => content.Key.includes('manifest'))
+      .sort((left, right) => right.LastModifiedDate.getMilliseconds() - left.LastModifiedDate.getMilliseconds())
+      .find((content) => content);
+    if (manifestForMostRecentSha) {
+      const manifest = await amazonS3.getObject({
+        Key: manifestForMostRecentSha.Key,
+        ResponseContentType: 'application/json',
+      });
+      this.logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
+      const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
+      return json.sha;
+    } else {
+      const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
+      this.logger.debug(error);
+      throw error;
+    }
   }
 }

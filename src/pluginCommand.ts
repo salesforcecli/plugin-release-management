@@ -9,10 +9,10 @@
 import { type as osType } from 'os';
 import * as path from 'path';
 
+import * as fs from 'fs';
 import npmRunPath from 'npm-run-path';
 import * as shelljs from 'shelljs';
 
-import * as fs from 'fs/promises';
 import { SfdxError, Logger } from '@salesforce/core';
 import { ShellString } from 'shelljs';
 import { AsyncCreatable } from '@salesforce/kit';
@@ -66,7 +66,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
   public async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     this.pkgPath = require.resolve(path.join(this.options.npmName, 'package.json'), { paths: [this.options.cliRoot] });
-    this.pkg = fs.readJsonSync(this.pkgPath) as PluginPackage;
+    this.pkg = JSON.parse(fs.readFileSync(this.pkgPath, 'utf8')) as PluginPackage;
     this.nodeExecutable = this.findNode(this.options.cliRoot);
     this.bin = this.getBin();
   }
@@ -75,23 +75,23 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
       .map((p) => `"${p}"`)
       .join(' ')}`;
     this.logger.debug(`Running plugin comand ${command}`);
-    const showResult = shelljs.exec(command, {
+    const results = shelljs.exec(command, {
       ...options,
       silent: true,
       fatal: true,
       async: false,
       env: npmRunPath.env({ env: process.env }),
     });
-    if (showResult.code !== 0) {
-      this.logger.debug(`Plugin command ${command} failed`, showResult.stderr);
-      throw new SfdxError(showResult.stderr, 'ShellExecError');
+    if (results.code !== 0) {
+      this.logger.debug(`Plugin command ${command} failed`, results.stderr);
+      throw new SfdxError(results.stderr, 'ShellExecError');
     }
-    this.logger.debug(`Plugin command ${command} succeeded`, showResult);
+    this.logger.debug(`Plugin command ${command} succeeded`, results);
     try {
       if (options.parameters?.includes('--json')) {
-        return JSON.parse(showResult.stdout) as PluginCommandResult;
+        return JSON.parse(results.stdout) as PluginCommandResult;
       } else {
-        return showResult;
+        return results;
       }
     } catch (error) {
       const sfdxError = new SfdxError(error, 'JsonParseError');

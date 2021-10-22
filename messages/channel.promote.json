@@ -13,11 +13,14 @@
   "indexes": "append the promoted urls into the index files",
   "xz": "also upload xz",
   "targets": "comma-separated targets to promote (e.g.: linux-arm,win32-x64)",
+  "version": "the version of the candidate to be promoted, which must exist already in s3. Used to fetch the correct sha",
   "InvalidRepoType": "Cannot run this command on a monorepo.",
   "InvalidToken": "This command requires a valid amazon s3 login",
   "InvalidTag": "the %s channel does not exist in Amazon",
-  "MissingSourceOfPromote": "You must provide a value for candidate or sha.",
+  "MissingSourceOfPromote": "You must provide a value for candidate, sha or version.",
   "CannotPromoteToSameChannel": "Candidate and target channels cannot the same.",
   "DryRunMessage": "Dry run results.\nPromoting cli %s version %s commit %s to channel %s for platforms %s",
-  "MissingDependencies": "Missing required environment variables or utilities"
+  "MissingDependencies": "Missing required environment variables or utilities",
+  "CouldNotDetermineShaAndVersion": "Could not determine sha and version from provided parameters",
+  "CouldNotLocateShaForVersion": "Could locate sha for version \"%s\" in S3"
 }

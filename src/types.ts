@@ -36,3 +36,12 @@ export type ServiceAvailability = {
   name?: string;
   available: boolean;
 };
+
+export type VersionShaContents = {
+  Key: string;
+  LastModified: string;
+  LastModifiedDate: Date;
+  ETag: string;
+  Size: number;
+  StorgaeClass: string;
+};
