@@ -11,7 +11,7 @@ import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo, SinglePackageRepo } from '../../repository';
+import { isMonoRepo } from '../../repository';
 import { Channel, CLI, S3Manifest, VersionShaContents } from '../../types';
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
@@ -88,27 +88,22 @@ export default class Promote extends SfdxCommand {
       exclusive: ['sha', 'candidate'],
     }),
   };
-  private pkg: SinglePackageRepo;
 
   public async run(): Promise<AnyJson> {
     if (await isMonoRepo()) {
       const errType = 'InvalidRepoType';
       throw new SfdxError(messages.getMessage(errType), errType);
     }
-
-    this.pkg = await SinglePackageRepo.create({ ux: this.ux });
     this.validateFlags();
     const cli = this.flags.cli as CLI;
     const target = ensureString(this.flags.target);
     const maxAge = ensureNumber(this.flags.maxage);
     const indexes = this.flags.indexes ? '--indexes' : '';
     const xz = this.flags.xz ? '--xz' : '--no-xz';
-    const targets = this.flags.targets ? `--targets ${ensureArray(this.flags.targets).join(',')}` : '';
+    const targets = this.flags.targets ? (['--targets', ...ensureArray(this.flags.targets)] as string[]) : [];
     const { sha, version } = await this.determineShaAndVersion(cli);
 
-    const platforms = ensureArray(this.flags.platform)
-      .map((p: string) => `--${p}`)
-      .join(' ');
+    const platforms = ensureArray(this.flags.platform).map((p: string) => `--${p}`);
 
     if (!this.flags.dryrun) {
       const oclifPlugin = await PluginCommand.create({
@@ -119,7 +114,7 @@ export default class Promote extends SfdxCommand {
       const results = oclifPlugin.runPluginCmd({
         command: 'promote',
         parameters: [
-          ' --version',
+          '--version',
           version,
           '--sha',
           sha,
@@ -127,8 +122,8 @@ export default class Promote extends SfdxCommand {
           target,
           '--max-age',
           `${maxAge}`,
-          platforms,
-          targets,
+          ...platforms,
+          ...targets,
           indexes,
           xz,
         ],
@@ -162,7 +157,8 @@ export default class Promote extends SfdxCommand {
       const sha = await this.findShaForVersion(cli, ensureString(this.flags.version));
       return { sha, version: ensureString(this.flags.version) };
     } else {
-      return { sha: ensureString(this.flags.sha), version: this.pkg.package.npmPackage.version };
+      const version = await this.findVersionForSha(cli, ensureString(this.flags.sha));
+      return { sha: ensureString(this.flags.sha), version };
     }
     throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
@@ -176,7 +172,7 @@ export default class Promote extends SfdxCommand {
     }
     const deps = verifyDependencies(
       this.flags,
-      (dep) => dep.name.startsWith('AWS') || dep.name.startsWith('NPM'),
+      (dep) => dep.name.startsWith('AWS'),
       (args: Flags) => !args.dryrun
     );
     if (deps.failures > 0) {
@@ -187,13 +183,12 @@ export default class Promote extends SfdxCommand {
   }
 
   private async findManifestForCandidate(cli: CLI, channel: Channel): Promise<S3Manifest> {
-    const amazonS3 = new AmazonS3({});
+    const amazonS3 = new AmazonS3({ cli, channel });
     return await amazonS3.getManifestFromChannel(channel);
   }
 
   private async findShaForVersion(cli: CLI, version: string): Promise<string> {
     const amazonS3 = new AmazonS3({ cli });
-    this.ux.log(version);
     const versions = await amazonS3.listCommonPrefixes('versions');
     const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
     this.logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
@@ -224,10 +219,31 @@ export default class Promote extends SfdxCommand {
       this.logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
       const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
       return json.sha;
-    } else {
-      const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
-      this.logger.debug(error);
-      throw error;
     }
+    const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
+    this.logger.debug(error);
+    throw error;
+  }
+  private async findVersionForSha(cli: CLI, sha: string): Promise<string> {
+    const amazonS3 = new AmazonS3({ cli });
+    const foundVersion = (
+      await Promise.all(
+        (
+          await amazonS3.listCommonPrefixes('versions')
+        ).map(async (version) => {
+          return await amazonS3.listCommonPrefixes(version.Prefix);
+        })
+      )
+    )
+      .flat()
+      .find((s) => s.Prefix.replace(/\/$/, '').endsWith(sha));
+    if (foundVersion) {
+      // Prefix looks like this "media/salesforce-cli/sf/versions/0.0.10/1d4b10d/",
+      // when reversed after split version number should occupy entry 1 of the array
+      return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
+    }
+    const error = new SfdxError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
+    this.logger.debug(error);
+    throw error;
   }
 }

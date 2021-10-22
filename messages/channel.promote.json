@@ -22,5 +22,6 @@
   "DryRunMessage": "Dry run results.\nPromoting cli %s version %s commit %s to channel %s for platforms %s",
   "MissingDependencies": "Missing required environment variables or utilities",
   "CouldNotDetermineShaAndVersion": "Could not determine sha and version from provided parameters",
-  "CouldNotLocateShaForVersion": "Could locate sha for version \"%s\" in S3"
+  "CouldNotLocateShaForVersion": "Could locate sha for version \"%s\" in S3",
+  "CouldNotLocateVersionForSha": "Could locate version for sha \"%s\" in S3"
 }

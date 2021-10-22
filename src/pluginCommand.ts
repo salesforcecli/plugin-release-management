@@ -74,7 +74,9 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     const command = `"${this.nodeExecutable}" "${this.bin}" ${options.command} ${options.parameters
       .map((p) => `"${p}"`)
       .join(' ')}`;
-    this.logger.debug(`Running plugin comand ${command}`);
+    delete options.command;
+    delete options.parameters;
+    this.logger.debug(`Running plugin command ${command}`);
     const results = shelljs.exec(command, {
       ...options,
       silent: true,
