@@ -363,7 +363,7 @@ class Installer extends Method.Base {
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
       this.logger.log(`Installing ${chalk.cyan(exe)}...`);
-      const result = exec(cmd, { silent: false, shell: 'powershell.exe' });
+      const result = exec(cmd, { silent: true, shell: 'powershell.exe' });
 
       if (result.code === 0) {
         const success = this.win32Test(installLocation);
