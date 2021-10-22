@@ -203,7 +203,9 @@ export default class Promote extends SfdxCommand {
       (
         await Promise.all(
           versionShas.map(async (versionSha) => {
-            const versionShaContents = (await amazonS3.listKeyContents(versionSha.Prefix)) as VersionShaContents[];
+            const versionShaContents = (await amazonS3.listKeyContents(
+              versionSha.Prefix
+            )) as unknown as VersionShaContents[];
             return versionShaContents.map((content) => {
               return { ...content, ...{ LastModifiedDate: new Date(content.LastModified) } };
             });
