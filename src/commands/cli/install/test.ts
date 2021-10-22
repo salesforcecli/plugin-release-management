@@ -9,10 +9,11 @@ import * as path from 'path';
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
-import { ensure } from '@salesforce/ts-types';
+import { ensure, Nullable } from '@salesforce/ts-types';
 import got from 'got';
-import { exec } from 'shelljs';
+import { exec, which } from 'shelljs';
 import * as chalk from 'chalk';
+import stripAnsi = require('strip-ansi');
 import { Channel, CLI, ServiceAvailability } from '../../../types';
 import { AmazonS3 } from '../../../amazonS3';
 
@@ -20,6 +21,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
 
 export type Results = Record<string, Record<CLI, boolean>>;
+export type ServiceAvailability = { service: string; available: boolean };
 
 namespace Method {
   export enum Type {
@@ -41,12 +43,12 @@ namespace Method {
       [CLI.SFDX]: [CLI.SFDX, CLI.SF],
     };
 
-    public constructor(protected options: Method.Options, protected ux: UX) {}
+    public constructor(protected options: Method.Options, protected logger: Logger) {}
 
     public async execute(): Promise<Results> {
       const { service, available } = await this.ping();
       if (!available) {
-        this.ux.warn(`${service} is not currently available. Unable to run installation tests...`);
+        this.logger.warn(`${service} is not currently available. Unable to run installation tests...`);
         return {};
       }
       switch (process.platform) {
@@ -71,7 +73,7 @@ namespace Method {
 
     protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
-      this.ux.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
+      this.logger.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
     }
 
     protected getTargets(): CLI[] {
@@ -99,8 +101,8 @@ class Tarball extends Method.Base {
     'linux-arm': ['arm.tar.gz', 'arm.tar.xz'],
   };
 
-  public constructor(protected options: Method.Options, protected ux: UX) {
-    super(options, ux);
+  public constructor(protected options: Method.Options, protected logger: Logger) {
+    super(options, logger);
     this.s3 = new AmazonS3({});
   }
 
@@ -137,7 +139,7 @@ class Tarball extends Method.Base {
           results[tarball][cli] = false;
         }
       }
-      this.ux.log();
+      this.logger.log();
     }
     return results;
   }
@@ -162,7 +164,7 @@ class Tarball extends Method.Base {
     const dir = path.join(this.options.directory, path.basename(file).replace(/./g, '-'));
     await fs.mkdirp(dir);
     return new Promise((resolve, reject) => {
-      this.ux.startSpinner(`Unpacking ${chalk.cyan(path.basename(file))}`);
+      this.logger.ux.startSpinner(`Unpacking ${chalk.cyan(path.basename(file))}`);
       const cmd =
         process.platform === 'win32'
           ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
@@ -173,13 +175,13 @@ class Tarball extends Method.Base {
           : { silent: true, async: true };
       exec(cmd, opts, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
-          this.ux.stopSpinner();
+          this.logger.ux.stopSpinner();
           resolve(dir);
         } else {
-          this.ux.stopSpinner('Failed');
-          this.ux.log('code:', code.toString());
-          this.ux.log('stdout:', stdout);
-          this.ux.log('stderr:', stderr);
+          this.logger.ux.stopSpinner('Failed');
+          this.logger.log('code:', code.toString());
+          this.logger.log('stdout:', stdout);
+          this.logger.log('stderr:', stderr);
           reject();
         }
       });
@@ -190,9 +192,9 @@ class Tarball extends Method.Base {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
       const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${cli}.cmd` : cli);
-      this.ux.log(`Testing ${chalk.cyan(executable)}`);
+      this.logger.log(`Testing ${chalk.cyan(executable)}`);
       const result = exec(`${executable} --version`, { silent: true });
-      this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+      this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }
     return results;
@@ -203,8 +205,8 @@ class Npm extends Method.Base {
   private static STATUS_URL = 'https://status.npmjs.org/api/v2/status.json';
   private package: string;
 
-  public constructor(protected options: Method.Options, protected ux: UX) {
-    super(options, ux);
+  public constructor(protected options: Method.Options, protected logger: Logger) {
+    super(options, logger);
     const name = options.cli === CLI.SF ? '@salesforce/cli' : 'sfdx-cli';
     const tag = options.channel === Channel.STABLE ? 'latest' : 'latest-rc';
     this.package = `${name}@${tag}`;
@@ -230,24 +232,33 @@ class Npm extends Method.Base {
   }
 
   private async installAndTest(): Promise<Results> {
+    try {
     await this.install();
+    } catch {
+      const results = {} as Record<CLI, boolean>;
+      for (const cli of this.getTargets()) {
+        results[cli] = false;
+      }
+      return { [this.package]: results };
+    }
+
     const testResults = this.test();
     for (const [cli, success] of Object.entries(testResults)) {
       this.logResult(cli as CLI, success);
     }
-    this.ux.log();
+    this.logger.log();
     return { [this.package]: testResults };
   }
 
   private async install(): Promise<void> {
-    this.ux.startSpinner(`Installing: ${chalk.cyan(this.package)}`);
+    this.logger.ux.startSpinner(`Installing: ${chalk.cyan(this.package)}`);
     return new Promise((resolve, reject) => {
       exec(`npm install ${this.package}`, { silent: true, cwd: this.options.directory, async: true }, (code) => {
         if (code === 0) {
-          this.ux.stopSpinner();
+          this.logger.ux.stopSpinner();
           resolve();
         } else {
-          this.ux.stopSpinner('Failed');
+          this.logger.ux.stopSpinner('Failed');
           reject();
         }
       });
@@ -257,10 +268,13 @@ class Npm extends Method.Base {
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
-      const executable = path.join(this.options.directory, 'node_modules', '.bin', cli);
-      this.ux.log(`Testing ${chalk.cyan(executable)}`);
+      const executable =
+        this.options.cli === CLI.SFDX && cli === CLI.SF
+          ? which(CLI.SF).stdout
+          : path.join(this.options.directory, 'node_modules', '.bin', cli);
+      this.logger.log(`Testing ${chalk.cyan(executable)}`);
       const result = exec(`${executable} --version`, { silent: true });
-      this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+      this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }
     return results;
@@ -270,10 +284,9 @@ class Npm extends Method.Base {
 class Installer extends Method.Base {
   private s3: AmazonS3;
 
-  public constructor(protected options: Method.Options, protected ux: UX) {
-    super(options, ux);
-    // options.cli, options.channel, ux
-    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux });
+  public constructor(protected options: Method.Options, protected logger: Logger) {
+    super(options, logger);
+    this.s3 = new AmazonS3(options.cli, options.channel, logger.ux);
   }
 
   public async darwin(): Promise<Results> {
@@ -286,11 +299,11 @@ class Installer extends Method.Base {
     if (result.code === 0) {
       const success = this.nixTest();
       this.logResult(this.options.cli, success);
-      this.ux.log();
+      this.logger.log();
       return { [url]: { [this.options.cli]: success } } as Results;
     } else {
       this.logResult(this.options.cli, false);
-      this.ux.log();
+      this.logger.log();
       return { [url]: { [this.options.cli]: false } } as Results;
     }
   }
@@ -304,17 +317,17 @@ class Installer extends Method.Base {
       await this.s3.download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
-      this.ux.log(`Installing ${chalk.cyan(exe)}...`);
+      this.logger.log(`Installing ${chalk.cyan(exe)}...`);
       const result = exec(cmd, { silent: false, shell: 'powershell.exe' });
 
       if (result.code === 0) {
         const success = this.win32Test(installLocation);
         this.logResult(this.options.cli, success);
-        this.ux.log();
+        this.logger.log();
         return { [url]: { [this.options.cli]: success } } as Results;
       } else {
         this.logResult(this.options.cli, false);
-        this.ux.log();
+        this.logger.log();
         return { [url]: { [this.options.cli]: false } } as Results;
       }
     }
@@ -333,11 +346,11 @@ class Installer extends Method.Base {
 
   private win32Test(installLocation: string): boolean {
     const binaryPath = path.join(installLocation, 'bin', `${this.options.cli}.cmd`);
-    this.ux.log(`Testing ${chalk.cyan(binaryPath)}`);
+    this.logger.log(`Testing ${chalk.cyan(binaryPath)}`);
     const execOptions = { silent: true, shell: 'powershell.exe' };
     const result = exec(`& "${binaryPath}" --version`, execOptions);
     const version = (result.stdout ?? result.stderr).replace(/\n*$/, '');
-    this.ux.log(chalk.dim(version));
+    this.logger.log(chalk.dim(version));
     if (result.code === 0) {
       return binaryPath.includes('x86') ? version.includes('win32-x86') : version.includes('win32-x64');
     } else {
@@ -347,10 +360,25 @@ class Installer extends Method.Base {
 
   private nixTest(): boolean {
     const binaryPath = `/usr/local/bin/${this.options.cli}`;
-    this.ux.log(`Testing ${chalk.cyan(binaryPath)}`);
+    this.logger.log(`Testing ${chalk.cyan(binaryPath)}`);
     const result = exec(`${binaryPath} --version`, { silent: true });
-    this.ux.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+    this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
     return result.code === 0;
+  }
+}
+
+class Logger {
+  public logs: string[] = [];
+  public constructor(public ux: UX) {}
+
+  public log(...args: string[]): void {
+    this.logs.push(...args.map((a) => stripAnsi(a)));
+    this.ux.log(...args);
+  }
+
+  public warn(msg?: Nullable<string>): void {
+    this.logs.push(stripAnsi(msg));
+    this.ux.warn(msg);
   }
 }
 
@@ -372,32 +400,35 @@ export default class Test extends SfdxCommand {
     }),
     channel: flags.string({
       description: messages.getMessage('channelFlag'),
-      options: [Channel.STABLE, Channel.STABLE_RC],
+      options: Object.values(Channel),
       default: 'stable',
     }),
   };
 
-  public async run(): Promise<Results> {
+  public async run(): Promise<{ results: Results; logs: string[] }> {
     const cli = ensure<CLI>(this.flags.cli);
     const method = ensure<Method.Type>(this.flags.method);
     const channel = ensure<Channel>(this.flags.channel);
     const directory = await this.makeWorkingDir(cli, channel, method);
-    this.ux.log(`Working Directory: ${directory}`);
-    this.ux.log();
+    const logger = new Logger(this.ux);
+
+    logger.log(`Working Directory: ${directory}`);
+    logger.log();
+
     let results: Results = {};
     switch (method) {
       case 'tarball': {
-        const tarball = new Tarball({ cli, channel, directory, method }, this.ux);
+        const tarball = new Tarball({ cli, channel, directory, method }, logger);
         results = await tarball.execute();
         break;
       }
       case 'npm': {
-        const npm = new Npm({ cli, channel, directory, method }, this.ux);
+        const npm = new Npm({ cli, channel, directory, method }, logger);
         results = await npm.execute();
         break;
       }
       case 'installer': {
-        const installer = new Installer({ cli, channel, directory, method }, this.ux);
+        const installer = new Installer({ cli, channel, directory, method }, logger);
         results = await installer.execute();
         break;
       }
@@ -409,7 +440,7 @@ export default class Test extends SfdxCommand {
       .flatMap(Object.values)
       .some((r) => !r);
     if (hasFailures) process.exitCode = 1;
-    return results;
+    return { results, logs: logger.logs };
   }
 
   private async makeWorkingDir(cli: CLI, channel: Channel, method: Method.Type): Promise<string> {
