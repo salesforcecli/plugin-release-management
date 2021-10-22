@@ -22,6 +22,11 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 export type Results = Record<string, Record<CLI, boolean>>;
 
+function makeOsSafe(executable: string): string {
+  if (process.platform === 'win32') return `& "${executable}"`;
+  else return executable;
+}
+
 namespace Method {
   export enum Type {
     INSTALLER = 'installer',
@@ -192,7 +197,7 @@ class Tarball extends Method.Base {
     for (const cli of this.getTargets()) {
       const executable = path.join(directory, 'bin', process.platform === 'win32' ? `${cli}.cmd` : cli);
       this.logger.log(`Testing ${chalk.cyan(executable)}`);
-      const result = exec(`${executable} --version`, { silent: true });
+      const result = exec(`${makeOsSafe(executable)} --version`, { silent: true });
       this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }
@@ -272,7 +277,7 @@ class Npm extends Method.Base {
           ? which(CLI.SF).stdout
           : path.join(this.options.directory, 'node_modules', '.bin', cli);
       this.logger.log(`Testing ${chalk.cyan(executable)}`);
-      const result = exec(`${executable} --version`, { silent: true });
+      const result = exec(`${makeOsSafe(executable)} --version`, { silent: true });
       this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
       results[cli] = result.code === 0;
     }
@@ -317,7 +322,7 @@ class Installer extends Method.Base {
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
       this.logger.log(`Installing ${chalk.cyan(exe)}...`);
-      const result = exec(cmd, { silent: false, shell: 'powershell.exe' });
+      const result = exec(cmd, { silent: true, shell: 'powershell.exe' });
 
       if (result.code === 0) {
         const success = this.win32Test(installLocation);

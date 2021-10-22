@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.5](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.4...v2.3.5) (2021-10-22)
+
+
+### Bug Fixes
+
+* silent cmd execution ([7b9c72f](https://github.com/salesforcecli/plugin-release-management/commit/7b9c72f1061d6e1e6b64dfcefa88aab826e74d14))
+
 ### [2.3.4](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.3...v2.3.4) (2021-10-21)
 
 
