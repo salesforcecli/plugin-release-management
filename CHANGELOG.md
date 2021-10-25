@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.0...v2.5.1) (2021-10-25)
+
+
+### Bug Fixes
+
+* use assert.deepEqual to compare schema ([#335](https://github.com/salesforcecli/plugin-release-management/issues/335)) ([1d64e1f](https://github.com/salesforcecli/plugin-release-management/commit/1d64e1fef3dea89eefc8c2df8183376a3ddedbaf))
+
 ## [2.5.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.4.1...v2.5.0) (2021-10-25)
 
 
