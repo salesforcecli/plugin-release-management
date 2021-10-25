@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.4.0...v2.4.1) (2021-10-25)
+
+
+### Bug Fixes
+
+* **regression:** use s3.download for downloading installers ([3463e00](https://github.com/salesforcecli/plugin-release-management/commit/3463e004c9a41a4f90d6745617ded7dabbc378c0))
+
 ## [2.4.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.7...v2.4.0) (2021-10-25)
 
 
