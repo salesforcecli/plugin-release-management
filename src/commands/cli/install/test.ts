@@ -299,7 +299,7 @@ class Installer extends Method.Base {
     const pkg = `${this.options.cli}.pkg`;
     const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
-    await this.s3.getObject({ Key: url });
+    await this.s3.download(url, location);
     const result = exec(`sudo installer -pkg ${location} -target /`, { silent: true });
 
     if (result.code === 0) {
