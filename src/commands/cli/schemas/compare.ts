@@ -55,7 +55,9 @@ export default class Compare extends SfdxCommand {
         return this.normalizeFilename(f) === file;
       });
       if (correspondingFile) {
-        const matches = await fs.areFilesEqual(file, correspondingFile);
+        const fileContents = await fs.readJsonMap(file);
+        const correspondingFileContents = await fs.readJsonMap(correspondingFile);
+        const matches = SchemaUtils.deepEqual(fileContents, correspondingFileContents);
         results[file] = { correspondingFile, matches };
       } else {
         results[file] = {
