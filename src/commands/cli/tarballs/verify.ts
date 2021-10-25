@@ -13,14 +13,10 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages, SfdxError } from '@salesforce/core';
 import { ensure, ensureNumber, get } from '@salesforce/ts-types';
 import { red, yellow, green } from 'chalk';
+import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.verify');
-
-export enum CLI {
-  SF = 'sf',
-  SFDX = 'sfdx',
-}
 
 const PASSED = green.bold('PASSED');
 const FAILED = red.bold('FAILED');

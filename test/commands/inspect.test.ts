@@ -6,7 +6,7 @@
  */
 import { IConfig } from '@oclif/config';
 import { expect } from '@salesforce/command/lib/test';
-import Inspect from '../../lib/commands/cli/versions/inspect';
+import Inspect from '../../src/commands/cli/versions/inspect';
 import { Channel, Info, Location } from '../../src/commands/cli/versions/inspect';
 
 describe('cli:versions:inspect', () => {
