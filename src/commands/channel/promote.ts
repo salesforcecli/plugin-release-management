@@ -59,6 +59,15 @@ export default class Promote extends SfdxCommand {
       char: 's',
       description: messages.getMessage('sha'),
       exclusive: ['candidate'],
+      parse: (input: string): string => {
+        return input.slice(0, 7);
+      },
+      validate: (input: string): boolean => {
+        if (input.length < 7) {
+          return false;
+        }
+        return true;
+      },
     }),
     maxage: flags.number({
       char: 'm',
@@ -86,6 +95,8 @@ export default class Promote extends SfdxCommand {
       char: 'T',
       description: messages.getMessage('version'),
       exclusive: ['sha', 'candidate'],
+      parse: (input: string): string => input.trim(),
+      validate: (input: string): boolean => /^([0-9]+\.){2}[0-9]+$/.test(input),
     }),
   };
 
@@ -157,8 +168,9 @@ export default class Promote extends SfdxCommand {
       const sha = await this.findShaForVersion(cli, ensureString(this.flags.version));
       return { sha, version: ensureString(this.flags.version) };
     } else {
-      const version = await this.findVersionForSha(cli, ensureString(this.flags.sha));
-      return { sha: ensureString(this.flags.sha), version };
+      const sha = ensureString(this.flags.sha);
+      const version = await this.findVersionForSha(cli, sha);
+      return { sha, version };
     }
     throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
@@ -191,34 +203,36 @@ export default class Promote extends SfdxCommand {
     const amazonS3 = new AmazonS3({ cli });
     const versions = await amazonS3.listCommonPrefixes('versions');
     const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
-    this.logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
-    const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
-    this.logger.debug(`Looking for version ${version} for cli ${cli} shas. Found ${versionShas.length} entries`);
-    const manifestForMostRecentSha = (
-      (
-        await Promise.all(
-          versionShas.map(async (versionSha) => {
-            const versionShaContents = (await amazonS3.listKeyContents(
-              versionSha.Prefix
-            )) as unknown as VersionShaContents[];
-            return versionShaContents.map((content) => {
-              return { ...content, ...{ LastModifiedDate: new Date(content.LastModified) } };
-            });
-          })
-        )
-      ).flat() as VersionShaContents[]
-    )
-      .filter((content) => content.Key.includes('manifest'))
-      .sort((left, right) => right.LastModifiedDate.getMilliseconds() - left.LastModifiedDate.getMilliseconds())
-      .find((content) => content);
-    if (manifestForMostRecentSha) {
-      const manifest = await amazonS3.getObject({
-        Key: manifestForMostRecentSha.Key,
-        ResponseContentType: 'application/json',
-      });
-      this.logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
-      const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
-      return json.sha;
+    if (foundVersion) {
+      this.logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
+      const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
+      this.logger.debug(`Looking for version ${version} for cli ${cli} shas. Found ${versionShas.length} entries`);
+      const manifestForMostRecentSha = (
+        (
+          await Promise.all(
+            versionShas.map(async (versionSha) => {
+              const versionShaContents = (await amazonS3.listKeyContents(
+                versionSha.Prefix
+              )) as unknown as VersionShaContents[];
+              return versionShaContents.map((content) => {
+                return { ...content, ...{ LastModifiedDate: new Date(content.LastModified) } };
+              });
+            })
+          )
+        ).flat() as VersionShaContents[]
+      )
+        .filter((content) => content.Key.includes('manifest'))
+        .sort((left, right) => right.LastModifiedDate.getMilliseconds() - left.LastModifiedDate.getMilliseconds())
+        .find((content) => content);
+      if (manifestForMostRecentSha) {
+        const manifest = await amazonS3.getObject({
+          Key: manifestForMostRecentSha.Key,
+          ResponseContentType: 'application/json',
+        });
+        this.logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
+        const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
+        return json.sha;
+      }
     }
     const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
     this.logger.debug(error);
