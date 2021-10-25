@@ -7,10 +7,12 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as assert from 'assert';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { cp } from 'shelljs';
 import * as fg from 'fast-glob';
+import { JsonMap } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.collect');
@@ -30,6 +32,15 @@ export class SchemaUtils {
     const globs = ['schemas/**/*.json'];
     const schemaFiles = await fg(globs);
     return schemaFiles;
+  }
+
+  public static deepEqual(a: JsonMap, b: JsonMap): boolean {
+    try {
+      assert.deepEqual(a, b);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
@@ -55,7 +66,7 @@ export default class collect extends SfdxCommand {
     const outputDir = path.join(process.cwd(), 'schemas');
     await fs.mkdirp(outputDir);
 
-    for (const [plugin, files] of schemaFilesByPlugin.entries()) {
+    for (const [plugin, files] of Array.from(schemaFilesByPlugin.entries())) {
       const pluginOutputDir = path.join(outputDir, plugin);
       await fs.mkdirp(pluginOutputDir);
       for (const file of files) {
