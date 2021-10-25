@@ -18,7 +18,7 @@ import { Channel, CLI, ServiceAvailability } from '../../../types';
 import { AmazonS3 } from '../../../amazonS3';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
 
 export type Results = Record<string, Record<CLI, boolean>>;
 
