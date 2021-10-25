@@ -18,7 +18,7 @@
     "@types/semver": "^7.3.6",
     "@types/sinon": "10.0.2",
     "agent-base": "^6.0.2",
-    "aws-sdk": "^2.1006.0",
+    "aws-sdk": "^2.1012.0",
     "chalk": "^4.1.0",
     "cli-ux": "^5.5.1",
     "conventional-changelog-conventionalcommits": "^4.6.1",
@@ -27,6 +27,7 @@
     "fast-glob": "^3.2.5",
     "glob": "^7.2.0",
     "got": "^11.8.0",
+    "oclif": "^1.18.1",
     "proxy-agent": "^4.0.1",
     "proxy-from-env": "^1.1.0",
     "semver": "^7.3.5",
@@ -37,10 +38,10 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
-    "@oclif/plugin-command-snapshot": "^2.0.0",
+    "@oclif/plugin-command-snapshot": "^2.2.2",
     "@salesforce/cli-plugins-testkit": "^1.4.11",
     "@salesforce/dev-config": "^2.1.2",
-    "@salesforce/dev-scripts": "^0.9.11",
+    "@salesforce/dev-scripts": "^0.9.18",
     "@salesforce/plugin-command-reference": "^1.3.16",
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/ts-sinon": "1.3.21",
@@ -127,6 +128,9 @@
             "description": "utilities for building CLI releases"
           }
         }
+      },
+      "channel": {
+        "description": "interact with aws channels for clis"
       },
       "circleci": {
         "description": "interact with circleci api",

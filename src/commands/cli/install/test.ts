@@ -14,22 +14,13 @@ import got from 'got';
 import { exec, which } from 'shelljs';
 import * as chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
+import { Channel, CLI, ServiceAvailability } from '../../../types';
+import { AmazonS3 } from '../../../amazonS3';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install');
 
-enum CLI {
-  SF = 'sf',
-  SFDX = 'sfdx',
-}
-
-enum Channel {
-  STABLE = 'stable',
-  STABLE_RC = 'stable-rc',
-}
-
 export type Results = Record<string, Record<CLI, boolean>>;
-export type ServiceAvailability = { service: string; available: boolean };
 
 namespace Method {
   export enum Type {
@@ -94,43 +85,6 @@ namespace Method {
   }
 }
 
-class AmazonS3 {
-  public static STATUS_URL = 'https://s3.amazonaws.com';
-
-  public directory: string;
-
-  public constructor(cli: CLI, channel: Channel, private ux: UX) {
-    this.directory = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/${channel}`;
-  }
-
-  public async ping(): Promise<ServiceAvailability> {
-    const { statusCode } = await got.get(AmazonS3.STATUS_URL);
-    return { service: 'Amazon S3', available: statusCode >= 200 && statusCode < 300 };
-  }
-
-  public async download(url: string, location: string): Promise<void> {
-    const downloadStream = got.stream(url);
-    const fileWriterStream = fs.createWriteStream(location);
-    return new Promise((resolve) => {
-      downloadStream.on('error', (error) => {
-        this.ux.error(`Download failed: ${error.message}`);
-      });
-
-      fileWriterStream
-        .on('error', (error) => {
-          this.ux.stopSpinner('Failed');
-          this.ux.error(`Could not write file to system: ${error.message}`);
-        })
-        .on('finish', () => {
-          this.ux.stopSpinner();
-          resolve();
-        });
-      this.ux.startSpinner(`Downloading ${chalk.cyan(url)}`);
-      downloadStream.pipe(fileWriterStream);
-    });
-  }
-}
-
 class Tarball extends Method.Base {
   private s3: AmazonS3;
   private paths = {
@@ -148,7 +102,7 @@ class Tarball extends Method.Base {
 
   public constructor(protected options: Method.Options, protected logger: Logger) {
     super(options, logger);
-    this.s3 = new AmazonS3(options.cli, options.channel, logger.ux);
+    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux: logger.ux });
   }
 
   public async darwin(): Promise<Results> {
@@ -192,7 +146,7 @@ class Tarball extends Method.Base {
   private getTarballs(platform: Extract<NodeJS.Platform, 'darwin' | 'linux' | 'win32'>): Record<string, string> {
     const paths = platform === 'linux' && os.arch().includes('arm') ? this.paths['linux-arm'] : this.paths[platform];
     const s3Tarballs = paths.map((p) => {
-      return `${this.s3.directory}/${this.options.cli}-${platform}-${p}`;
+      return `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`;
     });
 
     const tarballs: Record<string, string> = {};
@@ -338,14 +292,14 @@ class Installer extends Method.Base {
 
   public constructor(protected options: Method.Options, protected logger: Logger) {
     super(options, logger);
-    this.s3 = new AmazonS3(options.cli, options.channel, logger.ux);
+    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux: logger.ux });
   }
 
   public async darwin(): Promise<Results> {
     const pkg = `${this.options.cli}.pkg`;
-    const url = `${this.s3.directory}/${pkg}`;
+    const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
-    await this.s3.download(url, location);
+    await this.s3.getObject({ Key: url });
     const result = exec(`sudo installer -pkg ${location} -target /`, { silent: true });
 
     if (result.code === 0) {
@@ -364,7 +318,7 @@ class Installer extends Method.Base {
     const executables = [`${this.options.cli}-x64.exe`, `${this.options.cli}-x86.exe`];
     const results: Results = {};
     for (const exe of executables) {
-      const url = `${this.s3.directory}/${exe}`;
+      const url = `${this.s3.directory}/channels/${this.options.channel}/${exe}`;
       const location = path.join(this.options.directory, exe);
       await this.s3.download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
