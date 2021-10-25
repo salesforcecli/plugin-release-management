@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.7...v2.4.0) (2021-10-25)
+
+
+### Features
+
+* add channel:promote command ([#330](https://github.com/salesforcecli/plugin-release-management/issues/330)) ([64ae7be](https://github.com/salesforcecli/plugin-release-management/commit/64ae7be094c3a537fd8d7b9b4f3099ac6f9dd5b1))
+
 ### [2.3.7](https://github.com/salesforcecli/plugin-release-management/compare/v2.3.6...v2.3.7) (2021-10-22)
 
 
