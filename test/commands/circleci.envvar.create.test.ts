@@ -11,8 +11,8 @@ import { env } from '@salesforce/kit';
 import got from 'got';
 import { load } from '@oclif/config';
 import chalk = require('chalk');
-import { EnvvarModificationStatus } from '../../lib/circleCiEnvvars';
-import { CircelCIEnvvarCreateStatus } from '../../lib/commands/circleci/envvar/create';
+import { EnvvarModificationStatus } from '../../src/circleCiEnvvars';
+import { CircelCIEnvvarCreateStatus } from '../../src/commands/circleci/envvar/create';
 import CircleCIEnvvarCreate from '../../src/commands/circleci/envvar/create';
 
 const FAKE_ENVVAR_VALUE = 'test value';

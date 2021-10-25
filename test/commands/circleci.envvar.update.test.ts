@@ -12,7 +12,7 @@ import got from 'got';
 import { load } from '@oclif/config';
 import chalk = require('chalk');
 import CircleCIEnvvarUpdate, { CircelCIEnvvarUpdateStatus } from '../../src/commands/circleci/envvar/update';
-import { EnvvarModificationStatus } from '../../lib/circleCiEnvvars';
+import { EnvvarModificationStatus } from '../../src/circleCiEnvvars';
 
 const FAKE_ENVVAR_VALUE = 'test value';
 
