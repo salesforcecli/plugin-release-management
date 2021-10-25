@@ -106,6 +106,7 @@ export default class Promote extends SfdxCommand {
       throw new SfdxError(messages.getMessage(errType), errType);
     }
     this.validateFlags();
+    // preparing parameters for call to oclif promote commands
     const cli = this.flags.cli as CLI;
     const target = ensureString(this.flags.target);
     const maxAge = ensureNumber(this.flags.maxage);
@@ -160,6 +161,16 @@ export default class Promote extends SfdxCommand {
     };
   }
 
+  /**
+   * Based on which flag was provided, locate the sha and version in S3 that will be used in the promote
+   *
+   * when candidate channel flag present, find sha a version via the channel for candidate
+   * when version flag present, find the sha from version subfolders with the most recent modified date
+   * when sha flag is present, find the version that owns the subfolder named as sha value
+   *
+   * @param cli
+   * @private
+   */
   private async determineShaAndVersion(cli: CLI): Promise<{ sha: string; version: string }> {
     if (this.flags.candidate) {
       const manifest = await this.findManifestForCandidate(cli, this.flags.candidate);
@@ -175,13 +186,21 @@ export default class Promote extends SfdxCommand {
     throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
 
+  /**
+   * validate flag combinations
+   *
+   * @private
+   */
   private validateFlags(): void {
+    // requires one of the following flags
     if (!this.flags.version && !this.flags.sha && !this.flags.candidate) {
       throw new SfdxError(messages.getMessage('MissingSourceOfPromote'));
     }
+    // cannot promote when channel names are the same
     if (this.flags.candidate && this.flags.candidate === this.flags.target) {
       throw new SfdxError(messages.getMessage('CannotPromoteToSameChannel'));
     }
+    // make sure necessary runtime dependencies are present
     const deps = verifyDependencies(
       this.flags,
       (dep) => dep.name.startsWith('AWS'),
@@ -194,11 +213,25 @@ export default class Promote extends SfdxCommand {
     }
   }
 
+  /**
+   * find a manifest file in the channel
+   *
+   * @param cli
+   * @param channel
+   * @private
+   */
   private async findManifestForCandidate(cli: CLI, channel: Channel): Promise<S3Manifest> {
     const amazonS3 = new AmazonS3({ cli, channel });
     return await amazonS3.getManifestFromChannel(channel);
   }
 
+  /**
+   * find the sha that was uploaded most recently for the named version
+   *
+   * @param cli
+   * @param version
+   * @private
+   */
   private async findShaForVersion(cli: CLI, version: string): Promise<string> {
     const amazonS3 = new AmazonS3({ cli });
     const versions = await amazonS3.listCommonPrefixes('versions');
@@ -238,6 +271,14 @@ export default class Promote extends SfdxCommand {
     this.logger.debug(error);
     throw error;
   }
+
+  /**
+   * find the version that owns the named sha
+   *
+   * @param cli
+   * @param sha
+   * @private
+   */
   private async findVersionForSha(cli: CLI, sha: string): Promise<string> {
     const amazonS3 = new AmazonS3({ cli });
     const foundVersion = (
