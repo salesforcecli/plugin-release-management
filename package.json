@@ -192,7 +192,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "sf-husky-pre-commit",
       "commit-msg": "sf-husky-commit-msg",
       "pre-push": "sf-husky-pre-push"
     }
