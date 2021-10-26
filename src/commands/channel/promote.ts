@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import { AnyJson, asArray, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
+import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
 import { isMonoRepo } from '../../repository';
@@ -45,7 +45,8 @@ export default class Promote extends SfdxCommand {
     platform: flags.array({
       char: 'p',
       description: messages.getMessage('platform'),
-      options: ['win', 'macos'],
+      options: ['win', 'macos', 'deb'],
+      default: [],
       multiple: true,
     }),
     cli: flags.enum({
