@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
+import { AnyJson, ensureArray, ensureNumber, ensureString, asArray } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
 import { isMonoRepo } from '../../repository';
