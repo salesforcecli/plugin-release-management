@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import { AnyJson, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
+import { AnyJson, asArray, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
 import { isMonoRepo } from '../../repository';
@@ -45,8 +45,7 @@ export default class Promote extends SfdxCommand {
     platform: flags.array({
       char: 'p',
       description: messages.getMessage('platform'),
-      required: true,
-      options: ['win', 'macos', 'deb'],
+      options: ['win', 'macos'],
       multiple: true,
     }),
     cli: flags.enum({
@@ -115,7 +114,7 @@ export default class Promote extends SfdxCommand {
     const targets = this.flags.targets ? (['--targets', ...ensureArray(this.flags.targets)] as string[]) : [];
     const { sha, version } = await this.determineShaAndVersion(cli);
 
-    const platforms = ensureArray(this.flags.platform).map((p: string) => `--${p}`);
+    const platforms = asArray(this.flags.platform, []).map((p: string) => `--${p}`);
 
     if (!this.flags.dryrun) {
       const oclifPlugin = await PluginCommand.create({
