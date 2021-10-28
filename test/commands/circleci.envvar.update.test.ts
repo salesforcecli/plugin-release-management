@@ -52,7 +52,7 @@ function expectSlugStatus(slugs: string[], result: CircelCIEnvvarUpdateStatus) {
 before(async function () {
   // eslint-disable-next-line no-console
   console.log(chalk.yellow('Loading oclif commands into memory'));
-  this.timeout(10000);
+  this.timeout(100000);
   // Prime oclif commands into memory
   await load(`${__dirname}/../../`);
   process.env['CIRCLE_CI_TOKEN'] = '123456';

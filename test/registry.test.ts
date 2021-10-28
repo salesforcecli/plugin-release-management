@@ -47,7 +47,7 @@ describe('npmrc tests', () => {
   afterEach(() => {
     fs.removeSync(packageDir);
   });
-  (process.platform !== 'win32' ? it : it.skip)('should NOT WRITE npmrc registry for registry defaults', async () => {
+  it('should NOT WRITE npmrc registry for registry defaults', async () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     await registry.setNpmRegistry(packageDir);

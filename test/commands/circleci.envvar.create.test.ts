@@ -12,8 +12,7 @@ import got from 'got';
 import { load } from '@oclif/config';
 import chalk = require('chalk');
 import { EnvvarModificationStatus } from '../../src/circleCiEnvvars';
-import { CircelCIEnvvarCreateStatus } from '../../src/commands/circleci/envvar/create';
-import CircleCIEnvvarCreate from '../../src/commands/circleci/envvar/create';
+import CircleCIEnvvarCreate, { CircelCIEnvvarCreateStatus } from '../../src/commands/circleci/envvar/create';
 
 const FAKE_ENVVAR_VALUE = 'test value';
 
@@ -53,7 +52,7 @@ function expectSlugStatus(slugs: string[], result: CircelCIEnvvarCreateStatus) {
 before(async function () {
   // eslint-disable-next-line no-console
   console.log(chalk.yellow('Loading oclif commands into memory'));
-  this.timeout(10000);
+  this.timeout(100000);
   // Prime oclif commands into memory
   await load(`${__dirname}/../../`);
   process.env['CIRCLE_CI_TOKEN'] = '123456';
