@@ -63,6 +63,10 @@ interface PinnedPackage {
   alias: Nullable<string>;
 }
 
+export function parseAliasedPackageName(alias: string): string {
+  return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
+}
+
 export class Package extends AsyncOptionalCreatable {
   public name: string;
   public npmPackage: NpmPackage;
@@ -174,7 +178,7 @@ export class Package extends AsyncOptionalCreatable {
 
         if (version.startsWith('npm:')) {
           return {
-            name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
+            name: parseAliasedPackageName(version),
             version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
             alias: name,
             tag: tag || targetTag,

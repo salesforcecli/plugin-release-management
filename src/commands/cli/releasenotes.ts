@@ -14,7 +14,7 @@ import { bold, cyan, dim } from 'chalk';
 import { Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { CLI } from '../../types';
-import { NpmPackage } from '../../package';
+import { NpmPackage, parseAliasedPackageName } from '../../package';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
@@ -88,9 +88,7 @@ export default class ReleaseNotes extends SfdxCommand {
       .filter((p) => !p.startsWith('@oclif'))
       .map((p) => {
         if (npmPackage.dependencies[p].startsWith('npm:')) {
-          return npmPackage.dependencies[p]
-            .replace('npm:', '')
-            .replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
+          return parseAliasedPackageName(npmPackage.dependencies[p]);
         }
         return p;
       });
