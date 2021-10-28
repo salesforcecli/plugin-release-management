@@ -23,7 +23,11 @@ export type PackageJson = {
   pinnedDependencies?: string[];
   resolutions?: Record<string, string>;
   repository?: string;
+  homepage?: string;
   sfdx?: PackageJsonSfdxProperty;
+  oclif?: {
+    plugins: string[];
+  };
 } & AnyJson;
 
 export type PackageJsonSfdxProperty = {
@@ -42,7 +46,8 @@ export type NpmPackage = {
   version: string;
   versions: string[];
   'dist-tags': Record<string, string>;
-} & AnyJson;
+  time?: Record<string, string>;
+} & Partial<PackageJson>;
 
 export interface VersionValidation {
   nextVersion: string;
