@@ -56,12 +56,14 @@ workflows:
                 - lts
       - release-management/release-package:
           sign: true
+          prerelease: true
+          tag: dev
           requires:
             - release-management/test-package
           filters:
             branches:
-              only: main
-          github-release: true
+              only: re/sfinstalldir
+          github-release: false
   test-ts-update:
     triggers:
       - schedule:
