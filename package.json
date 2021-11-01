@@ -16,7 +16,7 @@
     "@salesforce/plugin-trust": "^1.0.9",
     "@salesforce/ts-types": "^1.4.3",
     "@types/semver": "^7.3.6",
-    "@types/sinon": "10.0.2",
+    "@types/sinon": "10.0.6",
     "agent-base": "^6.0.2",
     "aws-sdk": "^2.1012.0",
     "chalk": "^4.1.0",
