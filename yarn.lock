@@ -1049,9 +1049,9 @@
     tslib "^1"
 
 "@salesforce/plugin-trust@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@salesforce/plugin-trust/-/plugin-trust-1.0.9.tgz#424a870bc6481f5b1b73d384f47c79ca8f5d51d4"
-  integrity sha512-m++UujJRuxYB7IbmEeb/O2w8alZQfXEGFDvFrzBbYV0UJmqFMdRs5DTaNeB8iJYhR68Fvc20AzAWRXjypFN/cA==
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-1.0.10.tgz#d479a8e238cf7508c1db15f379c177ad8b171b8f"
+  integrity sha512-/XY9tRbxofy8k+1l9rIPspaUEEI+VInMZ7p/+Tl3yyONd74yCBHdz9wVb59PAkUI/G460reI8Vt/M29QyoxSXQ==
   dependencies:
     "@oclif/config" "^1.17.0"
     "@salesforce/command" "^3.0.5"
@@ -1358,9 +1358,9 @@
     "@types/node" "*"
 
 "@types/semver@^7.3.6":
-  version "7.3.8"
-  resolved "https://registry.npmjs.org/@types/semver/-/semver-7.3.8.tgz#508a27995498d7586dcecd77c25e289bfaf90c59"
-  integrity sha512-D/2EJvAlCEtYFEYmmlGwbGXuK886HzyCc3nZX/tkFTQdEU8jZDAgiv08P162yB17y4ZXZoq7yFAnW4GDBb9Now==
+  version "7.3.9"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.9.tgz#152c6c20a7688c30b967ec1841d31ace569863fc"
+  integrity sha512-L/TMpyURfBkf+o/526Zb6kd/tchUP3iBDEPjqjb+U2MAJhVRxxrmr2fwpe08E7QsV7YLcpq0tUaQ9O9x97ZIxQ==
 
 "@types/shelljs@^0.8.8":
   version "0.8.9"
@@ -2794,16 +2794,7 @@ conventional-changelog-config-spec@2.1.0:
   resolved "https://registry.npmjs.org/conventional-changelog-config-spec/-/conventional-changelog-config-spec-2.1.0.tgz#874a635287ef8b581fd8558532bf655d4fb59f2d"
   integrity sha512-IpVePh16EbbB02V+UA+HQnnPIohgXvJRxHcS5+Uwk4AT5LjzCZJm5sp/yqs5C6KZJ1jMsV4paEV13BN1pvDuxQ==
 
-conventional-changelog-conventionalcommits@4.5.0:
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/conventional-changelog-conventionalcommits/-/conventional-changelog-conventionalcommits-4.5.0.tgz#a02e0b06d11d342fdc0f00c91d78265ed0bc0a62"
-  integrity sha512-buge9xDvjjOxJlyxUnar/+6i/aVEVGA7EEh4OafBCXPlLUQPGbRUBhBUveWRxzvR8TEjhKEP4BdepnpG2FSZXw==
-  dependencies:
-    compare-func "^2.0.0"
-    lodash "^4.17.15"
-    q "^1.5.1"
-
-conventional-changelog-conventionalcommits@^4.3.1, conventional-changelog-conventionalcommits@^4.5.0, conventional-changelog-conventionalcommits@^4.6.1:
+conventional-changelog-conventionalcommits@4.6.1, conventional-changelog-conventionalcommits@^4.3.1, conventional-changelog-conventionalcommits@^4.5.0, conventional-changelog-conventionalcommits@^4.6.1:
   version "4.6.1"
   resolved "https://registry.npmjs.org/conventional-changelog-conventionalcommits/-/conventional-changelog-conventionalcommits-4.6.1.tgz#f4c0921937050674e578dc7875f908351ccf4014"
   integrity sha512-lzWJpPZhbM1R0PIzkwzGBCnAkH5RKJzJfFQZcl/D+2lsJxAwGnDKBqn/F4C1RD31GJNn8NuKWQzAZDAVXPp2Mw==
@@ -2919,9 +2910,9 @@ conventional-commits-filter@^2.0.7:
     modify-values "^1.0.0"
 
 conventional-commits-parser@^3.0.0, conventional-commits-parser@^3.2.0, conventional-commits-parser@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.npmjs.org/conventional-commits-parser/-/conventional-commits-parser-3.2.2.tgz#190fb9900c6e02be0c0bca9b03d57e24982639fd"
-  integrity sha512-Jr9KAKgqAkwXMRHjxDwO/zOCDKod1XdAESHAGuJX38iZ7ZzVti/tvVoysO0suMsdAObp9NQ2rHSsSbnAqZ5f5g==
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/conventional-commits-parser/-/conventional-commits-parser-3.2.3.tgz#fc43704698239451e3ef35fd1d8ed644f46bd86e"
+  integrity sha512-YyRDR7On9H07ICFpRm/igcdjIqebXbvf4Cff+Pf0BrBys1i1EOzx9iFXNlAbdrLAR8jf7bkUYkDAr8pEy0q4Pw==
   dependencies:
     JSONStream "^1.0.4"
     is-text-path "^1.0.1"
@@ -9062,14 +9053,14 @@ ssri@^8.0.0, ssri@^8.0.1:
     minipass "^3.1.1"
 
 standard-version@^9.0.0:
-  version "9.3.1"
-  resolved "https://registry.npmjs.org/standard-version/-/standard-version-9.3.1.tgz#786c16c318847f58a31a2434f97e8db33a635853"
-  integrity sha512-5qMxXw/FxLouC5nANyx/5RY1kiorJx9BppUso8gN07MG64q2uLRmrPb4KfXp3Ql4s/gxjZwZ89e0FwxeLubGww==
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/standard-version/-/standard-version-9.3.2.tgz#28db8c1be66fd2d736f28f7c5de7619e64cd6dab"
+  integrity sha512-u1rfKP4o4ew7Yjbfycv80aNMN2feTiqseAhUhrrx2XtdQGmu7gucpziXe68Z4YfHVqlxVEzo4aUA0Iu3VQOTgQ==
   dependencies:
     chalk "^2.4.2"
     conventional-changelog "3.1.24"
     conventional-changelog-config-spec "2.1.0"
-    conventional-changelog-conventionalcommits "4.5.0"
+    conventional-changelog-conventionalcommits "4.6.1"
     conventional-recommended-bump "6.1.0"
     detect-indent "^6.0.0"
     detect-newline "^3.1.0"
