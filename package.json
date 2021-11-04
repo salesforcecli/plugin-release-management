@@ -13,7 +13,7 @@
     "@salesforce/command": "^4.1.4",
     "@salesforce/core": "^2.28.1",
     "@salesforce/kit": "^1.5.17",
-    "@salesforce/plugin-trust": "^1.0.9",
+    "@salesforce/plugin-trust": "^1.0.11",
     "@salesforce/ts-types": "^1.4.3",
     "@types/semver": "^7.3.6",
     "@types/sinon": "10.0.6",
