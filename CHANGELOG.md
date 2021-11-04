@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.2...v2.5.3) (2021-11-04)
+
+
+### Bug Fixes
+
+* sf install dir ([00b1c1e](https://github.com/salesforcecli/plugin-release-management/commit/00b1c1e212297c89d67c95a34d6d4b79f4fde6d1))
+
 ### [2.5.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.1...v2.5.2) (2021-10-26)
 
 ### Bug Fixes
