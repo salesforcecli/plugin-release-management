@@ -104,7 +104,7 @@ export default class ReleaseNotes extends SfdxCommand {
     return name;
   }
 
-  private async getPullsForPlugin(plugin: string, since: string): Promise<Change[]> {
+  private async getPullsForPlugin(plugin: string, publishDate: string): Promise<Change[]> {
     const npmPackage = this.getNpmPackage(plugin);
     const homepage = npmPackage.homepage ?? (npmPackage.name === 'salesforce-alm' ? 'salesforcecli/toolbelt' : null);
     if (!homepage) {
@@ -121,7 +121,7 @@ export default class ReleaseNotes extends SfdxCommand {
     const changes = (await Promise.all(
       pullRequests.data
         .filter((pr) => {
-          return pr.merged_at && pr.merged_at > since && !pr.user.login.includes('dependabot');
+          return pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot');
         })
         .map(async (pr) => {
           const username = await this.getNameOfUser(pr.user.login);
