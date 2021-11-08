@@ -23,7 +23,11 @@ export type PackageJson = {
   pinnedDependencies?: string[];
   resolutions?: Record<string, string>;
   repository?: string;
+  homepage?: string;
   sfdx?: PackageJsonSfdxProperty;
+  oclif?: {
+    plugins: string[];
+  };
 } & AnyJson;
 
 export type PackageJsonSfdxProperty = {
@@ -42,7 +46,8 @@ export type NpmPackage = {
   version: string;
   versions: string[];
   'dist-tags': Record<string, string>;
-} & AnyJson;
+  time?: Record<string, string>;
+} & Partial<PackageJson>;
 
 export interface VersionValidation {
   nextVersion: string;
@@ -56,6 +61,10 @@ interface PinnedPackage {
   version: string;
   tag: string;
   alias: Nullable<string>;
+}
+
+export function parseAliasedPackageName(alias: string): string {
+  return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
 }
 
 export class Package extends AsyncOptionalCreatable {
@@ -169,7 +178,7 @@ export class Package extends AsyncOptionalCreatable {
 
         if (version.startsWith('npm:')) {
           return {
-            name: version.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, ''),
+            name: parseAliasedPackageName(version),
             version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
             alias: name,
             tag: tag || targetTag,
