@@ -110,12 +110,16 @@ export default class Release extends SfdxCommand {
     }
 
     pkg.printStage('Publish');
-    await pkg.publish({
-      signatures: [signature],
-      access: this.flags.npmaccess as Access,
-      tag: this.flags.npmtag as string,
-      dryrun: this.flags.dryrun as boolean,
-    });
+    try {
+      await pkg.publish({
+        signatures: [signature],
+        access: this.flags.npmaccess as Access,
+        tag: this.flags.npmtag as string,
+        dryrun: this.flags.dryrun as boolean,
+      });
+    } catch (e) {
+      this.error(e, { code: 'NPM_PUBLISH_FAILED', exit: 1 });
+    }
 
     if (!this.flags.dryrun && this.flags.verify) {
       pkg.printStage('Waiting For Availability');

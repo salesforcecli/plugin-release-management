@@ -245,7 +245,7 @@ export default class Verify extends SfdxCommand {
         `${this.baseDir}/dist/builtins/package.json`,
         `${this.baseDir}/scripts/clean-for-tarballs`,
         `${this.baseDir}/scripts/include-sf.js`,
-        `${this.baseDir}/sf-cli/**/*`,
+        `${this.baseDir}/sf/**/*`,
       ];
       const expectedFiles = await fg(expectedFileGlobs);
       const allFiles = await fg([`${this.baseDir}/**/*`, `!${this.baseDir}/node_modules/**/*`]);
