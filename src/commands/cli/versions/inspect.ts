@@ -176,10 +176,6 @@ export default class Inspect extends SfdxCommand {
       throw new SfdxError('the sf CLI does not have a legacy channel');
     }
 
-    if (this.flags.cli === CLI.SF && channels.includes(Channel.STABLE_RC)) {
-      throw new SfdxError('the sf CLI does not have a stable-rc channel');
-    }
-
     this.ux.log(`Working Directory: ${this.workingDir}`);
 
     // ensure that we are starting with a clean directory
