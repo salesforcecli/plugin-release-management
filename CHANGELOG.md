@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.0...v2.6.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* allow verifying stable-rc channel for sf ([a64d801](https://github.com/salesforcecli/plugin-release-management/commit/a64d801f87ff38a96b87626ae4a7c5331a981853))
+
 ## [2.6.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.3...v2.6.0) (2021-11-08)
 
 
