@@ -1,0 +1,6 @@
+{
+  "description": "smoke tests for the tarballed CLI\n Tests that the CLI and every command can be initialized.",
+  "examples": ["<%= config.bin %> <%= command.id %> --cli sfdx", "<%= config.bin %> <%= command.id %> --cli sf"],
+  "cliFlag": "the cli to install",
+  "verboseFlag": "show the --help output for each command"
+}

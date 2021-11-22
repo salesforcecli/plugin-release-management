@@ -108,6 +108,16 @@
         ]
     },
     {
+        "command": "cli:tarballs:smoke",
+        "plugin": "@salesforce/plugin-release-management",
+        "flags": [
+            "cli",
+            "json",
+            "loglevel",
+            "verbose"
+        ]
+    },
+    {
         "command": "cli:tarballs:verify",
         "plugin": "@salesforce/plugin-release-management",
         "flags": [

@@ -44,7 +44,7 @@ export class SchemaUtils {
   }
 }
 
-export default class collect extends SfdxCommand {
+export default class Collect extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flagsConfig: FlagsConfig = {};
