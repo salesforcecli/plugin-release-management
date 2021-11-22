@@ -63,11 +63,7 @@ export default class build extends SfdxCommand {
 
     this.exec('yarn snapshot-generate');
 
-    const user = await octokit.request('GET /user');
-
-    // required for committing in Circle
-    this.exec(`git config user.email "${user.data.email}"`);
-    this.exec(`git config user.name "${user.data.name}"`);
+    await this.maybeSetGitConfig(octokit);
 
     // commit package.json/yarn.lock and potentially command-snapshot changes
     this.exec('git add .');
@@ -90,5 +86,15 @@ export default class build extends SfdxCommand {
   private exec(cmd: string, options: ExecOptions = { silent: true }): void {
     this.log(bold(cmd));
     exec(cmd, options);
+  }
+
+  private async maybeSetGitConfig(octokit: Octokit): Promise<void> {
+    const username = exec('git config user.name', { silent: true }).stdout.trim();
+    const email = exec('git config user.email', { silent: true }).stdout.trim();
+    if (!username || !email) {
+      const user = await octokit.request('GET /user');
+      if (!username) this.exec(`git config user.name "${user.data.name}"`);
+      if (!email) this.exec(`git config user.email "${user.data.email}"`);
+    }
   }
 }
