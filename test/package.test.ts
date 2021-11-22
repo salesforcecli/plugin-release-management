@@ -27,6 +27,11 @@ describe('Package', () => {
           version: '1.0.0',
         })
       );
+      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
+        name: pkgName,
+        version: '1.0.0',
+        versions: ['0.0.1', '0.0.5', '1.0.0'],
+      });
     });
 
     it('should read the package.json in the current working directory', async () => {
