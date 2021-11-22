@@ -17,6 +17,7 @@ type PackageCommits = CommitInspection & {
 
 type Response = {
   shouldRelease: boolean;
+  majorBump: boolean;
   packages?: PackageCommits[];
 };
 
@@ -41,8 +42,14 @@ export default class Validate extends SfdxCommand {
       });
       responses.push(response);
     }
-    const shouldRelease = responses.some((resp) => !!resp.shouldRelease);
+    const majorBump = responses.some((resp) => !!resp.isMajorBump);
+    if (majorBump) {
+      this.ux.warn(
+        'Major version bump detected. You must manually update the version in the package.json to release a new major version.'
+      );
+    }
+    const shouldRelease = responses.some((resp) => !!resp.shouldRelease) && !majorBump;
     this.ux.log(shouldRelease.toString());
-    return this.flags.verbose ? { shouldRelease, packages: responses } : { shouldRelease };
+    return this.flags.verbose ? { shouldRelease, majorBump, packages: responses } : { shouldRelease, majorBump };
   }
 }

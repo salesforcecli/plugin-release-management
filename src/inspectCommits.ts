@@ -24,6 +24,7 @@ export interface CommitInspection {
   unreleasableCommits: Commit[];
   nextVersionIsHardcoded: boolean;
   shouldRelease: boolean;
+  isMajorBump?: boolean;
 }
 
 /**
@@ -77,22 +78,27 @@ export async function inspectCommits(pkg: Package, lerna = false): Promise<Commi
 
   const releasableCommits: Commit[] = [];
   const unreleasableCommits: Commit[] = [];
+  let isMajorBump = false;
   for (const commit of commits) {
     const headerIndicatesMajorChange = !!commit.header && commit.header.includes('!');
     const bodyIndicatesMajorChange = !!commit.body && commit.body.includes('BREAKING');
     const typeIsSkippable = skippableCommitTypes.includes(commit.type);
-    const isReleasable = !typeIsSkippable || bodyIndicatesMajorChange || headerIndicatesMajorChange;
+    const isMajorChange = bodyIndicatesMajorChange || headerIndicatesMajorChange;
+    const isReleasable = !typeIsSkippable || isMajorChange;
     if (isReleasable) {
       releasableCommits.push(commit);
     } else {
       unreleasableCommits.push(commit);
     }
+
+    if (isMajorChange && !isMajorBump) isMajorBump = true;
   }
 
   return {
     releasableCommits,
     unreleasableCommits,
     nextVersionIsHardcoded,
+    isMajorBump,
     shouldRelease: nextVersionIsHardcoded || releasableCommits.length > 0,
   };
 }
