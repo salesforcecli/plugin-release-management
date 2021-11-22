@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.1...v2.6.2) (2021-11-22)
+
+
+### Bug Fixes
+
+* properly skip pr validation ([#358](https://github.com/salesforcecli/plugin-release-management/issues/358)) ([012eb13](https://github.com/salesforcecli/plugin-release-management/commit/012eb1389fbecae7c58cf4d3493f589fe653502f))
+
 ### [2.6.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.0...v2.6.1) (2021-11-11)
 
 
