@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.2...v2.7.0) (2021-11-22)
+
+
+### Features
+
+* add cli:tarblls:smoke ([#359](https://github.com/salesforcecli/plugin-release-management/issues/359)) ([9c9c841](https://github.com/salesforcecli/plugin-release-management/commit/9c9c841d0ce0da8d9e46af2d9fdb3a93112341f4))
+
 ### [2.6.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.1...v2.6.2) (2021-11-22)
 
 
