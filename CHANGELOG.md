@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.7.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.1...v2.7.2) (2021-11-23)
+
+
+### Bug Fixes
+
+* allow any script to be included in tarball ([#362](https://github.com/salesforcecli/plugin-release-management/issues/362)) ([1efc454](https://github.com/salesforcecli/plugin-release-management/commit/1efc454620976aef69c037a86e2183a8e3370484))
+
 ### [2.7.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.0...v2.7.1) (2021-11-22)
 
 
