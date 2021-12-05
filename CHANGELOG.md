@@ -2,54 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.7.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.1...v2.7.2) (2021-11-23)
+## [2.8.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.2...v2.8.0) (2021-12-05)
 
+### Features
+
+- bump deps ([852fd58](https://github.com/salesforcecli/plugin-release-management/commit/852fd5804ba3366dc57c359a01ece350916fa615))
+- bump deps ([816ff86](https://github.com/salesforcecli/plugin-release-management/commit/816ff8654af006ff672d3dd1ca34606c5b0951e8))
+
+### [2.7.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.1...v2.7.2) (2021-11-23)
 
 ### Bug Fixes
 
-* allow any script to be included in tarball ([#362](https://github.com/salesforcecli/plugin-release-management/issues/362)) ([1efc454](https://github.com/salesforcecli/plugin-release-management/commit/1efc454620976aef69c037a86e2183a8e3370484))
+- allow any script to be included in tarball ([#362](https://github.com/salesforcecli/plugin-release-management/issues/362)) ([1efc454](https://github.com/salesforcecli/plugin-release-management/commit/1efc454620976aef69c037a86e2183a8e3370484))
 
 ### [2.7.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.7.0...v2.7.1) (2021-11-22)
 
-
 ### Bug Fixes
 
-* only set git config if does not exist ([#361](https://github.com/salesforcecli/plugin-release-management/issues/361)) ([0a0ed83](https://github.com/salesforcecli/plugin-release-management/commit/0a0ed83b252a4c7622ad74c5c4c69a9912c5fdcf))
+- only set git config if does not exist ([#361](https://github.com/salesforcecli/plugin-release-management/issues/361)) ([0a0ed83](https://github.com/salesforcecli/plugin-release-management/commit/0a0ed83b252a4c7622ad74c5c4c69a9912c5fdcf))
 
 ## [2.7.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.2...v2.7.0) (2021-11-22)
 
-
 ### Features
 
-* add cli:tarblls:smoke ([#359](https://github.com/salesforcecli/plugin-release-management/issues/359)) ([9c9c841](https://github.com/salesforcecli/plugin-release-management/commit/9c9c841d0ce0da8d9e46af2d9fdb3a93112341f4))
+- add cli:tarblls:smoke ([#359](https://github.com/salesforcecli/plugin-release-management/issues/359)) ([9c9c841](https://github.com/salesforcecli/plugin-release-management/commit/9c9c841d0ce0da8d9e46af2d9fdb3a93112341f4))
 
 ### [2.6.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.1...v2.6.2) (2021-11-22)
 
-
 ### Bug Fixes
 
-* properly skip pr validation ([#358](https://github.com/salesforcecli/plugin-release-management/issues/358)) ([012eb13](https://github.com/salesforcecli/plugin-release-management/commit/012eb1389fbecae7c58cf4d3493f589fe653502f))
+- properly skip pr validation ([#358](https://github.com/salesforcecli/plugin-release-management/issues/358)) ([012eb13](https://github.com/salesforcecli/plugin-release-management/commit/012eb1389fbecae7c58cf4d3493f589fe653502f))
 
 ### [2.6.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.6.0...v2.6.1) (2021-11-11)
 
-
 ### Bug Fixes
 
-* allow verifying stable-rc channel for sf ([a64d801](https://github.com/salesforcecli/plugin-release-management/commit/a64d801f87ff38a96b87626ae4a7c5331a981853))
+- allow verifying stable-rc channel for sf ([a64d801](https://github.com/salesforcecli/plugin-release-management/commit/a64d801f87ff38a96b87626ae4a7c5331a981853))
 
 ## [2.6.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.3...v2.6.0) (2021-11-08)
 
-
 ### Features
 
-* add command to pull info for release notes ([#338](https://github.com/salesforcecli/plugin-release-management/issues/338)) ([da2f2e0](https://github.com/salesforcecli/plugin-release-management/commit/da2f2e0a7dffb9010efdccc3a59eb9fdc4638711))
+- add command to pull info for release notes ([#338](https://github.com/salesforcecli/plugin-release-management/issues/338)) ([da2f2e0](https://github.com/salesforcecli/plugin-release-management/commit/da2f2e0a7dffb9010efdccc3a59eb9fdc4638711))
 
 ### [2.5.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.2...v2.5.3) (2021-11-04)
 
-
 ### Bug Fixes
 
-* sf install dir ([00b1c1e](https://github.com/salesforcecli/plugin-release-management/commit/00b1c1e212297c89d67c95a34d6d4b79f4fde6d1))
+- sf install dir ([00b1c1e](https://github.com/salesforcecli/plugin-release-management/commit/00b1c1e212297c89d67c95a34d6d4b79f4fde6d1))
 
 ### [2.5.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.5.1...v2.5.2) (2021-10-26)
 
