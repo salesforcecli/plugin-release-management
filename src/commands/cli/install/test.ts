@@ -11,7 +11,7 @@ import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ensure, Nullable } from '@salesforce/ts-types';
 import got from 'got';
-import { exec, which } from 'shelljs';
+import { exec } from 'shelljs';
 import * as chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
 import { Channel, CLI, ServiceAvailability } from '../../../types';
