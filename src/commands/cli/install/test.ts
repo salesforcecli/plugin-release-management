@@ -11,7 +11,7 @@ import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ensure, Nullable } from '@salesforce/ts-types';
 import got from 'got';
-import { exec, which } from 'shelljs';
+import { exec } from 'shelljs';
 import * as chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
 import { Channel, CLI, ServiceAvailability } from '../../../types';
@@ -269,20 +269,15 @@ class Npm extends Method.Base {
 
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
-    for (const cli of this.getTargets()) {
-      const executable =
-        this.options.cli === CLI.SFDX && cli === CLI.SF
-          ? which(CLI.SF).stdout
-          : path.join(this.options.directory, 'node_modules', '.bin', cli);
-      this.logger.log(`Testing ${chalk.cyan(executable)}`);
+    const executable = path.join(this.options.directory, 'node_modules', '.bin', this.options.cli);
+    this.logger.log(`Testing ${chalk.cyan(executable)}`);
 
-      const result =
-        process.platform === 'win32'
-          ? exec(`& "${executable}" --version`, { silent: true, shell: 'powershell.exe' })
-          : exec(`${executable} --version`, { silent: true });
-      this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-      results[cli] = result.code === 0;
-    }
+    const result =
+      process.platform === 'win32'
+        ? exec(`& "${executable}" --version`, { silent: true, shell: 'powershell.exe' })
+        : exec(`${executable} --version`, { silent: true });
+    this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+    results[this.options.cli] = result.code === 0;
     return results;
   }
 }
