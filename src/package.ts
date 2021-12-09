@@ -88,9 +88,21 @@ export class Package extends AsyncOptionalCreatable {
     return (await fs.readJson(pkgJsonPath)) as PackageJson;
   }
 
+  /**
+   * Retrieve the npm package info using `npm view`
+   *
+   * It'll first try to find the package with the version listed in the package.json
+   * If that version doesn't exist, it'll find the version tagged as latest
+   */
   public retrieveNpmPackage(): NpmPackage {
-    const result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
-    return result.code === 0 ? (JSON.parse(result.stdout) as NpmPackage) : null;
+    let result = exec(
+      `npm view ${this.name}@${this.packageJson.version} ${this.registry.getRegistryParameter()} --json`,
+      { silent: true }
+    );
+    if (!result.stdout) {
+      result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+    }
+    return !result.stdout ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
 
   public validateNextVersion(): VersionValidation {
