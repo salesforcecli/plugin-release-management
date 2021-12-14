@@ -102,7 +102,7 @@ export class Package extends AsyncOptionalCreatable {
     if (!result.stdout) {
       result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     }
-    return !result.stdout ? (JSON.parse(result.stdout) as NpmPackage) : null;
+    return result.stdout ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
 
   public validateNextVersion(): VersionValidation {
