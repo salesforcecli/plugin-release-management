@@ -65,7 +65,8 @@ export default class build extends SfdxCommand {
 
     await this.maybeSetGitConfig(octokit);
 
-    // commit package.json/yarn.lock and potentially command-snapshot changes
+    this.exec('npm shrinkwrap');
+    // commit package.json/yarn.lock, shrinkwrap.json and potentially command-snapshot changes
     this.exec('git add .');
     this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
     this.exec(`git push --set-upstream origin ${nextRCVersion}`);
