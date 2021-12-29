@@ -18,6 +18,7 @@ export type PackageJson = {
   version: string;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
+  peerDependencies?: Record<string, string>;
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
@@ -63,8 +64,16 @@ interface PinnedPackage {
   alias: Nullable<string>;
 }
 
+export function exactVersion(version: string): string {
+  return version.replace(/[\^~]/, '');
+}
+
 export function parseAliasedPackageName(alias: string): string {
   return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
+}
+
+export function parseAliasedPackageNameAndVersion(alias: string): string {
+  return alias.replace('npm:', '');
 }
 
 export class Package extends AsyncOptionalCreatable {
@@ -94,13 +103,17 @@ export class Package extends AsyncOptionalCreatable {
    * It'll first try to find the package with the version listed in the package.json
    * If that version doesn't exist, it'll find the version tagged as latest
    */
-  public retrieveNpmPackage(): NpmPackage {
+  public retrieveNpmPackage(name?: string, version?: string, npmProperties = ['name', 'dist-tags']): NpmPackage {
     let result = exec(
-      `npm view ${this.name}@${this.packageJson.version} ${this.registry.getRegistryParameter()} --json`,
+      `npm view ${name || this.name}@${version || this.packageJson.version} ${npmProperties.join(
+        ' '
+      )} ${this.registry.getRegistryParameter()} --json`,
       { silent: true }
     );
     if (!result.stdout) {
-      result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+      result = exec(`npm view ${this.name} ${npmProperties.join(' ')} ${this.registry.getRegistryParameter()} --json`, {
+        silent: true,
+      });
     }
     return result.stdout ? (JSON.parse(result.stdout) as NpmPackage) : null;
   }
@@ -263,7 +276,8 @@ export class Package extends AsyncOptionalCreatable {
     this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
-    this.npmPackage = this.retrieveNpmPackage() || this.createDefaultNpmPackage();
+    const npmPackage = this.retrieveNpmPackage();
+    this.npmPackage = npmPackage || this.createDefaultNpmPackage();
   }
 
   private createDefaultNpmPackage(): NpmPackage {

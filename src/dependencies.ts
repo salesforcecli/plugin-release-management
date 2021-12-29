@@ -6,6 +6,9 @@
  */
 import { Env } from '@salesforce/kit';
 import { OutputFlags } from '@oclif/parser';
+import Graph from 'graphology';
+import { SfdxError } from '@salesforce/core';
+import { dfs } from 'graphology-traversal';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Flags = OutputFlags<any>;
@@ -71,4 +74,53 @@ export function verifyDependencies(
   }
   const failures = results.filter((r) => r.passed === false).length;
   return { failures, results };
+}
+
+export function findCyclesInDependencyGraph(graph: Graph): Cycles {
+  if (graph.edges().some((e) => !graph.isDirected(e))) {
+    throw new SfdxError('All edges must be directed');
+  }
+  return cyclicGraphDetection(graph);
+}
+
+export type Cycle = {
+  between: {
+    nodeA: string;
+    nodeB: string;
+  };
+  cycleAsPath: string[];
+};
+
+export type Cycles = Cycle[];
+
+function cyclicGraphDetection(graph: Graph): Cycles {
+  let p: string[] = [];
+  let previousDepth = 0;
+  const cycles: Cycles = [];
+  const g = graph;
+  dfs(graph, function (node, attr, depth) {
+    // starting with a new top level node
+    if (depth === 0) {
+      p = [];
+    } else if (depth <= previousDepth) {
+      p = p.slice(0, depth);
+    }
+    p.push(node);
+    // find all previously visited nodes that have an outbound relationship to current node
+    const nodesWithCycles: string[] = p.filter((n) => g.areOutboundNeighbors(node, n));
+    cycles.push(
+      ...nodesWithCycles.map((nodeWithCycle) => {
+        const cycle: Cycle = {
+          between: {
+            nodeA: node,
+            nodeB: nodeWithCycle,
+          },
+          cycleAsPath: [...p.slice(p.indexOf(nodeWithCycle)), nodeWithCycle],
+        };
+        return cycle;
+      })
+    );
+    previousDepth = depth;
+  });
+  return cycles;
 }
