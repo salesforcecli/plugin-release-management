@@ -81,7 +81,7 @@
   {
     "command": "dependabot:automerge",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dryrun", "json", "loglevel", "max-version-bump", "owner", "repo", "skip-ci", "squash"]
+    "flags": ["dryrun", "json", "loglevel", "max-version-bump", "merge-method", "owner", "repo", "skip-ci"]
   },
   {
     "command": "dependabot:consolidate",

@@ -68,9 +68,10 @@ export default class AutoMerge extends SfdxCommand {
       char: 's',
       default: false,
     }),
-    squash: flags.boolean({
-      description: messages.getMessage('squash'),
-      default: false,
+    'merge-method': flags.enum({
+      description: messages.getMessage('mergeMethod'),
+      options: ['merge', 'squash', 'rebase'],
+      default: 'merge',
     }),
   };
 
@@ -126,13 +127,11 @@ export default class AutoMerge extends SfdxCommand {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
       const opts: octokitOpts = {
         ...this.baseRepoObject,
+        merge_method: this.flags.mergeMethod,
         pull_number: prToMerge.number,
       };
       if (this.flags['skip-ci']) {
         opts.commit_title = `Merge pull request #${prToMerge.number} from ${prToMerge.head.ref} [skip ci]`;
-      }
-      if (this.flags.squash) {
-        opts.merge_method = 'squash';
       }
       const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', opts);
       this.ux.logJson(mergeResult);
