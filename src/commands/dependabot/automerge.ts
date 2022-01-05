@@ -34,6 +34,15 @@ interface PullRequest {
     ref: string;
   };
 }
+
+type octokitOpts = {
+  owner: string;
+  repo: string;
+  pull_number: number;
+  commit_title?: string;
+  merge_method?: 'merge' | 'squash' | 'rebase';
+};
+
 export default class AutoMerge extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -58,6 +67,11 @@ export default class AutoMerge extends SfdxCommand {
       description: messages.getMessage('skipCi'),
       char: 's',
       default: false,
+    }),
+    'merge-method': flags.enum({
+      description: messages.getMessage('mergeMethod'),
+      options: ['merge', 'squash', 'rebase'],
+      default: 'merge',
     }),
   };
 
@@ -111,8 +125,9 @@ export default class AutoMerge extends SfdxCommand {
 
     if (this.flags.dryrun === false) {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
-      const opts: { owner: string; repo: string; pull_number: number; commit_title?: string } = {
+      const opts: octokitOpts = {
         ...this.baseRepoObject,
+        merge_method: this.flags.mergeMethod,
         pull_number: prToMerge.number,
       };
       if (this.flags['skip-ci']) {
