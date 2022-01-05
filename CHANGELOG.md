@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.8.3...v2.9.0) (2022-01-05)
+
+### Features
+
+- add --merge-method flag to automerge ([3371c1b](https://github.com/salesforcecli/plugin-release-management/commit/3371c1b4be1673088375c765b343c5dfb34f8331))
+- add --squash flag to automerge ([3493bf3](https://github.com/salesforcecli/plugin-release-management/commit/3493bf32198e0cc57e018b21a790b27c529b0fa2))
+
 ### [2.8.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.8.2...v2.8.3) (2021-12-14)
 
 ### Bug Fixes

@@ -113,7 +113,7 @@ sfdx plugins
 - [`sfdx cli:tarballs:smoke -c <string> [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballssmoke--c-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx cli:tarballs:verify [-c sf|sfdx] [-w <number>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballsverify--c-sfsfdx--w-number---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx cli:versions:inspect -c <string> -l <string> --cli sf|sfdx [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliversionsinspect--c-string--l-string---cli-sfsfdx--d-string--s---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-dependabotautomerge--m-majorminorpatch--r-string--o-string--d--s---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--merge-method merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-dependabotautomerge--m-majorminorpatch--r-string--o-string--d--s---merge-method-mergesquashrebase---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx dependabot:consolidate -m major|minor|patch -b <string> -t <string> [--ignore <array>] [-d] [--no-pr] [-r <string> -o <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-dependabotconsolidate--m-majorminorpatch--b-string--t-string---ignore-array--d---no-pr--r-string--o-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmdependenciespin--d--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx npm:lerna:release [-d] [-s <array>] [-t <string>] [-a <string>] [--install] [--githubrelease] [--verify] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmlernarelease--d--s-array--t-string--a-string---install---githubrelease---verify---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -541,14 +541,14 @@ EXAMPLES
 
 _See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/v2.8.3/src/commands/cli/versions/inspect.ts)_
 
-## `sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--merge-method merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 automatically merge one green, mergeable PR up to the specified maximum bump type
 
 ```
 USAGE
-  $ sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--json] [--loglevel
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx dependabot:automerge -m major|minor|patch [-r <string> -o <string>] [-d] [-s] [--merge-method
+  merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
   -d, --dryrun                                                                      only show what would happen if you
@@ -574,6 +574,8 @@ OPTIONS
 
   --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
                                                                                     this command invocation
+
+  --merge-method=(merge|squash|rebase)                                              [default: merge] merge method to use
 
 EXAMPLES
   sfdx dependabot:automerge --max-version-bump patch
