@@ -34,6 +34,15 @@ interface PullRequest {
     ref: string;
   };
 }
+
+type octokitOpts = {
+  owner: string;
+  repo: string;
+  pull_number: number;
+  commit_title?: string;
+  merge_method?: 'merge' | 'squash' | 'rebase';
+};
+
 export default class AutoMerge extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -57,6 +66,10 @@ export default class AutoMerge extends SfdxCommand {
     'skip-ci': flags.boolean({
       description: messages.getMessage('skipCi'),
       char: 's',
+      default: false,
+    }),
+    squash: flags.boolean({
+      description: messages.getMessage('squash'),
       default: false,
     }),
   };
@@ -111,12 +124,15 @@ export default class AutoMerge extends SfdxCommand {
 
     if (this.flags.dryrun === false) {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
-      const opts: { owner: string; repo: string; pull_number: number; commit_title?: string } = {
+      const opts: octokitOpts = {
         ...this.baseRepoObject,
         pull_number: prToMerge.number,
       };
       if (this.flags['skip-ci']) {
         opts.commit_title = `Merge pull request #${prToMerge.number} from ${prToMerge.head.ref} [skip ci]`;
+      }
+      if (this.flags.squash) {
+        opts.merge_method = 'squash';
       }
       const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', opts);
       this.ux.logJson(mergeResult);

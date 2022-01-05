@@ -1,6 +1,7 @@
 {
   "description": "automatically merge one green, mergeable PR up to the specified maximum bump type",
   "skipCi": "add [skip ci] to the merge commit title",
+  "squash": "squash the commits into one commit and merge it into the base branch",
   "examples": [
     "<%= config.bin %> <%= command.id %> --max-version-bump patch",
     "<%= config.bin %> <%= command.id %> --max-version-bump minor",
