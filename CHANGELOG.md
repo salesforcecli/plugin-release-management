@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.9.1...v2.10.0) (2022-01-06)
+
+### Features
+
+- optionally skip resolutions and pinnedDeps in latestrc build ([#406](https://github.com/salesforcecli/plugin-release-management/issues/406)) ([0fcf6ba](https://github.com/salesforcecli/plugin-release-management/commit/0fcf6ba23cd5e53d59ac579e42853fe15dee2d47))
+
 ### [2.9.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.9.0...v2.9.1) (2022-01-06)
 
 ### Bug Fixes
