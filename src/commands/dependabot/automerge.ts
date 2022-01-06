@@ -127,7 +127,7 @@ export default class AutoMerge extends SfdxCommand {
       this.ux.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
       const opts: octokitOpts = {
         ...this.baseRepoObject,
-        merge_method: this.flags.mergeMethod,
+        merge_method: this.flags['merge-method'],
         pull_number: prToMerge.number,
       };
       if (this.flags['skip-ci']) {
