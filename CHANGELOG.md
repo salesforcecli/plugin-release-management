@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.9.0...v2.9.1) (2022-01-06)
+
+### Bug Fixes
+
+- remove invalid flag reference for `merge-method` ([c8ab1fb](https://github.com/salesforcecli/plugin-release-management/commit/c8ab1fbe75317148e3033dc9cfa4f38997923a11))
+
 ## [2.9.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.8.3...v2.9.0) (2022-01-05)
 
 ### Features
