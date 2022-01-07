@@ -11,6 +11,7 @@ import { exec, pwd } from 'shelljs';
 import { fs, Logger, SfdxError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
 import { AnyJson, get, Nullable } from '@salesforce/ts-types';
+import { exec as execAsync } from 'promisify-child-process';
 import { Registry } from './registry';
 
 export type PackageJson = {
@@ -103,19 +104,22 @@ export class Package extends AsyncOptionalCreatable {
    * It'll first try to find the package with the version listed in the package.json
    * If that version doesn't exist, it'll find the version tagged as latest
    */
-  public retrieveNpmPackage(name?: string, version?: string, npmProperties = ['name', 'dist-tags']): NpmPackage {
-    let result = exec(
+  public async retrieveNpmPackage(
+    name?: string,
+    version?: string,
+    npmProperties = ['name', 'dist-tags']
+  ): Promise<NpmPackage> {
+    let result = await execAsync(
       `npm view ${name || this.name}@${version || this.packageJson.version} ${npmProperties.join(
         ' '
-      )} ${this.registry.getRegistryParameter()} --json`,
-      { silent: true }
+      )} ${this.registry.getRegistryParameter()} --json`
     );
     if (!result.stdout) {
-      result = exec(`npm view ${this.name} ${npmProperties.join(' ')} ${this.registry.getRegistryParameter()} --json`, {
-        silent: true,
-      });
+      result = await execAsync(
+        `npm view ${this.name} ${npmProperties.join(' ')} ${this.registry.getRegistryParameter()} --json`
+      );
     }
-    return result.stdout ? (JSON.parse(result.stdout) as NpmPackage) : null;
+    return result.stdout ? (JSON.parse(result.stdout.toString()) as NpmPackage) : null;
   }
 
   public validateNextVersion(): VersionValidation {
@@ -276,7 +280,7 @@ export class Package extends AsyncOptionalCreatable {
     this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
-    const npmPackage = this.retrieveNpmPackage();
+    const npmPackage = await this.retrieveNpmPackage();
     this.npmPackage = npmPackage || this.createDefaultNpmPackage();
   }
 

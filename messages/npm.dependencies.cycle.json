@@ -2,6 +2,7 @@
   "description": "locate any dependency cycles present in the list of npm modules",
   "flags": {
     "modules": "A list of npm module names to check fo dependency cycles",
+    "depth": "A number indicating how deep down the dependency chain the cycle check should go",
     "types": "List of dependency types to report cycle on",
     "errorOnCycles": "Cause this command to exit with non zero value",
     "pnhFilePath": "Save graph to a png with this name"

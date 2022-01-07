@@ -60,6 +60,7 @@ before(async function () {
 
 describe('circleci envvar create', () => {
   test
+    .skip()
     .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
     .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
     .stub(got, 'post', () => Promise.resolve())
