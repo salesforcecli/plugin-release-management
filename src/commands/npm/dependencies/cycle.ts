@@ -20,7 +20,6 @@ import {
 } from '../../../package';
 import { NpmName } from '../../../codeSigning/NpmName';
 import { findCyclesInDependencyGraph, Cycles as GraphCycles } from '../../../dependencies';
-import { graphToPng } from '../../../exportGraph';
 
 const nodeSize = 15;
 Messages.importMessagesDirectory(__dirname);
@@ -56,10 +55,6 @@ export default class Cycles extends SfdxCommand {
       description: messages.getMessage('flags.errorOnCycles'),
       default: true,
       allowNo: true,
-    }),
-    pngfilepath: flags.filepath({
-      char: 'f',
-      description: messages.getMessage('flags.pnhFilePath'),
     }),
   };
   protected static result = {
@@ -107,7 +102,6 @@ export default class Cycles extends SfdxCommand {
     });
     this.ux.setSpinnerStatus('Finding dependency cycles');
     const cycles = findCyclesInDependencyGraph(this.graph);
-    this.saveToPng(this.graph);
     this.ux.stopSpinner();
     if (this.flags.erroroncycles && cycles.length > 0) {
       process.exitCode = 1;
@@ -198,11 +192,5 @@ export default class Cycles extends SfdxCommand {
       .reduce((a, b) => {
         return Object.assign(a, b);
       }, {} as Record<string, string>);
-  }
-
-  private saveToPng(graph: Graph): void {
-    if (this.flags.pngfilepath) {
-      this.ux.setSpinnerStatus(`Save graph to file ${graphToPng(graph, this.flags.pngfilepath)}`);
-    }
   }
 }

@@ -102,7 +102,7 @@
   {
     "command": "npm:dependencies:cycle",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["depth", "erroroncycles", "json", "loglevel", "modules", "pngfilepath", "types"]
+    "flags": ["depth", "erroroncycles", "json", "loglevel", "modules", "types"]
   },
   {
     "command": "npm:dependencies:pin",

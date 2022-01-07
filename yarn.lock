@@ -4873,14 +4873,6 @@ graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
   integrity sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==
 
-graphology-canvas@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/graphology-canvas/-/graphology-canvas-0.4.0.tgz#eb4dc2d8f9899b8f7e38fe0109e68eb7fa423997"
-  integrity sha512-3J9fWvQkqJZqHgQloTAtMDEFcRPYwNAQxl2xHcAcUQmP3nsqM66q/eUZevmx2iGKtMiRA59YNuf/NNu+DGK2wA==
-  dependencies:
-    graphology-layout "0.5.0"
-    graphology-utils "^2.0.0"
-
 graphology-indices@^0.16.4:
   version "0.16.5"
   resolved "https://registry.yarnpkg.com/graphology-indices/-/graphology-indices-0.16.5.tgz#63bb60ff604930722aeea076c2aa11545a43cdd8"
@@ -4888,28 +4880,6 @@ graphology-indices@^0.16.4:
   dependencies:
     graphology-utils "^2.4.2"
     mnemonist "^0.39.0"
-
-graphology-layout-force@^0.2.3:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/graphology-layout-force/-/graphology-layout-force-0.2.4.tgz#a9b5f2aa5c7b56985503d302dbce4c73c76b9eb3"
-  integrity sha512-NYZz0YAnDkn5pkm30cvB0IScFoWGtbzJMrqaiH070dYlYJiag12Oc89dbVfaMaVR/w8DMIKxn/ix9Bqj+Umm9Q==
-  dependencies:
-    graphology-utils "^2.4.2"
-
-graphology-layout-forceatlas2@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/graphology-layout-forceatlas2/-/graphology-layout-forceatlas2-0.8.1.tgz#bb6f34f5181616bb25ea7a8adec73c79aef2aa8d"
-  integrity sha512-lAm9T0uBxhECZTVyYDMMnPi3l7h5kG2+7yfxqoT9wpgF/omComGc6vR9wmQqClQjSXiM3OU4frO4j2Il5E72Xg==
-  dependencies:
-    graphology-utils "^2.1.0"
-
-graphology-layout@0.5.0, graphology-layout@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/graphology-layout/-/graphology-layout-0.5.0.tgz#a0a54861cebae5f486c778dbdafc6294859f23b5"
-  integrity sha512-aIeXYPLeGMLvXIkO41TlhBv0ROFWUx1bqR2VQoJ7Mp2IW+TF+rxqMeRUrmyLHoe3HtKo8jhloB2KHp7g6fcDSg==
-  dependencies:
-    graphology-utils "^2.3.0"
-    pandemonium "^1.5.0"
 
 graphology-traversal@^0.3.0:
   version "0.3.0"
@@ -4924,7 +4894,7 @@ graphology-types@^0.23.0:
   resolved "https://registry.yarnpkg.com/graphology-types/-/graphology-types-0.23.0.tgz#76a0564baf31891044a7b0cc6cd028810541bb7a"
   integrity sha512-6Je1NWU3el7YmybAhRzrOEi79Blhx05EU3wGUCvP5ikaxRXEflrW/5unfw5q/wqfwjryM9tcwUv4M7TZ8yTBYQ==
 
-graphology-utils@^2.0.0, graphology-utils@^2.1.0, graphology-utils@^2.3.0, graphology-utils@^2.4.2:
+graphology-utils@^2.0.0, graphology-utils@^2.4.2:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/graphology-utils/-/graphology-utils-2.5.0.tgz#ccb0ec8231e4de403ed7a385644c911e40bc4833"
   integrity sha512-TmuBAoM1rZxWo3Wd7qC2Rhnu3KZwq8pWNgjWCFKubn3pt3a1Vh/k3CJaFw4G7k6Mvb6aSdWVYJnlGNThMl+bAQ==
@@ -7823,11 +7793,6 @@ paged-request@^2.0.1:
   integrity sha512-NWrGqneZImDdcMU/7vMcAOo1bIi5h/pmpJqe7/jdsy85BA/s5MSaU/KlpxwW/IVPmIwBcq2uKPrBWWhEWhtxag==
   dependencies:
     axios "^0.21.1"
-
-pandemonium@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/pandemonium/-/pandemonium-1.5.0.tgz#93f35af555de1420022b341e730215c51c725be3"
-  integrity sha512-9PU9fy93rJhZHLMjX+4M1RwZPEYl6g7DdWKGmGNhkgBZR5+tOBVExNZc00kzdEGMxbaAvWdQy9MqGAScGwYlcA==
 
 parent-module@^1.0.0:
   version "1.0.1"
