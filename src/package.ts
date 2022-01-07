@@ -104,7 +104,25 @@ export class Package extends AsyncOptionalCreatable {
    * It'll first try to find the package with the version listed in the package.json
    * If that version doesn't exist, it'll find the version tagged as latest
    */
-  public async retrieveNpmPackage(
+  public retrieveNpmPackage(name?: string, version?: string, npmProperties = ['name', 'dist-tags']): NpmPackage {
+    let result = exec(
+      `npm view ${name || this.name}@${version || this.packageJson.version} ${npmProperties.join(
+        ' '
+      )} ${this.registry.getRegistryParameter()} --json`
+    );
+    if (!result.stdout) {
+      result = exec(`npm view ${this.name} ${npmProperties.join(' ')} ${this.registry.getRegistryParameter()} --json`);
+    }
+    return result.stdout ? (JSON.parse(result.stdout.toString()) as NpmPackage) : null;
+  }
+
+  /**
+   * Retrieve the npm package info using `npm view`
+   *
+   * It'll first try to find the package with the version listed in the package.json
+   * If that version doesn't exist, it'll find the version tagged as latest
+   */
+  public async retrieveNpmPackageAsync(
     name?: string,
     version?: string,
     npmProperties = ['name', 'dist-tags']
@@ -280,7 +298,7 @@ export class Package extends AsyncOptionalCreatable {
     this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
-    const npmPackage = await this.retrieveNpmPackage();
+    const npmPackage = this.retrieveNpmPackage();
     this.npmPackage = npmPackage || this.createDefaultNpmPackage();
   }
 

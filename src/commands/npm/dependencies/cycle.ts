@@ -125,8 +125,6 @@ export default class Cycles extends SfdxCommand {
       await Promise.all(
         modules.map(async (module) => {
           this.ux.setSpinnerStatus(module);
-          // eslint-disable-next-line no-console
-          console.log(`processing module ${module}`);
           // make package for requested module
           const modulePackage = await this.makePackageFromModule(module);
           // for each dep, create module name that contains exact version
@@ -164,7 +162,7 @@ export default class Cycles extends SfdxCommand {
       const npmName = NpmName.parse(module);
       if (this.packagesVisited.has(npmName.toString())) return this.packagesVisited.get(npmName.toString());
       pkg = new Package(npmName.toString());
-      npmPackage = await pkg.retrieveNpmPackage(npmName.toString(), npmName.tag, [
+      npmPackage = await pkg.retrieveNpmPackageAsync(npmName.toString(), npmName.tag, [
         'version',
         'name',
         'dist-tags',
