@@ -23,6 +23,16 @@ export default class build extends SfdxCommand {
       description: messages.getMessage('flags.rctag'),
       default: 'latest-rc',
     }),
+    resolutions: flags.boolean({
+      description: messages.getMessage('flags.resolutions'),
+      default: true,
+      allowNo: true,
+    }),
+    'pinned-deps': flags.boolean({
+      description: messages.getMessage('flags.pinnedDeps'),
+      default: true,
+      allowNo: true,
+    }),
   };
 
   public async run(): Promise<void> {
@@ -51,12 +61,17 @@ export default class build extends SfdxCommand {
     repo.package.packageJson.version = nextRCVersion;
 
     // bump resolution deps
-    this.ux.log('bumping resolutions in the package.json to their "latest"');
-    repo.package.bumpResolutions('latest');
+    if (this.flags.resolutions) {
+      this.ux.log('bumping resolutions in the package.json to their "latest"');
+      repo.package.bumpResolutions('latest');
+    }
 
     // pin the pinned dependencies
-    this.ux.log('pinning dependencies in pinnedDependencies to "latest-rc"');
-    repo.package.pinDependencyVersions('latest-rc');
+    if (this.flags['pinned-deps']) {
+      this.ux.log('pinning dependencies in pinnedDependencies to "latest-rc"');
+      repo.package.pinDependencyVersions('latest-rc');
+    }
+
     repo.package.writePackageJson();
 
     this.exec('yarn install');

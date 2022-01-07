@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.9.1...v2.10.0) (2022-01-06)
+
+### Features
+
+- optionally skip resolutions and pinnedDeps in latestrc build ([#406](https://github.com/salesforcecli/plugin-release-management/issues/406)) ([0fcf6ba](https://github.com/salesforcecli/plugin-release-management/commit/0fcf6ba23cd5e53d59ac579e42853fe15dee2d47))
+
+### [2.9.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.9.0...v2.9.1) (2022-01-06)
+
+### Bug Fixes
+
+- remove invalid flag reference for `merge-method` ([c8ab1fb](https://github.com/salesforcecli/plugin-release-management/commit/c8ab1fbe75317148e3033dc9cfa4f38997923a11))
+
+## [2.9.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.8.3...v2.9.0) (2022-01-05)
+
+### Features
+
+- add --merge-method flag to automerge ([3371c1b](https://github.com/salesforcecli/plugin-release-management/commit/3371c1b4be1673088375c765b343c5dfb34f8331))
+- add --squash flag to automerge ([3493bf3](https://github.com/salesforcecli/plugin-release-management/commit/3493bf32198e0cc57e018b21a790b27c529b0fa2))
+
 ### [2.8.3](https://github.com/salesforcecli/plugin-release-management/compare/v2.8.2...v2.8.3) (2021-12-14)
 
 ### Bug Fixes
