@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.10.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.10.1...v2.10.2) (2022-01-10)
+
+### Bug Fixes
+
+- handle no existing versions when validating next version ([40f7d7d](https://github.com/salesforcecli/plugin-release-management/commit/40f7d7d325315b4c365f1204e73e94c8fbc0a3b7))
+
 ### [2.10.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.10.0...v2.10.1) (2022-01-10)
 
 ### Bug Fixes
