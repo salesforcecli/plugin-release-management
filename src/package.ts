@@ -252,7 +252,7 @@ export class Package extends AsyncOptionalCreatable {
    * published to the registry
    */
   public nextVersionIsHardcoded(): boolean {
-    return !this.npmPackage.versions.includes(this.packageJson.version);
+    return !(this.npmPackage.versions ?? []).includes(this.packageJson.version);
   }
 
   public hasScript(scriptName: string): boolean {
