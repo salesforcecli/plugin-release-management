@@ -106,12 +106,13 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public validateNextVersion(): VersionValidation {
-    const nextVersionExists = this.npmPackage.versions.includes(this.nextVersion);
+    const nextVersionExists = (this.npmPackage.versions ?? []).includes(this.nextVersion);
+    const currentVersion = this.npmPackage.version ?? null;
     if (!nextVersionExists) {
       this.logger.debug(`${this.npmPackage.name}@${this.nextVersion} does not exist in the registry. Proceeding...`);
       return {
         nextVersion: this.nextVersion,
-        currentVersion: this.npmPackage.version,
+        currentVersion,
         valid: true,
         name: this.name,
       };
@@ -119,7 +120,7 @@ export class Package extends AsyncOptionalCreatable {
       this.logger.debug(`${this.npmPackage.name}@${this.nextVersion} already exists in the registry. Exiting...`);
       return {
         nextVersion: this.nextVersion,
-        currentVersion: this.npmPackage.version,
+        currentVersion,
         valid: false,
         name: this.name,
       };
