@@ -9,5 +9,6 @@
   ],
   "cliFlag": "the cli to install",
   "methodFlag": "the installation method to use",
-  "channelFlag": "the channel to install from"
+  "channelFlag": "the channel to install from",
+  "outputFileFlag": "the file to write the JSON results to (must be .json)"
 }

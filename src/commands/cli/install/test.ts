@@ -7,13 +7,13 @@
 
 import * as path from 'path';
 import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand, UX } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
-import { ensure, Nullable } from '@salesforce/ts-types';
-import got from 'got';
 import { exec } from 'shelljs';
+import { cli as cliUx } from 'cli-ux';
+import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { fs, Messages } from '@salesforce/core';
+import { ensure } from '@salesforce/ts-types';
+import got from 'got';
 import * as chalk from 'chalk';
-import stripAnsi = require('strip-ansi');
 import { Channel, CLI, ServiceAvailability } from '../../../types';
 import { AmazonS3 } from '../../../amazonS3';
 
@@ -42,13 +42,19 @@ namespace Method {
       [CLI.SFDX]: [CLI.SFDX, CLI.SF],
     };
 
-    public constructor(protected options: Method.Options, protected logger: Logger) {}
+    public constructor(protected options: Method.Options) {}
 
     public async execute(): Promise<Results> {
       const { service, available } = await this.ping();
       if (!available) {
-        this.logger.warn(`${service} is not currently available. Unable to run installation tests...`);
-        return {};
+        cliUx.warn(`${service} is not currently available.`);
+        const results: Results = {
+          [this.options.method]: {} as Record<CLI, boolean>,
+        };
+        for (const cli of this.getTargets()) {
+          results[this.options.method][cli] = false;
+        }
+        return results;
       }
       switch (process.platform) {
         case 'darwin': {
@@ -72,7 +78,7 @@ namespace Method {
 
     protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
-      this.logger.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
+      cliUx.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
     }
 
     protected getTargets(): CLI[] {
@@ -100,9 +106,9 @@ class Tarball extends Method.Base {
     'linux-arm': ['arm.tar.gz', 'arm.tar.xz'],
   };
 
-  public constructor(protected options: Method.Options, protected logger: Logger) {
-    super(options, logger);
-    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux: logger.ux });
+  public constructor(protected options: Method.Options) {
+    super(options);
+    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel });
   }
 
   public async darwin(): Promise<Results> {
@@ -134,11 +140,12 @@ class Tarball extends Method.Base {
         }
         results[tarball] = testResults;
       } catch {
+        results[tarball] = {} as Record<CLI, boolean>;
         for (const cli of this.getTargets()) {
           results[tarball][cli] = false;
         }
       }
-      this.logger.log();
+      cliUx.log();
     }
     return results;
   }
@@ -160,27 +167,25 @@ class Tarball extends Method.Base {
   }
 
   private async extract(file: string): Promise<string> {
-    const dir = path.join(this.options.directory, path.basename(file).replace(/./g, '-'));
+    const dir = path.join(this.options.directory, path.basename(file).replace(/\./g, '-'));
     await fs.mkdirp(dir);
     return new Promise((resolve, reject) => {
-      this.logger.ux.startSpinner(`Unpacking ${chalk.cyan(path.basename(file))}`);
+      cliUx.action.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
       const cmd =
         process.platform === 'win32'
           ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
           : `tar -xf ${file} -C ${dir} --strip-components 1`;
-      const opts =
-        process.platform === 'win32'
-          ? { silent: true, async: true, shell: 'powershell.exe' }
-          : { silent: true, async: true };
-      exec(cmd, opts, (code: number, stdout: string, stderr: string) => {
+      const opts = process.platform === 'win32' ? { shell: 'powershell.exe' } : {};
+      exec(cmd, { ...opts, silent: true }, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
-          this.logger.ux.stopSpinner();
+          cliUx.action.stop();
+          cliUx.log(stdout);
           resolve(dir);
         } else {
-          this.logger.ux.stopSpinner('Failed');
-          this.logger.log('code:', code.toString());
-          this.logger.log('stdout:', stdout);
-          this.logger.log('stderr:', stderr);
+          cliUx.action.stop('Failed');
+          cliUx.log(`code: ${code}`);
+          cliUx.log('stdout:', stdout);
+          cliUx.log('stderr:', stderr);
           reject();
         }
       });
@@ -191,12 +196,9 @@ class Tarball extends Method.Base {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
       const executable = path.join(directory, 'bin', cli);
-      this.logger.log(`Testing ${chalk.cyan(executable)}`);
+      cliUx.log(`Testing ${chalk.cyan(executable)}`);
       const result =
-        process.platform === 'win32'
-          ? exec(`& "${executable}.cmd" --version`, { silent: true, shell: 'powershell.exe' })
-          : exec(`${executable} --version`, { silent: true });
-      this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+        process.platform === 'win32' ? exec(`cmd /c "${executable}.cmd" --version`) : exec(`${executable} --version`);
       results[cli] = result.code === 0;
     }
     return results;
@@ -207,8 +209,8 @@ class Npm extends Method.Base {
   private static STATUS_URL = 'https://status.npmjs.org/api/v2/status.json';
   private package: string;
 
-  public constructor(protected options: Method.Options, protected logger: Logger) {
-    super(options, logger);
+  public constructor(protected options: Method.Options) {
+    super(options);
     const name = options.cli === CLI.SF ? '@salesforce/cli' : 'sfdx-cli';
     const tag = options.channel === Channel.STABLE ? 'latest' : 'latest-rc';
     this.package = `${name}@${tag}`;
@@ -248,19 +250,22 @@ class Npm extends Method.Base {
     for (const [cli, success] of Object.entries(testResults)) {
       this.logResult(cli as CLI, success);
     }
-    this.logger.log();
+    cliUx.log();
     return { [this.package]: testResults };
   }
 
   private async install(): Promise<void> {
-    this.logger.ux.startSpinner(`Installing: ${chalk.cyan(this.package)}`);
+    cliUx.action.start(`Installing: ${chalk.cyan(this.package)}`);
     return new Promise((resolve, reject) => {
-      exec(`npm install ${this.package}`, { silent: true, cwd: this.options.directory, async: true }, (code) => {
+      exec(`npm install ${this.package}`, { silent: true, cwd: this.options.directory }, (code, stdout, stderr) => {
         if (code === 0) {
-          this.logger.ux.stopSpinner();
+          cliUx.action.stop();
+          cliUx.log(stdout);
           resolve();
         } else {
-          this.logger.ux.stopSpinner('Failed');
+          cliUx.action.stop('Failed');
+          cliUx.log(stdout);
+          cliUx.log(stderr);
           reject();
         }
       });
@@ -270,13 +275,10 @@ class Npm extends Method.Base {
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
     const executable = path.join(this.options.directory, 'node_modules', '.bin', this.options.cli);
-    this.logger.log(`Testing ${chalk.cyan(executable)}`);
+    cliUx.log(`Testing ${chalk.cyan(executable)}`);
 
     const result =
-      process.platform === 'win32'
-        ? exec(`& "${executable}" --version`, { silent: true, shell: 'powershell.exe' })
-        : exec(`${executable} --version`, { silent: true });
-    this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
+      process.platform === 'win32' ? exec(`cmd /c "${executable}" --version`) : exec(`${executable} --version`);
     results[this.options.cli] = result.code === 0;
     return results;
   }
@@ -285,9 +287,9 @@ class Npm extends Method.Base {
 class Installer extends Method.Base {
   private s3: AmazonS3;
 
-  public constructor(protected options: Method.Options, protected logger: Logger) {
-    super(options, logger);
-    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel, ux: logger.ux });
+  public constructor(protected options: Method.Options) {
+    super(options);
+    this.s3 = new AmazonS3({ cli: options.cli, channel: options.channel });
   }
 
   public async darwin(): Promise<Results> {
@@ -295,18 +297,23 @@ class Installer extends Method.Base {
     const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
     await this.s3.download(url, location);
-    const result = exec(`sudo installer -pkg ${location} -target /`, { silent: true });
-
+    const result = exec(`sudo installer -pkg ${location} -target /`);
+    const results: Results = {};
     if (result.code === 0) {
-      const success = this.nixTest();
-      this.logResult(this.options.cli, success);
-      this.logger.log();
-      return { [url]: { [this.options.cli]: success } } as Results;
+      const testResults = this.nixTest();
+      for (const [cli, success] of Object.entries(testResults)) {
+        this.logResult(cli as CLI, success);
+      }
+      results[url] = testResults;
     } else {
-      this.logResult(this.options.cli, false);
-      this.logger.log();
-      return { [url]: { [this.options.cli]: false } } as Results;
+      results[url] = {} as Record<CLI, boolean>;
+      for (const cli of this.getTargets()) {
+        this.logResult(this.options.cli, false);
+        results[url][cli] = false;
+      }
     }
+    cliUx.log();
+    return results;
   }
 
   public async win32(): Promise<Results> {
@@ -318,18 +325,20 @@ class Installer extends Method.Base {
       await this.s3.download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
-      this.logger.log(`Installing ${chalk.cyan(exe)}...`);
-      const result = exec(cmd, { silent: true, shell: 'powershell.exe' });
-
+      cliUx.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
+      const result = exec(cmd, { shell: 'powershell.exe' });
       if (result.code === 0) {
-        const success = this.win32Test(installLocation);
-        this.logResult(this.options.cli, success);
-        this.logger.log();
-        return { [url]: { [this.options.cli]: success } } as Results;
+        const testResults = this.win32Test(installLocation);
+        for (const [cli, success] of Object.entries(testResults)) {
+          this.logResult(cli as CLI, success);
+        }
+        results[url] = testResults;
       } else {
-        this.logResult(this.options.cli, false);
-        this.logger.log();
-        return { [url]: { [this.options.cli]: false } } as Results;
+        results[url] = {} as Record<CLI, boolean>;
+        for (const cli of this.getTargets()) {
+          this.logResult(this.options.cli, false);
+          results[url][cli] = false;
+        }
       }
     }
 
@@ -345,41 +354,29 @@ class Installer extends Method.Base {
     return this.s3.ping();
   }
 
-  private win32Test(installLocation: string): boolean {
-    const binaryPath = path.join(installLocation, 'bin', `${this.options.cli}.cmd`);
-    this.logger.log(`Testing ${chalk.cyan(binaryPath)}`);
-    const execOptions = { silent: true, shell: 'powershell.exe' };
-    const result = exec(`& "${binaryPath}" --version`, execOptions);
-    const version = (result.stdout ?? result.stderr).replace(/\n*$/, '');
-    this.logger.log(chalk.dim(version));
-    if (result.code === 0) {
-      return binaryPath.includes('x86') ? version.includes('win32-x86') : version.includes('win32-x64');
-    } else {
-      return false;
+  private win32Test(installLocation: string): Record<CLI, boolean> {
+    const results = {} as Record<CLI, boolean>;
+    for (const cli of this.getTargets()) {
+      const binaryPath = path.join(installLocation, 'bin', `${cli}.cmd`);
+      cliUx.log(`Testing ${chalk.cyan(binaryPath)}`);
+      const result = exec(`cmd /c "${binaryPath}" --version`);
+      results[cli] =
+        result.code === 0 && binaryPath.includes('x86')
+          ? result.stdout.includes('win32-x86')
+          : result.stdout.includes('win32-x64');
     }
+    return results;
   }
 
-  private nixTest(): boolean {
-    const binaryPath = `/usr/local/bin/${this.options.cli}`;
-    this.logger.log(`Testing ${chalk.cyan(binaryPath)}`);
-    const result = exec(`${binaryPath} --version`, { silent: true });
-    this.logger.log(chalk.dim((result.stdout ?? result.stderr).replace(/\n*$/, '')));
-    return result.code === 0;
-  }
-}
-
-class Logger {
-  public logs: string[] = [];
-  public constructor(public ux: UX) {}
-
-  public log(...args: string[]): void {
-    this.logs.push(...args.map((a) => stripAnsi(a)));
-    this.ux.log(...args);
-  }
-
-  public warn(msg?: Nullable<string>): void {
-    this.logs.push(stripAnsi(msg));
-    this.ux.warn(msg);
+  private nixTest(): Record<CLI, boolean> {
+    const results = {} as Record<CLI, boolean>;
+    for (const cli of this.getTargets()) {
+      const binaryPath = `/usr/local/bin/${cli}`;
+      cliUx.log(`Testing ${chalk.cyan(binaryPath)}`);
+      const result = exec(`${binaryPath} --version`);
+      results[cli] = result.code === 0;
+    }
+    return results;
   }
 }
 
@@ -404,44 +401,50 @@ export default class Test extends SfdxCommand {
       options: Object.values(Channel),
       default: 'stable',
     }),
+    'output-file': flags.string({
+      description: messages.getMessage('outputFileFlag'),
+      default: 'test-results.json',
+    }),
   };
 
-  public async run(): Promise<{ results: Results; logs: string[] }> {
+  public async run(): Promise<void> {
     const cli = ensure<CLI>(this.flags.cli);
     const method = ensure<Method.Type>(this.flags.method);
     const channel = ensure<Channel>(this.flags.channel);
+    const outputFile = ensure<string>(this.flags['output-file']);
     const directory = await this.makeWorkingDir(cli, channel, method);
-    const logger = new Logger(this.ux);
 
-    logger.log(`Working Directory: ${directory}`);
-    logger.log();
+    cliUx.log(`Working Directory: ${directory}`);
+    cliUx.log();
 
     let results: Results = {};
     switch (method) {
       case 'tarball': {
-        const tarball = new Tarball({ cli, channel, directory, method }, logger);
+        const tarball = new Tarball({ cli, channel, directory, method });
         results = await tarball.execute();
         break;
       }
       case 'npm': {
-        const npm = new Npm({ cli, channel, directory, method }, logger);
+        const npm = new Npm({ cli, channel, directory, method });
         results = await npm.execute();
         break;
       }
       case 'installer': {
-        const installer = new Installer({ cli, channel, directory, method }, logger);
+        const installer = new Installer({ cli, channel, directory, method });
         results = await installer.execute();
         break;
       }
       default:
         break;
     }
-
     const hasFailures = Object.values(results)
       .flatMap(Object.values)
       .some((r) => !r);
     if (hasFailures) process.exitCode = 1;
-    return { results, logs: logger.logs };
+
+    await fs.writeJson(outputFile, { status: process.exitCode ?? 0, results });
+    cliUx.styledJSON(results);
+    cliUx.log(`Results written to ${outputFile}`);
   }
 
   private async makeWorkingDir(cli: CLI, channel: Channel, method: Method.Type): Promise<string> {
