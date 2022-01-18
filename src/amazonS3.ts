@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
-import { UX } from '@salesforce/command';
+import { cli } from 'cli-ux';
 import got, { Agents } from 'got';
 import { SfdxError } from '@salesforce/core';
 import * as chalk from 'chalk';
@@ -29,7 +29,6 @@ export type AmazonS3Options = {
   bucket?: string;
   cli?: CLI;
   channel?: Channel;
-  ux?: UX;
   baseUrl?: string;
   credentials?: CredentialsOptions;
   baseKey?: string;
@@ -41,10 +40,8 @@ export class AmazonS3 {
   public directory: string;
   private s3: S3;
   private baseKey: string;
-  private ux: UX;
 
   public constructor(private options: AmazonS3Options) {
-    this.ux = this.options.ux;
     this.directory = `https://developer.salesforce.com/media/salesforce-cli/${this.options.cli || ''}`;
     this.baseKey = this.directory.replace(BASE_URL, '').replace(/^\//, '');
     const agent = api.getAgentForUri('https://s3.amazonaws.com') as Agents;
@@ -64,24 +61,24 @@ export class AmazonS3 {
     return { service: 'file', name: url, available: statusCode >= 200 && statusCode < 300 };
   }
 
-  public async download(url: string, location: string): Promise<void> {
+  public async download(url: string, location: string, silent = false): Promise<void> {
     const downloadStream = got.stream(url);
     const fileWriterStream = fs.createWriteStream(location);
     return new Promise((resolve) => {
       downloadStream.on('error', (error) => {
-        this.ux?.error(`Download failed: ${error.message}`);
+        if (!silent) cli.error(`Download failed: ${error.message}`);
       });
 
       fileWriterStream
         .on('error', (error) => {
-          this.ux?.stopSpinner('Failed');
-          this.ux?.error(`Could not write file to system: ${error.message}`);
+          if (!silent) cli.action.stop('Failed');
+          if (!silent) cli.error(`Could not write file to system: ${error.message}`);
         })
         .on('finish', () => {
-          this.ux?.stopSpinner();
+          if (!silent) cli.action.stop();
           resolve();
         });
-      this.ux?.startSpinner(`Downloading ${chalk.cyan(url)}`);
+      if (!silent) cli.action.start(`Downloading ${chalk.cyan(url)}`);
       downloadStream.pipe(fileWriterStream);
     });
   }
@@ -102,7 +99,7 @@ export class AmazonS3 {
     const availability = await this.fileIsAvailable(url);
     if (availability.available) {
       const filename = path.join(os.tmpdir(), `file${Math.random()}`);
-      await this.download(url, filename);
+      await this.download(url, filename, true);
       return filename;
     } else {
       throw new SfdxError(`File at url: ${url} does not exist`);
