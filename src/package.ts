@@ -160,14 +160,16 @@ export class Package extends AsyncOptionalCreatable {
     });
   }
 
-  public getNextRCVersion(tag: string): string {
+  public getNextRCVersion(tag: string, isPatch = false): string {
     const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
     const versions = JSON.parse(result.stdout) as Record<string, string>;
 
     const version = semver.parse(versions[tag]);
-    return `${version.major}.${version.minor + 1}.0`;
+    return isPatch
+      ? `${version.major}.${version.minor}.${version.patch + 1}`
+      : `${version.major}.${version.minor + 1}.0`;
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
