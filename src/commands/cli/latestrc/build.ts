@@ -48,7 +48,7 @@ export default class build extends SfdxCommand {
     // get the current version and implement the patch version for a default rc build
     const repo = await SinglePackageRepo.create({ ux: this.ux });
 
-    const nextRCVersion = repo.package.getNextRCVersion(this.flags.rctag, this.flags.path);
+    const nextRCVersion = repo.package.getNextRCVersion(this.flags.rctag, this.flags.patch);
     repo.nextVersion = nextRCVersion;
 
     this.ux.log(`starting on main and will checkout ${repo.nextVersion}`);
