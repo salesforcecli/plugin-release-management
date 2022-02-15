@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.11.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.11.0...v2.11.1) (2022-02-15)
+
+### Bug Fixes
+
+- bump oclif to v2 ([#432](https://github.com/salesforcecli/plugin-release-management/issues/432)) ([8f5bf11](https://github.com/salesforcecli/plugin-release-management/commit/8f5bf11ff7cb2955aa575a2623291cac2f7ba26d))
+
 ## [2.11.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.10.3...v2.11.0) (2022-02-01)
 
 ### Features
