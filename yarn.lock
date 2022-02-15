@@ -1895,14 +1895,14 @@ aws-sdk-mock@^5.4.0:
     traverse "^0.6.6"
 
 aws-sdk@^2.1043.0, aws-sdk@^2.928.0:
-  version "2.1049.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1049.0.tgz#8146dcdf3a1ab603e50ff961169ee8abc537d48e"
-  integrity sha512-+wls9iNlotMeoZepwgR0yPzXsjXzr2ijoi5ERmsPWfMTFMHkm6INndBtSkm6fpu/NZnl+7EaPPES2yhaqnhoJg==
+  version "2.1074.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1074.0.tgz#be3283f781b3060cd67d5abef50d1edacefede70"
+  integrity sha512-tD478mkukglutjs+mq5FQmYFzz+l/wddl5u3tTMWTNa+j1eSL+AqaHPFM1rC3O9h98QqpKKzeKbLrPhGDvYaRg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
     ieee754 "1.1.13"
-    jmespath "0.15.0"
+    jmespath "0.16.0"
     querystring "0.2.0"
     sax "1.2.1"
     url "0.10.3"
@@ -5723,10 +5723,10 @@ jake@^10.6.1:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-jmespath@0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
-  integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
+jmespath@0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.16.0.tgz#b15b0a85dfd4d930d43e69ed605943c802785076"
+  integrity sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==
 
 js-tokens@^4.0.0:
   version "4.0.0"
