@@ -25,7 +25,7 @@
     "fast-glob": "^3.2.7",
     "glob": "^7.2.0",
     "got": "^11.8.3",
-    "oclif": "^1.18.2",
+    "oclif": "^2.4.4",
     "proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.1.0",
     "semver": "^7.3.5",

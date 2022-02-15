@@ -52,7 +52,7 @@ describe('pluginCommand', () => {
       oclifCommand.runPluginCmd({ command: 'foobarbaz', parameters: ['--help'] });
       expect.fail('should have thrown exception');
     } catch (error) {
-      expect(error.message).to.match(/command foobarbaz not found/);
+      expect(error.message).to.match(/Command foobarbaz not found/);
     }
   });
   it('should fail command oclif promote with invalid params', async () => {
