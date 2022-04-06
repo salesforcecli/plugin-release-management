@@ -293,7 +293,8 @@ class Installer extends Method.Base {
   }
 
   public async darwin(): Promise<Results> {
-    const pkg = `${this.options.cli}.pkg`;
+    // TODO: Add test for ...-arm64.pkg when we have a way to test on M1 machines in CircleCI.
+    const pkg = `${this.options.cli}-x64.pkg`;
     const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
     await this.s3.download(url, location);
