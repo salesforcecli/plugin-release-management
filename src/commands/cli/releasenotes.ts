@@ -13,8 +13,9 @@ import { Octokit } from '@octokit/core';
 import { bold, cyan, dim } from 'chalk';
 import { Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
+import * as semver from 'semver';
 import { CLI } from '../../types';
-import { NpmPackage, parseAliasedPackageName } from '../../package';
+import { NpmPackage, parseAliasedPackageName, parseAliasedPackageVersion } from '../../package';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
@@ -30,6 +31,18 @@ export type Change = {
 };
 
 export type ChangesByPlugin = Record<string, Change[]>;
+
+type Differences = {
+  removed: Record<string, string>;
+  added: Record<string, string>;
+  upgraded: Record<string, string>;
+  downgraded: Record<string, string>;
+  unchanged: Record<string, string>;
+};
+
+function isNotEmpty(obj: Record<string, unknown>): boolean {
+  return Object.keys(obj).length > 0;
+}
 
 export default class ReleaseNotes extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -59,15 +72,52 @@ export default class ReleaseNotes extends SfdxCommand {
     this.octokit = new Octokit({ auth });
     const cli = ensure<CLI>(this.flags.cli);
     const fullName = cli === CLI.SF ? '@salesforce/cli' : 'sfdx-cli';
-    const npmPackage = this.getNpmPackage(fullName, this.flags.since ?? 'latest-rc');
-    const publishDate = npmPackage.time[npmPackage.version];
-    const plugins = this.normalizePlugins(npmPackage);
+
+    const npmPackage = this.getNpmPackage(fullName, this.flags.since ?? 'latest');
+    const latestrc = this.getNpmPackage(fullName, 'latest-rc');
+
+    const oldPlugins = this.normalizePlugins(npmPackage);
+    const newPlugins = this.normalizePlugins(latestrc);
+
+    const differences = this.findDifferences(oldPlugins, newPlugins);
+
+    if (isNotEmpty(differences.upgraded)) {
+      this.ux.styledHeader('Upgraded Plugins');
+      for (const [plugin, version] of Object.entries(differences.upgraded)) {
+        this.ux.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
+      }
+    }
+
+    if (isNotEmpty(differences.downgraded)) {
+      this.ux.styledHeader('Downgraded Plugins');
+      for (const [plugin, version] of Object.entries(differences.downgraded)) {
+        this.ux.log(`• ${plugin} ${version} => ${oldPlugins[plugin]}`);
+      }
+    }
+
+    if (isNotEmpty(differences.added)) {
+      this.ux.styledHeader('Added Plugins');
+      for (const [plugin, version] of Object.entries(differences.added)) {
+        this.ux.log(`• ${plugin} ${version}`);
+      }
+    }
+
+    if (isNotEmpty(differences.removed)) {
+      this.ux.styledHeader('Removed Plugins');
+      for (const [plugin, version] of Object.entries(differences.removed)) {
+        this.ux.log(`• ${plugin} ${version}`);
+      }
+    }
+
     const changesByPlugin: ChangesByPlugin = {};
-    for (const plugin of plugins) {
+    for (const [plugin] of Object.entries(differences.upgraded)) {
+      const pkg = this.getNpmPackage(plugin, oldPlugins[plugin]);
+      const publishDate = pkg.time[pkg.version];
       const changes = await this.getPullsForPlugin(plugin, publishDate);
       if (changes.length) changesByPlugin[plugin] = changes;
     }
 
+    this.ux.log();
     if (this.flags.markdown) {
       this.logChangesMarkdown(changesByPlugin);
     } else {
@@ -82,17 +132,41 @@ export default class ReleaseNotes extends SfdxCommand {
     return JSON.parse(result.stdout) as NpmPackage;
   }
 
-  private normalizePlugins(npmPackage: NpmPackage): string[] {
+  private normalizePlugins(npmPackage: NpmPackage): Record<string, string> {
     const plugins = npmPackage.oclif?.plugins ?? [];
-    const normalized = plugins
-      .filter((p) => !p.startsWith('@oclif'))
-      .map((p) => {
-        if (npmPackage.dependencies[p].startsWith('npm:')) {
-          return parseAliasedPackageName(npmPackage.dependencies[p]);
-        }
-        return p;
-      });
-    return [npmPackage.name, ...normalized];
+    const normalized = { [npmPackage.name]: npmPackage.version };
+    plugins.forEach((p) => {
+      if (npmPackage.dependencies[p].startsWith('npm:')) {
+        const name = parseAliasedPackageName(npmPackage.dependencies[p]);
+        const version = parseAliasedPackageVersion(npmPackage.dependencies[p]);
+        normalized[name] = version;
+      } else {
+        normalized[p] = npmPackage.dependencies[p];
+      }
+    });
+
+    return normalized;
+  }
+
+  private findDifferences(oldPlugins: Record<string, string>, newPlugins: Record<string, string>): Differences {
+    const removed = {};
+    const added = {};
+    const upgraded = {};
+    const downgraded = {};
+    const unchanged = {};
+
+    for (const [name, version] of Object.entries(oldPlugins)) {
+      if (!newPlugins[name]) removed[name] = version;
+    }
+
+    for (const [name, version] of Object.entries(newPlugins)) {
+      if (!oldPlugins[name]) added[name] = version;
+      else if (semver.gt(version, oldPlugins[name])) upgraded[name] = version;
+      else if (semver.lt(version, oldPlugins[name])) downgraded[name] = version;
+      else unchanged[name] = version;
+    }
+
+    return { removed, added, upgraded, downgraded, unchanged };
   }
 
   private async getNameOfUser(username: string): Promise<string> {
@@ -115,6 +189,7 @@ export default class ReleaseNotes extends SfdxCommand {
       owner,
       repo,
       state: 'closed',
+      base: 'main',
       // eslint-disable-next-line camelcase
       per_page: 100,
     });
