@@ -67,9 +67,9 @@ export function parseAliasedPackageName(alias: string): string {
   return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
 }
 
-export function parseAliasedPackageVersion(alias: string): string {
-  const regex = /@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/;
-  return regex.exec(alias.replace('npm:', ''))[0].replace('@', '');
+export function parsePackageVersion(alias: string): string {
+  const regex = /[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/;
+  return regex.exec(alias)[0];
 }
 
 export class Package extends AsyncOptionalCreatable {

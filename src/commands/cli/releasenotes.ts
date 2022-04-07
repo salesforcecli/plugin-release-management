@@ -15,7 +15,7 @@ import { Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import * as semver from 'semver';
 import { CLI } from '../../types';
-import { NpmPackage, parseAliasedPackageName, parseAliasedPackageVersion } from '../../package';
+import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
@@ -117,7 +117,6 @@ export default class ReleaseNotes extends SfdxCommand {
       if (changes.length) changesByPlugin[plugin] = changes;
     }
 
-    this.ux.log();
     if (this.flags.markdown) {
       this.logChangesMarkdown(changesByPlugin);
     } else {
@@ -136,12 +135,12 @@ export default class ReleaseNotes extends SfdxCommand {
     const plugins = npmPackage.oclif?.plugins ?? [];
     const normalized = { [npmPackage.name]: npmPackage.version };
     plugins.forEach((p) => {
+      const version = parsePackageVersion(npmPackage.dependencies[p]);
       if (npmPackage.dependencies[p].startsWith('npm:')) {
         const name = parseAliasedPackageName(npmPackage.dependencies[p]);
-        const version = parseAliasedPackageVersion(npmPackage.dependencies[p]);
         normalized[name] = version;
       } else {
-        normalized[p] = npmPackage.dependencies[p];
+        normalized[p] = version;
       }
     });
 
