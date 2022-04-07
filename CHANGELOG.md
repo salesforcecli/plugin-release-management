@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.12.0...v2.12.1) (2022-04-07)
+
+### Bug Fixes
+
+- release notes for sfdx ([93e9846](https://github.com/salesforcecli/plugin-release-management/commit/93e98465432de193e4bb3e2adc06b3821b385ee1))
+
 ## [2.12.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.11.1...v2.12.0) (2022-04-06)
 
 ### Features
