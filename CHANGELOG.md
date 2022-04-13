@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.12.2](https://github.com/salesforcecli/plugin-release-management/compare/v2.12.1...v2.12.2) (2022-04-13)
+
+### Bug Fixes
+
+- stop using npx for git commands ([#459](https://github.com/salesforcecli/plugin-release-management/issues/459)) ([fe9973d](https://github.com/salesforcecli/plugin-release-management/commit/fe9973d1fbfd9e12d56e61c5c68e23fa128ed079))
+
 ### [2.12.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.12.0...v2.12.1) (2022-04-07)
 
 ### Bug Fixes
