@@ -103,31 +103,31 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
 
   public getBranchName(): string {
     const branch =
-      this.env.getString('CIRCLE_BRANCH', null) || exec('npx git branch --show-current', { silent: true }).stdout;
+      this.env.getString('CIRCLE_BRANCH', null) || exec('git branch --show-current', { silent: true }).stdout;
     return ensureString(branch);
   }
 
   public pushChangesToGit(): void {
     const branch = this.getBranchName();
-    const cmd = `npx git push --set-upstream --no-verify --follow-tags origin ${branch}`;
+    const cmd = `git push --set-upstream --no-verify --follow-tags origin ${branch}`;
     this.execCommand(cmd, false);
   }
 
   public stageChanges(): void {
-    this.execCommand('npx git add .', false);
+    this.execCommand('git add .', false);
   }
 
   public revertUnstagedChanges(): void {
-    const changedFiles = exec('npx git diff --name-only', { silent: true })
+    const changedFiles = exec('git diff --name-only', { silent: true })
       .stdout.split(os.EOL)
       .filter((f) => !!f);
     changedFiles.forEach((file) => {
-      exec(`npx git checkout -- ${file}`, { silent: false });
+      exec(`git checkout -- ${file}`, { silent: false });
     });
   }
 
   public revertAllChanges(): void {
-    exec('npx git reset --hard HEAD', { silent: true });
+    exec('git reset --hard HEAD', { silent: true });
   }
 
   public printStage(msg: string): void {
