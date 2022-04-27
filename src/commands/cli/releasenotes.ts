@@ -91,7 +91,7 @@ export default class ReleaseNotes extends SfdxCommand {
     if (isNotEmpty(differences.downgraded)) {
       this.ux.styledHeader('Downgraded Plugins');
       for (const [plugin, version] of Object.entries(differences.downgraded)) {
-        this.ux.log(`• ${plugin} ${version} => ${oldPlugins[plugin]}`);
+        this.ux.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
       }
     }
 
