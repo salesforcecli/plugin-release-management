@@ -87,7 +87,7 @@ export default class build extends SfdxCommand {
     // commit package.json/yarn.lock and potentially command-snapshot changes
     this.exec('git add .');
     this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
-    this.exec(`git push --set-upstream origin ${nextRCVersion}`);
+    this.exec(`git push --set-upstream origin ${nextRCVersion} --no-verify`, { silent: false });
 
     const repoOwner = repo.package.packageJson.repository.split('/')[0];
     const repoName = repo.package.packageJson.repository.split('/')[1];
