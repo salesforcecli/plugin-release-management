@@ -156,7 +156,13 @@ export default class Release extends SfdxCommand {
     this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
       const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
-      if (result.code !== 0) throw new SfdxError(result.stderr, 'FailedCommandExecution');
+      if (result.code !== 0) {
+        const sfdxVerifyCmd = `sfdx plugins:trust:verify ${argv}`;
+        this.ux.warn(
+          'Unable to verify the package signature due to:\n\nFailed to find @salesforce/sfdx-scanner@3.1.0 in the registry\n' +
+            `\nYou can manually validate the package signature by running:\n\n${sfdxVerifyCmd}\n`
+        );
+      }
     } catch (err) {
       throw new SfdxError(err, 'FailedCommandExecution');
     }
