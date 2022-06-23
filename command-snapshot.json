@@ -41,7 +41,7 @@
   {
     "command": "cli:latestrc:build",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "loglevel", "patch", "pinned-deps", "rctag", "resolutions"]
+    "flags": ["build-only", "json", "loglevel", "patch", "pinned-deps", "rctag", "resolutions"]
   },
   {
     "command": "cli:releasenotes",
