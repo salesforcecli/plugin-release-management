@@ -23,6 +23,10 @@ export default class build extends SfdxCommand {
       description: messages.getMessage('flags.rctag'),
       default: 'latest-rc',
     }),
+    'build-only': flags.boolean({
+      description: messages.getMessage('flags.buildOnly'),
+      default: false,
+    }),
     resolutions: flags.boolean({
       description: messages.getMessage('flags.resolutions'),
       default: true,
@@ -39,11 +43,16 @@ export default class build extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    const auth = ensureString(
-      new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
-      'GH_TOKEN is required to be set in the environment'
-    );
-    const octokit = new Octokit({ auth });
+    let auth: string;
+
+    const pushChangesToGitHub = !this.flags['build-only'];
+
+    if (pushChangesToGitHub) {
+      auth = ensureString(
+        new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
+        'GH_TOKEN is required to be set in the environment'
+      );
+    }
 
     // get the current version and implement the patch version for a default rc build
     const repo = await SinglePackageRepo.create({ ux: this.ux });
@@ -82,24 +91,28 @@ export default class build extends SfdxCommand {
     this.exec('npx yarn-deduplicate');
     this.exec('yarn snapshot-generate');
 
-    await this.maybeSetGitConfig(octokit);
+    if (pushChangesToGitHub) {
+      const octokit = new Octokit({ auth });
 
-    // commit package.json/yarn.lock and potentially command-snapshot changes
-    this.exec('git add .');
-    this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
-    this.exec(`git push --set-upstream origin ${nextRCVersion} --no-verify`, { silent: false });
+      await this.maybeSetGitConfig(octokit);
 
-    const repoOwner = repo.package.packageJson.repository.split('/')[0];
-    const repoName = repo.package.packageJson.repository.split('/')[1];
+      // commit package.json/yarn.lock and potentially command-snapshot changes
+      this.exec('git add .');
+      this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
+      this.exec(`git push --set-upstream origin ${nextRCVersion} --no-verify`, { silent: false });
 
-    await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
-      owner: repoOwner,
-      repo: repoName,
-      head: nextRCVersion,
-      base: 'main',
-      title: `Release v${nextRCVersion} as latest-rc`,
-      body: 'Building latest-rc [skip-validate-pr]',
-    });
+      const repoOwner = repo.package.packageJson.repository.split('/')[0];
+      const repoName = repo.package.packageJson.repository.split('/')[1];
+
+      await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
+        owner: repoOwner,
+        repo: repoName,
+        head: nextRCVersion,
+        base: 'main',
+        title: `Release v${nextRCVersion} as latest-rc`,
+        body: 'Building latest-rc [skip-validate-pr]',
+      });
+    }
   }
 
   private exec(cmd: string, options: ExecOptions = { silent: true }): void {
