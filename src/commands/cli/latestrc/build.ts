@@ -50,7 +50,7 @@ export default class build extends SfdxCommand {
     if (pushChangesToGitHub) {
       auth = ensureString(
         new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
-        'GH_TOKEN is required to be set in the environment'
+        'The GH_TOKEN env var is required to push changes to GitHub. Use the --build-only flag to skip GitHub operations (a manual push will then be needed)'
       );
     }
 
