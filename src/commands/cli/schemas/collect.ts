@@ -22,9 +22,13 @@ export class SchemaUtils {
     const pjson = (await fs.readJsonMap(path.join(process.cwd(), 'package.json'))) as { oclif: { plugins: string[] } };
     const globs = (pjson.oclif?.plugins || []).map((plugin) => {
       const normalized = plugin.replace(/\\/g, '/');
-      return `node_modules/${normalized}/schemas/**/*.json`;
+      return `node_modules/${normalized}/schemas/**/*.json`; // We need to use / for path sep since fg only works with Unix paths
     });
-    const schemaFiles = (await fg(globs)).filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
+    const schemaFiles = (await fg(globs))
+      .map((f) => path.normalize(f)) // normalize paths so this will work on Windows since fg only returns Unix paths
+      .filter((f) => {
+        return !f.includes(path.join('@salesforce', 'schemas'));
+      });
     return schemaFiles;
   }
 
