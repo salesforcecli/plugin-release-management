@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.13.1](https://github.com/salesforcecli/plugin-release-management/compare/v2.13.0...v2.13.1) (2022-07-07)
+
+### Bug Fixes
+
+- normalize paths after fg gets them for x-platform compatibility ([ac74bae](https://github.com/salesforcecli/plugin-release-management/commit/ac74bae5dfccc65660764401c5dc096513c11684))
+
 ## [2.13.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.12.5...v2.13.0) (2022-06-23)
 
 ### Features
