@@ -235,7 +235,7 @@ export class Package extends AsyncOptionalCreatable {
         depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
       }
 
-      this.packageJson['dependencies'][depInfo.dependencyName] = depInfo.finalVersion;
+      this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
 
       return depInfo;
     });
@@ -314,9 +314,9 @@ export class Package extends AsyncOptionalCreatable {
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
       if (dep.alias) {
-        this.packageJson['dependencies'][dep.alias] = `npm:${dep.name}@${version}`;
+        this.packageJson.dependencies[dep.alias] = `npm:${dep.name}@${version}`;
       } else {
-        this.packageJson['dependencies'][dep.name] = version;
+        this.packageJson.dependencies[dep.name] = version;
       }
       // accumulate information to return
       pinnedPackages.push({ name: dep.name, version, tag, alias: dep.alias });
