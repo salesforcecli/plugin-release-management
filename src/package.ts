@@ -63,6 +63,15 @@ interface PinnedPackage {
   alias: Nullable<string>;
 }
 
+// Differentiates between dependencyName and packageName to support npm aliases
+interface DependencyInfo {
+  dependencyName: string;
+  packageName: string;
+  alias: Nullable<string>;
+  currentVersion?: string;
+  finalVersion?: string;
+}
+
 export function parseAliasedPackageName(alias: string): string {
   return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
 }
@@ -151,25 +160,89 @@ export class Package extends AsyncOptionalCreatable {
     fs.writeJsonSync(pkgJsonPath, this.packageJson);
   }
 
+  public getDistTags(name: string): Record<string, string> {
+    const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      silent: true,
+    });
+    return JSON.parse(result.stdout) as Record<string, string>;
+  }
+
   public bumpResolutions(tag: string): void {
     if (!this.packageJson.resolutions) {
       throw new SfdxError('Bumping resolutions requires property "resolutions" to be present in package.json');
     }
 
     Object.keys(this.packageJson.resolutions).map((key: string) => {
-      const result = exec(`npm view ${key} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-        silent: true,
-      });
-      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      const versions = this.getDistTags(key);
       this.packageJson.resolutions[key] = versions[tag];
     });
   }
 
-  public getNextRCVersion(tag: string, isPatch = false): string {
-    const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-      silent: true,
+  // Lookup dependency info by package name or npm alias
+  // Examples: @salesforce/plugin-info or @sf/info
+  public getDependencyInfo(name: string): DependencyInfo {
+    const { dependencies } = this.packageJson;
+
+    for (const [key, value] of Object.entries(dependencies)) {
+      if (key === name) {
+        if (value.startsWith('npm:')) {
+          // npm alias was passed, so we need to parse package name and version
+          return {
+            dependencyName: key,
+            packageName: parseAliasedPackageName(value),
+            alias: value,
+            currentVersion: parsePackageVersion(value),
+          };
+        } else {
+          // package name was passed, so we can use key and value directly
+          return {
+            dependencyName: key,
+            packageName: key,
+            alias: null,
+            currentVersion: value,
+          };
+        }
+      }
+      if (value.includes(`npm:${name}`)) {
+        // package name was passed, but an alias is used for the dependency
+        return {
+          dependencyName: key,
+          packageName: name,
+          alias: value,
+          currentVersion: parsePackageVersion(value),
+        };
+      }
+    }
+
+    cli.error(`${name} was not found in the dependencies section of the package.json`);
+  }
+
+  public bumpDependencyVersions(dependencies: string[]): DependencyInfo[] {
+    return dependencies.map((dep) => {
+      // regex for npm package with optional namespace and version
+      // https://regex101.com/r/HmIu3N/1
+      const npmPackageRegex = /^((?:@[^/]+\/)?[^@/]+)(?:@([^@/]+))?$/;
+      const [, name, version] = npmPackageRegex.exec(dep);
+
+      // find dependency in package.json (could be an npm alias)
+      const depInfo = this.getDependencyInfo(name);
+
+      // If a version is not provided, we'll look up the "latest" version
+      depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
+
+      // override final version if npm alias is used
+      if (depInfo.alias) {
+        depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
+      }
+
+      this.packageJson['dependencies'][depInfo.dependencyName] = depInfo.finalVersion;
+
+      return depInfo;
     });
-    const versions = JSON.parse(result.stdout) as Record<string, string>;
+  }
+
+  public getNextRCVersion(tag: string, isPatch = false): string {
+    const versions = this.getDistTags(this.packageJson.name);
 
     const version = semver.parse(versions[tag]);
     return isPatch
@@ -217,10 +290,7 @@ export class Package extends AsyncOptionalCreatable {
     const pinnedPackages: PinnedPackage[] = [];
     deps.forEach((dep) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${dep.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-        silent: true,
-      });
-      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      const versions = this.getDistTags(dep.name);
       let tag = dep.tag;
 
       // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
