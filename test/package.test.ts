@@ -202,7 +202,7 @@ describe('Package', () => {
     });
   });
 
-  describe.only('bumpDependencyVersions', () => {
+  describe('bumpDependencyVersions', () => {
     beforeEach(() => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({
