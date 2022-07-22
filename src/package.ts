@@ -205,7 +205,7 @@ export class Package extends AsyncOptionalCreatable {
           };
         }
       }
-      if (value.includes(`npm:${name}`)) {
+      if (value.startsWith(`npm:${name}`)) {
         // package name was passed in as name, but an alias is used for the dependency
         // e.g. passed in:  "@salesforce/plugin-login"
         //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
