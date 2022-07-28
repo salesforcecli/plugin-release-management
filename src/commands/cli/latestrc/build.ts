@@ -12,7 +12,7 @@ import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { bold } from 'chalk';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxError } from '@salesforce/core';
 import { SinglePackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
@@ -82,7 +82,13 @@ export default class build extends SfdxCommand {
 
     if (only) {
       this.ux.log(`bumping the following dependencies only: ${only.join(', ')}`);
-      repo.package.bumpDependencyVersions(only);
+      const bumped = repo.package.bumpDependencyVersions(only);
+
+      if (!bumped.length) {
+        throw new SfdxError(
+          'No version changes made. Confirm you are passing the correct dependency and version to --only.'
+        );
+      }
     } else {
       // bump resolution deps
       if (this.flags.resolutions) {

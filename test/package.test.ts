@@ -167,7 +167,8 @@ describe('Package', () => {
 
     it('should find dependency using an npm alias', async () => {
       const pkg = await Package.create();
-      const dependency = pkg.getDependencyInfo('@sf/info');
+      const deps = pkg.packageJson.dependencies;
+      const dependency = pkg.getDependencyInfo('@sf/info', deps);
 
       expect(dependency).to.deep.equal({
         dependencyName: '@sf/info',
@@ -179,7 +180,8 @@ describe('Package', () => {
 
     it('should find an npm alias with a package name', async () => {
       const pkg = await Package.create();
-      const dependency = pkg.getDependencyInfo('@salesforce/plugin-info');
+      const deps = pkg.packageJson.dependencies;
+      const dependency = pkg.getDependencyInfo('@salesforce/plugin-info', deps);
 
       expect(dependency).to.deep.equal({
         dependencyName: '@sf/info',
@@ -191,7 +193,8 @@ describe('Package', () => {
 
     it('should find a dependency using a package name', async () => {
       const pkg = await Package.create();
-      const dependency = pkg.getDependencyInfo('@salesforce/plugin-config');
+      const deps = pkg.packageJson.dependencies;
+      const dependency = pkg.getDependencyInfo('@salesforce/plugin-config', deps);
 
       expect(dependency).to.deep.equal({
         dependencyName: '@salesforce/plugin-config',
@@ -212,6 +215,9 @@ describe('Package', () => {
             '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
+          },
+          resolutions: {
+            '@salesforce/source-deploy-retrieve': '1.0.0',
           },
         })
       );
@@ -272,12 +278,26 @@ describe('Package', () => {
       ]);
     });
 
-    it('should update package.json', async () => {
+    it('should return an empty array if all versions are already up to date', async () => {
+      const pkg = await Package.create();
+      const results = pkg.bumpDependencyVersions(['@sf/info@2.0.1', '@salesforce/plugin-config@1.2.3']);
+
+      expect(results).to.deep.equal([]);
+    });
+
+    it('should update dependencies in package.json', async () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@sf/info@2.2.2', '@salesforce/plugin-config@3.3.3']);
 
       expect(pkg.packageJson.dependencies['@sf/info']).to.equal('npm:@salesforce/plugin-info@2.2.2');
       expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('3.3.3');
+    });
+
+    it('should update resolutions in package.json', async () => {
+      const pkg = await Package.create();
+      pkg.bumpDependencyVersions(['@salesforce/source-deploy-retrieve@1.0.1']);
+
+      expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('1.0.1');
     });
   });
 });

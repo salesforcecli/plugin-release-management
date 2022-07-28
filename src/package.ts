@@ -180,9 +180,8 @@ export class Package extends AsyncOptionalCreatable {
 
   // Lookup dependency info by package name or npm alias
   // Examples: @salesforce/plugin-info or @sf/info
-  public getDependencyInfo(name: string): DependencyInfo {
-    const { dependencies } = this.packageJson;
-
+  // Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
+  public getDependencyInfo(name: string, dependencies: Record<string, string>): DependencyInfo {
     for (const [key, value] of Object.entries(dependencies)) {
       if (key === name) {
         if (value.startsWith('npm:')) {
@@ -217,28 +216,41 @@ export class Package extends AsyncOptionalCreatable {
     cli.error(`${name} was not found in the dependencies section of the package.json`);
   }
 
-  public bumpDependencyVersions(dependencies: string[]): DependencyInfo[] {
-    return dependencies.map((dep) => {
-      // regex for npm package with optional namespace and version
-      // https://regex101.com/r/HmIu3N/1
-      const npmPackageRegex = /^((?:@[^/]+\/)?[^@/]+)(?:@([^@/]+))?$/;
-      const [, name, version] = npmPackageRegex.exec(dep);
+  public bumpDependencyVersions(targetDependencies: string[]): DependencyInfo[] {
+    return targetDependencies
+      .map((dep) => {
+        // regex for npm package with optional namespace and version
+        // https://regex101.com/r/HmIu3N/1
+        const npmPackageRegex = /^((?:@[^/]+\/)?[^@/]+)(?:@([^@/]+))?$/;
+        const [, name, version] = npmPackageRegex.exec(dep);
 
-      // find dependency in package.json (could be an npm alias)
-      const depInfo = this.getDependencyInfo(name);
+        // We will look for packages in dependencies and resolutions
+        const { dependencies, resolutions } = this.packageJson;
 
-      // If a version is not provided, we'll look up the "latest" version
-      depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
+        // find dependency in package.json (could be an npm alias)
+        const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions });
 
-      // override final version if npm alias is used
-      if (depInfo.alias) {
-        depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
-      }
+        // if a version is not provided, we'll look up the "latest" version
+        depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
 
-      this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
+        // return if version did not change
+        if (depInfo.currentVersion === depInfo.finalVersion) return;
 
-      return depInfo;
-    });
+        // override final version if npm alias is used
+        if (depInfo.alias) {
+          depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
+        }
+
+        // update dependency (or resolution) in package.json
+        if (dependencies[depInfo.dependencyName]) {
+          this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
+        } else {
+          this.packageJson.resolutions[depInfo.dependencyName] = depInfo.finalVersion;
+        }
+
+        return depInfo;
+      })
+      .filter(Boolean); // remove falsy values, in this case the `undefined` if version did not change
   }
 
   public getNextRCVersion(tag: string, isPatch = false): string {
