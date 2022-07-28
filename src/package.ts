@@ -185,7 +185,9 @@ export class Package extends AsyncOptionalCreatable {
     for (const [key, value] of Object.entries(dependencies)) {
       if (key === name) {
         if (value.startsWith('npm:')) {
-          // npm alias was passed, so we need to parse package name and version
+          // npm alias was passed in as name, so we need to parse package name and version
+          // e.g. passed in:  "@sf/login"
+          //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
           return {
             dependencyName: key,
             packageName: parseAliasedPackageName(value),
@@ -202,8 +204,10 @@ export class Package extends AsyncOptionalCreatable {
           };
         }
       }
-      if (value.includes(`npm:${name}`)) {
-        // package name was passed, but an alias is used for the dependency
+      if (value.startsWith(`npm:${name}`)) {
+        // package name was passed in as name, but an alias is used for the dependency
+        // e.g. passed in:  "@salesforce/plugin-login"
+        //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
         return {
           dependencyName: key,
           packageName: name,
