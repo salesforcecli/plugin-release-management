@@ -4,7 +4,6 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { fs } from '@salesforce/core';
 import * as AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
 import { expect } from 'chai';
@@ -16,7 +15,6 @@ const $$ = testSetup();
 describe('Upload', () => {
   beforeEach(() => {
     AWSMock.setSDKInstance(AWS);
-    $$.SANDBOX.stub(fs, 'readFile').returns(Promise.resolve('asdfadfhgadg=='));
   });
 
   afterEach(() => {

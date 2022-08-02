@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "2.13.1",
+  "version": "3.0.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -11,7 +11,7 @@
     "@oclif/config": "^1",
     "@octokit/core": "^3.4.0",
     "@salesforce/command": "^4.2.0",
-    "@salesforce/core": "^2.31.0",
+    "@salesforce/core": "^3.25.0",
     "@salesforce/kit": "^1.5.22",
     "@salesforce/plugin-trust": "^1.1.0",
     "@salesforce/ts-types": "^1.5.20",
@@ -150,9 +150,6 @@
         "subtopics": {
           "dependencies": {
             "description": "pin dependencies to a specific version in package.json"
-          },
-          "lerna": {
-            "description": "work with lerna npm projects"
           },
           "package": {
             "description": "work with npm projects"

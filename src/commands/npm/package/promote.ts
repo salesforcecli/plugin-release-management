@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
@@ -15,7 +15,16 @@ import { bold } from 'chalk';
 import { isMonoRepo, SinglePackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.promote');
+const messages = Messages.load('@salesforce/plugin-release-management', 'npm.package.promote', [
+  'description',
+  'examples',
+  'dryrun',
+  'target',
+  'candidate',
+  'InvalidRepoType',
+  'InvalidToken',
+  'InvalidTag',
+]);
 
 interface Token {
   token: string;
@@ -48,7 +57,7 @@ export default class Promote extends SfdxCommand {
   public async run(): Promise<void> {
     if (await isMonoRepo()) {
       const errType = 'InvalidRepoType';
-      throw new SfdxError(messages.getMessage(errType), errType);
+      throw new SfError(messages.getMessage(errType), errType);
     }
 
     const pkg = await SinglePackageRepo.create({ ux: this.ux });
@@ -61,7 +70,7 @@ export default class Promote extends SfdxCommand {
 
     if (!match) {
       const errType = 'InvalidToken';
-      throw new SfdxError(messages.getMessage(errType), errType);
+      throw new SfError(messages.getMessage(errType), errType);
     }
 
     const tags = pkg.package.npmPackage['dist-tags'];
@@ -70,7 +79,7 @@ export default class Promote extends SfdxCommand {
 
     if (!tags[candidate]) {
       const errType = 'InvalidTag';
-      throw new SfdxError(messages.getMessage(errType, [candidate]), errType);
+      throw new SfError(messages.getMessage(errType, [candidate]), errType);
     }
 
     this.log(`Promoting ${pkg.name}@${tags[candidate]} from ${bold(candidate)} to ${bold(target)}`);

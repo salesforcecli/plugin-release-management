@@ -13,7 +13,7 @@ import * as fs from 'fs';
 import npmRunPath from 'npm-run-path';
 import * as shelljs from 'shelljs';
 
-import { SfdxError, Logger } from '@salesforce/core';
+import { SfError, Logger } from '@salesforce/core';
 import { ShellString } from 'shelljs';
 import { AsyncCreatable } from '@salesforce/kit';
 
@@ -86,7 +86,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     });
     if (results.code !== 0) {
       this.logger.debug(`Plugin command ${command} failed`, results.stderr);
-      throw new SfdxError(results.stderr, 'ShellExecError');
+      throw new SfError(results.stderr, 'ShellExecError');
     }
     this.logger.debug(`Plugin command ${command} succeeded`, results);
     try {
@@ -96,7 +96,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
         return results;
       }
     } catch (error) {
-      const sfdxError = new SfdxError(error, 'JsonParseError');
+      const sfdxError = new SfError(error, 'JsonParseError');
       this.logger.debug(`Plugin command ${command} threw eception`, sfdxError);
       throw sfdxError;
     }
@@ -115,7 +115,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     const pkgPath = this.packagePath();
     const prjPath = pkgPath.substring(0, pkgPath.lastIndexOf(path.sep));
     if (!this.pkg.bin[this.options.commandBin]) {
-      const sfdxError = new SfdxError(
+      const sfdxError = new SfError(
         `Could not locate commandBin ${this.options.commandBin} in package at path ${pkgPath}`
       );
       this.logger.debug(sfdxError);
@@ -164,7 +164,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     const nodeShellString: shelljs.ShellString = shelljs.which('node');
     if (nodeShellString?.code === 0 && nodeShellString?.stdout) return nodeShellString.stdout;
 
-    throw new SfdxError('Cannot locate node executable.', 'CannotFindNodeExecutable');
+    throw new SfError('Cannot locate node executable.', 'CannotFindNodeExecutable');
   }
 
   /**

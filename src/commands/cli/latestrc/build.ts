@@ -14,7 +14,14 @@ import { Messages } from '@salesforce/core';
 import { SinglePackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.latestrc.build');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.latestrc.build', [
+  'description',
+  'flags.rctag',
+  'flags.buildOnly',
+  'flags.resolutions',
+  'flags.pinnedDeps',
+  'flags.patch',
+]);
 
 export default class build extends SfdxCommand {
   public static readonly description = messages.getMessage('description');

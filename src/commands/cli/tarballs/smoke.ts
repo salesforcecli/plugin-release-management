@@ -9,13 +9,18 @@ import * as path from 'path';
 import * as os from 'os';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.tarballs.smoke', [
+  'description',
+  'examples',
+  'cliFlag',
+  'verboseFlag',
+]);
 
 export default class SmokeTest extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -83,7 +88,7 @@ export default class SmokeTest extends SfdxCommand {
       }
       return result.stdout;
     } else {
-      throw new SfdxError(`Failed: ${command}`);
+      throw new SfError(`Failed: ${command}`);
     }
   }
 }

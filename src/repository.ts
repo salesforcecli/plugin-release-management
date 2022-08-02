@@ -7,13 +7,14 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 import * as glob from 'glob';
 import { pwd } from 'shelljs';
 import { AnyJson, ensureString, getString } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
-import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, Env, isEmpty, sleep } from '@salesforce/kit';
+import { Logger, SfError } from '@salesforce/core';
+import { AsyncOptionalCreatable, Env, isEmpty, sleep, parseJson } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { Package, VersionValidation } from './package';
@@ -55,7 +56,12 @@ export interface PackageInfo {
 type PollFunction = () => boolean;
 
 export async function isMonoRepo(): Promise<boolean> {
-  return fs.fileExists('lerna.json');
+  try {
+    await fs.promises.access('lerna.json');
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 export type RepositoryOptions = {
@@ -145,7 +151,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     if (!silent) this.ux.log(`${chalk.dim(cmd)}${os.EOL}`);
     const result = exec(cmd, { silent });
     if (result.code !== 0) {
-      throw new SfdxError(result.stderr, 'FailedCommandExecution');
+      throw new SfError(result.stderr, 'FailedCommandExecution');
     } else {
       return result;
     }
@@ -218,7 +224,9 @@ export class LernaRepo extends Repository {
 
   public static async getPackagePaths(): Promise<string[]> {
     const workingDir = pwd().stdout;
-    const lernaJson = (await fs.readJson('lerna.json')) as LernaJson;
+
+    const fileData = await fs.promises.readFile('lerna.json', 'utf8');
+    const lernaJson = parseJson(fileData, 'lerna.json', false) as LernaJson;
     // https://github.com/lerna/lerna#lernajson
     // "By default, lerna initializes the packages list as ["packages/*"]"
     const packageGlobs = lernaJson.packages || ['*'];

@@ -15,11 +15,17 @@ import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../..
 
 Messages.importMessagesDirectory(__dirname);
 
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.automerge');
-const messagesFromConsolidate = Messages.loadMessages(
-  '@salesforce/plugin-release-management',
-  'dependabot.consolidate'
-);
+const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.automerge', [
+  'description',
+  'examples',
+  'skipCi',
+  'mergeMethod',
+]);
+const messagesFromConsolidate = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', [
+  'owner',
+  'repo',
+  'dryrun',
+]);
 
 interface PullRequest {
   state: string;

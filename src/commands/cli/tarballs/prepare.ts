@@ -13,7 +13,13 @@ import { Messages } from '@salesforce/core';
 import { red } from 'chalk';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.prepare');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.tarballs.prepare', [
+  'description',
+  'examples',
+  'dryrun',
+  'types',
+  'verbose',
+]);
 
 /**
  * The functionality of this command is taken entirely from https://github.com/salesforcecli/sfdx-cli/blob/v7.109.0/scripts/clean-for-tarballs

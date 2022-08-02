@@ -7,10 +7,11 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 import { exec } from 'shelljs';
 import { cli as cliUx } from 'cli-ux';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import got from 'got';
 import * as chalk from 'chalk';
@@ -18,7 +19,14 @@ import { Channel, CLI, ServiceAvailability } from '../../../types';
 import { AmazonS3 } from '../../../amazonS3';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.install.test', [
+  'description',
+  'examples',
+  'cliFlag',
+  'methodFlag',
+  'channelFlag',
+  'outputFileFlag',
+]);
 
 export type Results = Record<string, Record<CLI, boolean>>;
 
@@ -168,7 +176,7 @@ class Tarball extends Method.Base {
 
   private async extract(file: string): Promise<string> {
     const dir = path.join(this.options.directory, path.basename(file).replace(/\./g, '-'));
-    await fs.mkdirp(dir);
+    await fs.promises.mkdir(dir, { recursive: true });
     return new Promise((resolve, reject) => {
       cliUx.action.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
       const cmd =
@@ -442,7 +450,11 @@ export default class Test extends SfdxCommand {
       .some((r) => !r);
     if (hasFailures) process.exitCode = 1;
 
-    await fs.writeJson(outputFile, { status: process.exitCode ?? 0, results });
+    const fileData: string = JSON.stringify({ status: process.exitCode ?? 0, results }, null, 2);
+    await fs.promises.writeFile(outputFile, fileData, {
+      encoding: 'utf8',
+      mode: '600',
+    });
     cliUx.styledJSON(results);
     cliUx.log(`Results written to ${outputFile}`);
   }
@@ -451,11 +463,11 @@ export default class Test extends SfdxCommand {
     const tmpDir = path.join(os.tmpdir(), 'cli-install-test', cli, channel, method);
     // ensure that we are starting with a clean directory
     try {
-      await fs.remove(tmpDir);
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
     } catch {
       // error means that folder doesn't exist which is okay
     }
-    await fs.mkdirp(tmpDir, { recursive: true });
+    await fs.promises.mkdir(tmpDir, { recursive: true });
     return tmpDir;
   }
 }

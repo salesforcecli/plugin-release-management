@@ -7,13 +7,18 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
+import { parseJsonMap } from '@salesforce/kit';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import cli from 'cli-ux';
 import { SchemaUtils } from './collect';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.compare');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.schemas.compare', [
+  'description',
+  'examples',
+]);
 
 export type Results = {
   [key: string]: {
@@ -39,7 +44,7 @@ export default class Compare extends SfdxCommand {
     if (latest.length > existing.length) {
       const normalized = latest.map((c) => this.normalizeFilename(c));
       const missing = normalized.filter((f) => !existing.includes(f));
-      throw new SfdxError(
+      throw new SfError(
         `Missing files: ${missing.join(', ')}`,
         'MissingFilesError',
         [
@@ -55,8 +60,12 @@ export default class Compare extends SfdxCommand {
         return this.normalizeFilename(f) === file;
       });
       if (correspondingFile) {
-        const fileContents = await fs.readJsonMap(file);
-        const correspondingFileContents = await fs.readJsonMap(correspondingFile);
+        const fileData = await fs.promises.readFile(file, 'utf8');
+        const fileContents = parseJsonMap(fileData, file);
+
+        const correspondingFileData = await fs.promises.readFile(correspondingFile, 'utf8');
+        const correspondingFileContents = parseJsonMap(correspondingFileData, correspondingFile);
+
         const matches = SchemaUtils.deepEqual(fileContents, correspondingFileContents);
         results[file] = { correspondingFile, matches };
       } else {
@@ -82,7 +91,7 @@ export default class Compare extends SfdxCommand {
 
     const hasErrors = Object.values(results).some((result) => result.matches === false);
     if (hasErrors) {
-      throw new SfdxError(
+      throw new SfError(
         'Found schema changes',
         'SchemaMismatchError',
         [

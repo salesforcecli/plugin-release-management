@@ -7,18 +7,28 @@
 
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as util from 'util';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
 import { ensure } from '@salesforce/ts-types';
+import { parseJson } from '@salesforce/kit';
 import { PackageJson } from '../../../package';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.versions.inspect', [
+  'description',
+  'examples',
+  'deps',
+  'salesforce',
+  'channels',
+  'locations',
+  'cli',
+]);
 
 const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
 const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
@@ -173,18 +183,18 @@ export default class Inspect extends SfdxCommand {
     const channels = toArray(this.flags.channels) as Channel[];
 
     if (this.flags.cli === CLI.SF && channels.includes(Channel.LEGACY)) {
-      throw new SfdxError('the sf CLI does not have a legacy channel');
+      throw new SfError('the sf CLI does not have a legacy channel');
     }
 
     this.ux.log(`Working Directory: ${this.workingDir}`);
 
     // ensure that we are starting with a clean directory
     try {
-      await fs.remove(this.workingDir);
+      await fs.promises.rm(this.workingDir, { recursive: true, force: true });
     } catch {
       // error means that folder doesn't exist which is okay
     }
-    await fs.mkdirp(this.workingDir, { recursive: true });
+    await fs.promises.mkdir(this.workingDir, { recursive: true });
 
     this.initArchives();
 
@@ -314,12 +324,13 @@ export default class Inspect extends SfdxCommand {
   }
 
   private async readPackageJson(pkgDir: string): Promise<PackageJson> {
-    return (await fs.readJson(path.join(pkgDir, 'package.json'))) as PackageJson;
+    const fileData = await fs.promises.readFile(path.join(pkgDir, 'package.json'), 'utf8');
+    return parseJson(fileData, path.join(pkgDir, 'package.json'), false) as PackageJson;
   }
 
   private async mkdir(...parts: string[]): Promise<string> {
     const dir = path.resolve(path.join(...parts));
-    await fs.mkdirp(dir);
+    await fs.promises.mkdir(dir, { recursive: true });
     return dir;
   }
 
@@ -368,7 +379,7 @@ export default class Inspect extends SfdxCommand {
     }
     // npmAndArchivesMatch can be undefined
     if ((npmAndArchivesMatch !== undefined && !npmAndArchivesMatch) || !allMatch) {
-      throw new SfdxError('Version Mismatch');
+      throw new SfError('Version Mismatch');
     }
   }
 }

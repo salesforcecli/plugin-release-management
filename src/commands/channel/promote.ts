@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureArray, ensureNumber, ensureString, asArray } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
@@ -18,7 +18,30 @@ import { Flags, verifyDependencies } from '../../dependencies';
 import { PluginCommand } from '../../pluginCommand';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
+const messages = Messages.load('@salesforce/plugin-release-management', 'channel.promote', [
+  'description',
+  'examples',
+  'dryrun',
+  'target',
+  'candidate',
+  'platform',
+  'cli',
+  'sha',
+  'maxage',
+  'indexes',
+  'xz',
+  'targets',
+  'version',
+  'InvalidRepoType',
+  'DryRunMessage',
+  'CouldNotDetermineShaAndVersion',
+  'MissingSourceOfPromote',
+  'CannotPromoteToSameChannel',
+  'MissingDependencies',
+  'CouldNotLocateShaForVersion',
+  'CouldNotLocateVersionForSha',
+]);
+
 const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64'];
 export default class Promote extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -103,7 +126,7 @@ export default class Promote extends SfdxCommand {
   public async run(): Promise<AnyJson> {
     if (await isMonoRepo()) {
       const errType = 'InvalidRepoType';
-      throw new SfdxError(messages.getMessage(errType), errType);
+      throw new SfError(messages.getMessage(errType), errType);
     }
     this.validateFlags();
     // preparing parameters for call to oclif promote commands
@@ -183,7 +206,7 @@ export default class Promote extends SfdxCommand {
       const version = await this.findVersionForSha(cli, sha);
       return { sha, version };
     }
-    throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
+    throw new SfError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
 
   /**
@@ -194,11 +217,11 @@ export default class Promote extends SfdxCommand {
   private validateFlags(): void {
     // requires one of the following flags
     if (!this.flags.version && !this.flags.sha && !this.flags.candidate) {
-      throw new SfdxError(messages.getMessage('MissingSourceOfPromote'));
+      throw new SfError(messages.getMessage('MissingSourceOfPromote'));
     }
     // cannot promote when channel names are the same
     if (this.flags.candidate && this.flags.candidate === this.flags.target) {
-      throw new SfdxError(messages.getMessage('CannotPromoteToSameChannel'));
+      throw new SfError(messages.getMessage('CannotPromoteToSameChannel'));
     }
     // make sure necessary runtime dependencies are present
     const deps = verifyDependencies(
@@ -209,7 +232,7 @@ export default class Promote extends SfdxCommand {
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
-      throw new SfdxError(messages.getMessage(errType), errType, missing);
+      throw new SfError(messages.getMessage(errType), errType, missing);
     }
   }
 
@@ -267,7 +290,7 @@ export default class Promote extends SfdxCommand {
         return json.sha;
       }
     }
-    const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
+    const error = new SfError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
     this.logger.debug(error);
     throw error;
   }
@@ -297,7 +320,7 @@ export default class Promote extends SfdxCommand {
       // when reversed after split version number should occupy entry 1 of the array
       return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
     }
-    const error = new SfdxError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
+    const error = new SfError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
     this.logger.debug(error);
     throw error;
   }

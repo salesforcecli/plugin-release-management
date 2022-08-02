@@ -12,7 +12,7 @@ import { cli } from 'cli-ux';
 import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'repositories');
+const messages = Messages.load('@salesforce/plugin-release-management', 'repositories', ['description', 'examples']);
 
 export default class Repositories extends SfdxCommand {
   public static readonly description = messages.getMessage('description');

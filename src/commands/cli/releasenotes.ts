@@ -11,14 +11,20 @@ import { ensure, ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { bold, cyan, dim } from 'chalk';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import * as semver from 'semver';
 import { CLI } from '../../types';
 import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.releasenotes', [
+  'description',
+  'examples',
+  'cliFlag',
+  'sinceFlag',
+  'markdownFlag',
+]);
 
 export type Change = {
   author: string;
@@ -181,7 +187,7 @@ export default class ReleaseNotes extends SfdxCommand {
     const npmPackage = this.getNpmPackage(plugin);
     const homepage = npmPackage.homepage ?? (npmPackage.name === 'salesforce-alm' ? 'salesforcecli/toolbelt' : null);
     if (!homepage) {
-      throw new SfdxError(`No github url found for ${npmPackage.name}`, 'GitUrlNotFound');
+      throw new SfError(`No github url found for ${npmPackage.name}`, 'GitUrlNotFound');
     }
     const [owner, repo] = homepage.replace('https://github.com/', '').replace(/#(.*)/g, '').split('/');
     const pullRequests = await this.octokit.request('GET /repos/{owner}/{repo}/pulls', {

@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { cli } from 'cli-ux';
 import got, { Agents } from 'got';
-import { SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import * as chalk from 'chalk';
 import * as AWS from 'aws-sdk';
 import { S3, WebIdentityCredentials } from 'aws-sdk';
@@ -102,7 +102,7 @@ export class AmazonS3 {
       await this.download(url, filename, true);
       return filename;
     } else {
-      throw new SfdxError(`File at url: ${url} does not exist`);
+      throw new SfError(`File at url: ${url} does not exist`);
     }
   }
 

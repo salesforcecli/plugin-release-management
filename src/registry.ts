@@ -8,8 +8,9 @@
 import { URL } from 'url';
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 import { exec } from 'shelljs';
-import { fs, SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 
 export class Registry {
@@ -62,7 +63,7 @@ export class Registry {
    */
   public async setNpmAuth(packageDirectory: string): Promise<void> {
     if (!this.authToken) {
-      throw new SfdxError('auth token has not been set');
+      throw new SfError('auth token has not been set');
     }
     let npmrc: string[] = await this.readNpmrc(packageDirectory);
     const normalizedRegistry = this.normalizeRegistryUrl();
@@ -97,18 +98,20 @@ export class Registry {
   }
 
   public async readNpmrc(packageDir: string): Promise<string[]> {
-    if (!(await fs.fileExists(path.join(packageDir, '.npmrc')))) {
+    try {
+      await fs.promises.access(path.join(packageDir, '.npmrc'));
+    } catch (err) {
       return [];
     }
 
-    const npmrc = await fs.readFile(path.join(packageDir, '.npmrc'), 'utf8');
+    const npmrc = await fs.promises.readFile(path.join(packageDir, '.npmrc'), 'utf8');
     const npmrcLines: string[] = npmrc.split(os.EOL);
     return [...new Set(npmrcLines).values()].filter((line) => line?.length);
   }
 
   public async writeNpmrc(packageDir: string, npmrc: string[]): Promise<void> {
     const npmrcLines = [...new Set(npmrc).values()].filter((line) => line?.length);
-    await fs.writeFile(path.join(packageDir, '.npmrc'), npmrcLines.join(os.EOL), 'utf8');
+    await fs.promises.writeFile(path.join(packageDir, '.npmrc'), npmrcLines.join(os.EOL), 'utf8');
   }
 
   private normalizeRegistryUrl(): string {

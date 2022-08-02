@@ -8,14 +8,14 @@
 
 /* eslint-disable no-underscore-dangle */
 
+import * as fs from 'fs';
 import { exec } from 'child_process';
 import { EOL } from 'os';
 import { join as pathJoin } from 'path';
-import { copyFile } from 'fs';
 import { Agent } from 'https';
 import { Agents } from 'got';
 import { UX } from '@salesforce/command';
-import { fs, Logger } from '@salesforce/core';
+import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
@@ -117,7 +117,7 @@ export const api = {
    * read the package.json file for the target npm to be signed.
    */
   retrievePackageJson(): Promise<string> {
-    return fs.readFile(pathGetter.packageJson, { encoding: 'utf8' });
+    return fs.promises.readFile(pathGetter.packageJson, { encoding: 'utf8' });
   },
 
   /**
@@ -126,7 +126,7 @@ export const api = {
    * @param filename - local path to the npmignore file
    */
   retrieveIgnoreFile(filename: string): Promise<string> {
-    return fs.readFile(pathGetter.getIgnoreFile(filename), { encoding: 'utf8' });
+    return fs.promises.readFile(pathGetter.getIgnoreFile(filename), { encoding: 'utf8' });
   },
 
   /**
@@ -182,7 +182,7 @@ export const api = {
    */
   copyPackageDotJson(src: string, dest: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      copyFile(src, dest, (err) => {
+      fs.copyFile(src, dest, (err) => {
         if (err) reject(err);
         resolve();
       });
@@ -195,16 +195,15 @@ export const api = {
    * @param pJson - the updated json content to write to disk
    */
   writePackageJson(pJson: PackageJson): Promise<void> {
-    return fs.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
+    return fs.promises.writeFile(pathGetter.packageJson, JSON.stringify(pJson, null, 4));
   },
 
   async revertPackageJsonIfExists(): Promise<void> {
     // Restore the package.json file so it doesn't show a git diff.
-    if (fs.existsSync(pathGetter.packageJsonBak)) {
-      cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
-      await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
-      await fs.unlink(pathGetter.packageJsonBak);
-    }
+    fs.accessSync(pathGetter.packageJsonBak);
+    cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
+    await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
+    await fs.promises.unlink(pathGetter.packageJsonBak);
   },
   /**
    * main method to pack and sign an npm.

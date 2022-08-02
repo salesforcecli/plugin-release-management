@@ -14,7 +14,6 @@ import { EOL } from 'os';
 import { join } from 'path';
 import { Readable } from 'stream';
 import * as fs from 'fs';
-import { fs as fscore } from '@salesforce/core';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';
@@ -58,9 +57,9 @@ describe('doPackAndSign', () => {
       cb(null, {});
     });
 
-    stubMethod($$.SANDBOX, fscore, 'unlink').returns(Promise.resolve());
+    stubMethod($$.SANDBOX, fs.promises, 'unlink').returns(Promise.resolve());
 
-    stubMethod($$.SANDBOX, fscore, 'writeFile').callsFake((path: string, content: string) => {
+    stubMethod($$.SANDBOX, fs.promises, 'writeFile').callsFake((path: string, content: string) => {
       if (path.includes('.sig')) {
         signature = content;
       }

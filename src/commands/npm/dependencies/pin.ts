@@ -9,7 +9,11 @@ import { Messages } from '@salesforce/core';
 import { ChangedPackageVersions, Package } from '../../../package';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.dependencies.pin');
+const messages = Messages.load('@salesforce/plugin-release-management', 'npm.dependencies.pin', [
+  'description',
+  'flags.dryrun',
+  'flags.tag',
+]);
 
 export default class Pin extends SfdxCommand {
   public static readonly description = messages.getMessage('description');

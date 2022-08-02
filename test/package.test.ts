@@ -6,8 +6,8 @@
  */
 
 import * as path from 'path';
+import * as nativeFs from 'fs';
 import { expect } from 'chai';
-import { fs } from '@salesforce/core';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import * as sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
@@ -21,8 +21,8 @@ describe('Package', () => {
     let readStub: sinon.SinonStub;
 
     beforeEach(() => {
-      readStub = $$.SANDBOX.stub(fs, 'readJson').returns(
-        Promise.resolve({
+      readStub = $$.SANDBOX.stub(nativeFs.promises, 'readFile').resolves(
+        JSON.stringify({
           name: pkgName,
           version: '1.0.0',
         })

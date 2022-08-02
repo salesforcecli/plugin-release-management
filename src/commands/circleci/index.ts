@@ -11,7 +11,11 @@ import { Messages } from '@salesforce/core';
 import { retrieveKnownRepositories } from '../../repositories';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'circleci');
+const messages = Messages.load('@salesforce/plugin-release-management', 'circleci', [
+  'list.description',
+  'list.examples',
+  'list.flags.type',
+]);
 
 export default class CircleCI extends SfdxCommand {
   public static readonly description = messages.getMessage('list.description');

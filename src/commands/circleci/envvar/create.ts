@@ -7,7 +7,7 @@
 
 import { EOL } from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { Dictionary } from '@salesforce/ts-types';
 import got from 'got';
 import { yellow } from 'chalk';
@@ -15,7 +15,13 @@ import { CircleCiEnvvars, EnvvarModificationStatus } from '../../../circleCiEnvv
 import { api } from '../../../codeSigning/packAndSign';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'circleci');
+const messages = Messages.load('@salesforce/plugin-release-management', 'circleci', [
+  'envvar.update.description',
+  'envvar.update.examples',
+  'envvar.flags.slug',
+  'envvar.flags.envvar',
+  'envvar.flags.dryrun',
+]);
 
 const URL_BASE = 'https://circleci.com/api/v2/project';
 
@@ -91,7 +97,7 @@ export default class CircleCIEnvvarCreate extends CircleCiEnvvars {
       }
       return status;
     } catch (err) {
-      const error = err as SfdxError;
+      const error = err as SfError;
       return `${error.message}. Skipping...`;
     }
   }
@@ -109,7 +115,7 @@ export default class CircleCIEnvvarCreate extends CircleCiEnvvars {
           agent,
         });
       } catch (err) {
-        const error = err as SfdxError;
+        const error = err as SfError;
         return { name, success: false, message: error.message };
       }
     }

@@ -15,7 +15,17 @@ import { ensureString } from '@salesforce/ts-types';
 import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
+const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', [
+  'description',
+  'examples',
+  'baseBranch',
+  'targetBranch',
+  'ignore',
+  'dryrun',
+  'noPR',
+  'owner',
+  'repo',
+]);
 
 export default class Consolidate extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
