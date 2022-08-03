@@ -167,7 +167,7 @@ export default class Release extends SfdxCommand {
 
     this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
-      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      const result = exec(`${this.config.root}/bin/run ${cmd} ${argv}`);
       if (result.code !== 0) {
         const sfdxVerifyCmd = `sfdx plugins:trust:verify ${argv}`;
         this.ux.warn(
