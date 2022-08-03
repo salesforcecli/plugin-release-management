@@ -10,7 +10,7 @@
   "dependencies": {
     "@oclif/config": "^1",
     "@octokit/core": "^3.4.0",
-    "@salesforce/command": "^4.2.0",
+    "@salesforce/command": "^5.2.1",
     "@salesforce/core": "^3.25.0",
     "@salesforce/kit": "^1.5.22",
     "@salesforce/plugin-trust": "^1.1.0",

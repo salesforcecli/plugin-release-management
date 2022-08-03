@@ -41,12 +41,10 @@ export default class Pin extends SfdxCommand {
     }
 
     this.ux.table(pkg, {
-      columns: [
-        { key: 'name', label: 'Name' },
-        { key: 'version', label: 'Version' },
-        { key: 'tag', label: 'Tag' },
-        { key: 'alias', label: 'Alias' },
-      ],
+      name: { header: 'Name' },
+      version: { header: 'Version' },
+      tag: { header: 'Tag' },
+      alias: { header: 'Alias' },
     });
 
     return pkg;

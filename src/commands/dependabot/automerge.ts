@@ -115,10 +115,8 @@ export default class AutoMerge extends SfdxCommand {
     );
 
     this.ux.table(mergeablePRs, {
-      columns: [
-        { key: 'title', label: 'Green, Mergeable PR' },
-        { key: 'html_url', label: 'Link' },
-      ],
+      title: { header: 'Green, Mergeable PR' },
+      html_url: { header: 'Link' },
     });
     this.ux.log('');
 

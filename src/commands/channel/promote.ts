@@ -82,8 +82,8 @@ export default class Promote extends SfdxCommand {
       char: 's',
       description: messages.getMessage('sha'),
       exclusive: ['candidate'],
-      parse: (input: string): string => {
-        return input.slice(0, 7);
+      parse: (input: string): Promise<string> => {
+        return Promise.resolve(input.slice(0, 7));
       },
       validate: (input: string): boolean => {
         if (input.length < 7) {
@@ -118,7 +118,7 @@ export default class Promote extends SfdxCommand {
       char: 'T',
       description: messages.getMessage('version'),
       exclusive: ['sha', 'candidate'],
-      parse: (input: string): string => input.trim(),
+      parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
       validate: (input: string): boolean => /^([0-9]+\.){2}[0-9]+$/.test(input),
     }),
   };
