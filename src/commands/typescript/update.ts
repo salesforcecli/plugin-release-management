@@ -13,7 +13,7 @@ import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
 import { NpmPackage, Package } from '../../package';
-import { SinglePackageRepo, LernaRepo, isMonoRepo } from '../../repository';
+import { PackageRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'typescript.update', [
@@ -40,7 +40,7 @@ export default class Update extends SfdxCommand {
   };
 
   private typescriptPkg: NpmPackage;
-  private repo: SinglePackageRepo | LernaRepo;
+  private repo: PackageRepo;
   private packages: Package[];
 
   public async run(): Promise<void> {
@@ -48,11 +48,9 @@ export default class Update extends SfdxCommand {
     this.validateEsTarget();
     this.validateTsVersion();
 
-    this.repo = (await isMonoRepo())
-      ? await LernaRepo.create({ ux: this.ux, shouldBePublished: true })
-      : await SinglePackageRepo.create({ ux: this.ux });
+    this.repo = await PackageRepo.create({ ux: this.ux });
 
-    this.packages = await this.getPackages();
+    this.packages = this.getPackages();
 
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
@@ -69,8 +67,8 @@ export default class Update extends SfdxCommand {
     }
   }
 
-  private async getPackages(): Promise<Package[]> {
-    return this.repo instanceof LernaRepo ? await LernaRepo.getPackages() : [this.repo.package];
+  private getPackages(): Package[] {
+    return [this.repo.package];
   }
 
   private async updateEsTargetConfig(packagePath: string): Promise<void> {

@@ -12,7 +12,7 @@ import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo, SinglePackageRepo } from '../../../repository';
+import { PackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'npm.package.promote', [
@@ -21,7 +21,6 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'npm.pac
   'dryrun',
   'target',
   'candidate',
-  'InvalidRepoType',
   'InvalidToken',
   'InvalidTag',
 ]);
@@ -55,12 +54,7 @@ export default class Promote extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfError(messages.getMessage(errType), errType);
-    }
-
-    const pkg = await SinglePackageRepo.create({ ux: this.ux });
+    const pkg = await PackageRepo.create({ ux: this.ux });
     await pkg.writeNpmToken();
 
     const token = ensureString(new Env().getString('NPM_TOKEN'), 'NPM_TOKEN must be set in the environment');

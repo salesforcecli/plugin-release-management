@@ -12,7 +12,7 @@ import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
-import { Access, isMonoRepo, SinglePackageRepo } from '../../../repository';
+import { Access, PackageRepo } from '../../../repository';
 import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
 
 Messages.importMessagesDirectory(__dirname);
@@ -25,7 +25,6 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'npm.pac
   'install',
   'prerelease',
   'verify',
-  'InvalidRepoType',
   'MissingDependencies',
   'InvalidNextVersion',
 ]);
@@ -74,11 +73,6 @@ export default class Release extends SfdxCommand {
   };
 
   public async run(): Promise<ReleaseResult> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfError(messages.getMessage(errType), errType);
-    }
-
     const deps = verifyDependencies(this.flags);
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
@@ -86,7 +80,7 @@ export default class Release extends SfdxCommand {
       throw new SfError(messages.getMessage(errType), errType, missing);
     }
 
-    const pkg = await SinglePackageRepo.create({ ux: this.ux, useprerelease: this.flags.prerelease as string });
+    const pkg = await PackageRepo.create({ ux: this.ux, useprerelease: this.flags.prerelease as string });
     if (!pkg.shouldBePublished) {
       this.ux.log('Found no commits that warrant a release. Exiting...');
       return;

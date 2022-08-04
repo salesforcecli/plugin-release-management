@@ -8,6 +8,5 @@
   "prerelease": "determine the next version as <version>-<prerelease>.0 if version is not manually set",
   "verify": "verify npm registry has new version after publish and digital signature",
   "InvalidNextVersion": "%s already exists in the public npm registry",
-  "MissingDependencies": "Missing requred environment variables or utilites",
-  "InvalidRepoType": "Cannot run this command on a monorepo. Use sfdx npm:monorepo:release instead."
+  "MissingDependencies": "Missing requred environment variables or utilites"
 }

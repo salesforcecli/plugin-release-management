@@ -7,7 +7,6 @@
 
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { SfError } from '@salesforce/core';
-import { isMonoRepo, LernaRepo } from '../../../repository';
 import { Package } from '../../../package';
 import { CommitInspection, inspectCommits } from '../../../inspectCommits';
 
@@ -32,11 +31,10 @@ export default class Validate extends SfdxCommand {
   };
 
   public async run(): Promise<Response> {
-    const isLerna = await isMonoRepo();
-    const packages = isLerna ? await LernaRepo.getPackages() : [await Package.create()];
+    const packages = [await Package.create()];
     const responses: PackageCommits[] = [];
     for (const pkg of packages) {
-      const commitInspection = await inspectCommits(pkg, isLerna);
+      const commitInspection = await inspectCommits(pkg);
       const response = Object.assign(commitInspection, {
         name: pkg.name,
         currentVersion: pkg.packageJson.version,

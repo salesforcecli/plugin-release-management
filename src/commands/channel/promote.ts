@@ -11,7 +11,6 @@ import { Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureArray, ensureNumber, ensureString, asArray } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo } from '../../repository';
 import { Channel, CLI, S3Manifest, VersionShaContents } from '../../types';
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
@@ -32,7 +31,6 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'channel
   'xz',
   'targets',
   'version',
-  'InvalidRepoType',
   'DryRunMessage',
   'CouldNotDetermineShaAndVersion',
   'MissingSourceOfPromote',
@@ -124,10 +122,6 @@ export default class Promote extends SfdxCommand {
   };
 
   public async run(): Promise<AnyJson> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfError(messages.getMessage(errType), errType);
-    }
     this.validateFlags();
     // preparing parameters for call to oclif promote commands
     const cli = this.flags.cli as CLI;
@@ -206,7 +200,6 @@ export default class Promote extends SfdxCommand {
       const version = await this.findVersionForSha(cli, sha);
       return { sha, version };
     }
-    throw new SfError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
 
   /**

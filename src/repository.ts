@@ -5,16 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
 import * as os from 'os';
-import * as fs from 'fs';
-import * as glob from 'glob';
-import { pwd } from 'shelljs';
-import { AnyJson, ensureString, getString } from '@salesforce/ts-types';
+import { ensureString } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
-import { AsyncOptionalCreatable, Env, isEmpty, sleep, parseJson } from '@salesforce/kit';
+import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { Package, VersionValidation } from './package';
@@ -22,9 +18,6 @@ import { Registry } from './registry';
 import { inspectCommits } from './inspectCommits';
 import { SigningResponse } from './codeSigning/SimplifiedSigning';
 import { api as packAndSignApi } from './codeSigning/packAndSign';
-export type LernaJson = {
-  packages?: string[];
-} & AnyJson;
 
 interface PrepareOpts {
   dryrun?: boolean;
@@ -40,13 +33,6 @@ interface PublishOpts {
   access?: Access;
 }
 
-interface VersionsByPackage {
-  [key: string]: {
-    currentVersion: string;
-    nextVersion: string;
-  };
-}
-
 export interface PackageInfo {
   name: string;
   nextVersion: string;
@@ -54,15 +40,6 @@ export interface PackageInfo {
 }
 
 type PollFunction = () => boolean;
-
-export async function isMonoRepo(): Promise<boolean> {
-  try {
-    await fs.promises.access('lerna.json');
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
 
 export type RepositoryOptions = {
   ux: UX;
@@ -187,8 +164,8 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
    * We, however, don't want to publish a new version for chore, docs, etc. So we analyze
    * the commits to see if any of them indicate that a new release should be published.
    */
-  protected async isReleasable(pkg: Package, lerna = false): Promise<boolean> {
-    const commitInspection = await inspectCommits(pkg, lerna);
+  protected async isReleasable(pkg: Package): Promise<boolean> {
+    const commitInspection = await inspectCommits(pkg);
     return commitInspection.shouldRelease;
   }
 
@@ -202,169 +179,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   protected abstract init(): Promise<void>;
 }
 
-export class LernaRepo extends Repository {
-  public packages: Package[] = [];
-
-  // Both loggers are used because some logs we only want to show in the debug output
-  // but other logs we always want to go to stdout
-  private logger!: Logger;
-
-  public constructor(options: RepositoryOptions) {
-    super(options);
-  }
-
-  public static async getPackages(): Promise<Package[]> {
-    const pkgPaths = await LernaRepo.getPackagePaths();
-    const packages: Package[] = [];
-    for (const pkgPath of pkgPaths) {
-      packages.push(await Package.create(pkgPath));
-    }
-    return packages;
-  }
-
-  public static async getPackagePaths(): Promise<string[]> {
-    const workingDir = pwd().stdout;
-
-    const fileData = await fs.promises.readFile('lerna.json', 'utf8');
-    const lernaJson = parseJson(fileData, 'lerna.json', false) as LernaJson;
-    // https://github.com/lerna/lerna#lernajson
-    // "By default, lerna initializes the packages list as ["packages/*"]"
-    const packageGlobs = lernaJson.packages || ['*'];
-    return packageGlobs
-      .map((pGlob) => glob.sync(pGlob))
-      .reduce((x, y) => x.concat(y), [])
-      .map((pkg) => path.join(workingDir, pkg));
-  }
-
-  public validate(): VersionValidation[] {
-    return this.packages.map((pkg) => pkg.validateNextVersion());
-  }
-
-  public prepare(opts: PrepareOpts = {}): void {
-    const { dryrun, githubRelease } = opts;
-
-    let cmd = 'npx lerna version --conventional-commits --yes --no-commit-hooks --no-push';
-    if (dryrun) cmd += ' --no-git-tag-version';
-    if (!dryrun && githubRelease) cmd += ' --create-release github';
-    if (!dryrun) cmd += ' --message "chore(release): publish [ci skip]"';
-    this.execCommand(cmd);
-    if (dryrun) {
-      this.revertAllChanges();
-    }
-  }
-
-  public async sign(packageNames: string[]): Promise<SigningResponse[]> {
-    this.ux.log(
-      `Command asked to sign packages ${packageNames.join(', ')}.  The repo contains ${this.packages
-        .map((pkg) => `${pkg.name} (${pkg.location})`)
-        .join(', ')}`
-    );
-    const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
-    const responses: SigningResponse[] = [];
-    packAndSignApi.setUx(this.ux);
-    for (const pkg of packages) {
-      this.ux.log(chalk.dim(`Signing ${pkg.name} at ${pkg.location}`));
-      const response = await packAndSignApi.packSignVerifyModifyPackageJSON(pkg.location);
-      responses.push(response);
-    }
-    return responses;
-  }
-
-  public async publish(opts: PublishOpts = {}): Promise<void> {
-    const { dryrun, signatures, access, tag } = opts;
-    if (!dryrun) await this.writeNpmToken();
-    const tarPathsByPkgName: { [key: string]: string } = (signatures || []).reduce((res, curr) => {
-      res[curr.packageName] = curr.fileTarPath;
-      return res;
-    }, {});
-    for (const pkg of this.packages) {
-      const tarPath = tarPathsByPkgName[pkg.name];
-      this.ux.log(`Will publish ${pkg.name} which is at ${tarPath}`);
-      let cmd = 'npm publish';
-      if (tarPath) cmd += ` ${tarPath}`;
-      if (tag) cmd += ` --tag ${tag}`;
-      if (dryrun) cmd += ' --dry-run';
-      cmd += ` ${this.registry.getRegistryParameter()}`;
-      cmd += ` --access ${access || 'public'}`;
-      this.execCommand(`(cd ${pkg.location} ; ${cmd})`);
-    }
-  }
-
-  public async waitForAvailability(): Promise<boolean> {
-    return this.poll(() => {
-      return this.packages.every((pkg) => pkg.nextVersionIsAvailable());
-    });
-  }
-
-  public getPkgInfo(packageNames: string[]): PackageInfo[] {
-    const packages = this.packages.filter((pkg) => packageNames.includes(pkg.name));
-    let pkgsInfo: PackageInfo[];
-
-    for (const pkg of packages) {
-      pkgsInfo.push({
-        name: pkg.name,
-        nextVersion: pkg.getNextVersion(),
-        registryParam: this.registry.getRegistryParameter(),
-      });
-    }
-
-    return pkgsInfo;
-  }
-
-  public getSuccessMessage(): string {
-    const successes = this.packages.map((pkg) => `  - ${pkg.name}@${pkg.getNextVersion()}`).join(os.EOL);
-    const header = chalk.green.bold(`${os.EOL}Successfully published:`);
-    return `${header}${os.EOL}${successes}`;
-  }
-
-  protected async init(): Promise<void> {
-    this.logger = await Logger.child(this.constructor.name);
-    const pkgPaths = await LernaRepo.getPackagePaths();
-    const nextVersions = this.determineNextVersionByPackage();
-    if (!isEmpty(nextVersions)) {
-      for (const pkgPath of pkgPaths) {
-        const pkg = await Package.create(pkgPath);
-        const shouldBePublished = this.shouldBePublished || (await this.isReleasable(pkg, true));
-        const nextVersion = getString(nextVersions, `${pkg.name}.nextVersion`, null);
-        if (shouldBePublished && nextVersion) {
-          pkg.setNextVersion(nextVersion);
-          this.packages.push(pkg);
-        }
-      }
-    }
-  }
-
-  private determineNextVersionByPackage(): VersionsByPackage {
-    const currentVersionRegex = /(?<=:\s)([0-9]{1,}\.|.){2,}(?=\s=>)/gi;
-    const nextVersionsRegex = /(?<==>\s)([0-9]{1,}\.|.){2,}/gi;
-    const pkgNameRegex = /(?<=-\s)(.*?)(?=:)/gi;
-    const result = this.execCommand(
-      'npx lerna version --conventional-commits --yes --no-changelog --no-commit-hooks --no-git-tag-version --no-push',
-      true
-    )
-      .replace(`Changes:${os.EOL}`, '')
-      .split(os.EOL)
-      .filter((s) => !!s)
-      .reduce((res, current) => {
-        try {
-          const currentVersion = current.match(currentVersionRegex)[0];
-          const nextVersion = current.match(nextVersionsRegex)[0];
-          const pkgName = current.match(pkgNameRegex)[0];
-          res[pkgName] = { currentVersion, nextVersion };
-          return res;
-        } catch {
-          return res;
-        }
-      }, {});
-    this.logger.debug('determined the following version bumps:');
-    this.logger.debug(result);
-    // lerna modifies the package.json files so we want to reset them
-    this.revertAllChanges();
-    return result;
-  }
-}
-
-export class SinglePackageRepo extends Repository {
+export class PackageRepo extends Repository {
   public name: string;
   public nextVersion: string;
   public package: Package;
