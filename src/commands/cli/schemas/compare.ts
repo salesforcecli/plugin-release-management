@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import { parseJsonMap } from '@salesforce/kit';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfError } from '@salesforce/core';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { SchemaUtils } from './collect';
 
 Messages.importMessagesDirectory(__dirname);
@@ -86,7 +86,7 @@ export default class Compare extends SfdxCommand {
         correspondingFile: { header: 'Corresponding File' },
         matches: { header: 'Matches?' },
       };
-      cli.table(data, columns);
+      CliUx.ux.table(data, columns);
     }
 
     const hasErrors = Object.values(results).some((result) => result.matches === false);

@@ -8,7 +8,7 @@
 import { EOL } from 'os';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { cli } from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
 
 Messages.importMessagesDirectory(__dirname);
@@ -21,14 +21,14 @@ export default class Repositories extends SfdxCommand {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   public static readonly flagsConfig: FlagsConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(cli.table.flags() as any),
+    ...(CliUx.ux.table.flags() as any),
   };
 
   public async run(): Promise<RepositoryInfo[]> {
     const repositories = await retrieveKnownRepositories();
 
     if (!this.flags.json) {
-      cli.table(
+      CliUx.ux.table(
         repositories,
         {
           organization: {},

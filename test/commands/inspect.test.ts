@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { expect } from '@salesforce/command/lib/test';
 import Inspect from '../../src/commands/cli/versions/inspect';
 import { Channel, Info, Location } from '../../src/commands/cli/versions/inspect';
@@ -12,7 +12,7 @@ import { Channel, Info, Location } from '../../src/commands/cli/versions/inspect
 describe('cli:versions:inspect', () => {
   let cmd;
   beforeEach(() => {
-    cmd = new Inspect(['-c', 'stable', '-l', 'archive'], {} as IConfig);
+    cmd = new Inspect(['-c', 'stable', '-l', 'archive'], {} as Config);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     cmd.ux = {
