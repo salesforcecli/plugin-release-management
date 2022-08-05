@@ -64,6 +64,15 @@ interface PinnedPackage {
   alias: Nullable<string>;
 }
 
+// Differentiates between dependencyName and packageName to support npm aliases
+interface DependencyInfo {
+  dependencyName: string;
+  packageName: string;
+  alias: Nullable<string>;
+  currentVersion?: string;
+  finalVersion?: string;
+}
+
 export function parseAliasedPackageName(alias: string): string {
   return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
 }
@@ -157,25 +166,105 @@ export class Package extends AsyncOptionalCreatable {
     });
   }
 
+  public getDistTags(name: string): Record<string, string> {
+    const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+      silent: true,
+    });
+    return JSON.parse(result.stdout) as Record<string, string>;
+  }
+
   public bumpResolutions(tag: string): void {
     if (!this.packageJson.resolutions) {
       throw new SfError('Bumping resolutions requires property "resolutions" to be present in package.json');
     }
 
     Object.keys(this.packageJson.resolutions).map((key: string) => {
-      const result = exec(`npm view ${key} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-        silent: true,
-      });
-      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      const versions = this.getDistTags(key);
       this.packageJson.resolutions[key] = versions[tag];
     });
   }
 
+  // Lookup dependency info by package name or npm alias
+  // Examples: @salesforce/plugin-info or @sf/info
+  // Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
+  public getDependencyInfo(name: string, dependencies: Record<string, string>): DependencyInfo {
+    for (const [key, value] of Object.entries(dependencies)) {
+      if (key === name) {
+        if (value.startsWith('npm:')) {
+          // npm alias was passed in as name, so we need to parse package name and version
+          // e.g. passed in:  "@sf/login"
+          //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
+          return {
+            dependencyName: key,
+            packageName: parseAliasedPackageName(value),
+            alias: value,
+            currentVersion: parsePackageVersion(value),
+          };
+        } else {
+          // package name was passed, so we can use key and value directly
+          return {
+            dependencyName: key,
+            packageName: key,
+            alias: null,
+            currentVersion: value,
+          };
+        }
+      }
+      if (value.startsWith(`npm:${name}`)) {
+        // package name was passed in as name, but an alias is used for the dependency
+        // e.g. passed in:  "@salesforce/plugin-login"
+        //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
+        return {
+          dependencyName: key,
+          packageName: name,
+          alias: value,
+          currentVersion: parsePackageVersion(value),
+        };
+      }
+    }
+
+    cli.error(`${name} was not found in the dependencies section of the package.json`);
+  }
+
+  public bumpDependencyVersions(targetDependencies: string[]): DependencyInfo[] {
+    return targetDependencies
+      .map((dep) => {
+        // regex for npm package with optional namespace and version
+        // https://regex101.com/r/HmIu3N/1
+        const npmPackageRegex = /^((?:@[^/]+\/)?[^@/]+)(?:@([^@/]+))?$/;
+        const [, name, version] = npmPackageRegex.exec(dep);
+
+        // We will look for packages in dependencies and resolutions
+        const { dependencies, resolutions } = this.packageJson;
+
+        // find dependency in package.json (could be an npm alias)
+        const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions });
+
+        // if a version is not provided, we'll look up the "latest" version
+        depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
+
+        // return if version did not change
+        if (depInfo.currentVersion === depInfo.finalVersion) return;
+
+        // override final version if npm alias is used
+        if (depInfo.alias) {
+          depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
+        }
+
+        // update dependency (or resolution) in package.json
+        if (dependencies[depInfo.dependencyName]) {
+          this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
+        } else {
+          this.packageJson.resolutions[depInfo.dependencyName] = depInfo.finalVersion;
+        }
+
+        return depInfo;
+      })
+      .filter(Boolean); // remove falsy values, in this case the `undefined` if version did not change
+  }
+
   public getNextRCVersion(tag: string, isPatch = false): string {
-    const result = exec(`npm view ${this.packageJson.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-      silent: true,
-    });
-    const versions = JSON.parse(result.stdout) as Record<string, string>;
+    const versions = this.getDistTags(this.packageJson.name);
 
     const version = semver.parse(versions[tag]);
     return isPatch
@@ -223,10 +312,7 @@ export class Package extends AsyncOptionalCreatable {
     const pinnedPackages: PinnedPackage[] = [];
     deps.forEach((dep) => {
       // get the 'release' tag version or the version specified by the passed in tag
-      const result = exec(`npm view ${dep.name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
-        silent: true,
-      });
-      const versions = JSON.parse(result.stdout) as Record<string, string>;
+      const versions = this.getDistTags(dep.name);
       let tag = dep.tag;
 
       // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
@@ -250,9 +336,9 @@ export class Package extends AsyncOptionalCreatable {
 
       // insert the new hardcoded versions into the dependencies in the project's package.json
       if (dep.alias) {
-        this.packageJson['dependencies'][dep.alias] = `npm:${dep.name}@${version}`;
+        this.packageJson.dependencies[dep.alias] = `npm:${dep.name}@${version}`;
       } else {
-        this.packageJson['dependencies'][dep.name] = version;
+        this.packageJson.dependencies[dep.name] = version;
       }
       // accumulate information to return
       pinnedPackages.push({ name: dep.name, version, tag, alias: dep.alias });

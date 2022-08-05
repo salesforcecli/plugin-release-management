@@ -1,9 +1,16 @@
 {
   "description": "creates a PR to the repository property defined in the package.json to release a latest-rc build",
+  "examples": [
+    "<%= config.bin %> <%= command.id %>",
+    "<%= config.bin %> <%= command.id %> --patch",
+    "<%= config.bin %> <%= command.id %> --build-only",
+    "<%= config.bin %> <%= command.id %> --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config"
+  ],
   "flags": {
     "rctag": "the tag name that corresponds to the npm RC build, usually latest-rc or stable-rc",
     "resolutions": "bump the versions of packages listed in the resolutions section",
     "pinnedDeps": "bump the versions of the packages listed in the pinnedDependencies section",
+    "only": "only bump the version of the packages passed in, uses latest if version is not provided",
     "patch": "bump the release as a patch of an existing version, not a new minor version",
     "buildOnly": "only build the latest rc, do not git add/commit/push"
   }

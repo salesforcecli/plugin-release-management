@@ -4,27 +4,32 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
+import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { exec, ExecOptions } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { bold } from 'chalk';
-import { Messages } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { PackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'cli.latestrc.build', [
   'description',
+  'examples',
   'flags.rctag',
   'flags.buildOnly',
   'flags.resolutions',
+  'flags.only',
   'flags.pinnedDeps',
   'flags.patch',
 ]);
 
 export default class build extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flagsConfig: FlagsConfig = {
     rctag: flags.string({
       description: messages.getMessage('flags.rctag'),
@@ -38,6 +43,9 @@ export default class build extends SfdxCommand {
       description: messages.getMessage('flags.resolutions'),
       default: true,
       allowNo: true,
+    }),
+    only: flags.array({
+      description: messages.getMessage('flags.only'),
     }),
     'pinned-deps': flags.boolean({
       description: messages.getMessage('flags.pinnedDeps'),
@@ -79,18 +87,30 @@ export default class build extends SfdxCommand {
     repo.package.setNextVersion(nextRCVersion);
     repo.package.packageJson.version = nextRCVersion;
 
-    // bump resolution deps
-    if (this.flags.resolutions) {
-      this.ux.log('bumping resolutions in the package.json to their "latest"');
-      repo.package.bumpResolutions('latest');
-    }
+    const only = this.flags.only as string[];
 
-    // pin the pinned dependencies
-    if (this.flags['pinned-deps']) {
-      this.ux.log('pinning dependencies in pinnedDependencies to "latest-rc"');
-      repo.package.pinDependencyVersions('latest-rc');
-    }
+    if (only) {
+      this.ux.log(`bumping the following dependencies only: ${only.join(', ')}`);
+      const bumped = repo.package.bumpDependencyVersions(only);
 
+      if (!bumped.length) {
+        throw new SfError(
+          'No version changes made. Confirm you are passing the correct dependency and version to --only.'
+        );
+      }
+    } else {
+      // bump resolution deps
+      if (this.flags.resolutions) {
+        this.ux.log('bumping resolutions in the package.json to their "latest"');
+        repo.package.bumpResolutions('latest');
+      }
+
+      // pin the pinned dependencies
+      if (this.flags['pinned-deps']) {
+        this.ux.log('pinning dependencies in pinnedDependencies to "latest-rc"');
+        repo.package.pinDependencyVersions('latest-rc');
+      }
+    }
     repo.package.writePackageJson();
 
     this.exec('yarn install');
