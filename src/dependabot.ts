@@ -4,16 +4,18 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import * as fs from 'fs';
 import { diff, ReleaseType } from 'semver';
 import { flags } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
+import { parseJson } from '@salesforce/kit';
 import { ensureString, isString } from '@salesforce/ts-types';
 import { PackageJson } from './package';
 
 type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
+const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
 
 export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
   const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
@@ -42,7 +44,8 @@ export const getOwnerAndRepo = async (
   ownerFlag: string,
   repoFlag: string
 ): Promise<{ owner: string; repo: string }> => {
-  const pkgJson = (await fs.readJson('package.json')) as PackageJson;
+  const fileData = await fs.promises.readFile('package.json', 'utf8');
+  const pkgJson = parseJson(fileData, 'package.json', false) as PackageJson;
   if (pkgJson.repository && isString(pkgJson.repository)) {
     const [owner, repo] = pkgJson.repository?.split('/');
     return { owner, repo };

@@ -6,8 +6,9 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs/promises';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
@@ -15,7 +16,13 @@ import { NpmPackage, Package } from '../../package';
 import { PackageRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
+const messages = Messages.load('@salesforce/plugin-release-management', 'typescript.update', [
+  'description',
+  'typescriptVersion',
+  'esTarget',
+  'InvalidTargetVersion',
+  'InvalidTypescriptVersion',
+]);
 
 export default class Update extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -74,7 +81,11 @@ export default class Update extends SfdxCommand {
 
     set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
     this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
-    await fs.writeJson(tsConfigPath, tsConfig);
+    const fileData: string = JSON.stringify(tsConfig, null, 2);
+    await fs.writeFile(tsConfigPath, fileData, {
+      encoding: 'utf8',
+      mode: '600',
+    });
   }
 
   private async updateEsTarget(): Promise<void> {
@@ -115,7 +126,7 @@ export default class Update extends SfdxCommand {
     if (result.code === 0) {
       return JSON.parse(result.stdout) as NpmPackage;
     } else {
-      throw new SfdxError('Could not find typescript on the npm registry', 'TypescriptNotFound');
+      throw new SfError('Could not find typescript on the npm registry', 'TypescriptNotFound');
     }
   }
 
@@ -124,15 +135,13 @@ export default class Update extends SfdxCommand {
 
     if (/ES[0-9]{4}/g.test(this.flags.target)) return true;
 
-    throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTargetVersion', [
-      this.flags.target,
-    ]);
+    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [this.flags.target]);
   }
 
   private validateTsVersion(): boolean {
     if (this.flags.version === 'latest') return true;
     if (this.flags.version && !this.typescriptPkg.versions.includes(this.flags.version)) {
-      throw SfdxError.create('@salesforce/plugin-release-management', 'typescript.update', 'InvalidTypescriptVersion', [
+      throw new SfError(messages.getMessage('InvalidTypescriptVersion'), 'InvalidTypescriptVersion', [
         this.flags.version,
       ]);
     }

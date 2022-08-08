@@ -6,20 +6,41 @@
  */
 
 import * as os from 'os';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensure, ensureNumber, get } from '@salesforce/ts-types';
 import { red, yellow, green } from 'chalk';
+import { parseJson } from '@salesforce/kit';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.verify');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.tarballs.verify', [
+  'description',
+  'examples',
+  'cli',
+  'windowsUsernameBuffer',
+]);
 
 const PASSED = green.bold('PASSED');
 const FAILED = red.bold('FAILED');
+
+/**
+ * Checks if a file path exists
+ *
+ * @param filePath the file path to check the existence of
+ */
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
 
 /**
  * The functionality of this command is taken entirely from https://github.com/salesforcecli/sfdx-cli/blob/v7.109.0/scripts/verify-tarballs
@@ -88,11 +109,11 @@ export default class Verify extends SfdxCommand {
   public async ensureNoWebDriverIO(): Promise<void> {
     const webDriverIo = path.join(this.baseDir, 'node_modules', 'webdriverio', 'test');
     const validate = async (): Promise<boolean> => {
-      return !(await fs.fileExists(webDriverIo));
+      return !(await fileExists(webDriverIo));
     };
     const passed = await this.execute('Ensure webdriverio does not exist', validate);
     if (!passed) {
-      throw new SfdxError(`${webDriverIo} is present. Was the clean not aggressive enough?`);
+      throw new SfError(`${webDriverIo} is present. Was the clean not aggressive enough?`);
     }
   }
 
@@ -109,11 +130,11 @@ export default class Verify extends SfdxCommand {
       '.nyc_output'
     );
     const validate = async (): Promise<boolean> => {
-      return !(await fs.fileExists(herokuCliUtil));
+      return !(await fileExists(herokuCliUtil));
     };
     const passed = await this.execute('Ensure heroku-cli-util/.nyc_output does not exist', validate);
     if (!passed) {
-      throw new SfdxError(`${herokuCliUtil} is present. Was the clean not aggressive enough?`);
+      throw new SfError(`${herokuCliUtil} is present. Was the clean not aggressive enough?`);
     }
   }
 
@@ -176,16 +197,16 @@ export default class Verify extends SfdxCommand {
     };
     const passed = await this.execute('Ensure windows path lengths', validate);
     if (!passed) {
-      throw new SfdxError('Unacceptably long paths detected in base build!');
+      throw new SfError('Unacceptably long paths detected in base build!');
     }
   }
 
   public async ensureApexNode(): Promise<void> {
     const apexNodePath = path.join(this.baseDir, 'node_modules', '@salesforce', 'apex-node', 'lib', 'src', 'tests');
-    const validate = async (): Promise<boolean> => fs.fileExists(apexNodePath);
+    const validate = async (): Promise<boolean> => fileExists(apexNodePath);
     const passed = await this.execute('Ensure apex-node exists', validate);
     if (!passed) {
-      throw new SfdxError(`${apexNodePath} is missing!. Was the clean too aggressive?`);
+      throw new SfError(`${apexNodePath} is missing!. Was the clean too aggressive?`);
     }
   }
 
@@ -199,19 +220,19 @@ export default class Verify extends SfdxCommand {
       'sfdxPlugin',
       'test'
     );
-    const validate = async (): Promise<boolean> => fs.fileExists(pluginGeneratorTestPath);
+    const validate = async (): Promise<boolean> => fileExists(pluginGeneratorTestPath);
     const passed = await this.execute('Ensure plugin generator test template exists', validate);
     if (!passed) {
-      throw new SfdxError(`${pluginGeneratorTestPath} is missing!. Was the clean too aggressive?`);
+      throw new SfError(`${pluginGeneratorTestPath} is missing!. Was the clean too aggressive?`);
     }
   }
 
   public async ensureTemplatesCommands(): Promise<void> {
     const templatesPath = path.join(this.baseDir, 'node_modules', '@salesforce', 'plugin-templates');
-    const validate = async (): Promise<boolean> => fs.fileExists(templatesPath);
+    const validate = async (): Promise<boolean> => fileExists(templatesPath);
     const passed = await this.execute('Ensure templates commands exist', validate);
     if (!passed) {
-      throw new SfdxError(`${templatesPath} is missing!. Was the doc clean too aggressive?`);
+      throw new SfError(`${templatesPath} is missing!. Was the doc clean too aggressive?`);
     }
   }
 
@@ -227,7 +248,7 @@ export default class Verify extends SfdxCommand {
     };
     const passed = await this.execute('Ensure no tests or maps in dist', validate);
     if (!passed) {
-      throw new SfdxError(`Found .test.js and/or .js.map files in ${path.join(this.baseDir, 'dist')}`);
+      throw new SfError(`Found .test.js and/or .js.map files in ${path.join(this.baseDir, 'dist')}`);
     }
   }
 
@@ -258,13 +279,14 @@ export default class Verify extends SfdxCommand {
     };
     const passed = await this.execute('Ensure no unexpected files', validate);
     if (!passed) {
-      throw new SfdxError('Unexpected file found in base build dir!');
+      throw new SfError('Unexpected file found in base build dir!');
     }
   }
 
   public async ensureMdMessagesExist(): Promise<void> {
     const validate = async (): Promise<boolean> => {
-      const packageJson = await fs.readJson(path.join(this.baseDir, 'package.json'));
+      const fileData = await fs.readFile(path.join(this.baseDir, 'package.json'), 'utf8');
+      const packageJson = parseJson(fileData, path.join(this.baseDir, 'package.json'), false);
       const plugins = get(packageJson, 'oclif.plugins', []) as string[];
       const globs = plugins.map((p) => `${this.baseDir}/node_modules/${p}/messages/*.md`);
       const files = await fg(globs);
@@ -272,23 +294,23 @@ export default class Verify extends SfdxCommand {
     };
     const passed = await this.execute('Ensure .md messages exist', validate);
     if (!passed) {
-      throw new SfdxError('Found no .md message files. Was the clean too aggresive?');
+      throw new SfError('Found no .md message files. Was the clean too aggresive?');
     }
   }
 
   public async ensureSfIsIncluded(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const sfBin = path.join(this.baseDir, 'bin', 'sf');
-      const sfBinExists = await fs.fileExists(sfBin);
+      const sfBinExists = await fileExists(sfBin);
       const sfCmd = path.join(this.baseDir, 'bin', 'sf.cmd');
-      const sfCmdExists = await fs.fileExists(sfCmd);
+      const sfCmdExists = await fileExists(sfCmd);
       const version = exec(`${sfBin} --version`, { silent: false });
       const help = exec(`${sfBin} --help`, { silent: false });
       return sfBinExists && sfCmdExists && version.code === 0 && help.code === 0;
     };
     const passed = await this.execute('Ensure sf is included\n', validate);
     if (!passed) {
-      throw new SfdxError('sf was not included! Did include-sf.js succeed?');
+      throw new SfError('sf was not included! Did include-sf.js succeed?');
     }
   }
 }

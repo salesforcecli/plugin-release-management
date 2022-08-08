@@ -8,14 +8,14 @@
 
 /* eslint-disable no-underscore-dangle */
 
+import * as fs from 'fs/promises';
 import { exec } from 'child_process';
 import { EOL } from 'os';
 import { join as pathJoin } from 'path';
-import { copyFile } from 'fs';
 import { Agent } from 'https';
 import { Agents } from 'got';
 import { UX } from '@salesforce/command';
-import { fs, Logger } from '@salesforce/core';
+import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
@@ -180,13 +180,8 @@ export const api = {
    * @param src - the package.json to backup
    * @param dest - package.json.bak
    */
-  copyPackageDotJson(src: string, dest: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      copyFile(src, dest, (err) => {
-        if (err) reject(err);
-        resolve();
-      });
-    });
+  async copyPackageDotJson(src: string, dest: string): Promise<void> {
+    await fs.copyFile(src, dest);
   },
 
   /**
@@ -200,11 +195,10 @@ export const api = {
 
   async revertPackageJsonIfExists(): Promise<void> {
     // Restore the package.json file so it doesn't show a git diff.
-    if (fs.existsSync(pathGetter.packageJsonBak)) {
-      cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
-      await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
-      await fs.unlink(pathGetter.packageJsonBak);
-    }
+    await fs.access(pathGetter.packageJsonBak);
+    cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
+    await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
+    await fs.unlink(pathGetter.packageJsonBak);
   },
   /**
    * main method to pack and sign an npm.

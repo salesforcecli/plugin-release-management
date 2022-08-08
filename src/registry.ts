@@ -8,8 +8,9 @@
 import { URL } from 'url';
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs/promises';
 import { exec } from 'shelljs';
-import { fs, SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 
 export class Registry {
@@ -62,7 +63,7 @@ export class Registry {
    */
   public async setNpmAuth(packageDirectory: string): Promise<void> {
     if (!this.authToken) {
-      throw new SfdxError('auth token has not been set');
+      throw new SfError('auth token has not been set');
     }
     let npmrc: string[] = await this.readNpmrc(packageDirectory);
     const normalizedRegistry = this.normalizeRegistryUrl();
@@ -97,7 +98,10 @@ export class Registry {
   }
 
   public async readNpmrc(packageDir: string): Promise<string[]> {
-    if (!(await fs.fileExists(path.join(packageDir, '.npmrc')))) {
+    try {
+      // check that `.npmrc` exists
+      await fs.access(path.join(packageDir, '.npmrc'));
+    } catch (err) {
       return [];
     }
 

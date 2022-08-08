@@ -4,13 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import * as fs from 'fs';
 import { $$, expect, test } from '@salesforce/command/lib/test';
 import * as shell from 'shelljs';
-import { fs } from '@salesforce/core';
 
 function setupStub(alias?: string): void {
   // prevent it from writing back to the package.json
-  $$.SANDBOX.stub(fs, 'writeJsonSync');
+  $$.SANDBOX.stub(fs, 'writeFileSync');
   const pJson = alias
     ? {
         name: 'test',
@@ -24,7 +24,7 @@ function setupStub(alias?: string): void {
         dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
         pinnedDependencies: ['@salesforce/plugin-auth'],
       };
-  $$.SANDBOX.stub(fs, 'readJson').resolves(pJson);
+  $$.SANDBOX.stub(fs.promises, 'readFile').resolves(JSON.stringify(pJson));
   // we don't need all members of what exec returns, just the stdout
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
