@@ -8,9 +8,9 @@
     "sf-release": "bin/run"
   },
   "dependencies": {
-    "@oclif/config": "^1",
+    "@oclif/core": "^1.13.3",
     "@octokit/core": "^3.4.0",
-    "@salesforce/command": "^4.2.0",
+    "@salesforce/command": "^5.2.3",
     "@salesforce/core": "^3.26.0",
     "@salesforce/kit": "^1.5.22",
     "@salesforce/plugin-trust": "^1.1.0",
@@ -18,14 +18,12 @@
     "agent-base": "^6.0.2",
     "aws-sdk": "^2.1043.0",
     "chalk": "^4.1.0",
-    "cli-ux": "^5.5.1",
     "conventional-changelog-conventionalcommits": "^4.6.1",
     "conventional-changelog-preset-loader": "^2.3.4",
     "conventional-commits-parser": "^3.2.2",
     "fast-glob": "^3.2.7",
     "glob": "^7.2.0",
     "got": "^11.8.3",
-    "oclif": "^2.4.4",
     "proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.1.0",
     "semver": "^7.3.5",
@@ -36,8 +34,9 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1",
-    "@oclif/plugin-command-snapshot": "^2.2.2",
+    "oclif": "^3.1.2",
+    "@oclif/test": "^1",
+    "@oclif/plugin-command-snapshot": "^3",
     "@salesforce/cli-plugins-testkit": "^1.4.11",
     "@salesforce/dev-config": "^3.0.0",
     "@salesforce/dev-scripts": "^2.0.3",
@@ -174,17 +173,17 @@
     "docs": "sf-docs",
     "format": "sf-format",
     "lint": "sf-lint",
-    "oclif-artifacts": "oclif-dev manifest",
+    "oclif-artifacts": "oclif manifest",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
     "test": "sf-test",
-    "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
-    "test:deprecation-policy": "./bin/run snapshot:compare",
+    "test:command-reference": "./bin/dev commandreference:generate --erroronwarnings",
+    "test:deprecation-policy": "./bin/dev snapshot:compare",
     "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
-    "version": "oclif-dev readme"
+    "version": "oclif readme"
   },
   "publishConfig": {
     "access": "public"

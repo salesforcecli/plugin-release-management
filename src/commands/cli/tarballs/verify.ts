@@ -96,13 +96,13 @@ export default class Verify extends SfdxCommand {
   }
 
   public async execute(msg: string, validate: () => Promise<boolean>): Promise<boolean> {
-    this.ux.cli.action.start(`[${this.step}/${this.totalSteps}] ${msg}`);
+    this.ux.startSpinner(`[${this.step}/${this.totalSteps}] ${msg}`);
     if (!(await validate())) {
-      this.ux.cli.action.stop(FAILED);
+      this.ux.stopSpinner(FAILED);
       return false;
     }
     this.step += 1;
-    this.ux.cli.action.stop(PASSED);
+    this.ux.stopSpinner(PASSED);
     return true;
   }
 

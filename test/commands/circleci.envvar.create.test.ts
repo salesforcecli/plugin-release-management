@@ -9,8 +9,6 @@ import { UX } from '@salesforce/command';
 import { expect, test } from '@salesforce/command/lib/test';
 import { env } from '@salesforce/kit';
 import got from 'got';
-import { load } from '@oclif/config';
-import chalk = require('chalk');
 import { EnvvarModificationStatus } from '../../src/circleCiEnvvars';
 import CircleCIEnvvarCreate, { CircelCIEnvvarCreateStatus } from '../../src/commands/circleci/envvar/create';
 
@@ -50,11 +48,6 @@ function expectSlugStatus(slugs: string[], result: CircelCIEnvvarCreateStatus) {
 }
 
 before(async function () {
-  // eslint-disable-next-line no-console
-  console.log(chalk.yellow('Loading oclif commands into memory'));
-  this.timeout(100000);
-  // Prime oclif commands into memory
-  await load(`${__dirname}/../../`);
   process.env['CIRCLE_CI_TOKEN'] = '123456';
 });
 
