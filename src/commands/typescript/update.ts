@@ -11,8 +11,8 @@ import { fs, Messages, SfdxError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
-import { NpmPackage, Package, PackageJson } from '../../package';
-import { SinglePackageRepo, LernaRepo, isMonoRepo } from '../../repository';
+import { NpmPackage, Package } from '../../package';
+import { PackageRepo } from '../../repository';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'typescript.update');
@@ -33,7 +33,7 @@ export default class Update extends SfdxCommand {
   };
 
   private typescriptPkg: NpmPackage;
-  private repo: SinglePackageRepo | LernaRepo;
+  private repo: PackageRepo;
   private packages: Package[];
 
   public async run(): Promise<void> {
@@ -41,15 +41,13 @@ export default class Update extends SfdxCommand {
     this.validateEsTarget();
     this.validateTsVersion();
 
-    this.repo = (await isMonoRepo())
-      ? await LernaRepo.create({ ux: this.ux, shouldBePublished: true })
-      : await SinglePackageRepo.create({ ux: this.ux });
+    this.repo = await PackageRepo.create({ ux: this.ux });
 
-    this.packages = await this.getPackages();
+    this.packages = this.getPackages();
 
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
-    await this.updateTsVersion();
+    this.updateTsVersion();
     await this.updateEsTarget();
 
     try {
@@ -62,8 +60,8 @@ export default class Update extends SfdxCommand {
     }
   }
 
-  private async getPackages(): Promise<Package[]> {
-    return this.repo instanceof LernaRepo ? await LernaRepo.getPackages() : [this.repo.package];
+  private getPackages(): Package[] {
+    return [this.repo.package];
   }
 
   private async updateEsTargetConfig(packagePath: string): Promise<void> {
@@ -85,7 +83,7 @@ export default class Update extends SfdxCommand {
     }
   }
 
-  private async updateTsVersion(): Promise<void> {
+  private updateTsVersion(): void {
     const newVersion = this.determineNextTsVersion();
     for (const pkg of this.packages) {
       if (pkg.packageJson.devDependencies['typescript']) {
@@ -103,17 +101,6 @@ export default class Update extends SfdxCommand {
       }
 
       pkg.writePackageJson(pkg.location);
-    }
-
-    if (this.repo instanceof LernaRepo) {
-      const pkgJson = (await fs.readJson('package.json')) as PackageJson;
-      // If the install script runs sf-lerna-install, the install will fail because the typescript version
-      // won't match the expected version. So in that case, we delete the prepare script so that we
-      // get a successful install
-      if (pkgJson.scripts['install'] === 'sf-lerna-install') {
-        delete pkgJson.scripts['install'];
-        await fs.writeJson('package.json', pkgJson);
-      }
     }
   }
 

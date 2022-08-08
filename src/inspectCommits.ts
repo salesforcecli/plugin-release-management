@@ -35,23 +35,19 @@ export interface CommitInspection {
  * We, however, don't want to publish a new version for chore, docs, etc. So we analyze
  * the commits to see if any of them indicate that a new release should be published.
  */
-export async function inspectCommits(pkg: Package, lerna = false): Promise<CommitInspection> {
+export async function inspectCommits(pkg: Package): Promise<CommitInspection> {
   const skippableCommitTypes = ['chore', 'style', 'docs', 'ci', 'test'];
 
   // find the latest git tag so that we can get all the commits that have happened since
   const tags = exec('git fetch --tags && git tag', { silent: true }).stdout.split(os.EOL);
-  const latestTag = lerna
-    ? tags.find((tag) => tag.includes(`${pkg.name}@${pkg.npmPackage.version}`)) || ''
-    : tags.find((tag) => tag.includes(pkg.npmPackage.version));
+  const latestTag = tags.find((tag) => tag.includes(pkg.npmPackage.version));
   // import the default commit parser configuration
   const defaultConfigPath = require.resolve('conventional-changelog-conventionalcommits');
   const configuration = await conventionalChangelogPresetLoader({ name: defaultConfigPath });
 
   const commits: Commit[] = await new Promise((resolve) => {
     const DELIMITER = 'SPLIT';
-    const gitLogCommand = lerna
-      ? `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges -- ${pkg.location}`
-      : `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges`;
+    const gitLogCommand = `git log --format=%B%n-hash-%n%H%n${DELIMITER} ${latestTag}..HEAD --no-merges`;
     const gitLog = exec(gitLogCommand, { silent: true })
       .stdout.split(`${DELIMITER}${os.EOL}`)
       .filter((c) => !!c);
