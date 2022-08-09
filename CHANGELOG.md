@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.14.0...v3.0.0) (2022-08-09)
+
+### ⚠ BREAKING CHANGES
+
+- parking orbit
+- remove lerna support
+
+- Merge pull request #507 from salesforcecli/cd/parking-orbit ([5419383](https://github.com/salesforcecli/plugin-release-management/commit/5419383c24628802de2ab7668f14c2771773b522)), closes [#507](https://github.com/salesforcecli/plugin-release-management/issues/507)
+- remove lerna support ([104df95](https://github.com/salesforcecli/plugin-release-management/commit/104df95765e73b5e65724b69e0d89ea10df78218))
+
 ## [2.14.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.13.1...v2.14.0) (2022-08-03)
 
 ### Features
