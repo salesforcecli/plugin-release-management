@@ -9,7 +9,7 @@ import * as os from 'os';
 import { ensureString } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { exec, ShellString } from 'shelljs';
-import { Logger, SfdxError } from '@salesforce/core';
+import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
@@ -128,7 +128,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     if (!silent) this.ux.log(`${chalk.dim(cmd)}${os.EOL}`);
     const result = exec(cmd, { silent });
     if (result.code !== 0) {
-      throw new SfdxError(result.stderr, 'FailedCommandExecution');
+      throw new SfError(result.stderr, 'FailedCommandExecution');
     } else {
       return result;
     }

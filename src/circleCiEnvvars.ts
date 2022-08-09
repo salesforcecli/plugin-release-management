@@ -8,7 +8,7 @@ import { fstat } from 'fs';
 import { EOL } from 'os';
 import { SfdxCommand } from '@salesforce/command';
 import { env } from '@salesforce/kit';
-import { SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import { AnyJson, getArray, isArray, isString } from '@salesforce/ts-types';
 import got, { Response } from 'got';
 import { bold, cyan, green, red } from 'chalk';
@@ -27,7 +27,7 @@ export abstract class CircleCiEnvvars extends SfdxCommand {
   protected get headers(): { [index: string]: string } {
     const token = env.getString('CIRCLE_CI_TOKEN');
     if (!token) {
-      throw new SfdxError('The environment variable "CIRCLE_CI_TOKEN" is required.');
+      throw new SfError('The environment variable "CIRCLE_CI_TOKEN" is required.');
     }
     return {
       'Circle-Token': token,
@@ -42,7 +42,7 @@ export abstract class CircleCiEnvvars extends SfdxCommand {
       } else if (!(await this.isPipedIn())) {
         this.envvarValues[envvarName] = await this.ux.prompt(envvarName, { type: 'mask' });
       } else {
-        throw new SfdxError(`missing envvar value for ${envvarName}`);
+        throw new SfError(`missing envvar value for ${envvarName}`);
       }
     }
   }
@@ -67,7 +67,7 @@ export abstract class CircleCiEnvvars extends SfdxCommand {
     slugs = [...slugs, ...this.getFlagAsArray('slug')];
 
     if (!slugs) {
-      throw new SfdxError('missing input slugs');
+      throw new SfError('missing input slugs');
     }
     return slugs.filter((slug) => !!slug);
   }

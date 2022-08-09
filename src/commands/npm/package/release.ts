@@ -8,7 +8,7 @@
 import * as os from 'os';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
@@ -66,7 +66,7 @@ export default class Release extends SfdxCommand {
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
-      throw new SfdxError(messages.getMessage(errType), errType, missing);
+      throw new SfError(messages.getMessage(errType), errType, missing);
     }
 
     const pkg = await PackageRepo.create({ ux: this.ux, useprerelease: this.flags.prerelease as string });
@@ -81,7 +81,7 @@ export default class Release extends SfdxCommand {
     const pkgValidation = pkg.validate();
     if (!pkgValidation.valid) {
       const errType = 'InvalidNextVersion';
-      throw new SfdxError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
+      throw new SfError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
     }
     this.ux.log(`Name: ${pkgValidation.name}`);
     this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
@@ -159,7 +159,7 @@ export default class Release extends SfdxCommand {
         );
       }
     } catch (err) {
-      throw new SfdxError(err, 'FailedCommandExecution');
+      throw new SfError(err, 'FailedCommandExecution');
     }
   }
 }
