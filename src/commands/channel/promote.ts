@@ -7,11 +7,10 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureArray, ensureNumber, ensureString, asArray } from '@salesforce/ts-types';
 import { ShellString } from 'shelljs';
 import { bold } from 'chalk';
-import { isMonoRepo } from '../../repository';
 import { Channel, CLI, S3Manifest, VersionShaContents } from '../../types';
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
@@ -59,8 +58,8 @@ export default class Promote extends SfdxCommand {
       char: 's',
       description: messages.getMessage('sha'),
       exclusive: ['candidate'],
-      parse: (input: string): string => {
-        return input.slice(0, 7);
+      parse: (input: string): Promise<string> => {
+        return Promise.resolve(input.slice(0, 7));
       },
       validate: (input: string): boolean => {
         if (input.length < 7) {
@@ -95,16 +94,12 @@ export default class Promote extends SfdxCommand {
       char: 'T',
       description: messages.getMessage('version'),
       exclusive: ['sha', 'candidate'],
-      parse: (input: string): string => input.trim(),
+      parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
       validate: (input: string): boolean => /^([0-9]+\.){2}[0-9]+$/.test(input),
     }),
   };
 
   public async run(): Promise<AnyJson> {
-    if (await isMonoRepo()) {
-      const errType = 'InvalidRepoType';
-      throw new SfdxError(messages.getMessage(errType), errType);
-    }
     this.validateFlags();
     // preparing parameters for call to oclif promote commands
     const cli = this.flags.cli as CLI;
@@ -183,7 +178,7 @@ export default class Promote extends SfdxCommand {
       const version = await this.findVersionForSha(cli, sha);
       return { sha, version };
     }
-    throw new SfdxError(messages.getMessage('CouldNotDetermineShaAndVersion'));
+    throw new SfError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
 
   /**
@@ -194,11 +189,11 @@ export default class Promote extends SfdxCommand {
   private validateFlags(): void {
     // requires one of the following flags
     if (!this.flags.version && !this.flags.sha && !this.flags.candidate) {
-      throw new SfdxError(messages.getMessage('MissingSourceOfPromote'));
+      throw new SfError(messages.getMessage('MissingSourceOfPromote'));
     }
     // cannot promote when channel names are the same
     if (this.flags.candidate && this.flags.candidate === this.flags.target) {
-      throw new SfdxError(messages.getMessage('CannotPromoteToSameChannel'));
+      throw new SfError(messages.getMessage('CannotPromoteToSameChannel'));
     }
     // make sure necessary runtime dependencies are present
     const deps = verifyDependencies(
@@ -209,7 +204,7 @@ export default class Promote extends SfdxCommand {
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
-      throw new SfdxError(messages.getMessage(errType), errType, missing);
+      throw new SfError(messages.getMessage(errType), errType, missing);
     }
   }
 
@@ -267,7 +262,7 @@ export default class Promote extends SfdxCommand {
         return json.sha;
       }
     }
-    const error = new SfdxError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
+    const error = new SfError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
     this.logger.debug(error);
     throw error;
   }
@@ -297,7 +292,7 @@ export default class Promote extends SfdxCommand {
       // when reversed after split version number should occupy entry 1 of the array
       return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
     }
-    const error = new SfdxError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
+    const error = new SfError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
     this.logger.debug(error);
     throw error;
   }

@@ -4,12 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import * as fs from 'fs';
 import * as path from 'path';
 import * as semver from 'semver';
 import { cli } from 'cli-ux';
 import { exec, pwd } from 'shelljs';
-import { fs, Logger, SfdxError } from '@salesforce/core';
-import { AsyncOptionalCreatable, findKey } from '@salesforce/kit';
+import { Logger, SfError } from '@salesforce/core';
+import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
 import { AnyJson, get, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
@@ -99,7 +100,8 @@ export class Package extends AsyncOptionalCreatable {
 
   public async readPackageJson(): Promise<PackageJson> {
     const pkgJsonPath = this.location ? path.join(this.location, 'package.json') : 'package.json';
-    return (await fs.readJson(pkgJsonPath)) as PackageJson;
+    const fileData = await fs.promises.readFile(pkgJsonPath, 'utf8');
+    return parseJson(fileData, pkgJsonPath, false) as PackageJson;
   }
 
   /**
@@ -157,7 +159,11 @@ export class Package extends AsyncOptionalCreatable {
 
   public writePackageJson(rootDir?: string): void {
     const pkgJsonPath = rootDir ? path.join(rootDir, 'package.json') : 'package.json';
-    fs.writeJsonSync(pkgJsonPath, this.packageJson);
+    const fileData: string = JSON.stringify(this.packageJson, null, 2);
+    fs.writeFileSync(pkgJsonPath, fileData, {
+      encoding: 'utf8',
+      mode: '600',
+    });
   }
 
   public getDistTags(name: string): Record<string, string> {
@@ -169,7 +175,7 @@ export class Package extends AsyncOptionalCreatable {
 
   public bumpResolutions(tag: string): void {
     if (!this.packageJson.resolutions) {
-      throw new SfdxError('Bumping resolutions requires property "resolutions" to be present in package.json');
+      throw new SfError('Bumping resolutions requires property "resolutions" to be present in package.json');
     }
 
     Object.keys(this.packageJson.resolutions).map((key: string) => {
@@ -269,7 +275,7 @@ export class Package extends AsyncOptionalCreatable {
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {
     // get the list of dependencies to hardcode
     if (!this.packageJson.pinnedDependencies) {
-      throw new SfdxError(
+      throw new SfError(
         'Pinning package dependencies requires property "pinnedDependencies" to be present in package.json'
       );
     }

@@ -6,9 +6,9 @@
  */
 
 import * as os from 'os';
+import * as fs from 'fs';
 import * as path from 'path';
-import { expect } from '@salesforce/command/lib/test';
-import { fs } from '@salesforce/core';
+import { expect } from 'chai';
 import { shouldThrow, testSetup } from '@salesforce/core/lib/testSetup';
 import { Env } from '@salesforce/kit';
 import { Registry } from '../src/registry';
@@ -42,21 +42,21 @@ describe('npmrc tests', () => {
   let packageDir;
   beforeEach(() => {
     packageDir = path.join(os.tmpdir(), new Date().getMilliseconds().toString());
-    fs.mkdirpSync(packageDir);
+    fs.mkdirSync(packageDir, { recursive: true });
   });
   afterEach(() => {
-    fs.removeSync(packageDir);
+    fs.rmSync(packageDir, { recursive: true });
   });
   it('should NOT WRITE npmrc registry for registry defaults', async () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     await registry.setNpmRegistry(packageDir);
-    expect(fs.fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.false;
+    expect(fs.existsSync(path.join(packageDir, '.npmrc'))).to.be.false;
   });
   it('should WRITE npmrc registry for registry not equal to default', async () => {
     const registry = new Registry('https://foo.bar.baz.org');
     await registry.setNpmRegistry(packageDir);
-    expect(fs.fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.true;
+    expect(fs.existsSync(path.join(packageDir, '.npmrc'))).to.be.true;
   });
   it('should throw error when setting auth token when token not present', async () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);

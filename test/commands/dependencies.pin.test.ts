@@ -4,91 +4,102 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { $$, expect, test } from '@salesforce/command/lib/test';
+import * as fs from 'fs';
 import * as shell from 'shelljs';
-import { fs } from '@salesforce/core';
-
-function setupStub(alias?: string): void {
-  // prevent it from writing back to the package.json
-  $$.SANDBOX.stub(fs, 'writeJsonSync');
-  const pJson = alias
-    ? {
-        name: 'test',
-        version: '1.0.0',
-        dependencies: { [alias]: 'npm:@salesforce/plugin-auth@^1.4.0' },
-        pinnedDependencies: [alias],
-      }
-    : {
-        name: 'test',
-        version: '1.0.0',
-        dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
-        pinnedDependencies: ['@salesforce/plugin-auth'],
-      };
-  $$.SANDBOX.stub(fs, 'readJson').resolves(pJson);
-  // we don't need all members of what exec returns, just the stdout
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  $$.SANDBOX.stub(shell, 'exec').returns({ stdout: '{"latest":"1.4.4","latest-rc":"1.5.0"}' });
-}
+import * as sinon from 'sinon';
+import { Config } from '@oclif/core';
+import { expect } from 'chai';
+import { stubMethod, fromStub, stubInterface } from '@salesforce/ts-sinon';
+import Pin from '../../src/commands/npm/dependencies/pin';
 
 describe('dependencies:pin', () => {
-  test
-    .do(() => {
-      setupStub();
-    })
-    .stdout()
-    .command(['npm:dependencies:pin', '--json'])
-    .it('should update the package.json with pinned versions for a package', (ctx) => {
-      const expected = [
-        {
-          name: '@salesforce/plugin-auth',
-          tag: 'latest',
-          version: '1.4.4',
-          alias: null,
-        },
-      ];
+  const sandbox = sinon.createSandbox();
 
-      const result = JSON.parse(ctx.stdout).result;
-      expect(result).to.deep.equal(expected);
-    });
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
-  test
-    .do(() => {
-      setupStub('auth');
-    })
-    .stdout()
-    .command(['npm:dependencies:pin', '--json'])
-    .it('should update the package.json with pinned versions for an aliased package', (ctx) => {
-      const expected = [
-        {
-          name: '@salesforce/plugin-auth',
-          tag: 'latest',
-          version: '1.4.4',
-          alias: 'auth',
-        },
-      ];
+  class TestNpmDependenciesPin extends Pin {
+    public async runIt() {
+      await this.init();
+      return this.run();
+    }
+  }
 
-      const result = JSON.parse(ctx.stdout).result;
-      expect(result).to.deep.equal(expected);
-    });
+  const runNpmDependenciesPinCmd = async (params: string[]) => {
+    const cmd = new TestNpmDependenciesPin(params, oclifConfigStub);
+    return cmd.runIt();
+  };
 
-  test
-    .do(async () => {
-      setupStub();
-    })
-    .stdout()
-    .command(['npm:dependencies:pin', '--tag', 'latest-rc', '--json'])
-    .it('should update the package.json with the target release version', (ctx) => {
-      const expected = [
-        {
-          name: '@salesforce/plugin-auth',
-          tag: 'latest-rc',
-          version: '1.5.0',
-          alias: null,
-        },
-      ];
+  afterEach(() => {
+    sandbox.restore();
+  });
 
-      const result = JSON.parse(ctx.stdout).result;
-      expect(result).to.deep.equal(expected);
-    });
+  function setupStub(alias?: string): void {
+    // prevent it from writing back to the package.json
+    stubMethod(sandbox, fs, 'writeFileSync');
+    const pJson = alias
+      ? {
+          name: 'test',
+          version: '1.0.0',
+          dependencies: { [alias]: 'npm:@salesforce/plugin-auth@^1.4.0' },
+          pinnedDependencies: [alias],
+        }
+      : {
+          name: 'test',
+          version: '1.0.0',
+          dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
+          pinnedDependencies: ['@salesforce/plugin-auth'],
+        };
+
+    stubMethod(sandbox, fs.promises, 'readFile').resolves(JSON.stringify(pJson));
+    // we don't need all members of what exec returns, just the stdout
+    stubMethod(sandbox, shell, 'exec').returns({ stdout: '{"latest":"1.4.4","latest-rc":"1.5.0"}' });
+  }
+
+  it('should update the package.json with pinned versions for a package', async () => {
+    setupStub();
+    const result = await runNpmDependenciesPinCmd(['--json']);
+
+    const expected = [
+      {
+        name: '@salesforce/plugin-auth',
+        tag: 'latest',
+        version: '1.4.4',
+        alias: null,
+      },
+    ];
+
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('should update the package.json with pinned versions for an aliased package', async () => {
+    setupStub('auth');
+    const result = await runNpmDependenciesPinCmd(['--json']);
+
+    const expected = [
+      {
+        name: '@salesforce/plugin-auth',
+        tag: 'latest',
+        version: '1.4.4',
+        alias: 'auth',
+      },
+    ];
+
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('should update the package.json with the target release version', async () => {
+    setupStub();
+    const result = await runNpmDependenciesPinCmd(['--tag', 'latest-rc', '--json']);
+
+    const expected = [
+      {
+        name: '@salesforce/plugin-auth',
+        tag: 'latest-rc',
+        version: '1.5.0',
+        alias: null,
+      },
+    ];
+
+    expect(result).to.deep.equal(expected);
+  });
 });

@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import { exec } from 'shelljs';
 import { CLI } from '../../../types';
@@ -83,7 +83,7 @@ export default class SmokeTest extends SfdxCommand {
       }
       return result.stdout;
     } else {
-      throw new SfdxError(`Failed: ${command}`);
+      throw new SfError(`Failed: ${command}`);
     }
   }
 }

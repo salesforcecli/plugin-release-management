@@ -7,9 +7,9 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
-import { cli } from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import got, { Agents } from 'got';
-import { SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import * as chalk from 'chalk';
 import * as AWS from 'aws-sdk';
 import { S3, WebIdentityCredentials } from 'aws-sdk';
@@ -66,19 +66,19 @@ export class AmazonS3 {
     const fileWriterStream = fs.createWriteStream(location);
     return new Promise((resolve) => {
       downloadStream.on('error', (error) => {
-        if (!silent) cli.error(`Download failed: ${error.message}`);
+        if (!silent) CliUx.ux.error(`Download failed: ${error.message}`);
       });
 
       fileWriterStream
         .on('error', (error) => {
-          if (!silent) cli.action.stop('Failed');
-          if (!silent) cli.error(`Could not write file to system: ${error.message}`);
+          if (!silent) CliUx.ux.action.stop('Failed');
+          if (!silent) CliUx.ux.error(`Could not write file to system: ${error.message}`);
         })
         .on('finish', () => {
-          if (!silent) cli.action.stop();
+          if (!silent) CliUx.ux.action.stop();
           resolve();
         });
-      if (!silent) cli.action.start(`Downloading ${chalk.cyan(url)}`);
+      if (!silent) CliUx.ux.action.start(`Downloading ${chalk.cyan(url)}`);
       downloadStream.pipe(fileWriterStream);
     });
   }
@@ -102,7 +102,7 @@ export class AmazonS3 {
       await this.download(url, filename, true);
       return filename;
     } else {
-      throw new SfdxError(`File at url: ${url} does not exist`);
+      throw new SfError(`File at url: ${url} does not exist`);
     }
   }
 

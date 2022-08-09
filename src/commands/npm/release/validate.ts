@@ -6,8 +6,7 @@
  */
 
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { SfdxError } from '@salesforce/core';
-import { isMonoRepo, LernaRepo } from '../../../repository';
+import { SfError } from '@salesforce/core';
 import { Package } from '../../../package';
 import { CommitInspection, inspectCommits } from '../../../inspectCommits';
 
@@ -32,11 +31,10 @@ export default class Validate extends SfdxCommand {
   };
 
   public async run(): Promise<Response> {
-    const isLerna = await isMonoRepo();
-    const packages = isLerna ? await LernaRepo.getPackages() : [await Package.create()];
+    const packages = [await Package.create()];
     const responses: PackageCommits[] = [];
     for (const pkg of packages) {
-      const commitInspection = await inspectCommits(pkg, isLerna);
+      const commitInspection = await inspectCommits(pkg);
       const response = Object.assign(commitInspection, {
         name: pkg.name,
         currentVersion: pkg.packageJson.version,
@@ -45,7 +43,7 @@ export default class Validate extends SfdxCommand {
     }
     const majorBump = responses.some((resp) => !!resp.isMajorBump);
     if (majorBump) {
-      throw new SfdxError(
+      throw new SfError(
         'Major version bump detected. You must manually update the version in the package.json to release a new major version.',
         'MajorBumpDetected'
       );

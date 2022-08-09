@@ -7,19 +7,26 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs/promises';
 import * as assert from 'assert';
 import { FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { cp } from 'shelljs';
 import * as fg from 'fast-glob';
 import { JsonMap } from '@salesforce/ts-types';
+import { parseJsonMap } from '@salesforce/kit';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.collect');
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.schemas.collect', [
+  'description',
+  'examples',
+]);
 
 export class SchemaUtils {
   public static async getLatestSchemaFiles(): Promise<string[]> {
-    const pjson = (await fs.readJsonMap(path.join(process.cwd(), 'package.json'))) as { oclif: { plugins: string[] } };
+    const fileData = await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8');
+    const pjson: { oclif: { plugins: string[] } } = parseJsonMap(fileData, path.join(process.cwd(), 'package.json'));
+
     const globs = (pjson.oclif?.plugins || []).map((plugin) => {
       const normalized = plugin.replace(/\\/g, '/');
       return `node_modules/${normalized}/schemas/**/*.json`; // We need to use / for path sep since fg only works with Unix paths
@@ -68,15 +75,15 @@ export default class Collect extends SfdxCommand {
       }
     }
     const outputDir = path.join(process.cwd(), 'schemas');
-    await fs.mkdirp(outputDir);
+    await fs.mkdir(outputDir, { recursive: true });
 
     for (const [plugin, files] of Array.from(schemaFilesByPlugin.entries())) {
       const pluginOutputDir = path.join(outputDir, plugin);
-      await fs.mkdirp(pluginOutputDir);
+      await fs.mkdir(pluginOutputDir, { recursive: true });
       for (const file of files) {
         if (file.split(path.sep).includes('hooks')) {
           const hooksOutputDir = path.join(pluginOutputDir, 'hooks');
-          await fs.mkdirp(hooksOutputDir);
+          await fs.mkdir(hooksOutputDir, { recursive: true });
           cp('-f', file, path.join(hooksOutputDir, path.basename(file)));
         } else {
           cp('-f', file, path.join(pluginOutputDir, path.basename(file)));

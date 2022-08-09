@@ -5,36 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as sinon from 'sinon';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
-import { expect, test } from '@salesforce/command/lib/test';
+import { expect } from 'chai';
+import { stubMethod, fromStub, stubInterface } from '@salesforce/ts-sinon';
 import { env } from '@salesforce/kit';
 import got from 'got';
-import { load } from '@oclif/config';
-import chalk = require('chalk');
 import { EnvvarModificationStatus } from '../../src/circleCiEnvvars';
 import CircleCIEnvvarCreate, { CircelCIEnvvarCreateStatus } from '../../src/commands/circleci/envvar/create';
 
 const FAKE_ENVVAR_VALUE = 'test value';
 
-/**
- * Get the typed command result object from stdout. Expects a successful json output.
- *
- * @param stdout the stdout of a command
- */
-function getResults(stdout: string): CircelCIEnvvarCreateStatus {
-  // Output should not contain envvar values
-  expect(stdout).to.not.contain(FAKE_ENVVAR_VALUE);
-  const output = JSON.parse(stdout) as { message: string; stack: string; result: CircelCIEnvvarCreateStatus };
-  expect(output.message, `${output.message}: ${output.stack}`).to.be.undefined;
-  return output.result;
-}
-
-/**
- * Expect slug status from a CircelCIEnvvarCreateStatus object.
- *
- * @param slugs a list of slugs
- * @param result a command result
- */
 function expectSlugStatus(slugs: string[], result: CircelCIEnvvarCreateStatus) {
   const updatedSlugs = Object.keys(result);
   expect(updatedSlugs.length).to.equal(slugs.length);
@@ -50,126 +32,148 @@ function expectSlugStatus(slugs: string[], result: CircelCIEnvvarCreateStatus) {
 }
 
 before(async function () {
-  // eslint-disable-next-line no-console
-  console.log(chalk.yellow('Loading oclif commands into memory'));
-  this.timeout(100000);
-  // Prime oclif commands into memory
-  await load(`${__dirname}/../../`);
   process.env['CIRCLE_CI_TOKEN'] = '123456';
 });
 
 describe('circleci envvar create', () => {
-  test
-    .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should create envvar on slug from process envvar', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
+  const sandbox = sinon.createSandbox();
 
-  test
-    .stub(UX.prototype, 'prompt', () => Promise.resolve(FAKE_ENVVAR_VALUE))
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should create envvar on slug from prompt', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
+  const promptStub = stubMethod(sandbox, UX.prototype, 'prompt');
+  let gotGetStub: sinon.SinonStub;
+  let gotPostStub: sinon.SinonStub;
 
-  test
-    .stub(UX.prototype, 'prompt', () => Promise.resolve(FAKE_ENVVAR_VALUE))
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [{ "name": "MYENVVAR" }] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--slug=gh/salesforcecli/plugin-auth', '--envvar=MYENVVAR', '--json'])
-    .it('should error if ennvar is set on circle', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expect(result['gh/salesforcecli/plugin-auth']).to.contain('Skipping...');
-    });
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
-  test
-    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
-    .it('should error if no envvar are provided with piped input', (ctx) => {
-      expect(ctx.stdout).to.contain('missing envvar value');
-    });
+  class TestCircleCIEnvvarCreate extends CircleCIEnvvarCreate {
+    public async runIt() {
+      await this.init();
+      this.ux.prompt = promptStub;
+      return this.run();
+    }
+  }
 
-  test
-    .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => 'gh/salesforcecli/plugin-auth')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
-    .it('should read slugs from piped input', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
+  const runCircleCIEnvVarCreateCmd = async (params: string[]) => {
+    const cmd = new TestCircleCIEnvvarCreate(params, oclifConfigStub);
+    return cmd.runIt();
+  };
 
-  test
-    .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '[ "gh/salesforcecli/plugin-auth" ]')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
-    .it('should read slugs from piped json input', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
+  beforeEach(() => {
+    gotGetStub = stubMethod(sandbox, got, 'get');
+    gotPostStub = stubMethod(sandbox, got, 'post');
+  });
 
-  test
-    .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
-    .stub(CircleCIEnvvarCreate.prototype, 'readPipedInput', async () => '{ "result": ["gh/salesforcecli/plugin-auth"]}')
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command(['circleci:envvar:create', '--envvar=MYENVVAR', '--json'])
-    .it('should read slugs from piped command json input', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
-    });
+  afterEach(() => {
+    sandbox.restore();
+  });
 
-  test
-    .stub(env, 'getString', () => FAKE_ENVVAR_VALUE)
-    .stub(CircleCIEnvvarCreate.prototype, 'isPipedIn', async () => true)
-    .stub(
-      CircleCIEnvvarCreate.prototype,
-      'readPipedInput',
-      async () => 'gh/salesforcecli/plugin-auth\ngh/salesforcecli/plugin-config'
-    )
-    .stub(got, 'get', () => Promise.resolve({ body: '{ "items": [] }' }))
-    .stub(got, 'post', () => Promise.resolve())
-    .stdout()
-    .command([
-      'circleci:envvar:create',
+  it('should create envvar on slug from process envvar', async () => {
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    gotPostStub.resolves();
+
+    const result = await runCircleCIEnvVarCreateCmd([
+      '--slug=gh/salesforcecli/plugin-auth',
+      '--envvar=MYENVVAR',
+      '--json',
+    ]);
+    expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+  });
+
+  it('should create envvar on slug from prompt', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    gotPostStub.resolves();
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(false);
+
+    promptStub.resolves(FAKE_ENVVAR_VALUE);
+
+    const result = await runCircleCIEnvVarCreateCmd([
+      '--slug=gh/salesforcecli/plugin-auth',
+      '--envvar=MYENVVAR',
+      '--json',
+    ]);
+    expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+  });
+
+  it('should error if ennvar is set on circle', async () => {
+    gotGetStub.resolves({ body: '{ "items": [{ "name": "MYENVVAR" }] }' });
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+
+    const result = await runCircleCIEnvVarCreateCmd([
+      '--slug=gh/salesforcecli/plugin-auth',
+      '--envvar=MYENVVAR',
+      '--json',
+    ]);
+    expect(result['gh/salesforcecli/plugin-auth']).to.contain('Skipping...');
+  });
+
+  it('should error if no envvar are provided with piped input', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(true);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'readPipedInput').resolves('gh/salesforcecli/plugin-auth');
+
+    try {
+      await runCircleCIEnvVarCreateCmd(['--envvar=MYENVVAR', '--json']);
+    } catch (err) {
+      expect(err.message).to.equal('missing envvar value for MYENVVAR');
+    }
+  });
+
+  it('should read slugs from piped input', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(true);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'readPipedInput').resolves('gh/salesforcecli/plugin-auth');
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+
+    const result = await runCircleCIEnvVarCreateCmd(['--envvar=MYENVVAR', '--json']);
+    expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+  });
+
+  it('should read slugs from piped json input', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(true);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'readPipedInput').resolves(
+      '[ "gh/salesforcecli/plugin-auth" ]'
+    );
+
+    const result = await runCircleCIEnvVarCreateCmd(['--envvar=MYENVVAR', '--json']);
+    expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+  });
+
+  it('should read slugs from piped command json input', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(true);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'readPipedInput').resolves(
+      '{ "result": ["gh/salesforcecli/plugin-auth"]}'
+    );
+
+    const result = await runCircleCIEnvVarCreateCmd(['--envvar=MYENVVAR', '--json']);
+    expectSlugStatus(['gh/salesforcecli/plugin-auth'], result);
+  });
+
+  it('should combine slugs from flags and piped input', async () => {
+    gotGetStub.resolves({ body: '{ "items": [] }' });
+    stubMethod(sandbox, env, 'getString').returns(FAKE_ENVVAR_VALUE);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'isPipedIn').resolves(true);
+    stubMethod(sandbox, TestCircleCIEnvvarCreate.prototype, 'readPipedInput').resolves(
+      'gh/salesforcecli/plugin-auth\ngh/salesforcecli/plugin-config'
+    );
+
+    const result = await runCircleCIEnvVarCreateCmd([
       '--slug=gh/salesforcecli/plugin-user',
       '--slug=gh/salesforcecli/plugin-trust',
       '--envvar=MYENVVAR',
       '--json',
-    ])
-    .it('should combine slugs from flags and piped input', (ctx) => {
-      const result = getResults(ctx.stdout);
-      expectSlugStatus(
-        [
-          'gh/salesforcecli/plugin-auth',
-          'gh/salesforcecli/plugin-config',
-          'gh/salesforcecli/plugin-user',
-          'gh/salesforcecli/plugin-trust',
-        ],
-        result
-      );
-    });
+    ]);
+    expectSlugStatus(
+      [
+        'gh/salesforcecli/plugin-auth',
+        'gh/salesforcecli/plugin-config',
+        'gh/salesforcecli/plugin-user',
+        'gh/salesforcecli/plugin-trust',
+      ],
+      result
+    );
+  });
 });
