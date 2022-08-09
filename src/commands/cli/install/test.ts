@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs/promises';
 import { exec } from 'shelljs';
-import { cli as cliUx } from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
@@ -55,7 +55,7 @@ namespace Method {
     public async execute(): Promise<Results> {
       const { service, available } = await this.ping();
       if (!available) {
-        cliUx.warn(`${service} is not currently available.`);
+        CliUx.ux.warn(`${service} is not currently available.`);
         const results: Results = {
           [this.options.method]: {} as Record<CLI, boolean>,
         };
@@ -86,7 +86,7 @@ namespace Method {
 
     protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
-      cliUx.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
+      CliUx.ux.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
     }
 
     protected getTargets(): CLI[] {
@@ -153,7 +153,7 @@ class Tarball extends Method.Base {
           results[tarball][cli] = false;
         }
       }
-      cliUx.log();
+      CliUx.ux.log();
     }
     return results;
   }
@@ -178,7 +178,7 @@ class Tarball extends Method.Base {
     const dir = path.join(this.options.directory, path.basename(file).replace(/\./g, '-'));
     await fs.mkdir(dir, { recursive: true });
     return new Promise((resolve, reject) => {
-      cliUx.action.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
+      CliUx.ux.action.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
       const cmd =
         process.platform === 'win32'
           ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
@@ -186,14 +186,12 @@ class Tarball extends Method.Base {
       const opts = process.platform === 'win32' ? { shell: 'powershell.exe' } : {};
       exec(cmd, { ...opts, silent: true }, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
-          cliUx.action.stop();
-          cliUx.log(stdout);
+          CliUx.ux.action.stop();
+          CliUx.ux.log(stdout);
           resolve(dir);
         } else {
-          cliUx.action.stop('Failed');
-          cliUx.log(`code: ${code}`);
-          cliUx.log('stdout:', stdout);
-          cliUx.log('stderr:', stderr);
+          CliUx.ux.log('stdout:', stdout);
+          CliUx.ux.log('stderr:', stderr);
           reject();
         }
       });
@@ -204,7 +202,7 @@ class Tarball extends Method.Base {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
       const executable = path.join(directory, 'bin', cli);
-      cliUx.log(`Testing ${chalk.cyan(executable)}`);
+      CliUx.ux.log(`Testing ${chalk.cyan(executable)}`);
       const result =
         process.platform === 'win32' ? exec(`cmd /c "${executable}.cmd" --version`) : exec(`${executable} --version`);
       results[cli] = result.code === 0;
@@ -258,22 +256,22 @@ class Npm extends Method.Base {
     for (const [cli, success] of Object.entries(testResults)) {
       this.logResult(cli as CLI, success);
     }
-    cliUx.log();
+    CliUx.ux.log();
     return { [this.package]: testResults };
   }
 
   private async install(): Promise<void> {
-    cliUx.action.start(`Installing: ${chalk.cyan(this.package)}`);
+    CliUx.ux.action.start(`Installing: ${chalk.cyan(this.package)}`);
     return new Promise((resolve, reject) => {
       exec(`npm install ${this.package}`, { silent: true, cwd: this.options.directory }, (code, stdout, stderr) => {
         if (code === 0) {
-          cliUx.action.stop();
-          cliUx.log(stdout);
+          CliUx.ux.action.stop();
+          CliUx.ux.log(stdout);
           resolve();
         } else {
-          cliUx.action.stop('Failed');
-          cliUx.log(stdout);
-          cliUx.log(stderr);
+          CliUx.ux.action.stop('Failed');
+          CliUx.ux.log(stdout);
+          CliUx.ux.log(stderr);
           reject();
         }
       });
@@ -283,7 +281,7 @@ class Npm extends Method.Base {
   private test(): Record<CLI, boolean> {
     const results = {} as Record<CLI, boolean>;
     const executable = path.join(this.options.directory, 'node_modules', '.bin', this.options.cli);
-    cliUx.log(`Testing ${chalk.cyan(executable)}`);
+    CliUx.ux.log(`Testing ${chalk.cyan(executable)}`);
 
     const result =
       process.platform === 'win32' ? exec(`cmd /c "${executable}" --version`) : exec(`${executable} --version`);
@@ -320,7 +318,7 @@ class Installer extends Method.Base {
         results[url][cli] = false;
       }
     }
-    cliUx.log();
+    CliUx.ux.log();
     return results;
   }
 
@@ -333,7 +331,7 @@ class Installer extends Method.Base {
       await this.s3.download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
-      cliUx.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
+      CliUx.ux.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
       const result = exec(cmd, { shell: 'powershell.exe' });
       if (result.code === 0) {
         const testResults = this.win32Test(installLocation);
@@ -366,7 +364,7 @@ class Installer extends Method.Base {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
       const binaryPath = path.join(installLocation, 'bin', `${cli}.cmd`);
-      cliUx.log(`Testing ${chalk.cyan(binaryPath)}`);
+      CliUx.ux.log(`Testing ${chalk.cyan(binaryPath)}`);
       const result = exec(`cmd /c "${binaryPath}" --version`);
       results[cli] =
         result.code === 0 && binaryPath.includes('x86')
@@ -380,7 +378,7 @@ class Installer extends Method.Base {
     const results = {} as Record<CLI, boolean>;
     for (const cli of this.getTargets()) {
       const binaryPath = `/usr/local/bin/${cli}`;
-      cliUx.log(`Testing ${chalk.cyan(binaryPath)}`);
+      CliUx.ux.log(`Testing ${chalk.cyan(binaryPath)}`);
       const result = exec(`${binaryPath} --version`);
       results[cli] = result.code === 0;
     }
@@ -422,8 +420,8 @@ export default class Test extends SfdxCommand {
     const outputFile = ensure<string>(this.flags['output-file']);
     const directory = await this.makeWorkingDir(cli, channel, method);
 
-    cliUx.log(`Working Directory: ${directory}`);
-    cliUx.log();
+    CliUx.ux.log(`Working Directory: ${directory}`);
+    CliUx.ux.log();
 
     let results: Results = {};
     switch (method) {
@@ -455,8 +453,8 @@ export default class Test extends SfdxCommand {
       encoding: 'utf8',
       mode: '600',
     });
-    cliUx.styledJSON(results);
-    cliUx.log(`Results written to ${outputFile}`);
+    CliUx.ux.styledJSON(results);
+    CliUx.ux.log(`Results written to ${outputFile}`);
   }
 
   private async makeWorkingDir(cli: CLI, channel: Channel, method: Method.Type): Promise<string> {
