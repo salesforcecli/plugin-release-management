@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/salesforcecli/plugin-release-management/compare/v3.0.0...v3.0.1) (2022-08-09)
+
+### Bug Fixes
+
+- replace old cli-ux imports ([#508](https://github.com/salesforcecli/plugin-release-management/issues/508)) ([cb9698a](https://github.com/salesforcecli/plugin-release-management/commit/cb9698a6aa00966a9fce7a686f491869c8184e2b))
+
 ## [3.0.0](https://github.com/salesforcecli/plugin-release-management/compare/v2.14.0...v3.0.0) (2022-08-09)
 
 ### ⚠ BREAKING CHANGES
