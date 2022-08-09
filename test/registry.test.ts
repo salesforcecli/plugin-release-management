@@ -13,15 +13,6 @@ import { shouldThrow, testSetup } from '@salesforce/core/lib/testSetup';
 import { Env } from '@salesforce/kit';
 import { Registry } from '../src/registry';
 
-function fileExistsSync(filePath: string): boolean {
-  try {
-    fs.accessSync(filePath);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
 const $$ = testSetup();
 
 describe('registry tests', () => {
@@ -60,12 +51,12 @@ describe('npmrc tests', () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
     const registry = new Registry();
     await registry.setNpmRegistry(packageDir);
-    expect(fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.false;
+    expect(fs.existsSync(path.join(packageDir, '.npmrc'))).to.be.false;
   });
   it('should WRITE npmrc registry for registry not equal to default', async () => {
     const registry = new Registry('https://foo.bar.baz.org');
     await registry.setNpmRegistry(packageDir);
-    expect(fileExistsSync(path.join(packageDir, '.npmrc'))).to.be.true;
+    expect(fs.existsSync(path.join(packageDir, '.npmrc'))).to.be.true;
   });
   it('should throw error when setting auth token when token not present', async () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns(undefined);
