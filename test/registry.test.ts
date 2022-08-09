@@ -8,7 +8,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect } from '@salesforce/command/lib/test';
+import { expect } from 'chai';
 import { shouldThrow, testSetup } from '@salesforce/core/lib/testSetup';
 import { Env } from '@salesforce/kit';
 import { Registry } from '../src/registry';

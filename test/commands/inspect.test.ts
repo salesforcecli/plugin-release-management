@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Config } from '@oclif/core';
-import { expect } from '@salesforce/command/lib/test';
+import { expect } from 'chai';
 import Inspect from '../../src/commands/cli/versions/inspect';
 import { Channel, Info, Location } from '../../src/commands/cli/versions/inspect';
 
