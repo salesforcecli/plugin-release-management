@@ -15,7 +15,7 @@ import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
 import { ensure } from '@salesforce/ts-types';
-import { parseJson } from '@salesforce/kit';
+import { ensureArray, parseJson } from '@salesforce/kit';
 import { PackageJson } from '../../../package';
 import { CLI } from '../../../types';
 
@@ -135,10 +135,6 @@ const CLI_META = {
   },
 };
 
-function toArray(arrOrString: string | string[]): string[] {
-  return Array.isArray(arrOrString) ? arrOrString : [arrOrString];
-}
-
 export default class Inspect extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -179,8 +175,8 @@ export default class Inspect extends SfdxCommand {
   public archives: Archives;
 
   public async run(): Promise<Info[]> {
-    const locations = toArray(this.flags.locations) as Location[];
-    const channels = toArray(this.flags.channels) as Channel[];
+    const locations = ensureArray(this.flags.locations) as Location[];
+    const channels = ensureArray(this.flags.channels) as Channel[];
 
     if (this.flags.cli === CLI.SF && channels.includes(Channel.LEGACY)) {
       throw new SfError('the sf CLI does not have a legacy channel');
