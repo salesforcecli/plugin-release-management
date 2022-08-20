@@ -17,19 +17,22 @@ type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
 
+const inclusionMap = {
+  major: ['major', 'minor', 'patch'] as BumpType[],
+  minor: ['minor', 'patch'] as BumpType[],
+  patch: ['patch'] as BumpType[],
+};
+
 export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
-  const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
-  const [from, to] = title.match(versionsRegex);
-
-  const bumpType = diff(from, to) as BumpType;
-  const inclusionMap = {
-    major: ['major', 'minor', 'patch'] as BumpType[],
-    minor: ['minor', 'patch'] as BumpType[],
-    patch: ['patch'] as BumpType[],
-  };
-
-  const includeBumps = inclusionMap[maxVersionBump];
-  return includeBumps.includes(bumpType);
+  try {
+    const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
+    const [from, to] = title.match(versionsRegex);
+    const bumpType = diff(from, to) as BumpType;
+    return inclusionMap[maxVersionBump].includes(bumpType);
+  } catch (e) {
+    // example of unparsable title: https://github.com/salesforcecli/eslint-plugin-sf-plugin/pull/25
+    return false;
+  }
 };
 
 export const maxVersionBumpFlag = flags.enum({
