@@ -24,15 +24,10 @@ const inclusionMap = {
 };
 
 export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
-  try {
-    const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
-    const [from, to] = title.match(versionsRegex);
-    const bumpType = diff(from, to) as BumpType;
-    return inclusionMap[maxVersionBump].includes(bumpType);
-  } catch (e) {
-    // example of unparsable title: https://github.com/salesforcecli/eslint-plugin-sf-plugin/pull/25
-    return false;
-  }
+  const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
+  const [from, to] = title.match(versionsRegex);
+  const bumpType = diff(from, to) as BumpType;
+  return inclusionMap[maxVersionBump].includes(bumpType);
 };
 
 export const maxVersionBumpFlag = flags.enum({
