@@ -80,7 +80,7 @@ export default class Release extends SfdxCommand {
 
     await pkg.writeNpmToken();
 
-    if (this.flags['github-tag']) {
+    if (this.flags.githubtag) {
       this.ux.log(`Using Version: ${pkg.nextVersion}`);
     } else {
       pkg.printStage('Validate Next Version');
@@ -102,7 +102,7 @@ export default class Release extends SfdxCommand {
       pkg.build();
     }
 
-    if (!this.flags['github-tag']) {
+    if (!this.flags.githubtag) {
       pkg.printStage('Prepare Release');
       pkg.prepare({ dryrun: this.flags.dryrun as boolean });
     }
