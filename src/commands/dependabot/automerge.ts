@@ -100,6 +100,7 @@ export default class AutoMerge extends SfdxCommand {
       (pr) =>
         pr.state === 'open' &&
         pr.user.login === 'dependabot[bot]' &&
+        /bump .+ from [0-9]+.[0-9]+.[0-9] to [0-9]+.[0-9]+.[0-9]+$/.test(pr.title) &&
         meetsVersionCriteria(pr.title, this.flags['max-version-bump'])
     ) as PullRequest[];
 

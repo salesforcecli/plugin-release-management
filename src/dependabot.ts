@@ -17,19 +17,17 @@ type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
 
+const inclusionMap = {
+  major: ['major', 'minor', 'patch'] as BumpType[],
+  minor: ['minor', 'patch'] as BumpType[],
+  patch: ['patch'] as BumpType[],
+};
+
 export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
   const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
   const [from, to] = title.match(versionsRegex);
-
   const bumpType = diff(from, to) as BumpType;
-  const inclusionMap = {
-    major: ['major', 'minor', 'patch'] as BumpType[],
-    minor: ['minor', 'patch'] as BumpType[],
-    patch: ['patch'] as BumpType[],
-  };
-
-  const includeBumps = inclusionMap[maxVersionBump];
-  return includeBumps.includes(bumpType);
+  return inclusionMap[maxVersionBump].includes(bumpType);
 };
 
 export const maxVersionBumpFlag = flags.enum({
