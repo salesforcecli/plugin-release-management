@@ -59,6 +59,9 @@ export default class Release extends SfdxCommand {
       default: true,
       allowNo: true,
     }),
+    githubtag: flags.string({
+      description: messages.getMessage('githubtag'),
+    }),
   };
 
   public async run(): Promise<ReleaseResult> {
@@ -77,15 +80,19 @@ export default class Release extends SfdxCommand {
 
     await pkg.writeNpmToken();
 
-    pkg.printStage('Validate Next Version');
-    const pkgValidation = pkg.validate();
-    if (!pkgValidation.valid) {
-      const errType = 'InvalidNextVersion';
-      throw new SfError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
+    if (this.flags.githubtag) {
+      this.ux.log(`Using Version: ${pkg.nextVersion}`);
+    } else {
+      pkg.printStage('Validate Next Version');
+      const pkgValidation = pkg.validate();
+      if (!pkgValidation.valid) {
+        const errType = 'InvalidNextVersion';
+        throw new SfError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
+      }
+      this.ux.log(`Name: ${pkgValidation.name}`);
+      this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
+      this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
     }
-    this.ux.log(`Name: ${pkgValidation.name}`);
-    this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
-    this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
 
     if (this.flags.install) {
       pkg.printStage('Install');
@@ -95,9 +102,10 @@ export default class Release extends SfdxCommand {
       pkg.build();
     }
 
-    pkg.printStage('Prepare Release');
-    pkg.prepare({ dryrun: this.flags.dryrun as boolean });
-
+    if (!this.flags.githubtag) {
+      pkg.printStage('Prepare Release');
+      pkg.prepare({ dryrun: this.flags.dryrun as boolean });
+    }
     let signature: SigningResponse;
     if (this.flags.sign && !this.flags.dryrun) {
       pkg.printStage('Sign and Upload Security Files');
@@ -130,7 +138,7 @@ export default class Release extends SfdxCommand {
         this.verifySign(pkg.getPkgInfo());
       }
     } finally {
-      if (!this.flags.dryrun) {
+      if (!this.flags.dryrun && !this.flags.githubtag) {
         pkg.printStage('Push Changes to Git');
         pkg.pushChangesToGit();
       }
