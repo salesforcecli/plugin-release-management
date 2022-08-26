@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v3.0.3...v3.1.0) (2022-08-26)
+
+### Features
+
+- publish a released github tag ([929a812](https://github.com/salesforcecli/plugin-release-management/commit/929a8126906e5cdfc3c2a5a4af02be7683945044))
+
+### Bug Fixes
+
+- correct tag name ([d6b5e3c](https://github.com/salesforcecli/plugin-release-management/commit/d6b5e3c0edb1ee4fdb3e8a8f25bb529f7a3c2761))
+
 ### [3.0.3](https://github.com/salesforcecli/plugin-release-management/compare/v3.0.2...v3.0.3) (2022-08-25)
 
 ### [3.0.2](https://github.com/salesforcecli/plugin-release-management/compare/v3.0.1...v3.0.2) (2022-08-16)
