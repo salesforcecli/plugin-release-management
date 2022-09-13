@@ -11,7 +11,7 @@ import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
-import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
+import { maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
 
 Messages.importMessagesDirectory(__dirname);
 
@@ -51,6 +51,7 @@ export default class AutoMerge extends SfdxCommand {
     owner: flags.string({
       char: 'o',
       description: messagesFromConsolidate.getMessage('owner'),
+      dependsOn: ['repo'],
     }),
     repo: flags.string({
       char: 'r',
@@ -94,16 +95,10 @@ export default class AutoMerge extends SfdxCommand {
       repo,
     };
 
+    this.ux.log(`owner: ${this.baseRepoObject.owner}, scope: ${this.baseRepoObject.repo}`);
     const eligiblePRs = (
       await this.octokit.request('GET /repos/{owner}/{repo}/pulls', this.baseRepoObject)
-    ).data.filter(
-      (pr) =>
-        pr.state === 'open' &&
-        pr.user.login === 'dependabot[bot]' &&
-        /bump .+ from [0-9]+.[0-9]+.[0-9] to [0-9]+.[0-9]+.[0-9]+$/.test(pr.title) &&
-        meetsVersionCriteria(pr.title, this.flags['max-version-bump'])
-    ) as PullRequest[];
-
+    ).data.filter((pr) => pr.state === 'open' && pr.user.login === 'dependabot[bot]') as PullRequest[];
     const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter((pr) => pr !== undefined);
     const mergeablePRs = (await Promise.all(greenPRs.map((pr) => this.isMergeable(pr)))).filter(
       (pr) => pr !== undefined
@@ -144,7 +139,18 @@ export default class AutoMerge extends SfdxCommand {
       ...this.baseRepoObject,
       ref: pr.head.sha,
     });
-    if (statusResponse.data.state === 'success') {
+    // no point looking at check runs if the commit status is not green
+    if (statusResponse.data.state !== 'success') {
+      return undefined;
+    }
+
+    const checkRunResponse = await this.octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', {
+      ...this.baseRepoObject,
+      ref: pr.head.sha,
+    });
+    this.ux.logJson(checkRunResponse.data);
+
+    if (checkRunResponse.data.check_runs.every((cr) => cr.status === 'completed' && cr.conclusion === 'success')) {
       return pr;
     }
   }
