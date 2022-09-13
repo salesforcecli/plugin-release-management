@@ -51,6 +51,7 @@ export default class AutoMerge extends SfdxCommand {
     owner: flags.string({
       char: 'o',
       description: messagesFromConsolidate.getMessage('owner'),
+      dependsOn: ['repo'],
     }),
     repo: flags.string({
       char: 'r',
