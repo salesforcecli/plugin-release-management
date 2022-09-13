@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/salesforcecli/plugin-release-management/compare/v3.1.0...v3.2.0) (2022-09-13)
+
+### Features
+
+- flags require each other ([6e93f48](https://github.com/salesforcecli/plugin-release-management/commit/6e93f48b4a05e55cc08ecdcc30f522273d65b615))
+
+### Bug Fixes
+
+- flags override pjson properly ([20e0c63](https://github.com/salesforcecli/plugin-release-management/commit/20e0c638d9e284c8015f71429d37026f29860119))
+- update automerge logic to look for gha checks ([9899d19](https://github.com/salesforcecli/plugin-release-management/commit/9899d1943814857b9be6ee505897a2f13c1e9d09))
+
 ## [3.1.0](https://github.com/salesforcecli/plugin-release-management/compare/v3.0.3...v3.1.0) (2022-08-26)
 
 ### Features
