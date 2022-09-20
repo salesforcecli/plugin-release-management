@@ -12,6 +12,8 @@
     "pinnedDeps": "bump the versions of the packages listed in the pinnedDependencies section",
     "only": "only bump the version of the packages passed in, uses latest if version is not provided",
     "patch": "bump the release as a patch of an existing version, not a new minor version",
-    "buildOnly": "only build the latest rc, do not git add/commit/push"
+    "buildOnly": "only build the latest rc, do not git add/commit/push",
+    "snapshot": "update the snapshots and commit them to the PR",
+    "schema": "update the schemas and commit them to the PR"
   }
 }
