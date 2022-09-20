@@ -121,7 +121,7 @@ export default class build extends SfdxCommand {
 
     if (this.flags.schema) {
       this.ux.log('updating schema');
-      this.exec('./bin/run cli:schemas:collect', { silent: false });
+      this.exec('sf-release cli:schemas:collect', { silent: false });
     }
 
     if (pushChangesToGitHub) {
