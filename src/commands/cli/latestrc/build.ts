@@ -116,7 +116,7 @@ export default class build extends SfdxCommand {
 
     if (this.flags.snapshot) {
       this.ux.log('updating snapshots');
-      this.exec('./bin/run snapshot:generate', { silent: false });
+      this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`, { silent: false });
     }
 
     if (this.flags.schema) {
