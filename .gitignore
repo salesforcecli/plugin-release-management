@@ -9,7 +9,7 @@ package-lock.json
 # debug logs
 npm-error.log
 yarn-error.log
-lerna-debug.log
+
 
 # compile source
 lib
@@ -21,7 +21,6 @@ lib
 .nyc_output
 coverage
 test_session*
-test-results.json
 
 # generated docs
 docs
@@ -40,4 +39,5 @@ node_modules
 # os specific files
 .DS_Store
 .idea
-/oclif.manifest.json
+
+oclif.manifest.json
