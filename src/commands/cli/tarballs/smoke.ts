@@ -48,6 +48,7 @@ export default class SmokeTest extends SfdxCommand {
     this.execute(executable, '--version');
     this.execute(executable, '--help');
     this.execute(executable, 'plugins --core');
+    this.execute(executable, 'plugins:install @salesforce/plugin-alias@latest');
     this.initializeAllCommands(executable);
   }
 
@@ -68,7 +69,6 @@ export default class SmokeTest extends SfdxCommand {
   }
 
   private getAllCommands(executable: string): string[] {
-    if (path.basename(executable) === CLI.SF) this.execute(executable, 'plugins:install @oclif/plugin-commands@^2');
     const commandsJson = JSON.parse(this.execute(executable, 'commands --json', true)) as Array<{ id: string }>;
     return commandsJson.map((c) => c.id);
   }
