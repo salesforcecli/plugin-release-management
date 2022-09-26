@@ -150,7 +150,11 @@ export default class AutoMerge extends SfdxCommand {
     });
     this.ux.logJson(checkRunResponse.data);
 
-    if (checkRunResponse.data.check_runs.every((cr) => cr.status === 'completed' && cr.conclusion === 'success')) {
+    if (
+      checkRunResponse.data.check_runs.every(
+        (cr) => cr.status === 'completed' && ['success', 'skipped'].includes(cr.conclusion)
+      )
+    ) {
       return pr;
     }
   }
