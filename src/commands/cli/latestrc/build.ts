@@ -46,6 +46,12 @@ export default class build extends SfdxCommand {
     patch: flags.boolean({
       description: messages.getMessage('flags.patch'),
     }),
+    snapshot: flags.boolean({
+      description: messages.getMessage('flags.snapshot'),
+    }),
+    schema: flags.boolean({
+      description: messages.getMessage('flags.schema'),
+    }),
   };
 
   public async run(): Promise<void> {
@@ -107,7 +113,16 @@ export default class build extends SfdxCommand {
     this.exec('yarn install');
     // streamline the lockfile
     this.exec('npx yarn-deduplicate');
-    this.exec('yarn snapshot-generate');
+
+    if (this.flags.snapshot) {
+      this.ux.log('updating snapshots');
+      this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`, { silent: false });
+    }
+
+    if (this.flags.schema) {
+      this.ux.log('updating schema');
+      this.exec('sf-release cli:schemas:collect', { silent: false });
+    }
 
     if (pushChangesToGitHub) {
       const octokit = new Octokit({ auth });
