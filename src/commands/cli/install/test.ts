@@ -238,7 +238,7 @@ class Npm extends Method.Base {
     // I'm not confident that this is the best way to preempt any issues related to Npm's availability. Mainly
     // because I couldn't find any documetation related to what status indicators might be used and when.
     const response = await got.get(Npm.STATUS_URL).json<{ status: { indicator: string; description: string } }>();
-    return { service: 'Npm', available: response.status.indicator === 'none' };
+    return { service: 'Npm', available: ['none', 'minor'].includes(response.status.indicator) };
   }
 
   private async installAndTest(): Promise<Results> {
