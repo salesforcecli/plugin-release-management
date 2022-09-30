@@ -80,10 +80,12 @@ namespace Method {
       return {};
     }
 
+    // eslint-disable-next-line class-methods-use-this
     protected async ping(): Promise<ServiceAvailability> {
       return Promise.resolve({ available: true, service: 'Service' });
     }
 
+    // eslint-disable-next-line class-methods-use-this
     protected logResult(cli: CLI, success: boolean): void {
       const msg = success ? chalk.green('true') : chalk.red('false');
       CliUx.ux.log(`${chalk.bold(`${cli} Success`)}: ${msg}`);
@@ -140,7 +142,9 @@ class Tarball extends Method.Base {
     const results: Results = {};
     for (const [tarball, location] of Object.entries(tarballs)) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         await this.s3.download(tarball, location);
+        // eslint-disable-next-line no-await-in-loop
         const extracted = await this.extract(location);
         const testResults = this.test(extracted);
         for (const [cli, success] of Object.entries(testResults)) {
@@ -160,7 +164,9 @@ class Tarball extends Method.Base {
 
   private getTarballs(platform: Extract<NodeJS.Platform, 'darwin' | 'linux' | 'win32'>): Record<string, string> {
     const paths = platform === 'linux' && os.arch().includes('arm') ? this.paths['linux-arm'] : this.paths[platform];
-    const s3Tarballs = paths.map((p) => `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`);
+    const s3Tarballs = paths.map(
+      (p) => `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`
+    );
 
     const tarballs: Record<string, string> = {};
     for (const tarball of s3Tarballs) {
@@ -232,6 +238,7 @@ class Npm extends Method.Base {
     return this.installAndTest();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   protected async ping(): Promise<ServiceAvailability> {
     // I'm not confident that this is the best way to preempt any issues related to Npm's availability. Mainly
     // because I couldn't find any documetation related to what status indicators might be used and when.
@@ -326,6 +333,7 @@ class Installer extends Method.Base {
     for (const exe of executables) {
       const url = `${this.s3.directory}/channels/${this.options.channel}/${exe}`;
       const location = path.join(this.options.directory, exe);
+      // eslint-disable-next-line no-await-in-loop
       await this.s3.download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
@@ -349,7 +357,7 @@ class Installer extends Method.Base {
     return results;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
+  // eslint-disable-next-line @typescript-eslint/require-await, class-methods-use-this
   public async linux(): Promise<Results> {
     throw new Error('Installers not supported for linux.');
   }
@@ -412,11 +420,11 @@ export default class Test extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    const cli = ensure<CLI>(this.flags.cli);
-    const method = ensure<Method.Type>(this.flags.method);
-    const channel = ensure<Channel>(this.flags.channel);
-    const outputFile = ensure<string>(this.flags['output-file']);
-    const directory = await this.makeWorkingDir(cli, channel, method);
+    const cli = ensure<CLI>(this.flags.cli as CLI);
+    const method = ensure<Method.Type>(this.flags.method as Method.Type);
+    const channel = ensure<Channel>(this.flags.channel as Channel);
+    const outputFile = ensure<string>(this.flags['output-file'] as string);
+    const directory = await makeWorkingDir(cli, channel, method);
 
     CliUx.ux.log(`Working Directory: ${directory}`);
     CliUx.ux.log();
@@ -454,16 +462,16 @@ export default class Test extends SfdxCommand {
     CliUx.ux.styledJSON(results);
     CliUx.ux.log(`Results written to ${outputFile}`);
   }
-
-  private async makeWorkingDir(cli: CLI, channel: Channel, method: Method.Type): Promise<string> {
-    const tmpDir = path.join(os.tmpdir(), 'cli-install-test', cli, channel, method);
-    // ensure that we are starting with a clean directory
-    try {
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    } catch {
-      // error means that folder doesn't exist which is okay
-    }
-    await fs.mkdir(tmpDir, { recursive: true });
-    return tmpDir;
-  }
 }
+
+const makeWorkingDir = async (cli: CLI, channel: Channel, method: Method.Type): Promise<string> => {
+  const tmpDir = path.join(os.tmpdir(), 'cli-install-test', cli, channel, method);
+  // ensure that we are starting with a clean directory
+  try {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  } catch {
+    // error means that folder doesn't exist which is okay
+  }
+  await fs.mkdir(tmpDir, { recursive: true });
+  return tmpDir;
+};

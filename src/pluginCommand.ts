@@ -67,7 +67,7 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     this.logger = await Logger.child(this.constructor.name);
     this.pkgPath = require.resolve(path.join(this.options.npmName, 'package.json'), { paths: [this.options.cliRoot] });
     this.pkg = JSON.parse(fs.readFileSync(this.pkgPath, 'utf8')) as PluginPackage;
-    this.nodeExecutable = this.findNode(this.options.cliRoot);
+    this.nodeExecutable = findNode(this.options.cliRoot);
     this.bin = this.getBin();
   }
   public runPluginCmd(options: PluginRunOptions): PluginCommandResult | ShellString {
@@ -96,9 +96,12 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
         return results;
       }
     } catch (error) {
-      const sfError = new SfError(error, 'JsonParseError');
-      this.logger.debug(`Plugin command ${command} threw eception`, sfError);
-      throw sfError;
+      if (typeof error === 'string') {
+        const sfError = new SfError(error, 'JsonParseError');
+        this.logger.debug(`Plugin command ${command} threw exception`, sfError);
+        throw sfError;
+      }
+      throw error;
     }
   }
 
@@ -123,59 +126,56 @@ export class PluginCommand extends AsyncCreatable<PluginCommandOptions> {
     }
     return path.join(prjPath, this.pkg.bin[this.options.commandBin]);
   }
+}
 
-  /**
-   * Locate node executable and return its absolute path
-   * First it tries to locate the node executable on the root path passed in
-   * If not found then tries to use whatever 'node' resolves to on the user's PATH
-   * If found return absolute path to the executable
-   * If the node executable cannot be found, an error is thrown
-   *
-   * @private
-   */
-  private findNode(root: string = undefined): string {
-    const isExecutable = (filepath: string): boolean => {
-      if (osType() === 'Windows_NT') return filepath.endsWith('node.exe');
+/**
+ * Finds the bin directory in the sfdx installation root path
+ *
+ * @param sfdxPath
+ * @private
+ */
+const findSfdxBinDirs = (sfdxPath: string): string[] =>
+  sfdxPath ? [path.join(sfdxPath, 'bin'), path.join(sfdxPath, 'client', 'bin')].filter((p) => fs.existsSync(p)) : [];
 
-      try {
-        if (filepath.endsWith('node')) {
-          // This checks if the filepath is executable on Mac or Linux, if it is not it errors.
-          fs.accessSync(filepath, fs.constants.X_OK);
-          return true;
-        }
-      } catch {
-        return false;
+/**
+ * Locate node executable and return its absolute path
+ * First it tries to locate the node executable on the root path passed in
+ * If not found then tries to use whatever 'node' resolves to on the user's PATH
+ * If found return absolute path to the executable
+ * If the node executable cannot be found, an error is thrown
+ *
+ * @private
+ */
+const findNode = (root: string = undefined): string => {
+  const isExecutable = (filepath: string): boolean => {
+    if (osType() === 'Windows_NT') return filepath.endsWith('node.exe');
+
+    try {
+      if (filepath.endsWith('node')) {
+        // This checks if the filepath is executable on Mac or Linux, if it is not it errors.
+        fs.accessSync(filepath, fs.constants.X_OK);
+        return true;
       }
+    } catch {
       return false;
-    };
+    }
+    return false;
+  };
 
-    if (root) {
-      const sfdxBinDirs = this.findSfdxBinDirs(root);
-      if (sfdxBinDirs.length > 0) {
-        // Find the node executable
-        const node = shelljs.find(sfdxBinDirs).filter((file) => isExecutable(file))[0];
-        if (node) {
-          return fs.realpathSync(node);
-        }
+  if (root) {
+    const sfdxBinDirs = findSfdxBinDirs(root);
+    if (sfdxBinDirs.length > 0) {
+      // Find the node executable
+      const node = shelljs.find(sfdxBinDirs).filter((file) => isExecutable(file))[0];
+      if (node) {
+        return fs.realpathSync(node);
       }
     }
-
-    // Check to see if node is installed
-    const nodeShellString: shelljs.ShellString = shelljs.which('node');
-    if (nodeShellString?.code === 0 && nodeShellString?.stdout) return nodeShellString.stdout;
-
-    throw new SfError('Cannot locate node executable.', 'CannotFindNodeExecutable');
   }
 
-  /**
-   * Finds the bin directory in the sfdx installation root path
-   *
-   * @param sfdxPath
-   * @private
-   */
-  private findSfdxBinDirs(sfdxPath: string): string[] {
-    return sfdxPath
-      ? [path.join(sfdxPath, 'bin'), path.join(sfdxPath, 'client', 'bin')].filter((p) => fs.existsSync(p))
-      : [];
-  }
-}
+  // Check to see if node is installed
+  const nodeShellString: shelljs.ShellString = shelljs.which('node');
+  if (nodeShellString?.code === 0 && nodeShellString?.stdout) return nodeShellString.stdout;
+
+  throw new SfError('Cannot locate node executable.', 'CannotFindNodeExecutable');
+};

@@ -135,13 +135,13 @@ export default class Promote extends SfdxCommand {
       }) as ShellString;
       this.ux.log(results.stdout);
     } else if (!this.flags.json) {
-        this.log(
-          messages.getMessage(
-            'DryRunMessage',
-            [cli, version, sha, target, ensureArray(this.flags.platform).join(', ')].map((s) => bold(s))
-          )
-        );
-      }
+      this.log(
+        messages.getMessage(
+          'DryRunMessage',
+          [cli, version, sha, target, ensureArray(this.flags.platform).join(', ')].map((s) => bold(s))
+        )
+      );
+    }
     return {
       dryRun: !!this.flags.dryrun,
       cli,
@@ -164,7 +164,7 @@ export default class Promote extends SfdxCommand {
    */
   private async determineShaAndVersion(cli: CLI): Promise<{ sha: string; version: string }> {
     if (this.flags.candidate) {
-      const manifest = await this.findManifestForCandidate(cli, this.flags.candidate);
+      const manifest = await findManifestForCandidate(cli, this.flags.candidate as Channel);
       return { sha: manifest.sha, version: manifest.version };
     } else if (this.flags.version) {
       const sha = await this.findShaForVersion(cli, ensureString(this.flags.version));
@@ -205,18 +205,6 @@ export default class Promote extends SfdxCommand {
   }
 
   /**
-   * find a manifest file in the channel
-   *
-   * @param cli
-   * @param channel
-   * @private
-   */
-  private async findManifestForCandidate(cli: CLI, channel: Channel): Promise<S3Manifest> {
-    const amazonS3 = new AmazonS3({ cli, channel });
-    return amazonS3.getManifestFromChannel(channel);
-  }
-
-  /**
    * find the sha that was uploaded most recently for the named version
    *
    * @param cli
@@ -238,7 +226,10 @@ export default class Promote extends SfdxCommand {
               const versionShaContents = (await amazonS3.listKeyContents(
                 versionSha.Prefix
               )) as unknown as VersionShaContents[];
-              return versionShaContents.map((content) => ({ ...content, ...{ LastModifiedDate: new Date(content.LastModified) } }));
+              return versionShaContents.map((content) => ({
+                ...content,
+                ...{ LastModifiedDate: new Date(content.LastModified) },
+              }));
             })
           )
         ).flat() as VersionShaContents[]
@@ -289,3 +280,15 @@ export default class Promote extends SfdxCommand {
     throw error;
   }
 }
+
+/**
+ * find a manifest file in the channel
+ *
+ * @param cli
+ * @param channel
+ * @private
+ */
+const findManifestForCandidate = async (cli: CLI, channel: Channel): Promise<S3Manifest> => {
+  const amazonS3 = new AmazonS3({ cli, channel });
+  return amazonS3.getManifestFromChannel(channel);
+};

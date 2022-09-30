@@ -8,7 +8,7 @@
 import { NamedError } from '@salesforce/kit';
 
 export class ExecProcessFailed extends NamedError {
-  public constructor(process: string, errorCode: string, message: string) {
+  public constructor(process: string, errorCode: string | number, message: string) {
     super(
       'Sub-process failed.',
       `Exec'd subprocess ${process} failed with error code '${errorCode}' and message '${message}'.`

@@ -52,7 +52,7 @@ export default class Promote extends SfdxCommand {
     const token = ensureString(new Env().getString('NPM_TOKEN'), 'NPM_TOKEN must be set in the environment');
     const tokens = JSON.parse(exec('npm token list --json', { silent: true }).stdout) as Token[];
     const publishTokens = tokens.filter((t) => t.readonly === false && t.automation === false);
-    const match = publishTokens.find((t) => token.substring(0, 6) === t.token);
+    const match = publishTokens.find((t) => token.startsWith(t.token));
 
     if (!match) {
       const errType = 'InvalidToken';

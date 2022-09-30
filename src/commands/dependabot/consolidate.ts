@@ -12,7 +12,7 @@ import { Env } from '@salesforce/kit';
 import { bold, cyan, green } from 'chalk';
 import { exec } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
-import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
+import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo, BumpType } from '../../dependabot';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
@@ -59,7 +59,7 @@ export default class Consolidate extends SfdxCommand {
   };
 
   public async run(): Promise<void> {
-    const baseRepoObject = await getOwnerAndRepo(this.flags.owner, this.flags.repo);
+    const baseRepoObject = await getOwnerAndRepo(this.flags.owner as string, this.flags.repo as string);
     const baseBranch = ensureString(this.flags['base-branch']);
     const targetBranch = ensureString(this.flags['target-branch']);
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
@@ -71,7 +71,7 @@ export default class Consolidate extends SfdxCommand {
       (d) =>
         d.state === 'open' &&
         d.user.login === 'dependabot[bot]' &&
-        meetsVersionCriteria(d.title, this.flags['max-version-bump']) &&
+        meetsVersionCriteria(d.title, this.flags['max-version-bump'] as BumpType) &&
         !this.shouldBeIgnored(d.title)
     );
 
@@ -122,6 +122,9 @@ export default class Consolidate extends SfdxCommand {
           this.log(`${green('Created Pull Request:')} ${response.data._links.html.href}`);
         }
       } catch (err) {
+        if (!(err instanceof Error) || typeof err !== 'string') {
+          throw err;
+        }
         this.error(err);
       }
     }

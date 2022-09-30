@@ -28,7 +28,7 @@ export default class Pin extends SfdxCommand {
 
   public async run(): Promise<ChangedPackageVersions> {
     const packageJson = await Package.create();
-    const pkg = packageJson.pinDependencyVersions(this.flags.tag);
+    const pkg = packageJson.pinDependencyVersions(this.flags.tag as string);
 
     if (this.flags.dryrun) {
       this.warn('Running in --dryrun mode. No changes will be written to the package.json.');

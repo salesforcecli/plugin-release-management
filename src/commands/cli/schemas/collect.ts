@@ -58,6 +58,7 @@ export default class Collect extends SfdxCommand {
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flagsConfig: FlagsConfig = {};
 
+  // eslint-disable-next-line class-methods-use-this
   public async run(): Promise<void> {
     const schemaFiles = await SchemaUtils.getLatestSchemaFiles();
     const schemaFilesByPlugin = new Map<string, string[]>();
@@ -75,18 +76,22 @@ export default class Collect extends SfdxCommand {
     const outputDir = path.join(process.cwd(), 'schemas');
     await fs.mkdir(outputDir, { recursive: true });
 
-    for (const [plugin, files] of Array.from(schemaFilesByPlugin.entries())) {
-      const pluginOutputDir = path.join(outputDir, plugin);
-      await fs.mkdir(pluginOutputDir, { recursive: true });
-      for (const file of files) {
-        if (file.split(path.sep).includes('hooks')) {
-          const hooksOutputDir = path.join(pluginOutputDir, 'hooks');
-          await fs.mkdir(hooksOutputDir, { recursive: true });
-          cp('-f', file, path.join(hooksOutputDir, path.basename(file)));
-        } else {
-          cp('-f', file, path.join(pluginOutputDir, path.basename(file)));
-        }
-      }
-    }
+    await Promise.all(
+      Array.from(schemaFilesByPlugin.entries()).map(async ([plugin, files]) => {
+        const pluginOutputDir = path.join(outputDir, plugin);
+        await fs.mkdir(pluginOutputDir, { recursive: true });
+        await Promise.all(
+          files.map(async (file) => {
+            if (file.split(path.sep).includes('hooks')) {
+              const hooksOutputDir = path.join(pluginOutputDir, 'hooks');
+              await fs.mkdir(hooksOutputDir, { recursive: true });
+              cp('-f', file, path.join(hooksOutputDir, path.basename(file)));
+            } else {
+              cp('-f', file, path.join(pluginOutputDir, path.basename(file)));
+            }
+          })
+        );
+      })
+    );
   }
 }

@@ -52,9 +52,10 @@ export async function inspectCommits(pkg: Package): Promise<CommitInspection> {
       .stdout.split(`${DELIMITER}${os.EOL}`)
       .filter((c) => !!c);
     const readable = Readable.from(gitLog);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    /* eslint-disable */
     // @ts-ignore because the type exported from conventionalCommitsParser is wrong
     const parser = readable.pipe(conventionalCommitsParser(configuration.parserOpts));
+    /* eslint-enable */
     const allCommits: Commit[] = [];
     parser.on('data', (commit: Commit) => allCommits.push(commit));
     parser.on('finish', () => resolve(allCommits));
