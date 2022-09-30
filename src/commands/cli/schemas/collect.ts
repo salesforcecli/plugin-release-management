@@ -33,9 +33,7 @@ export class SchemaUtils {
     });
     const schemaFiles = (await fg(globs))
       .map((f) => path.normalize(f)) // normalize paths so this will work on Windows since fg only returns Unix paths
-      .filter((f) => {
-        return !f.includes(path.join('@salesforce', 'schemas'));
-      });
+      .filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
     return schemaFiles;
   }
 

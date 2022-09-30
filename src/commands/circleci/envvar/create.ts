@@ -64,11 +64,11 @@ export default class CircleCIEnvvarCreate extends CircleCiEnvvars {
   }
 
   public async isPipedIn(): Promise<boolean> {
-    return await super.isPipedIn();
+    return super.isPipedIn();
   }
 
   public async readPipedInput(): Promise<string> {
-    return await super.readPipedInput();
+    return super.readPipedInput();
   }
 
   private async createEnvvars(slug: string): Promise<string | EnvvarModificationStatus[]> {

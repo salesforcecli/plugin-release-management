@@ -194,9 +194,7 @@ export default class ReleaseNotes extends SfdxCommand {
     });
     const changes = (await Promise.all(
       pullRequests.data
-        .filter((pr) => {
-          return pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot');
-        })
+        .filter((pr) => pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot'))
         .map(async (pr) => {
           const username = await this.getNameOfUser(pr.user.login);
           const author = pr.user.login === username ? username : `${username} (${pr.user.login})`;

@@ -58,9 +58,7 @@ export default class Promote extends SfdxCommand {
       char: 's',
       description: messages.getMessage('sha'),
       exclusive: ['candidate'],
-      parse: (input: string): Promise<string> => {
-        return Promise.resolve(input.slice(0, 7));
-      },
+      parse: (input: string): Promise<string> => Promise.resolve(input.slice(0, 7)),
       validate: (input: string): boolean => {
         if (input.length < 7) {
           return false;
@@ -136,8 +134,7 @@ export default class Promote extends SfdxCommand {
         ],
       }) as ShellString;
       this.ux.log(results.stdout);
-    } else {
-      if (!this.flags.json) {
+    } else if (!this.flags.json) {
         this.log(
           messages.getMessage(
             'DryRunMessage',
@@ -145,7 +142,6 @@ export default class Promote extends SfdxCommand {
           )
         );
       }
-    }
     return {
       dryRun: !!this.flags.dryrun,
       cli,
@@ -217,7 +213,7 @@ export default class Promote extends SfdxCommand {
    */
   private async findManifestForCandidate(cli: CLI, channel: Channel): Promise<S3Manifest> {
     const amazonS3 = new AmazonS3({ cli, channel });
-    return await amazonS3.getManifestFromChannel(channel);
+    return amazonS3.getManifestFromChannel(channel);
   }
 
   /**
@@ -242,9 +238,7 @@ export default class Promote extends SfdxCommand {
               const versionShaContents = (await amazonS3.listKeyContents(
                 versionSha.Prefix
               )) as unknown as VersionShaContents[];
-              return versionShaContents.map((content) => {
-                return { ...content, ...{ LastModifiedDate: new Date(content.LastModified) } };
-              });
+              return versionShaContents.map((content) => ({ ...content, ...{ LastModifiedDate: new Date(content.LastModified) } }));
             })
           )
         ).flat() as VersionShaContents[]
@@ -280,9 +274,7 @@ export default class Promote extends SfdxCommand {
       await Promise.all(
         (
           await amazonS3.listCommonPrefixes('versions')
-        ).map(async (version) => {
-          return await amazonS3.listCommonPrefixes(version.Prefix);
-        })
+        ).map(async (version) => amazonS3.listCommonPrefixes(version.Prefix))
       )
     )
       .flat()
