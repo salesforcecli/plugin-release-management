@@ -20,7 +20,7 @@ import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
 
-export type Change = {
+type Change = {
   author: string;
   description: string;
   link: string;
@@ -30,7 +30,7 @@ export type Change = {
   title: string;
 };
 
-export type ChangesByPlugin = Record<string, Change[]>;
+type ChangesByPlugin = Record<string, Change[]>;
 
 type Differences = {
   removed: Record<string, string>;

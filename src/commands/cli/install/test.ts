@@ -28,7 +28,7 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.ins
   'outputFileFlag',
 ]);
 
-export type Results = Record<string, Record<CLI, boolean>>;
+type Results = Record<string, Record<CLI, boolean>>;
 
 namespace Method {
   export enum Type {

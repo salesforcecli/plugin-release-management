@@ -25,7 +25,7 @@ type Result = {
   matches: boolean;
   reason?: string;
 };
-export type Results = Record<string, Result>;
+type Results = Record<string, Result>;
 
 export default class Compare extends SfdxCommand {
   public static readonly description = messages.getMessage('description');

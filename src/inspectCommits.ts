@@ -13,7 +13,7 @@ import * as conventionalChangelogPresetLoader from 'conventional-changelog-prese
 import { Nullable } from '@salesforce/ts-types';
 import { Package } from './package';
 
-export interface Commit {
+interface Commit {
   type: Nullable<string>;
   header: Nullable<string>;
   body: Nullable<string>;

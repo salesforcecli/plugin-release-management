@@ -12,13 +12,13 @@ export type Flags = OutputFlags<any>;
 type ConditionFn = (flags: Flags) => boolean;
 type DependencyType = 'env';
 
-export interface Dependency {
+interface Dependency {
   name: string;
   type: DependencyType;
   condition?: ConditionFn;
 }
 
-export interface Result {
+interface Result {
   name: string;
   type: DependencyType;
   passed: boolean;

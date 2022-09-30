@@ -20,12 +20,12 @@ import { Channel, CLI, S3Manifest, ServiceAvailability } from './types';
 import { api } from './codeSigning/packAndSign';
 import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
-export const BASE_URL = 'https://developer.salesforce.com';
+const BASE_URL = 'https://developer.salesforce.com';
 const BUCKET = 'dfc-data-production';
 
-export type GetObjectOption = Omit<GetObjectRequest, 'Bucket'>;
+type GetObjectOption = Omit<GetObjectRequest, 'Bucket'>;
 
-export type AmazonS3Options = {
+type AmazonS3Options = {
   bucket?: string;
   cli?: CLI;
   channel?: Channel;

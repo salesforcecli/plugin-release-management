@@ -17,7 +17,7 @@ import { SfError, Logger } from '@salesforce/core';
 import { ShellString } from 'shelljs';
 import { AsyncCreatable } from '@salesforce/kit';
 
-export type PluginShowResults = {
+type PluginShowResults = {
   versions: string[];
   'dist-tags': {
     [name: string]: string;

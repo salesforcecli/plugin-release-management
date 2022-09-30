@@ -41,7 +41,7 @@ export interface PackageInfo {
 
 type PollFunction = () => boolean;
 
-export type RepositoryOptions = {
+type RepositoryOptions = {
   ux: UX;
   useprerelease?: string;
   shouldBePublished?: boolean;
