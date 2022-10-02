@@ -98,17 +98,14 @@ export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<
 /**
  * Save the security items (publicKey and .sig file) to AWS based on the generates filenames
  */
-const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> => {
-  return Promise.all([
+const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> => Promise.all([
     // signature file
     putObject(BUCKET, input.packageJsonSfdxProperty.signatureUrl.replace(`${BASE_URL}/`, ''), input.signatureContents),
     // publicKey
     putObject(BUCKET, input.packageJsonSfdxProperty.publicKeyUrl.replace(`${BASE_URL}/`, ''), input.publicKeyContents),
   ]);
-};
 
-const getOneTimeUseKeys = (): Promise<KeyPair> => {
-  return new Promise<KeyPair>((resolve, reject) => {
+const getOneTimeUseKeys = (): Promise<KeyPair> => new Promise<KeyPair>((resolve, reject) => {
     generateKeyPair(
       'rsa',
       {
@@ -131,7 +128,6 @@ const getOneTimeUseKeys = (): Promise<KeyPair> => {
       }
     );
   });
-};
 
 const getSignature = async (privateKey: string, dataToSignFilePath: string): Promise<string> => {
   const signApi = createSign(CRYPTO_LEVEL);
@@ -139,18 +135,13 @@ const getSignature = async (privateKey: string, dataToSignFilePath: string): Pro
   return new Promise<string>((resolve, reject) => {
     const dataToSignStream = createReadStream(dataToSignFilePath, { encoding: 'binary' });
     dataToSignStream.pipe(signApi);
-    dataToSignStream.on('end', () => {
-      return resolve(signApi.sign(privateKey, 'base64'));
-    });
+    dataToSignStream.on('end', () => resolve(signApi.sign(privateKey, 'base64')));
 
-    dataToSignStream.on('error', (err) => {
-      return reject(err);
-    });
+    dataToSignStream.on('error', (err) => reject(err));
   });
 };
 
-const verify = async (dataToSignFilePath: string, publicKey: string, signature: string): Promise<boolean> => {
-  return new Promise<boolean>((resolve, reject) => {
+const verify = async (dataToSignFilePath: string, publicKey: string, signature: string): Promise<boolean> => new Promise<boolean>((resolve, reject) => {
     const verifier = createVerify(CRYPTO_LEVEL);
     const dataToVerifyStream = createReadStream(dataToSignFilePath, { encoding: 'binary' });
     dataToVerifyStream.pipe(verifier);
@@ -161,8 +152,5 @@ const verify = async (dataToSignFilePath: string, publicKey: string, signature: 
       return reject('The signature did not verify');
     });
 
-    dataToVerifyStream.on('error', (err) => {
-      return reject(err);
-    });
+    dataToVerifyStream.on('error', (err) => reject(err));
   });
-};

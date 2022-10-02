@@ -108,9 +108,7 @@ export default class Verify extends SfdxCommand {
 
   public async ensureNoWebDriverIO(): Promise<void> {
     const webDriverIo = path.join(this.baseDir, 'node_modules', 'webdriverio', 'test');
-    const validate = async (): Promise<boolean> => {
-      return !(await fileExists(webDriverIo));
-    };
+    const validate = async (): Promise<boolean> => !(await fileExists(webDriverIo));
     const passed = await this.execute('Ensure webdriverio does not exist', validate);
     if (!passed) {
       throw new SfError(`${webDriverIo} is present. Was the clean not aggressive enough?`);
@@ -129,9 +127,7 @@ export default class Verify extends SfdxCommand {
       'heroku-cli-util',
       '.nyc_output'
     );
-    const validate = async (): Promise<boolean> => {
-      return !(await fileExists(herokuCliUtil));
-    };
+    const validate = async (): Promise<boolean> => !(await fileExists(herokuCliUtil));
     const passed = await this.execute('Ensure heroku-cli-util/.nyc_output does not exist', validate);
     if (!passed) {
       throw new SfError(`${herokuCliUtil} is present. Was the clean not aggressive enough?`);

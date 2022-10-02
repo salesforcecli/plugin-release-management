@@ -160,9 +160,7 @@ class Tarball extends Method.Base {
 
   private getTarballs(platform: Extract<NodeJS.Platform, 'darwin' | 'linux' | 'win32'>): Record<string, string> {
     const paths = platform === 'linux' && os.arch().includes('arm') ? this.paths['linux-arm'] : this.paths[platform];
-    const s3Tarballs = paths.map((p) => {
-      return `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`;
-    });
+    const s3Tarballs = paths.map((p) => `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`);
 
     const tarballs: Record<string, string> = {};
     for (const tarball of s3Tarballs) {

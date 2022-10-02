@@ -56,9 +56,7 @@ export default class Compare extends SfdxCommand {
 
     const results: Results = {};
     for (const file of existing) {
-      const correspondingFile = latest.find((f) => {
-        return this.normalizeFilename(f) === file;
-      });
+      const correspondingFile = latest.find((f) => this.normalizeFilename(f) === file);
       if (correspondingFile) {
         const fileData = await fs.readFile(file, 'utf8');
         const fileContents = parseJsonMap(fileData, file);
@@ -78,9 +76,7 @@ export default class Compare extends SfdxCommand {
     }
 
     if (!this.flags.json) {
-      const data = Object.entries(results).reduce((x, [file, d]) => {
-        return x.concat(Object.assign({ file }, d));
-      }, [] as Array<{ file: string; correspondingFile: string; matches: boolean }>);
+      const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>((x, [file, d]) => x.concat(Object.assign({ file }, d)), []);
       const columns = {
         file: { header: 'File' },
         correspondingFile: { header: 'Corresponding File' },
