@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -17,7 +17,7 @@
     "@salesforce/plugin-trust": "^2.0.4",
     "@salesforce/ts-types": "^1.5.21",
     "agent-base": "^6.0.2",
-    "aws-sdk": "^2.1226.0",
+    "aws-sdk": "^2.1227.0",
     "chalk": "^4.1.0",
     "conventional-changelog-conventionalcommits": "^4.6.1",
     "conventional-changelog-preset-loader": "^2.3.4",
@@ -63,7 +63,7 @@
     "shx": "0.3.4",
     "sinon": "10.0.0",
     "ts-node": "^10.0.0",
-    "typescript": "^4.8.3"
+    "typescript": "^4.8.4"
   },
   "config": {},
   "engines": {
