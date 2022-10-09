@@ -818,7 +818,7 @@
     is-wsl "^2.1.1"
     tslib "^2.3.1"
 
-"@oclif/core@^1.14.1", "@oclif/core@^1.15.0", "@oclif/core@^1.16.4", "@oclif/core@^1.6.3", "@oclif/core@^1.6.4":
+"@oclif/core@^1.14.1", "@oclif/core@^1.15.0", "@oclif/core@^1.16.4", "@oclif/core@^1.16.5", "@oclif/core@^1.6.3", "@oclif/core@^1.6.4":
   version "1.16.5"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.16.5.tgz#248c3371b615462a6ee6826a3c316bdc54dc5193"
   integrity sha512-Jb58K79AALkLmY0PNU1Jx4Z+/JIWtpgtRbei92PIIBx+TaAmYgVySNI1beInZFNOpGo2fhxVBp+yr3DZ38z3kQ==
@@ -949,13 +949,13 @@
   dependencies:
     "@oclif/core" "^1.16.4"
 
-"@oclif/plugin-not-found@^2.3.3":
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-2.3.3.tgz#390b2898455d709104b8e45c869ace134ac678f6"
-  integrity sha512-SIrSQmZAkxkje5XSHLQRj5cwUrJkPlMLil5Raqq7LGIskMWufsq5y3WzOb0kcFq4aKzzjtYDRdB+HP4670suiQ==
+"@oclif/plugin-not-found@^2.3.4":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-2.3.4.tgz#aca2c0561757ca4bdb25cfc7e34c46b6eeabc619"
+  integrity sha512-pTFKaGYXClS2RwPT4A86EPQVutwy+2RtGvJpSZwZ67AVxqIW5OPnwkiOSC4MVZ53cT/3sgtWZwob2LG99zpamA==
   dependencies:
     "@oclif/color" "^1.0.1"
-    "@oclif/core" "^1.16.4"
+    "@oclif/core" "^1.16.5"
     fast-levenshtein "^3.0.0"
     lodash "^4.17.21"
 
@@ -2083,7 +2083,7 @@ aws-sdk-mock@^5.4.0:
     sinon "^13.0.2"
     traverse "^0.6.6"
 
-aws-sdk@^2.1116.0, aws-sdk@^2.1122.0, aws-sdk@^2.1231.0:
+aws-sdk@^2.1122.0, aws-sdk@^2.1227.0, aws-sdk@^2.1231.0:
   version "2.1231.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1231.0.tgz#c02e83b095211d9f6dfb540fd47fa69190af9c0d"
   integrity sha512-ONBuRsOxsu0zL8u/Vmz49tPWi9D4ls2pjb6szdfSx9VQef7bOnWe9gJpWoA94OTzcjOWsvjsG7UgjvQJkIuPBg==
@@ -6782,16 +6782,16 @@ object.values@^1.1.5:
     define-properties "^1.1.3"
     es-abstract "^1.19.1"
 
-oclif@^3.2.11:
-  version "3.2.11"
-  resolved "https://registry.yarnpkg.com/oclif/-/oclif-3.2.11.tgz#52cfd71c10e1c42198e99b7206e2261ec4a7b719"
-  integrity sha512-82HXKQhD2ZPjXI7smjdKOifXQU00wMpE3pgYSpIYpMAORi7xB9U9UsitnCosqMgR7P5RHquRgcrqUL763QCkHg==
+oclif@^3.2.14:
+  version "3.2.14"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-3.2.14.tgz#5468e0393a4dec8c9dad051deb92b676c3c1964e"
+  integrity sha512-ccAD3P9q/E0EK6jHi8gEv4gZoKOMCrkTajYJZ+eZOVeuIJgH7rxBmI9Lo3TcqBuLlkLQBLRxn8/o9gJ3lp8FOQ==
   dependencies:
     "@oclif/core" "^1.16.4"
     "@oclif/plugin-help" "^5.1.14"
-    "@oclif/plugin-not-found" "^2.3.3"
+    "@oclif/plugin-not-found" "^2.3.4"
     "@oclif/plugin-warn-if-update-available" "^2.0.6"
-    aws-sdk "^2.1116.0"
+    aws-sdk "^2.1227.0"
     concurrently "^7.4.0"
     debug "^4.3.3"
     find-yarn-workspace-root "^2.0.0"
