@@ -37,7 +37,7 @@ function expectSlugStatus(slugs: string[], result: CircelCIEnvvarUpdateStatus) {
   expect(matchedUpdates.length).to.equal(updatedSlugs.length);
 }
 
-before(async function () {
+before(async () => {
   process.env['CIRCLE_CI_TOKEN'] = '123456';
 });
 

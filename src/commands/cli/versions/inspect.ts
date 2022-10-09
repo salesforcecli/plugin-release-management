@@ -234,10 +234,10 @@ export default class Inspect extends SfdxCommand {
   private async inspectArchives(channels: Channel[]): Promise<Info[]> {
     const tarDir = await this.mkdir(this.workingDir, 'tar');
 
-    const pathsByChannel = channels.reduce((res, current) => {
+    const pathsByChannel = channels.reduce<Archives>((res, current) => {
       const channel = CHANNEL_MAPPING[Location.ARCHIVE][current] as ArchiveChannel;
       return Object.assign(res, { [channel]: this.archives[channel] });
-    }, {} as Archives);
+    }, {});
 
     const results: Info[] = [];
     for (const channel of Object.keys(pathsByChannel) as Channel[]) {

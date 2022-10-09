@@ -81,9 +81,7 @@ export default class Verify extends SfdxCommand {
       '@salesforce/plugin-templates',
       '@salesforce/plugin-generator',
     ];
-    const testDirs = (await this.find(`${baseDirGlob}/**/test`, { onlyDirectories: true })).filter((f) => {
-      return !allowedTestDirs.some((d) => f.includes(d));
-    });
+    const testDirs = (await this.find(`${baseDirGlob}/**/test`, { onlyDirectories: true })).filter((f) => !allowedTestDirs.some((d) => f.includes(d)));
     this.remove(testDirs, 'test directories');
 
     // JS map files, except the ill-named `lodash.map` (it's a directory and we'll also filter out matches if found for good measure)
