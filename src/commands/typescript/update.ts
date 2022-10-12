@@ -55,7 +55,11 @@ export default class Update extends SfdxCommand {
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
     this.updateTsVersion();
-    await Promise.all(this.packages.map((pkg) => this.updateEsTargetConfig(pkg.location)));
+    for (const pkg of this.packages) {
+      // this.packages is singular in a non-lerna world
+      // eslint-disable-next-line no-await-in-loop
+      await this.updateEsTargetConfig(pkg.location);
+    }
 
     try {
       this.repo.install();
