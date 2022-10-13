@@ -87,7 +87,7 @@ export default class AutoMerge extends SfdxCommand {
       new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
       'GH_TOKEN is required to be set in the environment'
     );
-    const { owner, repo } = await getOwnerAndRepo(this.flags.owner, this.flags.repo);
+    const { owner, repo } = await getOwnerAndRepo(this.flags.owner as string, this.flags.repo as string);
 
     this.octokit = new Octokit({ auth });
     this.baseRepoObject = {

@@ -34,7 +34,7 @@ export default class SmokeTest extends SfdxCommand {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async run(): Promise<void> {
-    const cli = ensure<CLI>(this.flags.cli);
+    const cli = ensure<CLI>(this.flags.cli as CLI);
     const executables = [path.join('tmp', cli, 'bin', cli)];
     if (cli === CLI.SFDX) {
       executables.push(path.join('tmp', cli, 'bin', CLI.SF));

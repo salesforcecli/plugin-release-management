@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint-disable no-await-in-loop */
 
 import * as os from 'os';
 import * as path from 'path';
@@ -210,7 +211,7 @@ export default class Inspect extends SfdxCommand {
   }
 
   private initArchives(): void {
-    const cli = ensure<CLI>(this.flags.cli);
+    const cli = ensure<CLI>(this.flags.cli as CLI);
     const stablePath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable`;
     const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
     this.archives = {} as Archives;
@@ -232,12 +233,13 @@ export default class Inspect extends SfdxCommand {
   }
 
   private async inspectArchives(channels: Channel[]): Promise<Info[]> {
-    const tarDir = await this.mkdir(this.workingDir, 'tar');
+    const tarDir = await mkdir(this.workingDir, 'tar');
 
-    const pathsByChannel = channels.reduce((res, current) => {
-      const channel = CHANNEL_MAPPING[Location.ARCHIVE][current] as ArchiveChannel;
-      return Object.assign(res, { [channel]: this.archives[channel] });
-    }, {} as Archives);
+    const pathsByChannel = Object.fromEntries(
+      channels
+        .map((c) => CHANNEL_MAPPING[Location.ARCHIVE][c])
+        .map((c) => [c, this.archives[CHANNEL_MAPPING[Location.ARCHIVE][c]]])
+    );
 
     const results: Info[] = [];
     for (const channel of Object.keys(pathsByChannel) as Channel[]) {
@@ -251,7 +253,7 @@ export default class Inspect extends SfdxCommand {
           continue;
         }
         const filename = path.basename(archivePath);
-        const unpackedDir = await this.mkdir(this.workingDir, 'unpacked', filename);
+        const unpackedDir = await mkdir(this.workingDir, 'unpacked', filename);
         this.ux.startSpinner(`Unpacking: ${cyan(unpackedDir)}`);
         const tarResult = exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
         this.ux.stopSpinner();
@@ -259,7 +261,7 @@ export default class Inspect extends SfdxCommand {
           this.ux.log(red('Failed to unpack. Skipping...'));
           continue;
         }
-        const pkgJson = await this.readPackageJson(unpackedDir);
+        const pkgJson = await readPackageJson(unpackedDir);
         results.push({
           dependencies: await this.getDependencies(unpackedDir),
           origin: archivePath,
@@ -274,17 +276,17 @@ export default class Inspect extends SfdxCommand {
 
   private async inspectNpm(channels: Channel[]): Promise<Info[]> {
     const cliMeta = CLI_META[this.flags.cli as CLI];
-    const npmDir = await this.mkdir(this.workingDir, 'npm');
+    const npmDir = await mkdir(this.workingDir, 'npm');
     const results: Info[] = [];
     const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);
     for (const tag of tags) {
       this.ux.log(`---- ${Location.NPM} ${tag} ----`);
-      const installDir = await this.mkdir(npmDir, tag);
+      const installDir = await mkdir(npmDir, tag);
       const name = `${cliMeta.packageName}@${tag}`;
       this.ux.startSpinner(`Installing: ${cyan(name)}`);
       exec(`npm install ${name}`, { cwd: installDir, silent: true });
       this.ux.stopSpinner();
-      const pkgJson = await this.readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
+      const pkgJson = await readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
       results.push({
         dependencies: await this.getDependencies(installDir),
         origin: `${cliMeta.npm}/v/${pkgJson.version}`,
@@ -310,24 +312,13 @@ export default class Inspect extends SfdxCommand {
     const dependencyPaths = await fg(depGlobs, { onlyDirectories: true, deep: 1 });
     const dependencies: Dependency[] = [];
     for (const dep of dependencyPaths) {
-      const pkg = await this.readPackageJson(dep);
+      const pkg = await readPackageJson(dep);
       dependencies.push({
         name: pkg.name,
         version: pkg.version,
       });
     }
     return dependencies;
-  }
-
-  private async readPackageJson(pkgDir: string): Promise<PackageJson> {
-    const fileData = await fs.readFile(path.join(pkgDir, 'package.json'), 'utf8');
-    return parseJson(fileData, path.join(pkgDir, 'package.json'), false) as PackageJson;
-  }
-
-  private async mkdir(...parts: string[]): Promise<string> {
-    const dir = path.resolve(path.join(...parts));
-    await fs.mkdir(dir, { recursive: true });
-    return dir;
   }
 
   private logResults(results: Info[], locations: Location[], channels: Channel[]): void {
@@ -379,3 +370,14 @@ export default class Inspect extends SfdxCommand {
     }
   }
 }
+
+const readPackageJson = async (pkgDir: string): Promise<PackageJson> => {
+  const fileData = await fs.readFile(path.join(pkgDir, 'package.json'), 'utf8');
+  return parseJson(fileData, path.join(pkgDir, 'package.json'), false) as PackageJson;
+};
+
+const mkdir = async (...parts: string[]): Promise<string> => {
+  const dir = path.resolve(path.join(...parts));
+  await fs.mkdir(dir, { recursive: true });
+  return dir;
+};

@@ -46,9 +46,7 @@ describe('doPackAndSign', () => {
   before(() => {
     let signature: string;
 
-    stubMethod($$.SANDBOX, got, 'get').callsFake(async (path: string) => {
-      return _getCertResponse(path);
-    });
+    stubMethod($$.SANDBOX, got, 'get').callsFake(async (path: string) => _getCertResponse(path));
 
     $$.SANDBOX.stub(console, 'log');
     $$.SANDBOX.stub(console, 'info');

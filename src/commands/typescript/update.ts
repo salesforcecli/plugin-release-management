@@ -44,7 +44,7 @@ export default class Update extends SfdxCommand {
   private packages: Package[];
 
   public async run(): Promise<void> {
-    this.typescriptPkg = this.retrieveTsPackage();
+    this.typescriptPkg = retrieveTsPackage();
     this.validateEsTarget();
     this.validateTsVersion();
 
@@ -55,7 +55,11 @@ export default class Update extends SfdxCommand {
     this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
     this.updateTsVersion();
-    await this.updateEsTarget();
+    for (const pkg of this.packages) {
+      // this.packages is singular in a non-lerna world
+      // eslint-disable-next-line no-await-in-loop
+      await this.updateEsTargetConfig(pkg.location);
+    }
 
     try {
       this.repo.install();
@@ -80,18 +84,12 @@ export default class Update extends SfdxCommand {
     const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
 
     set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
-    this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
+    this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target as string);
     const fileData: string = JSON.stringify(tsConfig, null, 2);
     await fs.writeFile(tsConfigPath, fileData, {
       encoding: 'utf8',
       mode: '600',
     });
-  }
-
-  private async updateEsTarget(): Promise<void> {
-    for (const pkg of this.packages) {
-      await this.updateEsTargetConfig(pkg.location);
-    }
   }
 
   private updateTsVersion(): void {
@@ -121,30 +119,31 @@ export default class Update extends SfdxCommand {
       : (this.flags.version as string);
   }
 
-  private retrieveTsPackage(): NpmPackage {
-    const result = exec('npm view typescript --json', { silent: true });
-    if (result.code === 0) {
-      return JSON.parse(result.stdout) as NpmPackage;
-    } else {
-      throw new SfError('Could not find typescript on the npm registry', 'TypescriptNotFound');
-    }
-  }
-
   private validateEsTarget(): boolean {
     if (this.flags.target === 'ESNext') return true;
 
-    if (/ES[0-9]{4}/g.test(this.flags.target)) return true;
+    if (/ES[0-9]{4}/g.test(this.flags.target as string)) return true;
 
-    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [this.flags.target]);
+    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [
+      this.flags.target as string,
+    ]);
   }
 
   private validateTsVersion(): boolean {
-    if (this.flags.version === 'latest') return true;
-    if (this.flags.version && !this.typescriptPkg.versions.includes(this.flags.version)) {
-      throw new SfError(messages.getMessage('InvalidTypescriptVersion'), 'InvalidTypescriptVersion', [
-        this.flags.version,
-      ]);
+    const version = this.flags.version as string;
+    if (version === 'latest') return true;
+    if (version && !this.typescriptPkg.versions.includes(version)) {
+      throw new SfError(messages.getMessage('InvalidTypescriptVersion'), 'InvalidTypescriptVersion', [version]);
     }
     return true;
   }
 }
+
+const retrieveTsPackage = (): NpmPackage => {
+  const result = exec('npm view typescript --json', { silent: true });
+  if (result.code === 0) {
+    return JSON.parse(result.stdout) as NpmPackage;
+  } else {
+    throw new SfError('Could not find typescript on the npm registry', 'TypescriptNotFound');
+  }
+};

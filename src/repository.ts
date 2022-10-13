@@ -41,7 +41,7 @@ export interface PackageInfo {
 
 type PollFunction = () => boolean;
 
-export type RepositoryOptions = {
+type RepositoryOptions = {
   ux: UX;
   useprerelease?: string;
   shouldBePublished?: boolean;
@@ -100,6 +100,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     this.execCommand('git add .', false);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public revertUnstagedChanges(): void {
     const changedFiles = exec('git diff --name-only', { silent: true })
       .stdout.split(os.EOL)
@@ -109,6 +110,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public revertAllChanges(): void {
     exec('git reset --hard HEAD', { silent: true });
   }
@@ -150,6 +152,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
       attempts += 1;
       update(`attempt: ${attempts} of ${maxAttempts}`);
       found = checkFn();
+      // eslint-disable-next-line no-await-in-loop
       await sleep(1000);
     }
     stop(attempts >= maxAttempts ? 'failed' : 'done');
@@ -164,6 +167,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
    * We, however, don't want to publish a new version for chore, docs, etc. So we analyze
    * the commits to see if any of them indicate that a new release should be published.
    */
+  // eslint-disable-next-line class-methods-use-this
   protected async isReleasable(pkg: Package): Promise<boolean> {
     const commitInspection = await inspectCommits(pkg);
     return commitInspection.shouldRelease;
@@ -218,6 +222,7 @@ export class PackageRepo extends Repository {
     return packAndSignApi.packSignVerifyModifyPackageJSON(this.package.location);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async revertChanges(): Promise<void> {
     return packAndSignApi.revertPackageJsonIfExists();
   }

@@ -187,6 +187,7 @@ export class Package extends AsyncOptionalCreatable {
   // Lookup dependency info by package name or npm alias
   // Examples: @salesforce/plugin-info or @sf/info
   // Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
+  // eslint-disable-next-line class-methods-use-this
   public getDependencyInfo(name: string, dependencies: Record<string, string>): DependencyInfo {
     for (const [key, value] of Object.entries(dependencies)) {
       if (key === name) {

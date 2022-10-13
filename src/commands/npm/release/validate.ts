@@ -32,15 +32,14 @@ export default class Validate extends SfdxCommand {
 
   public async run(): Promise<Response> {
     const packages = [await Package.create()];
-    const responses: PackageCommits[] = [];
-    for (const pkg of packages) {
-      const commitInspection = await inspectCommits(pkg);
-      const response = Object.assign(commitInspection, {
+    const responses = await Promise.all(
+      packages.map(async (pkg) => ({
+        ...(await inspectCommits(pkg)),
         name: pkg.name,
         currentVersion: pkg.packageJson.version,
-      });
-      responses.push(response);
-    }
+      }))
+    );
+
     const majorBump = responses.some((resp) => !!resp.isMajorBump);
     if (majorBump) {
       throw new SfError(

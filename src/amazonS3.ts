@@ -20,12 +20,12 @@ import { Channel, CLI, S3Manifest, ServiceAvailability } from './types';
 import { api } from './codeSigning/packAndSign';
 import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
-export const BASE_URL = 'https://developer.salesforce.com';
+const BASE_URL = 'https://developer.salesforce.com';
 const BUCKET = 'dfc-data-production';
 
-export type GetObjectOption = Omit<GetObjectRequest, 'Bucket'>;
+type GetObjectOption = Omit<GetObjectRequest, 'Bucket'>;
 
-export type AmazonS3Options = {
+type AmazonS3Options = {
   bucket?: string;
   cli?: CLI;
   channel?: Channel;
@@ -51,16 +51,19 @@ export class AmazonS3 {
     } as ClientConfiguration);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async ping(): Promise<ServiceAvailability> {
     const { statusCode } = await got.get(AmazonS3.STATUS_URL);
     return { service: 'Amazon S3', available: statusCode >= 200 && statusCode < 300 };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async fileIsAvailable(url: string): Promise<ServiceAvailability> {
     const { statusCode } = await got.get(url, { throwHttpErrors: false });
     return { service: 'file', name: url, available: statusCode >= 200 && statusCode < 300 };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async download(url: string, location: string, silent = false): Promise<void> {
     const downloadStream = got.stream(url);
     const fileWriterStream = fs.createWriteStream(location);

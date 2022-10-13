@@ -23,7 +23,6 @@ describe('PackageRepo', () => {
   let execStub: sinon.SinonStub;
 
   beforeEach(async () => {
-    // eslint-disable-next-line prettier/prettier
     uxStub = stubInterface<UX>($$.SANDBOX, {}) as unknown as UX;
   });
 

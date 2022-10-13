@@ -67,7 +67,7 @@ export default class Verify extends SfdxCommand {
   private totalSteps = 1;
 
   public async run(): Promise<void> {
-    const cli = ensure<CLI>(this.flags.cli);
+    const cli = ensure<CLI>(this.flags.cli as CLI);
     this.baseDir = path.join('tmp', cli);
     const cliRunLists: Record<CLI, Array<() => Promise<void>>> = {
       [CLI.SFDX]: [
@@ -91,6 +91,7 @@ export default class Verify extends SfdxCommand {
 
     this.totalSteps = cliRunLists[cli].length;
     for (const test of cliRunLists[cli]) {
+      // eslint-disable-next-line no-await-in-loop
       await test();
     }
   }
@@ -108,9 +109,7 @@ export default class Verify extends SfdxCommand {
 
   public async ensureNoWebDriverIO(): Promise<void> {
     const webDriverIo = path.join(this.baseDir, 'node_modules', 'webdriverio', 'test');
-    const validate = async (): Promise<boolean> => {
-      return !(await fileExists(webDriverIo));
-    };
+    const validate = async (): Promise<boolean> => !(await fileExists(webDriverIo));
     const passed = await this.execute('Ensure webdriverio does not exist', validate);
     if (!passed) {
       throw new SfError(`${webDriverIo} is present. Was the clean not aggressive enough?`);
@@ -129,9 +128,7 @@ export default class Verify extends SfdxCommand {
       'heroku-cli-util',
       '.nyc_output'
     );
-    const validate = async (): Promise<boolean> => {
-      return !(await fileExists(herokuCliUtil));
-    };
+    const validate = async (): Promise<boolean> => !(await fileExists(herokuCliUtil));
     const passed = await this.execute('Ensure heroku-cli-util/.nyc_output does not exist', validate);
     if (!passed) {
       throw new SfError(`${herokuCliUtil} is present. Was the clean not aggressive enough?`);
@@ -148,7 +145,7 @@ export default class Verify extends SfdxCommand {
   public async ensureWindowsPathLengths(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const maxWindowsPath = 259;
-      const cli = ensure<CLI>(this.flags.cli);
+      const cli = ensure<CLI>(this.flags.cli as CLI);
 
       const supportedUsernameLength = ensureNumber(this.flags['windows-username-buffer']);
       const fakeSupportedUsername = 'u'.repeat(supportedUsernameLength);
@@ -294,7 +291,7 @@ export default class Verify extends SfdxCommand {
     };
     const passed = await this.execute('Ensure .md messages exist', validate);
     if (!passed) {
-      throw new SfError('Found no .md message files. Was the clean too aggresive?');
+      throw new SfError('Found no .md message files. Was the clean too aggressive?');
     }
   }
 

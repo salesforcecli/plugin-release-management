@@ -20,13 +20,12 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.sch
   'examples',
 ]);
 
-export type Results = {
-  [key: string]: {
-    correspondingFile: string;
-    matches: boolean;
-    reason?: string;
-  };
+type Result = {
+  correspondingFile: string;
+  matches: boolean;
+  reason?: string;
 };
+type Results = Record<string, Result>;
 
 export default class Compare extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -42,7 +41,7 @@ export default class Compare extends SfdxCommand {
     // If there are more latest schema than existing schema, that means that new
     // schema was added without also being added at the CLI level.
     if (latest.length > existing.length) {
-      const normalized = latest.map((c) => this.normalizeFilename(c));
+      const normalized = latest.map((c) => normalizeFilename(c));
       const missing = normalized.filter((f) => !existing.includes(f));
       throw new SfError(
         `Missing files: ${missing.join(', ')}`,
@@ -54,33 +53,38 @@ export default class Compare extends SfdxCommand {
       );
     }
 
-    const results: Results = {};
-    for (const file of existing) {
-      const correspondingFile = latest.find((f) => {
-        return this.normalizeFilename(f) === file;
-      });
-      if (correspondingFile) {
-        const fileData = await fs.readFile(file, 'utf8');
-        const fileContents = parseJsonMap(fileData, file);
-
-        const correspondingFileData = await fs.readFile(correspondingFile, 'utf8');
-        const correspondingFileContents = parseJsonMap(correspondingFileData, correspondingFile);
-
-        const matches = SchemaUtils.deepEqual(fileContents, correspondingFileContents);
-        results[file] = { correspondingFile, matches };
-      } else {
-        results[file] = {
-          correspondingFile: null,
-          matches: false,
-          reason: 'No corresponding file found in node_modules',
-        };
-      }
-    }
+    const results: Results = Object.fromEntries(
+      await Promise.all(
+        existing.map(async (file): Promise<[string, Result]> => {
+          const correspondingFile = latest.find((f) => normalizeFilename(f) === file);
+          if (correspondingFile) {
+            const [fileData, correspondingFileData] = await Promise.all([
+              fs.readFile(file, 'utf8'),
+              fs.readFile(correspondingFile, 'utf8'),
+            ]);
+            const fileContents = parseJsonMap(fileData, file);
+            const correspondingFileContents = parseJsonMap(correspondingFileData, correspondingFile);
+            const matches = SchemaUtils.deepEqual(fileContents, correspondingFileContents);
+            return [file, { correspondingFile, matches }];
+          } else {
+            return [
+              file,
+              {
+                correspondingFile: null,
+                matches: false,
+                reason: 'No corresponding file found in node_modules',
+              },
+            ];
+          }
+        })
+      )
+    );
 
     if (!this.flags.json) {
-      const data = Object.entries(results).reduce((x, [file, d]) => {
-        return x.concat(Object.assign({ file }, d));
-      }, [] as Array<{ file: string; correspondingFile: string; matches: boolean }>);
+      const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>(
+        (x, [file, d]) => x.concat(Object.assign({ file }, d)),
+        []
+      );
       const columns = {
         file: { header: 'File' },
         correspondingFile: { header: 'Corresponding File' },
@@ -102,12 +106,12 @@ export default class Compare extends SfdxCommand {
     }
     return results;
   }
-
-  private normalizeFilename(file: string): string {
-    const normalized = file
-      .split(path.sep)
-      .filter((p) => !['node_modules', 'schemas'].includes(p))
-      .join(path.sep);
-    return path.join('schemas', normalized);
-  }
 }
+
+const normalizeFilename = (file: string): string => {
+  const normalized = file
+    .split(path.sep)
+    .filter((p) => !['node_modules', 'schemas'].includes(p))
+    .join(path.sep);
+  return path.join('schemas', normalized);
+};

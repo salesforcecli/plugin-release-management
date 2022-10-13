@@ -12,7 +12,7 @@ import { parseJson } from '@salesforce/kit';
 import { ensureString, isString } from '@salesforce/ts-types';
 import { PackageJson } from './package';
 
-type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
+export type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
@@ -49,8 +49,8 @@ export const getOwnerAndRepo = async (
   const fileData = await fs.promises.readFile('package.json', 'utf8');
   const pkgJson = parseJson(fileData, 'package.json', false) as PackageJson;
 
-  if (pkgJson.repository && isString(pkgJson.repository)) {
-    const [owner, repo] = pkgJson.repository?.split('/');
+  if (isString(pkgJson.repository)) {
+    const [owner, repo] = pkgJson.repository.split('/');
     return { owner, repo };
   } else {
     return {

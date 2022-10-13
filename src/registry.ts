@@ -97,6 +97,7 @@ export class Registry {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async readNpmrc(packageDir: string): Promise<string[]> {
     try {
       // check that `.npmrc` exists
@@ -110,6 +111,7 @@ export class Registry {
     return [...new Set(npmrcLines).values()].filter((line) => line?.length);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async writeNpmrc(packageDir: string, npmrc: string[]): Promise<void> {
     const npmrcLines = [...new Set(npmrc).values()].filter((line) => line?.length);
     await fs.writeFile(path.join(packageDir, '.npmrc'), npmrcLines.join(os.EOL), 'utf8');

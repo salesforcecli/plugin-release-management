@@ -120,8 +120,11 @@ export default class Release extends SfdxCommand {
         tag: this.flags.npmtag as string,
         dryrun: this.flags.dryrun as boolean,
       });
-    } catch (e) {
-      this.error(e, { code: 'NPM_PUBLISH_FAILED', exit: 1 });
+    } catch (err) {
+      if (!(err instanceof Error) || typeof err !== 'string') {
+        throw err;
+      }
+      this.error(err, { code: 'NPM_PUBLISH_FAILED', exit: 1 });
     }
 
     if (!this.flags.dryrun && this.flags.verify) {
@@ -167,6 +170,9 @@ export default class Release extends SfdxCommand {
         );
       }
     } catch (err) {
+      if (!(err instanceof Error) || typeof err !== 'string') {
+        throw err;
+      }
       throw new SfError(err, 'FailedCommandExecution');
     }
   }

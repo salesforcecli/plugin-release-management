@@ -36,7 +36,7 @@ class PathGetter {
     this._cwd = process.cwd();
     if (!target) {
       this._target = this._cwd;
-    } else if (target && target.includes(this._cwd)) {
+    } else if (target?.includes(this._cwd)) {
       this._target = target;
     } else {
       this._target = pathJoin(this._cwd, target);
@@ -84,15 +84,16 @@ export const api = {
       exec(
         command,
         { cwd: pathGetter.target, maxBuffer: 1024 * 4096 },
-        (error: Error, stdout: string, stderr: string) => {
-          if (error && error['code']) {
+        // we expect an error code from this command, so we're adding it to the normal Error type
+        (error: Error & { code?: number | string }, stdout: string, stderr: string) => {
+          if (error?.code) {
             return reject(new ExecProcessFailed(command, error['code'], stderr));
           } else {
             const output = stdout.split(EOL);
             if (output.length > 1) {
               // note the output end with a newline;
               const path = output[output.length - 2];
-              if (path && path.endsWith('tgz')) {
+              if (path?.endsWith('tgz')) {
                 return resolve(pathGetter.getFile(path));
               } else {
                 return reject(

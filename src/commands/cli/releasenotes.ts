@@ -20,7 +20,7 @@ import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
 
-export type Change = {
+type Change = {
   author: string;
   description: string;
   link: string;
@@ -30,7 +30,7 @@ export type Change = {
   title: string;
 };
 
-export type ChangesByPlugin = Record<string, Change[]>;
+type ChangesByPlugin = Record<string, Change[]>;
 
 type Differences = {
   removed: Record<string, string>;
@@ -70,16 +70,16 @@ export default class ReleaseNotes extends SfdxCommand {
   public async run(): Promise<ChangesByPlugin> {
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
     this.octokit = new Octokit({ auth });
-    const cli = ensure<CLI>(this.flags.cli);
+    const cli = ensure<CLI>(this.flags.cli as CLI);
     const fullName = cli === CLI.SF ? '@salesforce/cli' : 'sfdx-cli';
 
-    const npmPackage = this.getNpmPackage(fullName, this.flags.since ?? 'latest');
-    const latestrc = this.getNpmPackage(fullName, 'latest-rc');
+    const npmPackage = getNpmPackage(fullName, (this.flags.since as string) ?? 'latest');
+    const latestrc = getNpmPackage(fullName, 'latest-rc');
 
-    const oldPlugins = this.normalizePlugins(npmPackage);
-    const newPlugins = this.normalizePlugins(latestrc);
+    const oldPlugins = normalizePlugins(npmPackage);
+    const newPlugins = normalizePlugins(latestrc);
 
-    const differences = this.findDifferences(oldPlugins, newPlugins);
+    const differences = findDifferences(oldPlugins, newPlugins);
 
     if (isNotEmpty(differences.upgraded)) {
       this.ux.styledHeader('Upgraded Plugins');
@@ -111,8 +111,9 @@ export default class ReleaseNotes extends SfdxCommand {
 
     const changesByPlugin: ChangesByPlugin = {};
     for (const [plugin] of Object.entries(differences.upgraded)) {
-      const pkg = this.getNpmPackage(plugin, oldPlugins[plugin]);
+      const pkg = getNpmPackage(plugin, oldPlugins[plugin]);
       const publishDate = pkg.time[pkg.version];
+      // eslint-disable-next-line no-await-in-loop
       const changes = await this.getPullsForPlugin(plugin, publishDate);
       if (changes.length) changesByPlugin[plugin] = changes;
     }
@@ -126,48 +127,6 @@ export default class ReleaseNotes extends SfdxCommand {
     return changesByPlugin;
   }
 
-  private getNpmPackage(name: string, version = 'latest'): NpmPackage {
-    const result = exec(`npm view ${name}@${version} --json`, { silent: true });
-    return JSON.parse(result.stdout) as NpmPackage;
-  }
-
-  private normalizePlugins(npmPackage: NpmPackage): Record<string, string> {
-    const plugins = npmPackage.oclif?.plugins ?? [];
-    const normalized = { [npmPackage.name]: npmPackage.version };
-    plugins.forEach((p) => {
-      const version = parsePackageVersion(npmPackage.dependencies[p]);
-      if (npmPackage.dependencies[p].startsWith('npm:')) {
-        const name = parseAliasedPackageName(npmPackage.dependencies[p]);
-        normalized[name] = version;
-      } else {
-        normalized[p] = version;
-      }
-    });
-
-    return normalized;
-  }
-
-  private findDifferences(oldPlugins: Record<string, string>, newPlugins: Record<string, string>): Differences {
-    const removed = {};
-    const added = {};
-    const upgraded = {};
-    const downgraded = {};
-    const unchanged = {};
-
-    for (const [name, version] of Object.entries(oldPlugins)) {
-      if (!newPlugins[name]) removed[name] = version;
-    }
-
-    for (const [name, version] of Object.entries(newPlugins)) {
-      if (!oldPlugins[name]) added[name] = version;
-      else if (semver.gt(version, oldPlugins[name])) upgraded[name] = version;
-      else if (semver.lt(version, oldPlugins[name])) downgraded[name] = version;
-      else unchanged[name] = version;
-    }
-
-    return { removed, added, upgraded, downgraded, unchanged };
-  }
-
   private async getNameOfUser(username: string): Promise<string> {
     if (this.usernames[username]) return this.usernames[username];
 
@@ -178,7 +137,7 @@ export default class ReleaseNotes extends SfdxCommand {
   }
 
   private async getPullsForPlugin(plugin: string, publishDate: string): Promise<Change[]> {
-    const npmPackage = this.getNpmPackage(plugin);
+    const npmPackage = getNpmPackage(plugin);
     const homepage = npmPackage.homepage ?? (npmPackage.name === 'salesforce-alm' ? 'salesforcecli/toolbelt' : null);
     if (!homepage) {
       throw new SfError(`No github url found for ${npmPackage.name}`, 'GitUrlNotFound');
@@ -194,9 +153,7 @@ export default class ReleaseNotes extends SfdxCommand {
     });
     const changes = (await Promise.all(
       pullRequests.data
-        .filter((pr) => {
-          return pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot');
-        })
+        .filter((pr) => pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot'))
         .map(async (pr) => {
           const username = await this.getNameOfUser(pr.user.login);
           const author = pr.user.login === username ? username : `${username} (${pr.user.login})`;
@@ -252,3 +209,45 @@ export default class ReleaseNotes extends SfdxCommand {
     }
   }
 }
+
+const getNpmPackage = (name: string, version = 'latest'): NpmPackage => {
+  const result = exec(`npm view ${name}@${version} --json`, { silent: true });
+  return JSON.parse(result.stdout) as NpmPackage;
+};
+
+const normalizePlugins = (npmPackage: NpmPackage): Record<string, string> => {
+  const plugins = npmPackage.oclif?.plugins ?? [];
+  const normalized = { [npmPackage.name]: npmPackage.version };
+  plugins.forEach((p) => {
+    const version = parsePackageVersion(npmPackage.dependencies[p]);
+    if (npmPackage.dependencies[p].startsWith('npm:')) {
+      const name = parseAliasedPackageName(npmPackage.dependencies[p]);
+      normalized[name] = version;
+    } else {
+      normalized[p] = version;
+    }
+  });
+
+  return normalized;
+};
+
+const findDifferences = (oldPlugins: Record<string, string>, newPlugins: Record<string, string>): Differences => {
+  const removed = {};
+  const added = {};
+  const upgraded = {};
+  const downgraded = {};
+  const unchanged = {};
+
+  for (const [name, version] of Object.entries(oldPlugins)) {
+    if (!newPlugins[name]) removed[name] = version;
+  }
+
+  for (const [name, version] of Object.entries(newPlugins)) {
+    if (!oldPlugins[name]) added[name] = version;
+    else if (semver.gt(version, oldPlugins[name])) upgraded[name] = version;
+    else if (semver.lt(version, oldPlugins[name])) downgraded[name] = version;
+    else unchanged[name] = version;
+  }
+
+  return { removed, added, upgraded, downgraded, unchanged };
+};
