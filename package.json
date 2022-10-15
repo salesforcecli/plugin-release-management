@@ -44,7 +44,7 @@
     "@types/shelljs": "^0.8.8",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "aws-sdk-mock": "^5.4.0",
+    "aws-sdk-mock": "^5.8.0",
     "chai": "^4.2.0",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
