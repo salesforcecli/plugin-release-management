@@ -46,7 +46,7 @@
     "@typescript-eslint/parser": "^5.33.0",
     "aws-sdk-mock": "^5.4.0",
     "chai": "^4.2.0",
-    "eslint": "^8.21.0",
+    "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-salesforce": "^1.1.0",
     "eslint-config-salesforce-license": "^0.1.6",
