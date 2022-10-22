@@ -8,7 +8,7 @@
     "sf-release": "bin/run"
   },
   "dependencies": {
-    "@oclif/core": "^1.16.4",
+    "@oclif/core": "^1.19.1",
     "@octokit/core": "^4.0.4",
     "@salesforce/command": "^5.2.11",
     "@salesforce/core": "^3.26.0",
