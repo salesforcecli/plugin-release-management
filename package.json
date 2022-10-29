@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@oclif/core": "^1.19.1",
-    "@octokit/core": "^4.0.4",
+    "@octokit/core": "^4.1.0",
     "@salesforce/command": "^5.2.11",
     "@salesforce/core": "^3.26.0",
     "@salesforce/kit": "^1.6.1",
