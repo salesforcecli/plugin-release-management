@@ -6,15 +6,19 @@
  */
 
 import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, SfError } from '@salesforce/core';
-import { AnyJson, ensureArray, ensureNumber, ensureString, asArray } from '@salesforce/ts-types';
-import { ShellString } from 'shelljs';
+
 import { bold } from 'chalk';
-import { Channel, CLI, S3Manifest, VersionShaContents } from '../../types';
+import semver from 'semver';
+import { ShellString } from 'shelljs';
+
+import { FlagsConfig, SfdxCommand, flags } from '@salesforce/command';
+import { Messages, SfError } from '@salesforce/core';
+import { AnyJson, asArray, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
+
 import { AmazonS3 } from '../../amazonS3';
 import { Flags, verifyDependencies } from '../../dependencies';
 import { PluginCommand } from '../../pluginCommand';
+import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
@@ -93,7 +97,7 @@ export default class Promote extends SfdxCommand {
       description: messages.getMessage('version'),
       exclusive: ['sha', 'candidate'],
       parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
-      validate: (input: string): boolean => /^([0-9]+\.){2}[0-9]+$/.test(input),
+      validate: (input: string): boolean => semver.valid(input) !== null,
     }),
   };
 
