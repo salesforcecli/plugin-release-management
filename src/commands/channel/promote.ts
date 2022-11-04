@@ -8,7 +8,7 @@
 import * as os from 'os';
 
 import { bold } from 'chalk';
-import semver from 'semver';
+import { valid as validSemVer } from 'semver';
 import { ShellString } from 'shelljs';
 
 import { FlagsConfig, SfdxCommand, flags } from '@salesforce/command';
@@ -97,7 +97,7 @@ export default class Promote extends SfdxCommand {
       description: messages.getMessage('version'),
       exclusive: ['sha', 'candidate'],
       parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
-      validate: (input: string): boolean => semver.valid(input) !== null,
+      validate: (input: string): boolean => validSemVer(input) !== null,
     }),
   };
 
