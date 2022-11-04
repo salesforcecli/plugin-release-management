@@ -153,6 +153,7 @@ export default class Inspect extends SfdxCommand {
     channels: flags.string({
       description: messages.getMessage('channels'),
       char: 'c',
+      options: Object.values(Channel),
       required: true,
       multiple: true,
     }),
