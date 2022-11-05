@@ -1217,12 +1217,12 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/command@^5.0.4", "@salesforce/command@^5.2.11", "@salesforce/command@^5.2.15":
-  version "5.2.17"
-  resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-5.2.17.tgz#9987b889b0e9fc9b33f8b9a91a2264a595c66ce0"
-  integrity sha512-CDM7i7ZAySzKbccKCmlUu9IF8F4CZaFPU8hkz4j+WPljmdHzlG8Glc55LAHvtsw/zbNJDVR6/MqKu9ARGYNOQA==
+"@salesforce/command@^5.0.4", "@salesforce/command@^5.2.15", "@salesforce/command@^5.2.18":
+  version "5.2.18"
+  resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-5.2.18.tgz#e85edd27c8f9fb7b98bc34bc93931e1e4702247b"
+  integrity sha512-kG6lZHZ6fzihTDCZnsEG65Tv9aXcCqypUBaKKpOHo1vD54tCH1w905YAoncJVp76jZFMh6CbOmPhssk1psVY+A==
   dependencies:
-    "@oclif/core" "^1.19.1"
+    "@oclif/core" "^1.20.0"
     "@oclif/test" "^2.2.4"
     "@salesforce/core" "^3.31.17"
     "@salesforce/kit" "^1.6.1"
@@ -1296,19 +1296,10 @@
     typedoc-plugin-missing-exports "0.23.0"
     typescript "^4.1.3"
 
-"@salesforce/kit@^1.5.44", "@salesforce/kit@^1.7.0":
+"@salesforce/kit@^1.5.44", "@salesforce/kit@^1.6.1", "@salesforce/kit@^1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.7.0.tgz#f14ef71662742edf0fb74ffb23c530fad5ccb4c9"
   integrity sha512-AxJi7W9skYEVQrZMGyWtG3xOOLzdRu7638Hlea3gtPdMpMRc0aB1Nvpg7Ru+VLtULNhXnnQ3nXesDl0d2TA04w==
-  dependencies:
-    "@salesforce/ts-types" "^1.5.21"
-    shx "^0.3.3"
-    tslib "^2.2.0"
-
-"@salesforce/kit@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.6.1.tgz#73a16205f957e527b2cc9bfcebc55b6880f3169b"
-  integrity sha512-ZuQrzUo1jili5xl9LbJOsIra07C4FIRy5f9PLGi8lXEKGIJ2qg21VCLlREGV5tz5Qm1aYsCYW9rjQQzME1ou8Q==
   dependencies:
     "@salesforce/ts-types" "^1.5.21"
     shx "^0.3.3"
