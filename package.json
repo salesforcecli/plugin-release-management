@@ -13,7 +13,7 @@
     "@salesforce/command": "^5.2.11",
     "@salesforce/core": "^3.26.0",
     "@salesforce/kit": "^1.6.1",
-    "@salesforce/plugin-command-reference": "^1.4.7",
+    "@salesforce/plugin-command-reference": "^1.5.0",
     "@salesforce/plugin-trust": "^2.1.0",
     "@salesforce/ts-types": "^1.5.21",
     "agent-base": "^6.0.2",
