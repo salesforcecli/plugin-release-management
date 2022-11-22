@@ -5,7 +5,7 @@
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
-    "sf-release": "bin/dev"
+    "sf-release": "bin/run"
   },
   "dependencies": {
     "@oclif/core": "^1.19.1",
