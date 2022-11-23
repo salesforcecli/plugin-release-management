@@ -7,12 +7,15 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import { exec as execSync } from 'child_process';
+import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
-import { exec } from 'shelljs';
 import { CLI } from '../../../types';
+
+const exec = promisify(execSync);
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
@@ -32,7 +35,6 @@ export default class SmokeTest extends SfdxCommand {
     }),
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async run(): Promise<void> {
     const cli = ensure<CLI>(this.flags.cli as CLI);
     const executables = [path.join('tmp', cli, 'bin', cli)];
@@ -67,7 +69,6 @@ export default class SmokeTest extends SfdxCommand {
 
   private async nonVerboseCommandExecution(executable: string, command: string): Promise<void> {
     try {
-      // eslint-disable-next-line no-await-in-loop
       await this.execute(executable, `${command} --help`, true);
       this.log(`${executable} ${command} --help ${chalk.green('PASSED')}`);
     } catch (err) {
@@ -78,17 +79,15 @@ export default class SmokeTest extends SfdxCommand {
 
   private async execute(executable: string, args: string, silent = false): Promise<string> {
     const command = `${executable} ${args}`;
-    return new Promise((resolve, reject) => {
-      const result = exec(command, { silent: true });
-      if (result.code === 0) {
-        if (!silent) {
-          this.ux.styledHeader(command);
-          this.log(result.stdout);
-        }
-        resolve(result.stdout);
-      } else {
-        reject(`Failed: ${command}`);
+    try {
+      const { stdout } = await exec(command);
+      if (!silent) {
+        this.ux.styledHeader(command);
+        this.log(stdout);
       }
-    });
+      return stdout;
+    } catch (e) {
+      throw new SfError(`Failed: ${command}`);
+    }
   }
 }
