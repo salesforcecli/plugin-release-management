@@ -90,10 +90,7 @@ export default class Verify extends SfdxCommand {
     };
 
     this.totalSteps = cliRunLists[cli].length;
-    for (const test of cliRunLists[cli]) {
-      // eslint-disable-next-line no-await-in-loop
-      await test();
-    }
+    await Promise.all(cliRunLists[cli].map((test) => test()));
   }
 
   public async execute(msg: string, validate: () => Promise<boolean>): Promise<boolean> {
