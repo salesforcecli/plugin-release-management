@@ -7,12 +7,15 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import { exec as execSync } from 'child_process';
+import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages, SfError } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
-import { exec } from 'shelljs';
 import { CLI } from '../../../types';
+
+const exec = promisify(execSync);
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
@@ -32,57 +35,58 @@ export default class SmokeTest extends SfdxCommand {
     }),
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async run(): Promise<void> {
     const cli = ensure<CLI>(this.flags.cli as CLI);
     const executables = [path.join('tmp', cli, 'bin', cli)];
     if (cli === CLI.SFDX) {
       executables.push(path.join('tmp', cli, 'bin', CLI.SF));
     }
-    for (const executable of executables) {
-      this.smokeTest(executable);
-    }
+    await Promise.all(executables.map((executable) => this.smokeTest(executable)));
   }
 
-  private smokeTest(executable: string): void {
-    this.execute(executable, '--version');
-    this.execute(executable, '--help');
-    this.execute(executable, 'plugins --core');
-    this.execute(executable, 'plugins:install @salesforce/plugin-alias@latest');
-    this.initializeAllCommands(executable);
+  private async smokeTest(executable: string): Promise<void> {
+    await Promise.all([
+      this.execute(executable, '--version'),
+      this.execute(executable, '--help'),
+      this.execute(executable, 'plugins --core'),
+      this.execute(executable, 'plugins:install @salesforce/plugin-alias@latest'),
+    ]);
+    await this.initializeAllCommands(executable);
   }
 
-  private initializeAllCommands(executable: string): void {
-    for (const command of this.getAllCommands(executable)) {
-      if (this.flags.verbose) {
-        this.execute(executable, `${command} --help`);
-      } else {
-        try {
-          this.execute(executable, `${command} --help`, true);
-          this.log(`${executable} ${command} --help ${chalk.green('PASSED')}`);
-        } catch (err) {
-          this.log(`${executable} ${command} --help ${chalk.red('FAILED')}`);
-          throw err;
-        }
-      }
-    }
+  private async initializeAllCommands(executable: string): Promise<void> {
+    await Promise.all(
+      this.flags.verbose
+        ? (await this.getAllCommands(executable)).map((command) => this.execute(executable, `${command} --help`))
+        : (await this.getAllCommands(executable)).map((command) => this.nonVerboseCommandExecution(executable, command))
+    );
   }
 
-  private getAllCommands(executable: string): string[] {
-    const commandsJson = JSON.parse(this.execute(executable, 'commands --json', true)) as Array<{ id: string }>;
+  private async getAllCommands(executable: string): Promise<string[]> {
+    const commandsJson = JSON.parse(await this.execute(executable, 'commands --json', true)) as Array<{ id: string }>;
     return commandsJson.map((c) => c.id);
   }
 
-  private execute(executable: string, args: string, silent = false): string {
+  private async nonVerboseCommandExecution(executable: string, command: string): Promise<void> {
+    try {
+      await this.execute(executable, `${command} --help`, true);
+      this.log(`${executable} ${command} --help ${chalk.green('PASSED')}`);
+    } catch (err) {
+      this.log(`${executable} ${command} --help ${chalk.red('FAILED')}`);
+      throw err;
+    }
+  }
+
+  private async execute(executable: string, args: string, silent = false): Promise<string> {
     const command = `${executable} ${args}`;
-    const result = exec(command, { silent: true });
-    if (result.code === 0) {
+    try {
+      const { stdout } = await exec(command);
       if (!silent) {
         this.ux.styledHeader(command);
-        this.log(result.stdout);
+        this.log(stdout);
       }
-      return result.stdout;
-    } else {
+      return stdout;
+    } catch (e) {
       throw new SfError(`Failed: ${command}`);
     }
   }
