@@ -24,7 +24,7 @@ interface Token {
   automation: boolean;
 }
 
-export default class Promote extends SfCommand<unknown> {
+export default class Promote extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {

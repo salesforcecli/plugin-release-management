@@ -19,7 +19,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 /**
  * The functionality of this command is taken entirely from https://github.com/salesforcecli/sfdx-cli/blob/v7.109.0/scripts/clean-for-tarballs
  */
-export default class Prepare extends SfCommand<unknown> {
+export default class Prepare extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {

@@ -51,7 +51,7 @@ export const deepEqual = (a: JsonMap, b: JsonMap): boolean => {
   }
 };
 
-export default class Collect extends SfCommand<unknown> {
+export default class Collect extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {};

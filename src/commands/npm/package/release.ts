@@ -23,7 +23,7 @@ interface ReleaseResult {
   name: string;
 }
 
-export default class Release extends SfCommand<unknown> {
+export default class Release extends SfCommand<ReleaseResult> {
   public static readonly summary = messages.getMessage('description');
   public static readonly flags = {
     dryrun: Flags.boolean({

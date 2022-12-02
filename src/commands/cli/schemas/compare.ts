@@ -26,7 +26,7 @@ type Result = {
 };
 type Results = Record<string, Result>;
 
-export default class Compare extends SfCommand<unknown> {
+export default class Compare extends SfCommand<Results> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);

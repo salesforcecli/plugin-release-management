@@ -20,7 +20,7 @@ const exec = promisify(execSync);
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
 
-export default class SmokeTest extends SfCommand<unknown> {
+export default class SmokeTest extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {

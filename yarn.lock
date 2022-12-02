@@ -1908,7 +1908,7 @@
     eslint-utils "^3.0.0"
     semver "^7.3.7"
 
-"@typescript-eslint/utils@^5.44.0":
+"@typescript-eslint/utils@^5.41.0":
   version "5.45.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.45.0.tgz#9cca2996eee1b8615485a6918a5c763629c7acf5"
   integrity sha512-OUg2JvsVI1oIee/SwiejTot2OxwU8a7UfTFMOdlhD2y+Hl6memUSL4s98bpUTo8EpVEr0lmwlU7JSu/p2QpSvA==
@@ -3764,10 +3764,12 @@ eslint-plugin-prefer-arrow@^1.2.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-prefer-arrow/-/eslint-plugin-prefer-arrow-1.2.3.tgz#e7fbb3fa4cd84ff1015b9c51ad86550e55041041"
   integrity sha512-J9I5PKCOJretVuiZRGvPQxCbllxGAV/viI20JO3LYblAodofBxyMnZAJ+WGeClHgANnSJberTNoFWWjrWKBuXQ==
 
-"eslint-plugin-sf-plugin@file:../eslint-plugin-sf-plugin":
+eslint-plugin-sf-plugin@^1.1.5:
   version "1.1.5"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.1.5.tgz#eee5dfaa1e7cf4e14bc6319bd1f1aae42ab223b8"
+  integrity sha512-zFmXpRud4S1qrbhops4WfjBATKIeIVJVLcZg7QnVRmnXUFoOPAebQbe1ccViYx6F3Y/s5Ui/Q0tEb8ywDz/gqQ==
   dependencies:
-    "@typescript-eslint/utils" "^5.44.0"
+    "@typescript-eslint/utils" "^5.41.0"
 
 eslint-scope@^5.1.1:
   version "5.1.1"
