@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import * as chalk from 'chalk';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { PackageInfo } from '../../../repository';
@@ -23,65 +23,69 @@ interface ReleaseResult {
   name: string;
 }
 
-export default class Release extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
-  public static readonly flagsConfig: FlagsConfig = {
-    dryrun: flags.boolean({
+export default class Release extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
+  public static readonly flags = {
+    dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      description: messages.getMessage('dryrun'),
+      summary: messages.getMessage('dryrun'),
     }),
-    sign: flags.boolean({
+    sign: Flags.boolean({
       char: 's',
       default: false,
-      description: messages.getMessage('sign'),
+      summary: messages.getMessage('sign'),
     }),
-    npmtag: flags.string({
+    npmtag: Flags.string({
       char: 't',
       default: 'latest',
-      description: messages.getMessage('npmTag'),
+      summary: messages.getMessage('npmTag'),
     }),
-    npmaccess: flags.string({
+    npmaccess: Flags.string({
       char: 'a',
       default: 'public',
-      description: messages.getMessage('npmAccess'),
+      summary: messages.getMessage('npmAccess'),
     }),
-    install: flags.boolean({
+    install: Flags.boolean({
       default: true,
-      description: messages.getMessage('install'),
+      summary: messages.getMessage('install'),
       allowNo: true,
     }),
-    prerelease: flags.string({
-      description: messages.getMessage('prerelease'),
+    prerelease: Flags.string({
+      summary: messages.getMessage('prerelease'),
     }),
-    verify: flags.boolean({
-      description: messages.getMessage('verify'),
+    verify: Flags.boolean({
+      summary: messages.getMessage('verify'),
       default: true,
       allowNo: true,
     }),
-    githubtag: flags.string({
-      description: messages.getMessage('githubtag'),
+    githubtag: Flags.string({
+      summary: messages.getMessage('githubtag'),
     }),
   };
 
   public async run(): Promise<ReleaseResult> {
-    const deps = verifyDependencies(this.flags);
+    const { flags } = await this.parse(Release);
+    const deps = verifyDependencies(flags);
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
       throw new SfError(messages.getMessage(errType), errType, missing);
     }
 
-    const pkg = await PackageRepo.create({ ux: this.ux, useprerelease: this.flags.prerelease as string });
+    const pkg = await PackageRepo.create({
+      ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+      useprerelease: flags.prerelease,
+    });
     if (!pkg.shouldBePublished) {
-      this.ux.log('Found no commits that warrant a release. Exiting...');
+      this.log('Found no commits that warrant a release. Exiting...');
       return;
     }
 
     await pkg.writeNpmToken();
 
-    if (this.flags.githubtag) {
-      this.ux.log(`Using Version: ${pkg.nextVersion}`);
+    if (flags.githubtag) {
+      this.log(`Using Version: ${pkg.nextVersion}`);
     } else {
       pkg.printStage('Validate Next Version');
       const pkgValidation = pkg.validate();
@@ -89,12 +93,12 @@ export default class Release extends SfdxCommand {
         const errType = 'InvalidNextVersion';
         throw new SfError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
       }
-      this.ux.log(`Name: ${pkgValidation.name}`);
-      this.ux.log(`Current Version: ${pkgValidation.currentVersion}`);
-      this.ux.log(`Next Version: ${pkgValidation.nextVersion}`);
+      this.log(`Name: ${pkgValidation.name}`);
+      this.log(`Current Version: ${pkgValidation.currentVersion}`);
+      this.log(`Next Version: ${pkgValidation.nextVersion}`);
     }
 
-    if (this.flags.install) {
+    if (flags.install) {
       pkg.printStage('Install');
       pkg.install();
 
@@ -102,12 +106,12 @@ export default class Release extends SfdxCommand {
       pkg.build();
     }
 
-    if (!this.flags.githubtag) {
+    if (!flags.githubtag) {
       pkg.printStage('Prepare Release');
-      pkg.prepare({ dryrun: this.flags.dryrun as boolean });
+      pkg.prepare({ dryrun: flags.dryrun });
     }
     let signature: SigningResponse;
-    if (this.flags.sign && !this.flags.dryrun) {
+    if (flags.sign && !flags.dryrun) {
       pkg.printStage('Sign and Upload Security Files');
       signature = await pkg.sign();
     }
@@ -116,9 +120,9 @@ export default class Release extends SfdxCommand {
     try {
       await pkg.publish({
         signatures: [signature],
-        access: this.flags.npmaccess as Access,
-        tag: this.flags.npmtag as string,
-        dryrun: this.flags.dryrun as boolean,
+        access: flags.npmaccess as Access,
+        tag: flags.npmtag,
+        dryrun: flags.dryrun,
       });
     } catch (err) {
       if (!(err instanceof Error) || typeof err !== 'string') {
@@ -127,27 +131,27 @@ export default class Release extends SfdxCommand {
       this.error(err, { code: 'NPM_PUBLISH_FAILED', exit: 1 });
     }
 
-    if (!this.flags.dryrun && this.flags.verify) {
+    if (!flags.dryrun && flags.verify) {
       pkg.printStage('Waiting For Availability');
       const found = await pkg.waitForAvailability();
       if (!found) {
-        this.ux.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);
+        this.warn(`Exceeded timeout waiting for ${pkg.name}@${pkg.nextVersion} to become available`);
       }
     }
 
     try {
-      if (this.flags.sign && this.flags.verify && !this.flags.dryrun) {
+      if (flags.sign && flags.verify && !flags.dryrun) {
         pkg.printStage('Verify Signed Packaged');
         this.verifySign(pkg.getPkgInfo());
       }
     } finally {
-      if (!this.flags.dryrun && !this.flags.githubtag) {
+      if (!flags.dryrun && !flags.githubtag) {
         pkg.printStage('Push Changes to Git');
         pkg.pushChangesToGit();
       }
     }
 
-    this.ux.log(pkg.getSuccessMessage());
+    this.log(pkg.getSuccessMessage());
 
     return {
       version: pkg.nextVersion,
@@ -159,12 +163,12 @@ export default class Release extends SfdxCommand {
     const cmd = 'plugins:trust:verify';
     const argv = `--npm ${pkgInfo.name}@${pkgInfo.nextVersion} ${pkgInfo.registryParam}`;
 
-    this.ux.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
+    this.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
       const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
       if (result.code !== 0) {
         const sfdxVerifyCmd = `sfdx plugins:trust:verify ${argv}`;
-        this.ux.warn(
+        this.warn(
           'Unable to verify the package signature due to:\n\nFailed to find @salesforce/sfdx-scanner@3.1.0 in the registry\n' +
             `\nYou can manually validate the package signature by running:\n\n${sfdxVerifyCmd}\n`
         );

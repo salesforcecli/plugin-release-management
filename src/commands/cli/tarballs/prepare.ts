@@ -8,9 +8,10 @@
 import * as os from 'os';
 import * as fg from 'fast-glob';
 import { pwd, rm } from 'shelljs';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { red } from 'chalk';
+import { Interfaces } from '@oclif/core';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.prepare');
@@ -18,26 +19,31 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 /**
  * The functionality of this command is taken entirely from https://github.com/salesforcecli/sfdx-cli/blob/v7.109.0/scripts/clean-for-tarballs
  */
-export default class Verify extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
+export default class Prepare extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    dryrun: flags.boolean({
-      description: messages.getMessage('dryrun'),
+  public static readonly flags = {
+    dryrun: Flags.boolean({
+      summary: messages.getMessage('dryrun'),
       default: false,
       char: 'd',
     }),
-    types: flags.boolean({
-      description: messages.getMessage('types'),
+    types: Flags.boolean({
+      summary: messages.getMessage('types'),
       default: false,
       char: 't',
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('verbose'),
+    verbose: Flags.boolean({
+      summary: messages.getMessage('verbose'),
     }),
   };
 
+  private flags: Interfaces.InferredFlags<typeof Prepare.flags>;
+
   public async run(): Promise<void> {
+    const { flags } = await this.parse(Prepare);
+    this.flags = flags;
+
     const workingDir = pwd().stdout;
     const baseDirGlob = `${workingDir}/node_modules`;
 

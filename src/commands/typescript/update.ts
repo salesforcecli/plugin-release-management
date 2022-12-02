@@ -7,11 +7,12 @@
 
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
 import { set } from '@salesforce/kit';
 import { AnyJson, asObject, getString } from '@salesforce/ts-types';
+import { Interfaces } from '@oclif/core';
 import { NpmPackage, Package } from '../../package';
 import { PackageRepo } from '../../repository';
 
@@ -24,17 +25,17 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'typescr
   'InvalidTypescriptVersion',
 ]);
 
-export default class Update extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
-  public static readonly flagsConfig: FlagsConfig = {
-    version: flags.string({
+export default class Update extends SfCommand<void> {
+  public static readonly summary = messages.getMessage('description');
+  public static readonly flags = {
+    version: Flags.string({
       char: 'v',
-      description: messages.getMessage('typescriptVersion'),
+      summary: messages.getMessage('typescriptVersion'),
       default: 'latest',
     }),
-    target: flags.string({
+    target: Flags.string({
       char: 't',
-      description: messages.getMessage('esTarget'),
+      summary: messages.getMessage('esTarget'),
       default: 'ESNext',
     }),
   };
@@ -43,16 +44,20 @@ export default class Update extends SfdxCommand {
   private repo: PackageRepo;
   private packages: Package[];
 
+  private flags: Interfaces.InferredFlags<typeof Update.flags>;
+
   public async run(): Promise<void> {
+    const { flags } = await this.parse(Update);
+    this.flags = flags;
     this.typescriptPkg = retrieveTsPackage();
     this.validateEsTarget();
     this.validateTsVersion();
 
-    this.repo = await PackageRepo.create({ ux: this.ux });
+    this.repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
     this.packages = this.getPackages();
 
-    this.ux.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
+    this.warn('This is for testing new versions only. To update the version you must go through dev-scripts.');
 
     this.updateTsVersion();
     for (const pkg of this.packages) {
@@ -66,7 +71,7 @@ export default class Update extends SfdxCommand {
       this.repo.build();
       this.repo.test();
     } finally {
-      this.ux.log('Reverting unstaged stages');
+      this.log('Reverting unstaged stages');
       this.repo.revertUnstagedChanges();
     }
   }
@@ -84,7 +89,7 @@ export default class Update extends SfdxCommand {
     const tsConfig = JSON.parse(tsConfigString.replace(commentRegex, '')) as AnyJson;
 
     set(asObject(tsConfig), 'compilerOptions.target', this.flags.target);
-    this.ux.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target as string);
+    this.log(`Updating tsconfig target at ${tsConfigPath} to:`, this.flags.target);
     const fileData: string = JSON.stringify(tsConfig, null, 2);
     await fs.writeFile(tsConfigPath, fileData, {
       encoding: 'utf8',
@@ -96,7 +101,7 @@ export default class Update extends SfdxCommand {
     const newVersion = this.determineNextTsVersion();
     for (const pkg of this.packages) {
       if (pkg.packageJson.devDependencies['typescript']) {
-        this.ux.warn(`Updating typescript version to ${newVersion} in path ${pkg.location}`);
+        this.warn(`Updating typescript version to ${newVersion} in path ${pkg.location}`);
         pkg.packageJson.devDependencies['typescript'] = newVersion;
         pkg.packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = 'latest';
         pkg.packageJson.devDependencies['@typescript-eslint/parser'] = 'latest';
@@ -116,21 +121,19 @@ export default class Update extends SfdxCommand {
   private determineNextTsVersion(): string {
     return this.flags.version === 'latest' || !this.flags.version
       ? getString(this.typescriptPkg, 'dist-tags.latest')
-      : (this.flags.version as string);
+      : this.flags.version;
   }
 
   private validateEsTarget(): boolean {
     if (this.flags.target === 'ESNext') return true;
 
-    if (/ES[0-9]{4}/g.test(this.flags.target as string)) return true;
+    if (/ES[0-9]{4}/g.test(this.flags.target)) return true;
 
-    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [
-      this.flags.target as string,
-    ]);
+    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [this.flags.target]);
   }
 
   private validateTsVersion(): boolean {
-    const version = this.flags.version as string;
+    const version = this.flags.version;
     if (version === 'latest') return true;
     if (version && !this.typescriptPkg.versions.includes(version)) {
       throw new SfError(messages.getMessage('InvalidTypescriptVersion'), 'InvalidTypescriptVersion', [version]);

@@ -10,11 +10,12 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { ensure, ensureNumber, get } from '@salesforce/ts-types';
 import { red, yellow, green } from 'chalk';
 import { parseJson } from '@salesforce/kit';
+import { Interfaces } from '@oclif/core';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
@@ -45,18 +46,18 @@ async function fileExists(filePath: string): Promise<boolean> {
 /**
  * The functionality of this command is taken entirely from https://github.com/salesforcecli/sfdx-cli/blob/v7.109.0/scripts/verify-tarballs
  */
-export default class Verify extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
+export default class Verify extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    cli: flags.enum({
-      description: messages.getMessage('cli'),
+  public static readonly flags = {
+    cli: Flags.enum({
+      summary: messages.getMessage('cli'),
       options: Object.values(CLI),
       default: 'sfdx',
       char: 'c',
     }),
-    ['windows-username-buffer']: flags.number({
-      description: messages.getMessage('windowsUsernameBuffer'),
+    ['windows-username-buffer']: Flags.integer({
+      summary: messages.getMessage('windowsUsernameBuffer'),
       default: 41,
       char: 'w',
     }),
@@ -66,7 +67,11 @@ export default class Verify extends SfdxCommand {
   private step = 1;
   private totalSteps = 1;
 
+  private flags: Interfaces.InferredFlags<typeof Verify.flags>;
+
   public async run(): Promise<void> {
+    const { flags } = await this.parse(Verify);
+    this.flags = flags;
     const cli = ensure<CLI>(this.flags.cli as CLI);
     this.baseDir = path.join('tmp', cli);
     const cliRunLists: Record<CLI, Array<() => Promise<void>>> = {
@@ -97,13 +102,13 @@ export default class Verify extends SfdxCommand {
   }
 
   public async execute(msg: string, validate: () => Promise<boolean>): Promise<boolean> {
-    this.ux.startSpinner(`[${this.step}/${this.totalSteps}] ${msg}`);
+    this.spinner.start(`[${this.step}/${this.totalSteps}] ${msg}`);
     if (!(await validate())) {
-      this.ux.stopSpinner(FAILED);
+      this.spinner.stop(FAILED);
       return false;
     }
     this.step += 1;
-    this.ux.stopSpinner(PASSED);
+    this.spinner.stop(PASSED);
     return true;
   }
 

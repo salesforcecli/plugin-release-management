@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs/promises';
 import * as assert from 'assert';
-import { FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { cp } from 'shelljs';
 import * as fg from 'fast-glob';
@@ -22,45 +22,43 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.sch
   'examples',
 ]);
 
-export class SchemaUtils {
-  public static async getLatestSchemaFiles(): Promise<string[]> {
-    const fileData = await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8');
-    const pjson: { oclif: { plugins: string[] } } = parseJsonMap(fileData, path.join(process.cwd(), 'package.json'));
+export const getLatestSchemaFiles = async (): Promise<string[]> => {
+  const fileData = await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8');
+  const pjson: { oclif: { plugins: string[] } } = parseJsonMap(fileData, path.join(process.cwd(), 'package.json'));
 
-    const globs = (pjson.oclif?.plugins || []).map((plugin) => {
-      const normalized = plugin.replace(/\\/g, '/');
-      return `node_modules/${normalized}/schemas/**/*.json`; // We need to use / for path sep since fg only works with Unix paths
-    });
-    const schemaFiles = (await fg(globs))
-      .map((f) => path.normalize(f)) // normalize paths so this will work on Windows since fg only returns Unix paths
-      .filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
-    return schemaFiles;
+  const globs = (pjson.oclif?.plugins || []).map((plugin) => {
+    const normalized = plugin.replace(/\\/g, '/');
+    return `node_modules/${normalized}/schemas/**/*.json`; // We need to use / for path sep since fg only works with Unix paths
+  });
+  const schemaFiles = (await fg(globs))
+    .map((f) => path.normalize(f)) // normalize paths so this will work on Windows since fg only returns Unix paths
+    .filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
+  return schemaFiles;
+};
+
+export const getExistingSchemaFiles = async (): Promise<string[]> => {
+  const globs = ['schemas/**/*.json'];
+  const schemaFiles = await fg(globs);
+  return schemaFiles;
+};
+
+export const deepEqual = (a: JsonMap, b: JsonMap): boolean => {
+  try {
+    assert.deepEqual(a, b);
+    return true;
+  } catch {
+    return false;
   }
+};
 
-  public static async getExistingSchemaFiles(): Promise<string[]> {
-    const globs = ['schemas/**/*.json'];
-    const schemaFiles = await fg(globs);
-    return schemaFiles;
-  }
-
-  public static deepEqual(a: JsonMap, b: JsonMap): boolean {
-    try {
-      assert.deepEqual(a, b);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-}
-
-export default class Collect extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
+export default class Collect extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {};
+  public static readonly flags = {};
 
   // eslint-disable-next-line class-methods-use-this
   public async run(): Promise<void> {
-    const schemaFiles = await SchemaUtils.getLatestSchemaFiles();
+    const schemaFiles = await getLatestSchemaFiles();
     const schemaFilesByPlugin = new Map<string, string[]>();
     for (const file of schemaFiles) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { SfError } from '@salesforce/core';
 import { Package } from '../../../package';
 import { CommitInspection, inspectCommits } from '../../../inspectCommits';
@@ -21,16 +21,17 @@ type Response = {
   packages?: PackageCommits[];
 };
 
-export default class Validate extends SfdxCommand {
-  public static readonly description =
+export default class Validate extends SfCommand<Response> {
+  public static readonly summary =
     'inspects the git commits to see if there are any commits that will warrant a new release';
-  public static readonly flagsConfig: FlagsConfig = {
-    verbose: flags.builtin({
-      description: 'show all commits for all packages (only works with --json flag)',
+  public static readonly flags = {
+    verbose: Flags.boolean({
+      summary: 'show all commits for all packages (only works with --json flag)',
     }),
   };
 
   public async run(): Promise<Response> {
+    const { flags } = await this.parse(Validate);
     const packages = [await Package.create()];
     const responses = await Promise.all(
       packages.map(async (pkg) => ({
@@ -48,7 +49,7 @@ export default class Validate extends SfdxCommand {
       );
     }
     const shouldRelease = responses.some((resp) => !!resp.shouldRelease) && !majorBump;
-    this.ux.log(shouldRelease.toString());
-    return this.flags.verbose ? { shouldRelease, majorBump, packages: responses } : { shouldRelease, majorBump };
+    this.log(shouldRelease.toString());
+    return flags.verbose ? { shouldRelease, majorBump, packages: responses } : { shouldRelease, majorBump };
   }
 }

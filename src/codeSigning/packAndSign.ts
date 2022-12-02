@@ -14,7 +14,7 @@ import { EOL } from 'os';
 import { join as pathJoin } from 'path';
 import { Agent } from 'https';
 import { Agents } from 'got';
-import { UX } from '@salesforce/command';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import * as ProxyAgent from 'proxy-agent';
@@ -66,11 +66,11 @@ class PathGetter {
   }
 }
 
-let cliUx: UX;
+let cliUx: Ux;
 let pathGetter: PathGetter;
 
 export const api = {
-  setUx(ux: UX): void {
+  setUx(ux: Ux): void {
     cliUx = ux;
   },
 
@@ -256,7 +256,7 @@ export const api = {
       packageJson.sfdx = getSfdxProperty(packageNameWithOrWithoutScope, npmName.tag);
       await api.writePackageJson(packageJson);
       cliUx.log('Successfully updated package.json with public key and signature file locations.');
-      cliUx.logJson(packageJson.sfdx);
+      cliUx.styledJSON(packageJson.sfdx);
 
       const filepath = await api.pack();
       cliUx.log(`Packed tgz to ${filepath}`);

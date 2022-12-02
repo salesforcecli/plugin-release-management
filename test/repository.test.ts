@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import * as sinon from 'sinon';
-import { UX } from '@salesforce/command';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { Package } from '../src/package';
 import { PackageRepo } from '../src/repository';
 
@@ -19,11 +19,11 @@ const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
 
 describe('PackageRepo', () => {
-  let uxStub: UX;
+  let uxStub: Ux;
   let execStub: sinon.SinonStub;
 
   beforeEach(async () => {
-    uxStub = stubInterface<UX>($$.SANDBOX, {}) as unknown as UX;
+    uxStub = stubInterface<Ux>($$.SANDBOX, {}) as unknown as Ux;
   });
 
   describe('isReleasable', () => {

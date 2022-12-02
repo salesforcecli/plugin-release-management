@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { ensure, ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
@@ -44,22 +44,22 @@ function isNotEmpty(obj: Record<string, unknown>): boolean {
   return Object.keys(obj).length > 0;
 }
 
-export default class ReleaseNotes extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
+export default class ReleaseNotes extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    cli: flags.string({
-      description: messages.getMessage('cliFlag'),
+  public static readonly flags = {
+    cli: Flags.string({
+      summary: messages.getMessage('cliFlag'),
       options: Object.values(CLI),
       char: 'c',
       required: true,
     }),
-    since: flags.string({
-      description: messages.getMessage('sinceFlag'),
+    since: Flags.string({
+      summary: messages.getMessage('sinceFlag'),
       char: 's',
     }),
-    markdown: flags.boolean({
-      description: messages.getMessage('markdownFlag'),
+    markdown: Flags.boolean({
+      summary: messages.getMessage('markdownFlag'),
       char: 'm',
       default: false,
     }),
@@ -68,12 +68,13 @@ export default class ReleaseNotes extends SfdxCommand {
   private usernames: Record<string, string> = {};
 
   public async run(): Promise<ChangesByPlugin> {
+    const { flags } = await this.parse(ReleaseNotes);
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
     this.octokit = new Octokit({ auth });
-    const cli = ensure<CLI>(this.flags.cli as CLI);
+    const cli = ensure<CLI>(flags.cli as CLI);
     const fullName = cli === CLI.SF ? '@salesforce/cli' : 'sfdx-cli';
 
-    const npmPackage = getNpmPackage(fullName, (this.flags.since as string) ?? 'latest');
+    const npmPackage = getNpmPackage(fullName, flags.since ?? 'latest');
     const latestrc = getNpmPackage(fullName, 'latest-rc');
 
     const oldPlugins = normalizePlugins(npmPackage);
@@ -82,30 +83,30 @@ export default class ReleaseNotes extends SfdxCommand {
     const differences = findDifferences(oldPlugins, newPlugins);
 
     if (isNotEmpty(differences.upgraded)) {
-      this.ux.styledHeader('Upgraded Plugins');
+      this.styledHeader('Upgraded Plugins');
       for (const [plugin, version] of Object.entries(differences.upgraded)) {
-        this.ux.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
+        this.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
       }
     }
 
     if (isNotEmpty(differences.downgraded)) {
-      this.ux.styledHeader('Downgraded Plugins');
+      this.styledHeader('Downgraded Plugins');
       for (const [plugin, version] of Object.entries(differences.downgraded)) {
-        this.ux.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
+        this.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
       }
     }
 
     if (isNotEmpty(differences.added)) {
-      this.ux.styledHeader('Added Plugins');
+      this.styledHeader('Added Plugins');
       for (const [plugin, version] of Object.entries(differences.added)) {
-        this.ux.log(`• ${plugin} ${version}`);
+        this.log(`• ${plugin} ${version}`);
       }
     }
 
     if (isNotEmpty(differences.removed)) {
-      this.ux.styledHeader('Removed Plugins');
+      this.styledHeader('Removed Plugins');
       for (const [plugin, version] of Object.entries(differences.removed)) {
-        this.ux.log(`• ${plugin} ${version}`);
+        this.log(`• ${plugin} ${version}`);
       }
     }
 
@@ -118,7 +119,7 @@ export default class ReleaseNotes extends SfdxCommand {
       if (changes.length) changesByPlugin[plugin] = changes;
     }
 
-    if (this.flags.markdown) {
+    if (flags.markdown) {
       this.logChangesMarkdown(changesByPlugin);
     } else {
       this.logChanges(changesByPlugin);
@@ -173,7 +174,7 @@ export default class ReleaseNotes extends SfdxCommand {
 
   private logChanges(changesByPlugin: ChangesByPlugin): void {
     for (const [plugin, changes] of Object.entries(changesByPlugin)) {
-      this.ux.styledHeader(cyan(plugin));
+      this.styledHeader(cyan(plugin));
       for (const change of changes) {
         this.log(bold(`${change.title}`));
         for (const [key, value] of Object.entries(change)) {

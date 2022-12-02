@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as fs from 'fs/promises';
 import { exec } from 'shelljs';
 import { CliUx } from '@oclif/core';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import got from 'got';
@@ -241,7 +241,7 @@ class Npm extends Method.Base {
   // eslint-disable-next-line class-methods-use-this
   protected async ping(): Promise<ServiceAvailability> {
     // I'm not confident that this is the best way to preempt any issues related to Npm's availability. Mainly
-    // because I couldn't find any documetation related to what status indicators might be used and when.
+    // because I couldn't find any documentation related to what status indicators might be used and when.
     const response = await got.get(Npm.STATUS_URL).json<{ status: { indicator: string; description: string } }>();
     return { service: 'Npm', available: ['none', 'minor'].includes(response.status.indicator) };
   }
@@ -392,38 +392,40 @@ class Installer extends Method.Base {
   }
 }
 
-export default class Test extends SfdxCommand {
+export default class Test extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    cli: flags.string({
-      description: messages.getMessage('cliFlag'),
+  public static readonly flags = {
+    cli: Flags.string({
+      summary: messages.getMessage('cliFlag'),
       options: Object.values(CLI),
       char: 'c',
       required: true,
     }),
-    method: flags.string({
-      description: messages.getMessage('methodFlag'),
+    method: Flags.string({
+      summary: messages.getMessage('methodFlag'),
       options: Object.values(Method.Type),
       char: 'm',
       required: true,
     }),
-    channel: flags.string({
-      description: messages.getMessage('channelFlag'),
+    channel: Flags.string({
+      summary: messages.getMessage('channelFlag'),
       options: Object.values(Channel),
       default: 'stable',
     }),
-    'output-file': flags.string({
-      description: messages.getMessage('outputFileFlag'),
+    'output-file': Flags.string({
+      summary: messages.getMessage('outputFileFlag'),
       default: 'test-results.json',
     }),
   };
 
   public async run(): Promise<void> {
-    const cli = ensure<CLI>(this.flags.cli as CLI);
-    const method = ensure<Method.Type>(this.flags.method as Method.Type);
-    const channel = ensure<Channel>(this.flags.channel as Channel);
-    const outputFile = ensure<string>(this.flags['output-file'] as string);
+    const { flags } = await this.parse(Test);
+    const cli = ensure<CLI>(flags.cli as CLI);
+    const method = ensure<Method.Type>(flags.method as Method.Type);
+    const channel = ensure<Channel>(flags.channel as Channel);
+    const outputFile = ensure<string>(flags['output-file']);
     const directory = await makeWorkingDir(cli, channel, method);
 
     CliUx.ux.log(`Working Directory: ${directory}`);

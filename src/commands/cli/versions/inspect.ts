@@ -12,11 +12,12 @@ import * as util from 'util';
 import * as fs from 'fs/promises';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
 import { ensure } from '@salesforce/ts-types';
-import { ensureArray, parseJson } from '@salesforce/kit';
+import { parseJson } from '@salesforce/kit';
+import { Interfaces } from '@oclif/core';
 import { PackageJson } from '../../../package';
 import { CLI } from '../../../types';
 
@@ -136,36 +137,36 @@ const CLI_META = {
   },
 };
 
-export default class Inspect extends SfdxCommand {
-  public static readonly description = messages.getMessage('description');
+export default class Inspect extends SfCommand<unknown> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    dependencies: flags.string({
-      description: messages.getMessage('deps'),
+  public static readonly flags = {
+    dependencies: Flags.string({
+      summary: messages.getMessage('deps'),
       char: 'd',
       multiple: true,
     }),
-    salesforce: flags.boolean({
-      description: messages.getMessage('salesforce'),
+    salesforce: Flags.boolean({
+      summary: messages.getMessage('salesforce'),
       char: 's',
       default: false,
     }),
-    channels: flags.string({
-      description: messages.getMessage('channels'),
+    channels: Flags.string({
+      summary: messages.getMessage('channels'),
       char: 'c',
       options: Object.values(Channel),
       required: true,
       multiple: true,
     }),
-    locations: flags.string({
-      description: messages.getMessage('locations'),
+    locations: Flags.string({
+      summary: messages.getMessage('locations'),
       char: 'l',
       options: Object.values(Location),
       required: true,
       multiple: true,
     }),
-    cli: flags.enum({
-      description: messages.getMessage('cli'),
+    cli: Flags.enum({
+      summary: messages.getMessage('cli'),
       options: Object.values(CLI),
       default: CLI.SFDX,
       required: true,
@@ -175,15 +176,20 @@ export default class Inspect extends SfdxCommand {
   public workingDir = path.join(os.tmpdir(), 'cli_inspection');
   public archives: Archives;
 
+  private flags: Interfaces.InferredFlags<typeof Inspect.flags>;
+
   public async run(): Promise<Info[]> {
-    const locations = ensureArray(this.flags.locations) as Location[];
-    const channels = ensureArray(this.flags.channels) as Channel[];
+    const { flags } = await this.parse(Inspect);
+    this.flags = flags;
+
+    const locations = this.flags.locations as Location[];
+    const channels = this.flags.channels as Channel[];
 
     if (this.flags.cli === CLI.SF && channels.includes(Channel.LEGACY)) {
       throw new SfError('the sf CLI does not have a legacy channel');
     }
 
-    this.ux.log(`Working Directory: ${this.workingDir}`);
+    this.log(`Working Directory: ${this.workingDir}`);
 
     // ensure that we are starting with a clean directory
     try {
@@ -195,15 +201,10 @@ export default class Inspect extends SfdxCommand {
 
     this.initArchives();
 
-    const results: Info[] = [];
-
-    if (locations.includes(Location.ARCHIVE)) {
-      results.push(...(await this.inspectArchives(channels)));
-    }
-
-    if (locations.includes(Location.NPM)) {
-      results.push(...(await this.inspectNpm(channels)));
-    }
+    const results = [
+      ...(locations.includes(Location.ARCHIVE) ? await this.inspectArchives(channels) : []),
+      ...(locations.includes(Location.NPM) ? await this.inspectNpm(channels) : []),
+    ];
 
     this.logResults(results, locations, channels);
 
@@ -243,22 +244,22 @@ export default class Inspect extends SfdxCommand {
 
     const results: Info[] = [];
     for (const channel of Object.keys(pathsByChannel) as Channel[]) {
-      this.ux.log(`---- ${Location.ARCHIVE} ${channel} ----`);
+      this.log(`---- ${Location.ARCHIVE} ${channel} ----`);
       for (const archivePath of pathsByChannel[channel] as string[]) {
-        this.ux.startSpinner(`Downloading: ${cyan(archivePath)}`);
+        this.spinner.start(`Downloading: ${cyan(archivePath)}`);
         const curlResult = exec(`curl ${archivePath} -Os`, { cwd: tarDir });
-        this.ux.stopSpinner();
+        this.spinner.stop();
         if (curlResult.code !== 0) {
-          this.ux.log(red('Download failed. That is a big deal. Investigate immediately.'));
+          this.log(red('Download failed. That is a big deal. Investigate immediately.'));
           continue;
         }
         const filename = path.basename(archivePath);
         const unpackedDir = await mkdir(this.workingDir, 'unpacked', filename);
-        this.ux.startSpinner(`Unpacking: ${cyan(unpackedDir)}`);
+        this.spinner.start(`Unpacking: ${cyan(unpackedDir)}`);
         const tarResult = exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
-        this.ux.stopSpinner();
+        this.spinner.stop();
         if (tarResult.code !== 0) {
-          this.ux.log(red('Failed to unpack. Skipping...'));
+          this.log(red('Failed to unpack. Skipping...'));
           continue;
         }
         const pkgJson = await readPackageJson(unpackedDir);
@@ -280,12 +281,12 @@ export default class Inspect extends SfdxCommand {
     const results: Info[] = [];
     const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);
     for (const tag of tags) {
-      this.ux.log(`---- ${Location.NPM} ${tag} ----`);
+      this.log(`---- ${Location.NPM} ${tag} ----`);
       const installDir = await mkdir(npmDir, tag);
       const name = `${cliMeta.packageName}@${tag}`;
-      this.ux.startSpinner(`Installing: ${cyan(name)}`);
+      this.spinner.start(`Installing: ${cyan(name)}`);
       exec(`npm install ${name}`, { cwd: installDir, silent: true });
-      this.ux.stopSpinner();
+      this.spinner.stop();
       const pkgJson = await readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
       results.push({
         dependencies: await this.getDependencies(installDir),
@@ -301,7 +302,7 @@ export default class Inspect extends SfdxCommand {
   private async getDependencies(directory: string): Promise<Dependency[]> {
     const depGlobs: string[] = [];
     if (this.flags.dependencies) {
-      const globPatterns = (this.flags.dependencies as string[]).map((d) => `${directory}/node_modules/${d}`);
+      const globPatterns = this.flags.dependencies.map((d) => `${directory}/node_modules/${d}`);
       depGlobs.push(...globPatterns);
     }
     if (this.flags.salesforce) {
@@ -324,23 +325,23 @@ export default class Inspect extends SfdxCommand {
   private logResults(results: Info[], locations: Location[], channels: Channel[]): void {
     let allMatch: boolean;
     let npmAndArchivesMatch: boolean;
-    this.ux.log();
+    this.log();
     results.forEach((result) => {
-      this.ux.log(bold(`${result.origin}: ${green(result.version)}`));
+      this.log(bold(`${result.origin}: ${green(result.version)}`));
       result.dependencies.forEach((dep) => {
-        this.ux.log(`  ${dep.name}: ${dep.version}`);
+        this.log(`  ${dep.name}: ${dep.version}`);
       });
     });
-    this.ux.log();
+    this.log();
 
     if (locations.includes(Location.ARCHIVE)) {
       const archivesMatch =
         new Set(results.filter((r) => r.location === Location.ARCHIVE).map((r) => r.version)).size === 1;
-      this.ux.log(`${'All archives match?'} ${archivesMatch ? green(archivesMatch) : yellow(archivesMatch)}`);
+      this.log(`${'All archives match?'} ${archivesMatch ? green(archivesMatch) : yellow(archivesMatch)}`);
 
       channels.forEach((channel) => {
         allMatch = new Set(results.filter((r) => r.channel === channel).map((r) => r.version)).size === 1;
-        this.ux.log(
+        this.log(
           `${`All ${Location.ARCHIVE}@${channel} versions match?`} ${allMatch ? green(allMatch) : red(allMatch)}`
         );
       });
@@ -359,7 +360,7 @@ export default class Inspect extends SfdxCommand {
             ).size === 1;
 
           const match = npmAndArchivesMatch ? green(true) : red(false);
-          this.ux.log(
+          this.log(
             `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
           );
         });
