@@ -139,6 +139,8 @@ const CLI_META = {
 
 export default class Inspect extends SfCommand<Info[]> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {
     dependencies: Flags.string({

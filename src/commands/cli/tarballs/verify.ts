@@ -48,6 +48,8 @@ async function fileExists(filePath: string): Promise<boolean> {
  */
 export default class Verify extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {
     cli: Flags.enum({

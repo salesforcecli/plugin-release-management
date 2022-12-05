@@ -15,6 +15,8 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 export default class Pin extends SfCommand<ChangedPackageVersions> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+
   public static readonly flags = {
     dryrun: Flags.boolean({
       char: 'd',

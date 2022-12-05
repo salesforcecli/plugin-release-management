@@ -24,6 +24,9 @@ type Response = {
 export default class Validate extends SfCommand<Response> {
   public static readonly summary =
     'inspects the git commits to see if there are any commits that will warrant a new release';
+  public static readonly description =
+    'inspects the git commits to see if there are any commits that will warrant a new release';
+
   public static readonly flags = {
     verbose: Flags.boolean({
       summary: 'show all commits for all packages (only works with --json flag)',

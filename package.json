@@ -147,6 +147,9 @@
           }
         }
       },
+      "repositories": {
+        "description": "list and get information about SalesforceCLI-owned repositories"
+      },
       "typescript": {
         "description": "test updates to typescript version"
       }

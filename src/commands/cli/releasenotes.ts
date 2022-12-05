@@ -46,6 +46,7 @@ function isNotEmpty(obj: Record<string, unknown>): boolean {
 
 export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly flags = {
     cli: Flags.string({

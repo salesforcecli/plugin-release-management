@@ -25,6 +25,8 @@ interface ReleaseResult {
 
 export default class Release extends SfCommand<ReleaseResult> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+
   public static readonly flags = {
     dryrun: Flags.boolean({
       char: 'd',
