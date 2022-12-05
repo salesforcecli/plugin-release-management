@@ -27,6 +27,7 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'typescr
 
 export default class Update extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
   public static readonly flags = {
     version: Flags.string({
       char: 'v',
