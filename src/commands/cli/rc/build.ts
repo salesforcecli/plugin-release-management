@@ -16,16 +16,22 @@ import { Messages, SfError } from '@salesforce/core';
 import { PackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.latestrc.build');
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.rc.build');
 
 export default class build extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly aliases = ['cli:latestrc:build'];
   public static readonly flags = {
-    rctag: Flags.string({
-      summary: messages.getMessage('flags.rctag'),
+    base: Flags.string({
+      summary: messages.getMessage('flags.base'),
+      default: 'main',
+    }),
+    'rc-dist-tag': Flags.string({
+      summary: messages.getMessage('flags.rcDistTag'),
       default: 'latest-rc',
+      aliases: ['rctag'],
     }),
     'build-only': Flags.boolean({
       summary: messages.getMessage('flags.buildOnly'),
@@ -68,23 +74,27 @@ export default class build extends SfCommand<void> {
       );
     }
 
-    // get the current version and implement the patch version for a default rc build
+    const { ['rc-dist-tag']: rcDistTag } = flags;
+
     const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
-    const nextRCVersion = repo.package.getNextRCVersion(flags.rctag, flags.patch);
-    repo.nextVersion = nextRCVersion;
+    // Get the current version for the passed in dist-tag
+    // Determine the next version based on if --patch was passed in
+    const [currentVersion, nextVersion] = repo.package.getVersionsForDistTag(rcDistTag, flags.patch);
+    repo.nextVersion = nextVersion;
 
-    this.log(`starting on main and will checkout ${repo.nextVersion}`);
+    this.log(`Starting on ${currentVersion} (${rcDistTag}) and creating branch ${repo.nextVersion}`);
 
-    // start the latest-rc build process on a clean main branch
-    this.exec('git checkout main');
-    this.exec('git pull');
-    this.exec(`git checkout -b ${nextRCVersion}`);
+    // Ensure we have a list of all tags pulled
+    this.exec('git fetch --all --tags');
+    // Start the rc build process on the current version for that dist-tag
+    // Also, create a new branch that matches the next version
+    this.exec(`git checkout ${currentVersion} -b ${nextVersion}`);
 
-    // bump the version in the pjson to the new latest-rc
-    this.log(`setting the version to ${nextRCVersion}`);
-    repo.package.setNextVersion(nextRCVersion);
-    repo.package.packageJson.version = nextRCVersion;
+    // bump the version in the pjson to the next version for this dist-tag
+    this.log(`setting the version to ${nextVersion}`);
+    repo.package.setNextVersion(nextVersion);
+    repo.package.packageJson.version = nextVersion;
 
     const only = flags.only.split(',').map((s) => s.trim());
 
@@ -133,8 +143,8 @@ export default class build extends SfCommand<void> {
 
       // commit package.json/yarn.lock and potentially command-snapshot changes
       this.exec('git add .');
-      this.exec(`git commit -m "chore(latest-rc): bump to ${nextRCVersion}"`);
-      this.exec(`git push --set-upstream origin ${nextRCVersion} --no-verify`, { silent: false });
+      this.exec(`git commit -m "chore(${rcDistTag}): bump to ${nextVersion}"`);
+      this.exec(`git push --set-upstream origin ${nextVersion} --no-verify`, { silent: false });
 
       const repoOwner = repo.package.packageJson.repository.split('/')[0];
       const repoName = repo.package.packageJson.repository.split('/')[1];
@@ -142,10 +152,10 @@ export default class build extends SfCommand<void> {
       await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
         owner: repoOwner,
         repo: repoName,
-        head: nextRCVersion,
+        head: nextVersion,
         base: 'main',
-        title: `Release v${nextRCVersion} as latest-rc`,
-        body: 'Building latest-rc [skip-validate-pr]',
+        title: `Release v${nextVersion} as ${rcDistTag}`,
+        body: `Building ${rcDistTag} [skip-validate-pr]`,
       });
     }
   }

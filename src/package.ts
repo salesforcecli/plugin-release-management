@@ -264,13 +264,13 @@ export class Package extends AsyncOptionalCreatable {
       .filter(Boolean); // remove falsy values, in this case the `undefined` if version did not change
   }
 
-  public getNextRCVersion(tag: string, isPatch = false): string {
+  public getVersionsForDistTag(tag: string, isPatch = false): string[] {
     const versions = this.getDistTags(this.packageJson.name);
 
-    const version = semver.parse(versions[tag]);
-    return isPatch
-      ? `${version.major}.${version.minor}.${version.patch + 1}`
-      : `${version.major}.${version.minor + 1}.0`;
+    const currentVersion = semver.parse(versions[tag]);
+    const nextVersion = isPatch ? semver.inc(currentVersion, 'patch') : semver.inc(currentVersion, 'minor');
+
+    return [currentVersion.version, nextVersion];
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {

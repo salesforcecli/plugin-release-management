@@ -98,14 +98,16 @@ export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<
 /**
  * Save the security items (publicKey and .sig file) to AWS based on the generates filenames
  */
-const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> => Promise.all([
+const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> =>
+  Promise.all([
     // signature file
     putObject(BUCKET, input.packageJsonSfdxProperty.signatureUrl.replace(`${BASE_URL}/`, ''), input.signatureContents),
     // publicKey
     putObject(BUCKET, input.packageJsonSfdxProperty.publicKeyUrl.replace(`${BASE_URL}/`, ''), input.publicKeyContents),
   ]);
 
-const getOneTimeUseKeys = (): Promise<KeyPair> => new Promise<KeyPair>((resolve, reject) => {
+const getOneTimeUseKeys = (): Promise<KeyPair> =>
+  new Promise<KeyPair>((resolve, reject) => {
     generateKeyPair(
       'rsa',
       {
@@ -141,7 +143,8 @@ const getSignature = async (privateKey: string, dataToSignFilePath: string): Pro
   });
 };
 
-const verify = async (dataToSignFilePath: string, publicKey: string, signature: string): Promise<boolean> => new Promise<boolean>((resolve, reject) => {
+const verify = async (dataToSignFilePath: string, publicKey: string, signature: string): Promise<boolean> =>
+  new Promise<boolean>((resolve, reject) => {
     const verifier = createVerify(CRYPTO_LEVEL);
     const dataToVerifyStream = createReadStream(dataToSignFilePath, { encoding: 'binary' });
     dataToVerifyStream.pipe(verifier);
