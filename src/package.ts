@@ -267,6 +267,7 @@ export class Package extends AsyncOptionalCreatable {
   public getVersionsForDistTag(tag: string, isPatch = false): string[] {
     const versions = this.getDistTags(this.packageJson.name);
 
+    // TODO: Add support for "alpha tags" here
     const currentVersion = semver.parse(versions[tag]);
     const nextVersion = isPatch ? semver.inc(currentVersion, 'patch') : semver.inc(currentVersion, 'minor');
 
