@@ -14,7 +14,7 @@ import { Interfaces } from '@oclif/core';
 
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureString } from '@salesforce/ts-types';
-import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
+import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
 import { AmazonS3 } from '../../amazonS3';
 import { verifyDependencies } from '../../dependencies';
 import { PluginCommand } from '../../pluginCommand';
@@ -49,11 +49,10 @@ export default class Promote extends SfCommand<AnyJson> {
       exactlyOne: ['sha', 'version', 'promote-from-channel'],
       aliases: ['candidate'],
     }),
-    platform: Flags.string({
+    platform: arrayWithDeprecation({
       char: 'p',
       summary: messages.getMessage('platform'),
       options: ['win', 'macos', 'deb'],
-      multiple: true,
     }),
     cli: Flags.enum({
       char: 'c',
@@ -91,11 +90,10 @@ export default class Promote extends SfCommand<AnyJson> {
       default: true,
       allowNo: true,
     }),
-    'architecture-target': Flags.string({
+    'architecture-target': arrayWithDeprecation({
       char: 'T',
       summary: messages.getMessage('targets'),
       options: TARGETS,
-      multiple: true,
       aliases: ['targets'],
     }),
     version: Flags.string({
@@ -118,7 +116,6 @@ export default class Promote extends SfCommand<AnyJson> {
     const target = ensureString(this.flags['promote-to-channel']);
     const indexes = this.flags.indexes ? '--indexes' : '';
     const xz = this.flags.xz ? '--xz' : '--no-xz';
-    const targets = this.flags['architecture-target'] ?? [];
     const { sha, version } = await determineShaAndVersion(
       cli,
       this.flags['promote-from-channel'],
@@ -126,7 +123,7 @@ export default class Promote extends SfCommand<AnyJson> {
       this.flags.version
     );
 
-    const platforms = (this.flags.platform ?? []).map((p) => `--${p}`);
+    const platforms = this.flags.platform.map((p) => `--${p}`);
 
     if (!this.flags.dryrun) {
       const oclifPlugin = await PluginCommand.create({
@@ -144,9 +141,9 @@ export default class Promote extends SfCommand<AnyJson> {
           '--channel',
           target,
           '--max-age',
-          `${this.flags['max-age']}`,
+          this.flags['max-age'].toString(),
           ...platforms,
-          ...targets,
+          ...this.flags['architecture-target'],
           indexes,
           xz,
         ],
