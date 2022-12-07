@@ -90,7 +90,7 @@ export default class build extends SfCommand<void> {
     this.exec('git fetch --all --tags');
     // Start the rc build process on the current version for that dist-tag
     // Also, create a new branch that matches the next version
-    this.exec(`git checkout tags/${currentVersion} -b ${nextVersion}`);
+    this.exec(`git checkout ${currentVersion} -b ${nextVersion}`);
 
     // bump the version in the pjson to the next version for this dist-tag
     this.log(`setting the version to ${nextVersion}`);
