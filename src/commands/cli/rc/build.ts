@@ -153,7 +153,7 @@ export default class build extends SfCommand<void> {
         owner: repoOwner,
         repo: repoName,
         head: nextVersion,
-        base: 'main',
+        base: flags.base,
         title: `Release v${nextVersion} as ${rcDistTag}`,
         body: `Building ${rcDistTag} [skip-validate-pr]`,
       });
