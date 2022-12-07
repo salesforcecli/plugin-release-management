@@ -96,7 +96,7 @@ export default class build extends SfCommand<void> {
     repo.package.setNextVersion(nextVersion);
     repo.package.packageJson.version = nextVersion;
 
-    const only = flags.only.split(',').map((s) => s.trim());
+    const only = flags.only?.split(',').map((s) => s.trim());
 
     if (only) {
       this.log(`bumping the following dependencies only: ${only.join(', ')}`);
