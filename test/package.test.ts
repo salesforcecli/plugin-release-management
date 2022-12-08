@@ -300,4 +300,75 @@ describe('Package', () => {
       expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('1.0.1');
     });
   });
+
+  describe.only('getVersionsForTag', () => {
+    beforeEach(() => {
+      stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
+        latest: '1.2.3',
+        dev: '1.2.3-beta.0',
+      });
+    });
+
+    it('bumps minor from dist tag', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('latest');
+
+      expect(results).to.deep.equal(['1.2.3', '1.3.0']);
+    });
+
+    it('bumps patch from dist tag', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('latest', true);
+
+      expect(results).to.deep.equal(['1.2.3', '1.2.4']);
+    });
+
+    it('bumps prerelease from dist tag', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('dev');
+
+      expect(results).to.deep.equal(['1.2.3-beta.0', '1.2.3-beta.1']);
+    });
+
+    it('throws an error for invalid tag', async () => {
+      const pkg = await Package.create();
+
+      try {
+        pkg.getVersionsForTag('foo');
+      } catch (err) {
+        expect(err.message).to.deep.equal("Unable to parse valid semver from 'foo'");
+      }
+    });
+
+    it('bumps minor from semver', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('4.5.6');
+
+      expect(results).to.deep.equal(['4.5.6', '4.6.0']);
+    });
+
+    it('bumps patch from semver', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('4.5.6', true);
+
+      expect(results).to.deep.equal(['4.5.6', '4.5.7']);
+    });
+
+    it('bumps prerelease from semver', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('4.5.6-alpha.0');
+
+      expect(results).to.deep.equal(['4.5.6-alpha.0', '4.5.6-alpha.1']);
+    });
+
+    it('throws an error for invalid semver', async () => {
+      const pkg = await Package.create();
+
+      try {
+        pkg.getVersionsForTag('1.a.3');
+      } catch (err) {
+        expect(err.message).to.deep.equal("Unable to parse valid semver from '1.a.3'");
+      }
+    });
+  });
 });

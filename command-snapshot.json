@@ -34,7 +34,7 @@
       "only",
       "patch",
       "pinned-deps",
-      "rc-dist-tag",
+      "rc-tag",
       "resolutions",
       "schema",
       "snapshot"

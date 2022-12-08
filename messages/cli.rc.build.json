@@ -3,11 +3,13 @@
   "examples": [
     "<%= config.bin %> <%= command.id %>",
     "<%= config.bin %> <%= command.id %> --patch",
+    "<%= config.bin %> <%= command.id %> --rc-tag 7.177.0 --patch",
+    "<%= config.bin %> <%= command.id %> --rc-tag latest-rc",
     "<%= config.bin %> <%= command.id %> --build-only",
     "<%= config.bin %> <%= command.id %> --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config"
   ],
   "flags": {
-    "rcDistTag": "the tag name that corresponds to the npm dist-tag, example nightly, latest-rc",
+    "rcTag": "the tag to start the rc from. Can be semver or a dist-tag, examples: 7.177.0, nightly, latest-rc",
     "base": "the base branch for the PR",
     "resolutions": "bump the versions of packages listed in the resolutions section",
     "pinnedDeps": "bump the versions of the packages listed in the pinnedDependencies section",

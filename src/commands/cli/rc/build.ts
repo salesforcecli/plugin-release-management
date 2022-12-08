@@ -28,8 +28,8 @@ export default class build extends SfCommand<void> {
       summary: messages.getMessage('flags.base'),
       default: 'main',
     }),
-    'rc-dist-tag': Flags.string({
-      summary: messages.getMessage('flags.rcDistTag'),
+    'rc-tag': Flags.string({
+      summary: messages.getMessage('flags.rcTag'),
       default: 'latest-rc',
       aliases: ['rctag'],
       deprecateAliases: true,
@@ -75,24 +75,24 @@ export default class build extends SfCommand<void> {
       );
     }
 
-    const { ['rc-dist-tag']: rcDistTag } = flags;
+    const { ['rc-tag']: rcTag } = flags;
 
     const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
-    // Get the current version for the passed in dist-tag
-    // Determine the next version based on if --patch was passed in
-    const [currentVersion, nextVersion] = repo.package.getVersionsForDistTag(rcDistTag, flags.patch);
+    // Get the current version for the passed in tag
+    // Determine the next version based on if --patch was passed in or if it is a prerelease
+    const [currentVersion, nextVersion] = repo.package.getVersionsForTag(rcTag, flags.patch);
     repo.nextVersion = nextVersion;
 
-    this.log(`Starting on ${currentVersion} (${rcDistTag}) and creating branch ${repo.nextVersion}`);
+    this.log(`Starting on ${currentVersion} (${rcTag}) and creating branch ${repo.nextVersion}`);
 
     // Ensure we have a list of all tags pulled
     this.exec('git fetch --all --tags');
-    // Start the rc build process on the current version for that dist-tag
+    // Start the rc build process on the current version for that tag
     // Also, create a new branch that matches the next version
     this.exec(`git checkout ${currentVersion} -b ${nextVersion}`);
 
-    // bump the version in the pjson to the next version for this dist-tag
+    // bump the version in the pjson to the next version for this tag
     this.log(`setting the version to ${nextVersion}`);
     repo.package.setNextVersion(nextVersion);
     repo.package.packageJson.version = nextVersion;
@@ -142,7 +142,7 @@ export default class build extends SfCommand<void> {
 
       // commit package.json/yarn.lock and potentially command-snapshot changes
       this.exec('git add .');
-      this.exec(`git commit -m "chore(${rcDistTag}): bump to ${nextVersion}"`);
+      this.exec(`git commit -m "chore(${rcTag}): bump to ${nextVersion}"`);
       this.exec(`git push --set-upstream origin ${nextVersion} --no-verify`, { silent: false });
 
       const repoOwner = repo.package.packageJson.repository.split('/')[0];
@@ -153,8 +153,8 @@ export default class build extends SfCommand<void> {
         repo: repoName,
         head: nextVersion,
         base: flags.base,
-        title: `Release v${nextVersion} as ${rcDistTag}`,
-        body: `Building ${rcDistTag} [skip-validate-pr]`,
+        title: `Release v${nextVersion} as ${rcTag}`,
+        body: `Building ${rcTag} [skip-validate-pr]`,
       });
     }
   }

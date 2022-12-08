@@ -264,12 +264,20 @@ export class Package extends AsyncOptionalCreatable {
       .filter(Boolean); // remove falsy values, in this case the `undefined` if version did not change
   }
 
-  public getVersionsForDistTag(tag: string, isPatch = false): string[] {
-    const versions = this.getDistTags(this.packageJson.name);
+  public getVersionsForTag(tag: string, isPatch = false): string[] {
+    const distTags = this.getDistTags(this.packageJson.name);
 
-    // TODO: Add support for "alpha tags" here
-    const currentVersion = semver.parse(versions[tag]);
-    const nextVersion = semver.inc(currentVersion, isPatch ? 'patch' : 'minor');
+    const version = semver.valid(tag) ? tag : distTags[tag];
+    const currentVersion = semver.parse(version);
+
+    if (!currentVersion) {
+      throw new SfError(`Unable to parse valid semver from '${tag}'`);
+    }
+
+    const isPrerelease = semver.prerelease(currentVersion);
+    const releaseType = isPrerelease ? 'prerelease' : isPatch ? 'patch' : 'minor';
+
+    const nextVersion = semver.inc(currentVersion, releaseType);
 
     return [currentVersion.version, nextVersion];
   }
