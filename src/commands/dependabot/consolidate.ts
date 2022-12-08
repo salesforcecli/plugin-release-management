@@ -6,7 +6,7 @@
  */
 import * as os from 'os';
 import { Messages } from '@salesforce/core';
-import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
+import { arrayWithDeprecation, Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
 import { bold, cyan, green } from 'chalk';
@@ -36,9 +36,8 @@ export default class Consolidate extends SfCommand<void> {
       default: 'consolidate-dependabot',
       required: true,
     }),
-    ignore: Flags.string({
+    ignore: arrayWithDeprecation({
       summary: messages.getMessage('ignore'),
-      multiple: true,
     }),
     dryrun: Flags.boolean({
       summary: messages.getMessage('dryrun'),

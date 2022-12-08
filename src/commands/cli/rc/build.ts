@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
+import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { exec, ExecOptions } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -43,7 +43,7 @@ export default class build extends SfCommand<void> {
       default: true,
       allowNo: true,
     }),
-    only: Flags.string({
+    only: arrayWithDeprecation({
       summary: messages.getMessage('flags.only'),
     }),
     'pinned-deps': Flags.boolean({
@@ -97,11 +97,9 @@ export default class build extends SfCommand<void> {
     repo.package.setNextVersion(nextVersion);
     repo.package.packageJson.version = nextVersion;
 
-    const only = flags.only?.split(',').map((s) => s.trim());
-
-    if (only) {
-      this.log(`bumping the following dependencies only: ${only.join(', ')}`);
-      const bumped = repo.package.bumpDependencyVersions(only);
+    if (flags.only) {
+      this.log(`bumping the following dependencies only: ${flags.only.join(', ')}`);
+      const bumped = repo.package.bumpDependencyVersions(flags.only);
 
       if (!bumped.length) {
         throw new SfError(
