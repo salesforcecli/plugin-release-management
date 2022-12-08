@@ -265,9 +265,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public getVersionsForTag(tag: string, isPatch = false): string[] {
-    const distTags = this.getDistTags(this.packageJson.name);
-
-    const version = semver.valid(tag) ? tag : distTags[tag];
+    const version = semver.valid(tag) ? tag : this.getDistTags(this.packageJson.name)[tag];
     const currentVersion = semver.parse(version);
 
     if (!currentVersion) {
