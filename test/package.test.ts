@@ -301,7 +301,7 @@ describe('Package', () => {
     });
   });
 
-  describe.only('getVersionsForTag', () => {
+  describe('getVersionsForTag', () => {
     beforeEach(() => {
       stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
         latest: '1.2.3',
@@ -359,6 +359,13 @@ describe('Package', () => {
       const results = pkg.getVersionsForTag('4.5.6-alpha.0');
 
       expect(results).to.deep.equal(['4.5.6-alpha.0', '4.5.6-alpha.1']);
+    });
+
+    it('supports semver with v prefix', async () => {
+      const pkg = await Package.create();
+      const results = pkg.getVersionsForTag('v4.5.6', true);
+
+      expect(results).to.deep.equal(['4.5.6', '4.5.7']);
     });
 
     it('throws an error for invalid semver', async () => {
