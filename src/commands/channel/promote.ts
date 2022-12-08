@@ -10,58 +10,60 @@ import * as os from 'os';
 import { bold } from 'chalk';
 import { valid as validSemVer } from 'semver';
 import { ShellString } from 'shelljs';
+import { Interfaces } from '@oclif/core';
 
-import { FlagsConfig, SfdxCommand, flags } from '@salesforce/command';
-import { Messages, SfError } from '@salesforce/core';
-import { AnyJson, asArray, ensureArray, ensureNumber, ensureString } from '@salesforce/ts-types';
-
+import { Logger, Messages, SfError } from '@salesforce/core';
+import { AnyJson, ensureString } from '@salesforce/ts-types';
+import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
 import { AmazonS3 } from '../../amazonS3';
-import { Flags, verifyDependencies } from '../../dependencies';
+import { verifyDependencies } from '../../dependencies';
 import { PluginCommand } from '../../pluginCommand';
 import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
 const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64'];
-export default class Promote extends SfdxCommand {
+
+export default class Promote extends SfCommand<AnyJson> {
   public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    dryrun: flags.boolean({
+  public static flags = {
+    dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      description: messages.getMessage('dryrun'),
+      summary: messages.getMessage('dryrun'),
     }),
-    target: flags.string({
+    'promote-to-channel': Flags.string({
       char: 't',
       default: Channel.STABLE,
-      description: messages.getMessage('target'),
+      summary: messages.getMessage('target'),
       // options: Object.values(Channel),
       required: true,
+      aliases: ['target'],
     }),
-    candidate: flags.string({
+    'promote-from-channel': Flags.string({
       char: 'C',
-      description: messages.getMessage('candidate'),
+      summary: messages.getMessage('candidate'),
       // options: Object.values(Channel),
-      exclusive: ['sha'],
+      exactlyOne: ['sha', 'version', 'promote-from-channel'],
+      aliases: ['candidate'],
     }),
-    platform: flags.array({
+    platform: arrayWithDeprecation({
       char: 'p',
-      description: messages.getMessage('platform'),
+      summary: messages.getMessage('platform'),
       options: ['win', 'macos', 'deb'],
-      default: [],
-      multiple: true,
     }),
-    cli: flags.enum({
+    cli: Flags.enum({
       char: 'c',
-      description: messages.getMessage('cli'),
+      summary: messages.getMessage('cli'),
       required: true,
       options: Object.values(CLI),
     }),
-    sha: flags.string({
+    sha: Flags.string({
       char: 's',
-      description: messages.getMessage('sha'),
-      exclusive: ['candidate'],
+      summary: messages.getMessage('sha'),
+      exactlyOne: ['sha', 'version', 'promote-from-channel'],
       parse: (input: string): Promise<string> => Promise.resolve(input.slice(0, 7)),
       validate: (input: string): boolean => {
         if (input.length < 7) {
@@ -70,49 +72,58 @@ export default class Promote extends SfdxCommand {
         return true;
       },
     }),
-    maxage: flags.number({
+    'max-age': Flags.integer({
       char: 'm',
-      description: messages.getMessage('maxage'),
+      summary: messages.getMessage('maxage'),
       default: 300,
+      aliases: ['maxage'],
     }),
-    indexes: flags.boolean({
+    indexes: Flags.boolean({
       char: 'i',
-      description: messages.getMessage('indexes'),
+      summary: messages.getMessage('indexes'),
       default: true,
       allowNo: true,
     }),
-    xz: flags.boolean({
+    xz: Flags.boolean({
       char: 'x',
-      description: messages.getMessage('xz'),
+      summary: messages.getMessage('xz'),
       default: true,
       allowNo: true,
     }),
-    targets: flags.array({
+    'architecture-target': arrayWithDeprecation({
       char: 'T',
-      description: messages.getMessage('targets'),
+      summary: messages.getMessage('targets'),
       options: TARGETS,
+      aliases: ['targets'],
     }),
-    version: flags.string({
-      char: 'T',
-      description: messages.getMessage('version'),
-      exclusive: ['sha', 'candidate'],
+    version: Flags.string({
+      char: 'v',
+      summary: messages.getMessage('version'),
+      exactlyOne: ['sha', 'version', 'promote-from-channel'],
       parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
       validate: (input: string): boolean => validSemVer(input) !== null,
     }),
   };
 
+  private flags: Interfaces.InferredFlags<typeof Promote.flags>;
+
   public async run(): Promise<AnyJson> {
+    const { flags } = await this.parse(Promote);
+    this.flags = flags;
     this.validateFlags();
     // preparing parameters for call to oclif promote commands
     const cli = this.flags.cli as CLI;
-    const target = ensureString(this.flags.target);
-    const maxAge = ensureNumber(this.flags.maxage);
+    const target = ensureString(this.flags['promote-to-channel']);
     const indexes = this.flags.indexes ? '--indexes' : '';
     const xz = this.flags.xz ? '--xz' : '--no-xz';
-    const targets = this.flags.targets ? (['--targets', ...ensureArray(this.flags.targets)] as string[]) : [];
-    const { sha, version } = await this.determineShaAndVersion(cli);
+    const { sha, version } = await determineShaAndVersion(
+      cli,
+      this.flags['promote-from-channel'],
+      this.flags.sha,
+      this.flags.version
+    );
 
-    const platforms = asArray(this.flags.platform, []).map((p: string) => `--${p}`);
+    const platforms = this.flags.platform.map((p) => `--${p}`);
 
     if (!this.flags.dryrun) {
       const oclifPlugin = await PluginCommand.create({
@@ -130,19 +141,19 @@ export default class Promote extends SfdxCommand {
           '--channel',
           target,
           '--max-age',
-          `${maxAge}`,
+          this.flags['max-age'].toString(),
           ...platforms,
-          ...targets,
+          ...this.flags['architecture-target'],
           indexes,
           xz,
         ],
       }) as ShellString;
-      this.ux.log(results.stdout);
+      this.log(results.stdout);
     } else if (!this.flags.json) {
       this.log(
         messages.getMessage(
           'DryRunMessage',
-          [cli, version, sha, target, ensureArray(this.flags.platform).join(', ')].map((s) => bold(s))
+          [cli, version, sha, target, this.flags.platform.join(', ')].map((s) => bold(s))
         )
       );
     }
@@ -152,33 +163,8 @@ export default class Promote extends SfdxCommand {
       target,
       sha,
       version,
-      platforms: ensureArray(this.flags.platform),
+      platforms: this.flags.platform,
     };
-  }
-
-  /**
-   * Based on which flag was provided, locate the sha and version in S3 that will be used in the promote
-   *
-   * when candidate channel flag present, find sha a version via the channel for candidate
-   * when version flag present, find the sha from version subfolders with the most recent modified date
-   * when sha flag is present, find the version that owns the subfolder named as sha value
-   *
-   * @param cli
-   * @private
-   */
-  private async determineShaAndVersion(cli: CLI): Promise<{ sha: string; version: string }> {
-    if (this.flags.candidate) {
-      const manifest = await findManifestForCandidate(cli, this.flags.candidate as Channel);
-      return { sha: manifest.sha, version: manifest.version };
-    } else if (this.flags.version) {
-      const sha = await this.findShaForVersion(cli, ensureString(this.flags.version));
-      return { sha, version: ensureString(this.flags.version) };
-    } else {
-      const sha = ensureString(this.flags.sha);
-      const version = await this.findVersionForSha(cli, sha);
-      return { sha, version };
-    }
-    throw new SfError(messages.getMessage('CouldNotDetermineShaAndVersion'));
   }
 
   /**
@@ -187,101 +173,21 @@ export default class Promote extends SfdxCommand {
    * @private
    */
   private validateFlags(): void {
-    // requires one of the following flags
-    if (!this.flags.version && !this.flags.sha && !this.flags.candidate) {
-      throw new SfError(messages.getMessage('MissingSourceOfPromote'));
-    }
     // cannot promote when channel names are the same
-    if (this.flags.candidate && this.flags.candidate === this.flags.target) {
+    if (this.flags['promote-from-channel'] && this.flags['promote-from-channel'] === this.flags['promote-to-channel']) {
       throw new SfError(messages.getMessage('CannotPromoteToSameChannel'));
     }
     // make sure necessary runtime dependencies are present
     const deps = verifyDependencies(
       this.flags,
       (dep) => dep.name.startsWith('AWS'),
-      (args: Flags) => !args.dryrun
+      (args: typeof this.flags) => !args.dryrun
     );
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
       const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
       throw new SfError(messages.getMessage(errType), errType, missing);
     }
-  }
-
-  /**
-   * find the sha that was uploaded most recently for the named version
-   *
-   * @param cli
-   * @param version
-   * @private
-   */
-  private async findShaForVersion(cli: CLI, version: string): Promise<string> {
-    const amazonS3 = new AmazonS3({ cli });
-    const versions = await amazonS3.listCommonPrefixes('versions');
-    const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
-    if (foundVersion) {
-      this.logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
-      const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
-      this.logger.debug(`Looking for version ${version} for cli ${cli} shas. Found ${versionShas.length} entries`);
-      const manifestForMostRecentSha = (
-        (
-          await Promise.all(
-            versionShas.map(async (versionSha) => {
-              const versionShaContents = (await amazonS3.listKeyContents(
-                versionSha.Prefix
-              )) as unknown as VersionShaContents[];
-              return versionShaContents.map((content) => ({
-                ...content,
-                ...{ LastModifiedDate: new Date(content.LastModified) },
-              }));
-            })
-          )
-        ).flat() as VersionShaContents[]
-      )
-        .filter((content) => content.Key.includes('manifest'))
-        .sort((left, right) => right.LastModifiedDate.getMilliseconds() - left.LastModifiedDate.getMilliseconds())
-        .find((content) => content);
-      if (manifestForMostRecentSha) {
-        const manifest = await amazonS3.getObject({
-          Key: manifestForMostRecentSha.Key,
-          ResponseContentType: 'application/json',
-        });
-        this.logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
-        const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
-        return json.sha;
-      }
-    }
-    const error = new SfError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
-    this.logger.debug(error);
-    throw error;
-  }
-
-  /**
-   * find the version that owns the named sha
-   *
-   * @param cli
-   * @param sha
-   * @private
-   */
-  private async findVersionForSha(cli: CLI, sha: string): Promise<string> {
-    const amazonS3 = new AmazonS3({ cli });
-    const foundVersion = (
-      await Promise.all(
-        (
-          await amazonS3.listCommonPrefixes('versions')
-        ).map(async (version) => amazonS3.listCommonPrefixes(version.Prefix))
-      )
-    )
-      .flat()
-      .find((s) => s.Prefix.replace(/\/$/, '').endsWith(sha));
-    if (foundVersion) {
-      // Prefix looks like this "media/salesforce-cli/sf/versions/0.0.10/1d4b10d/",
-      // when reversed after split version number should occupy entry 1 of the array
-      return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
-    }
-    const error = new SfError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
-    this.logger.debug(error);
-    throw error;
   }
 }
 
@@ -295,4 +201,112 @@ export default class Promote extends SfdxCommand {
 const findManifestForCandidate = async (cli: CLI, channel: Channel): Promise<S3Manifest> => {
   const amazonS3 = new AmazonS3({ cli, channel });
   return amazonS3.getManifestFromChannel(channel);
+};
+
+/**
+ * find the version that owns the named sha
+ *
+ * @param cli
+ * @param sha
+ * @private
+ */
+const findVersionForSha = async (cli: CLI, sha: string): Promise<string> => {
+  const amazonS3 = new AmazonS3({ cli });
+  const foundVersion = (
+    await Promise.all(
+      (
+        await amazonS3.listCommonPrefixes('versions')
+      ).map(async (version) => amazonS3.listCommonPrefixes(version.Prefix))
+    )
+  )
+    .flat()
+    .find((s) => s.Prefix.replace(/\/$/, '').endsWith(sha));
+  if (foundVersion) {
+    // Prefix looks like this "media/salesforce-cli/sf/versions/0.0.10/1d4b10d/",
+    // when reversed after split version number should occupy entry 1 of the array
+    return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
+  }
+  const error = new SfError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
+  const logger = Logger.childFromRoot('Promote.findVersionForSha');
+  logger.debug(error);
+  throw error;
+};
+
+/**
+ * Based on which flag was provided, locate the sha and version in S3 that will be used in the promote
+ *
+ * when candidate channel flag present, find sha a version via the channel for candidate
+ * when version flag present, find the sha from version subfolders with the most recent modified date
+ * when sha flag is present, find the version that owns the subfolder named as sha value
+ *
+ * @param cli
+ * @private
+ */
+const determineShaAndVersion = async (
+  cli: CLI,
+  candidate?: string,
+  version?: string,
+  sha?: string
+): Promise<{ sha: string; version: string }> => {
+  if (candidate) {
+    const manifest = await findManifestForCandidate(cli, candidate as Channel);
+    return { sha: manifest.sha, version: manifest.version };
+  } else if (version) {
+    const shaFromVersion = await findShaForVersion(cli, ensureString(version));
+    return { sha: shaFromVersion, version: ensureString(version) };
+  } else if (sha) {
+    ensureString(sha);
+    const versionFromSha = await findVersionForSha(cli, sha);
+    return { sha, version: versionFromSha };
+  }
+  throw new SfError(messages.getMessage('CouldNotDetermineShaAndVersion'));
+};
+
+/**
+ * find the sha that was uploaded most recently for the named version
+ *
+ * @param cli
+ * @param version
+ * @private
+ */
+const findShaForVersion = async (cli: CLI, version: string): Promise<string> => {
+  const logger = Logger.childFromRoot('Promote.findShaForVersion');
+  const amazonS3 = new AmazonS3({ cli });
+  const versions = await amazonS3.listCommonPrefixes('versions');
+  const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
+  if (foundVersion) {
+    logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
+    const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
+    logger.debug(`Looking for version ${version} for cli ${cli} shas. Found ${versionShas.length} entries`);
+    const manifestForMostRecentSha = (
+      (
+        await Promise.all(
+          versionShas.map(async (versionSha) => {
+            const versionShaContents = (await amazonS3.listKeyContents(
+              versionSha.Prefix
+            )) as unknown as VersionShaContents[];
+            return versionShaContents.map((content) => ({
+              ...content,
+              ...{ LastModifiedDate: new Date(content.LastModified) },
+            }));
+          })
+        )
+      ).flat() as VersionShaContents[]
+    )
+      .filter((content) => content.Key.includes('manifest'))
+      .sort((left, right) => right.LastModifiedDate.getMilliseconds() - left.LastModifiedDate.getMilliseconds())
+      .find((content) => content);
+    if (manifestForMostRecentSha) {
+      const manifest = await amazonS3.getObject({
+        Key: manifestForMostRecentSha.Key,
+        ResponseContentType: 'application/json',
+      });
+      logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
+      const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
+      return json.sha;
+    }
+  }
+  const error = new SfError(messages.getMessage('CouldNotLocateShaForVersion', [version]));
+  logger.debug(error);
+  throw error;
 };

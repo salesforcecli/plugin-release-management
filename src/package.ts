@@ -92,9 +92,9 @@ export class Package extends AsyncOptionalCreatable {
   private nextVersion: string;
   private registry: Registry;
 
-  public constructor(location: string) {
+  public constructor(opts: { location: string }) {
     super();
-    this.location = location || pwd().stdout;
+    this.location = opts?.location ?? pwd().stdout;
     this.registry = new Registry();
   }
 

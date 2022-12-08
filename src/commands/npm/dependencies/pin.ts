@@ -4,39 +4,44 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+/* eslint-disable sf-plugin/command-example */
+
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { ChangedPackageVersions, Package } from '../../../package';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.dependencies.pin');
 
-export default class Pin extends SfdxCommand {
+export default class Pin extends SfCommand<ChangedPackageVersions> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
-  public static readonly flagsConfig: FlagsConfig = {
-    dryrun: flags.boolean({
+
+  public static readonly flags = {
+    dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      description: messages.getMessage('flags.dryrun'),
+      summary: messages.getMessage('flags.dryrun'),
     }),
-    tag: flags.string({
+    tag: Flags.string({
       char: 't',
-      description: messages.getMessage('flags.tag'),
+      summary: messages.getMessage('flags.tag'),
       default: 'latest',
     }),
   };
 
   public async run(): Promise<ChangedPackageVersions> {
+    const { flags } = await this.parse(Pin);
     const packageJson = await Package.create();
-    const pkg = packageJson.pinDependencyVersions(this.flags.tag as string);
+    const pkg = packageJson.pinDependencyVersions(flags.tag);
 
-    if (this.flags.dryrun) {
+    if (flags.dryrun) {
       this.warn('Running in --dryrun mode. No changes will be written to the package.json.');
     } else {
       packageJson.writePackageJson();
     }
 
-    this.ux.table(pkg, {
+    this.table(pkg, {
       name: { header: 'Name' },
       version: { header: 'Version' },
       tag: { header: 'Tag' },

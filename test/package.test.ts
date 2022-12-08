@@ -46,7 +46,7 @@ describe('Package', () => {
 
     it('should read the package.json in the package location', async () => {
       const packageDir = path.join('my', 'project', 'dir');
-      const pkg = await Package.create(packageDir);
+      const pkg = await Package.create({ location: packageDir });
       const pJson = await pkg.readPackageJson();
       expect(pJson).to.deep.equal({
         name: pkgName,

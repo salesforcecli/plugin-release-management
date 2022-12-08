@@ -9,10 +9,9 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs/promises';
 import { parseJsonMap } from '@salesforce/kit';
-import { FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { CliUx } from '@oclif/core';
-import { SchemaUtils } from './collect';
+import { getExistingSchemaFiles, getLatestSchemaFiles, deepEqual } from './collect';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'cli.schemas.compare', [
@@ -27,16 +26,17 @@ type Result = {
 };
 type Results = Record<string, Result>;
 
-export default class Compare extends SfdxCommand {
+export default class Compare extends SfCommand<Results> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {};
+  public static readonly flags = {};
 
   public async run(): Promise<Results> {
     // The "existing schema" is the schema that is stored at the CLI level
-    const existing = await SchemaUtils.getExistingSchemaFiles();
+    const existing = await getExistingSchemaFiles();
     // The "latest schema" is the schema that is found in the node_modules
-    const latest = await SchemaUtils.getLatestSchemaFiles();
+    const latest = await getLatestSchemaFiles();
 
     // If there are more latest schema than existing schema, that means that new
     // schema was added without also being added at the CLI level.
@@ -64,7 +64,7 @@ export default class Compare extends SfdxCommand {
             ]);
             const fileContents = parseJsonMap(fileData, file);
             const correspondingFileContents = parseJsonMap(correspondingFileData, correspondingFile);
-            const matches = SchemaUtils.deepEqual(fileContents, correspondingFileContents);
+            const matches = deepEqual(fileContents, correspondingFileContents);
             return [file, { correspondingFile, matches }];
           } else {
             return [
@@ -80,18 +80,16 @@ export default class Compare extends SfdxCommand {
       )
     );
 
-    if (!this.flags.json) {
-      const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>(
-        (x, [file, d]) => x.concat(Object.assign({ file }, d)),
-        []
-      );
-      const columns = {
-        file: { header: 'File' },
-        correspondingFile: { header: 'Corresponding File' },
-        matches: { header: 'Matches?' },
-      };
-      CliUx.ux.table(data, columns);
-    }
+    const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>(
+      (x, [file, d]) => x.concat(Object.assign({ file }, d)),
+      []
+    );
+    const columns = {
+      file: { header: 'File' },
+      correspondingFile: { header: 'Corresponding File' },
+      matches: { header: 'Matches?' },
+    };
+    this.table(data, columns);
 
     const hasErrors = Object.values(results).some((result) => result.matches === false);
     if (hasErrors) {

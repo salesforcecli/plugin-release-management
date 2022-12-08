@@ -6,7 +6,7 @@
  */
 import * as os from 'os';
 import { Messages } from '@salesforce/core';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { arrayWithDeprecation, Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
 import { bold, cyan, green } from 'chalk';
@@ -17,51 +17,53 @@ import { meetsVersionCriteria, maxVersionBumpFlag, getOwnerAndRepo, BumpType } f
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
 
-export default class Consolidate extends SfdxCommand {
+export default class Consolidate extends SfCommand<void> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
+
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
+  public static readonly flags = {
     'max-version-bump': maxVersionBumpFlag,
-    'base-branch': flags.string({
-      description: messages.getMessage('baseBranch'),
+    'base-branch': Flags.string({
+      summary: messages.getMessage('baseBranch'),
       char: 'b',
       default: 'main',
       required: true,
     }),
-    'target-branch': flags.string({
-      description: messages.getMessage('targetBranch'),
+    'target-branch': Flags.string({
+      summary: messages.getMessage('targetBranch'),
       char: 't',
       default: 'consolidate-dependabot',
       required: true,
     }),
-    ignore: flags.array({
-      description: messages.getMessage('ignore'),
-      default: [],
+    ignore: arrayWithDeprecation({
+      summary: messages.getMessage('ignore'),
     }),
-    dryrun: flags.boolean({
-      description: messages.getMessage('dryrun'),
+    dryrun: Flags.boolean({
+      summary: messages.getMessage('dryrun'),
       char: 'd',
       default: false,
     }),
-    'no-pr': flags.boolean({
-      description: messages.getMessage('noPR'),
+    'no-pr': Flags.boolean({
+      summary: messages.getMessage('noPR'),
       default: false,
     }),
-    owner: flags.string({
-      description: messages.getMessage('owner'),
+    owner: Flags.string({
+      summary: messages.getMessage('owner'),
       char: 'o',
     }),
-    repo: flags.string({
-      description: messages.getMessage('repo'),
+    repo: Flags.string({
+      summary: messages.getMessage('repo'),
       char: 'r',
       dependsOn: ['owner'],
     }),
   };
 
   public async run(): Promise<void> {
-    const baseRepoObject = await getOwnerAndRepo(this.flags.owner as string, this.flags.repo as string);
-    const baseBranch = ensureString(this.flags['base-branch']);
-    const targetBranch = ensureString(this.flags['target-branch']);
+    const { flags } = await this.parse(Consolidate);
+    const baseRepoObject = await getOwnerAndRepo(flags.owner, flags.repo);
+    const baseBranch = ensureString(flags['base-branch']);
+    const targetBranch = ensureString(flags['target-branch']);
     const auth = ensureString(new Env().getString('GH_TOKEN'), 'GH_TOKEN is required to be set in the environment');
 
     const octokit = new Octokit({ auth });
@@ -71,18 +73,16 @@ export default class Consolidate extends SfdxCommand {
       (d) =>
         d.state === 'open' &&
         d.user.login === 'dependabot[bot]' &&
-        meetsVersionCriteria(d.title, this.flags['max-version-bump'] as BumpType) &&
-        !this.shouldBeIgnored(d.title)
+        meetsVersionCriteria(d.title, flags['max-version-bump'] as BumpType) &&
+        !flags.ignore.some((i) => d.title.includes(i))
     );
 
-    let prBody = `This PR consolidates all dependabot PRs that are less than or equal to a ${
-      this.flags['max-version-bump'] as string
-    } version bump${os.EOL}${os.EOL}`;
+    let prBody = `This PR consolidates all dependabot PRs that are less than or equal to a ${flags['max-version-bump']} version bump${os.EOL}${os.EOL}`;
     for (const pr of dependabotPRs) {
       prBody += `Closes #${pr.number}${os.EOL}`;
     }
 
-    const prTitle = `Consolidate ${this.flags['max-version-bump'] as string} dependabot PRs`;
+    const prTitle = `Consolidate ${flags['max-version-bump']} dependabot PRs`;
 
     this.log(bold('PR Title:'));
     this.log(prTitle);
@@ -94,7 +94,7 @@ export default class Consolidate extends SfdxCommand {
       this.log(`  ${cyan(pr.head.sha)} [#${pr.number} ${pr.title}]`);
     }
 
-    if (!this.flags.dryrun) {
+    if (!flags.dryrun) {
       try {
         this.exec('git fetch origin');
         this.exec('git fetch -p');
@@ -107,7 +107,7 @@ export default class Consolidate extends SfdxCommand {
           this.exec(`git cherry-pick ${sha} --strategy-option=theirs`);
         }
 
-        if (!this.flags['no-pr']) {
+        if (!flags['no-pr']) {
           this.exec(`git push -u origin ${targetBranch} --no-verify`);
           const response = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
             ...baseRepoObject,
@@ -128,11 +128,6 @@ export default class Consolidate extends SfdxCommand {
         this.error(err);
       }
     }
-  }
-
-  private shouldBeIgnored(title: string): boolean {
-    const ignore = this.flags.ignore as string[];
-    return ignore.some((i) => title.includes(i));
   }
 
   private exec(cmd: string, silent = false): void {

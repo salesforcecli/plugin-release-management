@@ -10,7 +10,7 @@ import * as os from 'os';
 import { exec as execSync } from 'child_process';
 import { promisify } from 'node:util';
 import * as chalk from 'chalk';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import { CLI } from '../../../types';
@@ -20,23 +20,29 @@ const exec = promisify(execSync);
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
 
-export default class SmokeTest extends SfdxCommand {
+export default class SmokeTest extends SfCommand<void> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
+
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    cli: flags.string({
-      description: messages.getMessage('cliFlag'),
+  public static readonly flags = {
+    cli: Flags.string({
+      summary: messages.getMessage('cliFlag'),
       options: Object.values(CLI),
       char: 'c',
       required: true,
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('verboseFlag'),
+    verbose: Flags.boolean({
+      summary: messages.getMessage('verboseFlag'),
     }),
   };
 
+  private verbose: boolean;
+
   public async run(): Promise<void> {
-    const cli = ensure<CLI>(this.flags.cli as CLI);
+    const { flags } = await this.parse(SmokeTest);
+    this.verbose = flags.verbose;
+    const cli = ensure<CLI>(flags.cli as CLI);
     const executables = [path.join('tmp', cli, 'bin', cli)];
     if (cli === CLI.SFDX) {
       executables.push(path.join('tmp', cli, 'bin', CLI.SF));
@@ -56,7 +62,7 @@ export default class SmokeTest extends SfdxCommand {
 
   private async initializeAllCommands(executable: string): Promise<void> {
     await Promise.all(
-      this.flags.verbose
+      this.verbose
         ? (await this.getAllCommands(executable)).map((command) => this.execute(executable, `${command} --help`))
         : (await this.getAllCommands(executable)).map((command) => this.nonVerboseCommandExecution(executable, command))
     );
@@ -82,7 +88,7 @@ export default class SmokeTest extends SfdxCommand {
     try {
       const { stdout } = await exec(command);
       if (!silent) {
-        this.ux.styledHeader(command);
+        this.styledHeader(command);
         this.log(stdout);
       }
       return stdout;

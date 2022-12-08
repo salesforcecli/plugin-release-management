@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { ensureString } from '@salesforce/ts-types';
-import { UX } from '@salesforce/command';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { exec, ShellString } from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
@@ -42,14 +42,14 @@ export interface PackageInfo {
 type PollFunction = () => boolean;
 
 type RepositoryOptions = {
-  ux: UX;
+  ux: Ux;
   useprerelease?: string;
   shouldBePublished?: boolean;
 };
 
 abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   protected options: RepositoryOptions;
-  protected ux: UX;
+  protected ux: Ux;
   protected shouldBePublished: boolean;
   protected env: Env;
   protected registry: Registry;
@@ -141,11 +141,13 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     let found = false;
     let attempts = 0;
     const maxAttempts = 300;
-    const start = isNonTTY ? (msg: string): UX => this.ux.log(msg) : (msg: string): void => this.ux.startSpinner(msg);
+    const start = isNonTTY
+      ? (msg: string): void => this.ux.log(msg)
+      : (msg: string): void => this.ux.spinner.start(msg);
     const update = isNonTTY
-      ? (msg: string): UX => this.ux.log(msg)
-      : (msg: string): void => this.ux.setSpinnerStatus(msg);
-    const stop = isNonTTY ? (msg: string): UX => this.ux.log(msg) : (msg: string): void => this.ux.stopSpinner(msg);
+      ? (msg: string): void => this.ux.log(msg)
+      : (msg: string): string => (this.ux.spinner.status = msg);
+    const stop = isNonTTY ? (msg: string): void => this.ux.log(msg) : (msg: string): void => this.ux.spinner.stop(msg);
 
     start('Polling for new version(s) to become available on npm');
     while (attempts < maxAttempts && !found) {

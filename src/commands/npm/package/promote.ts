@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
@@ -24,29 +24,32 @@ interface Token {
   automation: boolean;
 }
 
-export default class Promote extends SfdxCommand {
+export default class Promote extends SfCommand<void> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
+
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    dryrun: flags.boolean({
+  public static readonly flags = {
+    dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      description: messages.getMessage('dryrun'),
+      summary: messages.getMessage('dryrun'),
     }),
-    target: flags.string({
+    target: Flags.string({
       char: 't',
       default: 'latest',
-      description: messages.getMessage('target'),
+      summary: messages.getMessage('target'),
     }),
-    candidate: flags.string({
+    candidate: Flags.string({
       char: 'c',
-      description: messages.getMessage('candidate'),
+      summary: messages.getMessage('candidate'),
       required: true,
     }),
   };
 
   public async run(): Promise<void> {
-    const pkg = await PackageRepo.create({ ux: this.ux });
+    const { flags } = await this.parse(Promote);
+    const pkg = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
     await pkg.writeNpmToken();
 
     const token = ensureString(new Env().getString('NPM_TOKEN'), 'NPM_TOKEN must be set in the environment');
@@ -60,8 +63,8 @@ export default class Promote extends SfdxCommand {
     }
 
     const tags = pkg.package.npmPackage['dist-tags'];
-    const candidate = ensureString(this.flags.candidate);
-    const target = ensureString(this.flags.target);
+    const candidate = ensureString(flags.candidate);
+    const target = ensureString(flags.target);
 
     if (!tags[candidate]) {
       const errType = 'InvalidTag';
@@ -74,7 +77,7 @@ export default class Promote extends SfdxCommand {
       this.log();
     }
 
-    if (!this.flags.dryrun) {
+    if (!flags.dryrun) {
       exec(`npm dist-tag add ${pkg.name}@${tags[candidate]} ${target} --json`);
     }
   }

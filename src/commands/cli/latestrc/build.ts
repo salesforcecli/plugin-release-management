@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { exec, ExecOptions } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -18,46 +18,48 @@ import { PackageRepo } from '../../../repository';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.latestrc.build');
 
-export default class build extends SfdxCommand {
+export default class build extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly flagsConfig: FlagsConfig = {
-    rctag: flags.string({
-      description: messages.getMessage('flags.rctag'),
+  public static readonly flags = {
+    rctag: Flags.string({
+      summary: messages.getMessage('flags.rctag'),
       default: 'latest-rc',
     }),
-    'build-only': flags.boolean({
-      description: messages.getMessage('flags.buildOnly'),
+    'build-only': Flags.boolean({
+      summary: messages.getMessage('flags.buildOnly'),
       default: false,
     }),
-    resolutions: flags.boolean({
-      description: messages.getMessage('flags.resolutions'),
+    resolutions: Flags.boolean({
+      summary: messages.getMessage('flags.resolutions'),
       default: true,
       allowNo: true,
     }),
-    only: flags.array({
-      description: messages.getMessage('flags.only'),
+    only: arrayWithDeprecation({
+      summary: messages.getMessage('flags.only'),
     }),
-    'pinned-deps': flags.boolean({
-      description: messages.getMessage('flags.pinnedDeps'),
+    'pinned-deps': Flags.boolean({
+      summary: messages.getMessage('flags.pinnedDeps'),
       default: true,
       allowNo: true,
     }),
-    patch: flags.boolean({
-      description: messages.getMessage('flags.patch'),
+    patch: Flags.boolean({
+      summary: messages.getMessage('flags.patch'),
     }),
-    snapshot: flags.boolean({
-      description: messages.getMessage('flags.snapshot'),
+    snapshot: Flags.boolean({
+      summary: messages.getMessage('flags.snapshot'),
     }),
-    schema: flags.boolean({
-      description: messages.getMessage('flags.schema'),
+    schema: Flags.boolean({
+      summary: messages.getMessage('flags.schema'),
     }),
   };
 
   public async run(): Promise<void> {
     let auth: string;
+    const { flags } = await this.parse(build);
 
-    const pushChangesToGitHub = !this.flags['build-only'];
+    const pushChangesToGitHub = !flags['build-only'];
 
     if (pushChangesToGitHub) {
       auth = ensureString(
@@ -67,12 +69,12 @@ export default class build extends SfdxCommand {
     }
 
     // get the current version and implement the patch version for a default rc build
-    const repo = await PackageRepo.create({ ux: this.ux });
+    const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
-    const nextRCVersion = repo.package.getNextRCVersion(this.flags.rctag as string, this.flags.patch as boolean);
+    const nextRCVersion = repo.package.getNextRCVersion(flags.rctag, flags.patch);
     repo.nextVersion = nextRCVersion;
 
-    this.ux.log(`starting on main and will checkout ${repo.nextVersion}`);
+    this.log(`starting on main and will checkout ${repo.nextVersion}`);
 
     // start the latest-rc build process on a clean main branch
     this.exec('git checkout main');
@@ -80,15 +82,13 @@ export default class build extends SfdxCommand {
     this.exec(`git checkout -b ${nextRCVersion}`);
 
     // bump the version in the pjson to the new latest-rc
-    this.ux.log(`setting the version to ${nextRCVersion}`);
+    this.log(`setting the version to ${nextRCVersion}`);
     repo.package.setNextVersion(nextRCVersion);
     repo.package.packageJson.version = nextRCVersion;
 
-    const only = this.flags.only as string[];
-
-    if (only) {
-      this.ux.log(`bumping the following dependencies only: ${only.join(', ')}`);
-      const bumped = repo.package.bumpDependencyVersions(only);
+    if (flags.only) {
+      this.log(`bumping the following dependencies only: ${flags.only.join(', ')}`);
+      const bumped = repo.package.bumpDependencyVersions(flags.only);
 
       if (!bumped.length) {
         throw new SfError(
@@ -97,14 +97,14 @@ export default class build extends SfdxCommand {
       }
     } else {
       // bump resolution deps
-      if (this.flags.resolutions) {
-        this.ux.log('bumping resolutions in the package.json to their "latest"');
+      if (flags.resolutions) {
+        this.log('bumping resolutions in the package.json to their "latest"');
         repo.package.bumpResolutions('latest');
       }
 
       // pin the pinned dependencies
-      if (this.flags['pinned-deps']) {
-        this.ux.log('pinning dependencies in pinnedDependencies to "latest-rc"');
+      if (flags['pinned-deps']) {
+        this.log('pinning dependencies in pinnedDependencies to "latest-rc"');
         repo.package.pinDependencyVersions('latest-rc');
       }
     }
@@ -114,13 +114,13 @@ export default class build extends SfdxCommand {
     // streamline the lockfile
     this.exec('npx yarn-deduplicate');
 
-    if (this.flags.snapshot) {
-      this.ux.log('updating snapshots');
+    if (flags.snapshot) {
+      this.log('updating snapshots');
       this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`, { silent: false });
     }
 
-    if (this.flags.schema) {
-      this.ux.log('updating schema');
+    if (flags.schema) {
+      this.log('updating schema');
       this.exec('sf-release cli:schemas:collect', { silent: false });
     }
 

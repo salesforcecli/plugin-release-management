@@ -6,7 +6,7 @@
  */
 
 import { EOL } from 'os';
-import { FlagsConfig, SfdxCommand } from '@salesforce/command';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { CliUx } from '@oclif/core';
 import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
@@ -14,20 +14,22 @@ import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'repositories');
 
-export default class Repositories extends SfdxCommand {
+export default class Repositories extends SfCommand<RepositoryInfo[]> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(EOL);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  public static readonly flagsConfig: FlagsConfig = {
+  public static readonly flags = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(CliUx.ux.table.flags() as any),
   };
 
   public async run(): Promise<RepositoryInfo[]> {
+    const { flags } = await this.parse(Repositories);
     const repositories = await retrieveKnownRepositories();
 
-    if (!this.flags.json) {
+    if (!flags.json) {
       CliUx.ux.table(
         repositories,
         {
@@ -42,7 +44,7 @@ export default class Repositories extends SfdxCommand {
         {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           printLine: this.log.bind(this),
-          ...this.flags, // parsed flags
+          ...flags, // parsed flags
         }
       );
     }

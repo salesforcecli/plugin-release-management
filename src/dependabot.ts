@@ -6,7 +6,7 @@
  */
 import * as fs from 'fs';
 import { diff, ReleaseType } from 'semver';
-import { flags } from '@salesforce/command';
+import { Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { parseJson } from '@salesforce/kit';
 import { ensureString, isString } from '@salesforce/ts-types';
@@ -30,7 +30,7 @@ export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): b
   return inclusionMap[maxVersionBump].includes(bumpType);
 };
 
-export const maxVersionBumpFlag = flags.enum({
+export const maxVersionBumpFlag = Flags.string({
   description: messages.getMessage('maxVersionBump'),
   char: 'm',
   options: ['major', 'minor', 'patch'],
