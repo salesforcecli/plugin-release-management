@@ -269,7 +269,7 @@ export class Package extends AsyncOptionalCreatable {
 
     // TODO: Add support for "alpha tags" here
     const currentVersion = semver.parse(versions[tag]);
-    const nextVersion = isPatch ? semver.inc(currentVersion, 'patch') : semver.inc(currentVersion, 'minor');
+    const nextVersion = semver.inc(currentVersion, isPatch ? 'patch' : 'minor');
 
     return [currentVersion.version, nextVersion];
   }
