@@ -16,7 +16,7 @@ import { Messages, SfError } from '@salesforce/core';
 import { PackageRepo } from '../../../repository';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.rc.build');
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.release.build');
 
 export default class build extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');

@@ -111,7 +111,7 @@
           "install": {
             "description": "utilities for CLI installation"
           },
-          "rc": {
+          "release": {
             "description": "utilities for building CLI releases"
           },
           "schemas": {
