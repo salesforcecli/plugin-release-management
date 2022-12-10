@@ -1,3 +1,12 @@
+## [3.7.2](https://github.com/salesforcecli/plugin-release-management/compare/3.7.1...3.7.2) (2022-12-10)
+
+
+### Bug Fixes
+
+* **deps:** bump got from 11.8.5 to 11.8.6 ([356d4b5](https://github.com/salesforcecli/plugin-release-management/commit/356d4b55805b169e37b2ad862a9f9236d65e2c7f))
+
+
+
 ## [3.7.1](https://github.com/salesforcecli/plugin-release-management/compare/3.7.0...3.7.1) (2022-12-10)
 
 
