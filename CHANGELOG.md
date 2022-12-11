@@ -1,3 +1,12 @@
+## [3.7.3](https://github.com/salesforcecli/plugin-release-management/compare/3.7.2...3.7.3) (2022-12-11)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/plugin-trust from 2.1.0 to 2.2.1 ([780cf3a](https://github.com/salesforcecli/plugin-release-management/commit/780cf3a24e4789a1f4ee745af281c620c302f456))
+
+
+
 ## [3.7.2](https://github.com/salesforcecli/plugin-release-management/compare/3.7.1...3.7.2) (2022-12-10)
 
 
