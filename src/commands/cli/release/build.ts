@@ -26,7 +26,6 @@ export default class build extends SfCommand<void> {
   public static readonly flags = {
     'start-from-npm-dist-tag': Flags.string({
       summary: messages.getMessage('flags.startFromNpmDistTag'),
-      // default: 'latest-rc', // TODO: Will need to update this in GHA before next RC. `exactlyOne` does not work wellwith defaults
       char: 'd',
       aliases: ['rctag'],
       deprecateAliases: true,
@@ -215,7 +214,6 @@ export default class build extends SfCommand<void> {
         repo: repoName,
         head: nextVersion,
         base,
-        // TODO: Will need to update the "Tag kickoff" that is looking for this specific string
         title: `Release PR for ${nextVersion}`,
         body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
       });
