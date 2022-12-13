@@ -264,20 +264,12 @@ export class Package extends AsyncOptionalCreatable {
       .filter(Boolean); // remove falsy values, in this case the `undefined` if version did not change
   }
 
-  public getVersionsForTag(tag: string, isPatch = false): string[] {
-    const version = semver.valid(tag) ? tag : this.getDistTags(this.packageJson.name)[tag];
-    const currentVersion = semver.parse(version);
+  public determineNextVersion(isPatch = false, prerelease?: string): string {
+    const currentVersion = this.packageJson.version;
 
-    if (!currentVersion) {
-      throw new SfError(`Unable to parse valid semver from '${tag}'`);
-    }
+    const releaseType = prerelease ? 'prerelease' : isPatch ? 'patch' : 'minor';
 
-    const isPrerelease = semver.prerelease(currentVersion);
-    const releaseType = isPrerelease ? 'prerelease' : isPatch ? 'patch' : 'minor';
-
-    const nextVersion = semver.inc(currentVersion, releaseType);
-
-    return [currentVersion.version, nextVersion];
+    return semver.inc(currentVersion, releaseType, prerelease);
   }
 
   public pinDependencyVersions(targetTag: string): ChangedPackageVersions {

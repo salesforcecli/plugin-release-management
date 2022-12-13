@@ -301,81 +301,60 @@ describe('Package', () => {
     });
   });
 
-  describe('getVersionsForTag', () => {
-    beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
-        latest: '1.2.3',
-        dev: '1.2.3-beta.0',
-      });
+  describe('determineNextVersion', () => {
+    it('bumps minor', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion();
+
+      expect(results).to.deep.equal('1.3.0');
     });
 
-    it('bumps minor from dist tag', async () => {
+    it('bumps patch', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
+
       const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('latest');
+      const results = pkg.determineNextVersion(true);
 
-      expect(results).to.deep.equal(['1.2.3', '1.3.0']);
-    });
-
-    it('bumps patch from dist tag', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('latest', true);
-
-      expect(results).to.deep.equal(['1.2.3', '1.2.4']);
-    });
-
-    it('bumps prerelease from dist tag', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('dev');
-
-      expect(results).to.deep.equal(['1.2.3-beta.0', '1.2.3-beta.1']);
-    });
-
-    it('throws an error for invalid tag', async () => {
-      const pkg = await Package.create();
-
-      try {
-        pkg.getVersionsForTag('foo');
-      } catch (err) {
-        expect(err.message).to.deep.equal("Unable to parse valid semver from 'foo'");
-      }
-    });
-
-    it('bumps minor from semver', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('4.5.6');
-
-      expect(results).to.deep.equal(['4.5.6', '4.6.0']);
-    });
-
-    it('bumps patch from semver', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('4.5.6', true);
-
-      expect(results).to.deep.equal(['4.5.6', '4.5.7']);
-    });
-
-    it('bumps prerelease from semver', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('4.5.6-alpha.0');
-
-      expect(results).to.deep.equal(['4.5.6-alpha.0', '4.5.6-alpha.1']);
+      expect(results).to.deep.equal('1.2.4');
     });
 
     it('supports semver with v prefix', async () => {
-      const pkg = await Package.create();
-      const results = pkg.getVersionsForTag('v4.5.6', true);
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: 'v1.2.3' })
+      );
 
-      expect(results).to.deep.equal(['4.5.6', '4.5.7']);
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion();
+
+      expect(results).to.deep.equal('1.3.0');
     });
 
-    it('throws an error for invalid semver', async () => {
-      const pkg = await Package.create();
+    it('bumps prerelease from standard version', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
 
-      try {
-        pkg.getVersionsForTag('1.a.3');
-      } catch (err) {
-        expect(err.message).to.deep.equal("Unable to parse valid semver from '1.a.3'");
-      }
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion(false, 'beta');
+
+      expect(results).to.deep.equal('1.2.4-beta.0');
+    });
+
+    it('bumps prerelease from existing prerelease', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.4-beta.0' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion(false, 'beta');
+
+      expect(results).to.deep.equal('1.2.4-beta.1');
     });
   });
 });
