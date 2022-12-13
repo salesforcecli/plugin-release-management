@@ -73,41 +73,18 @@ export default class build extends SfCommand<void> {
     // I could not get the shelljs.exec config { fatal: true } to actually throw an error, but this works :shrug:
     set('-e');
 
-    let auth: string;
     const { flags } = await this.parse(build);
-
-    if (flags.prerelease === 'true' || flags.prerelease === 'false') {
-      throw new SfError(
-        'The prerelease flag is not a boolean. It should be the name of the prerelease tag, examples: dev, alpha, beta'
-      );
-    }
 
     const pushChangesToGitHub = !flags['build-only'];
 
-    if (pushChangesToGitHub) {
-      auth = ensureString(
-        new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
-        'The GH_TOKEN env var is required to push changes to GitHub. Use the --build-only flag to skip GitHub operations (a manual push will then be needed)'
-      );
-    }
+    const auth = pushChangesToGitHub
+      ? ensureString(
+          new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
+          'The GH_TOKEN env var is required to push changes to GitHub. Use the --build-only flag to skip GitHub operations (a manual push will then be needed)'
+        )
+      : undefined;
 
-    const { ['start-from-npm-dist-tag']: startFromNpmDistTag, ['start-from-github-ref']: startFromGithubRef } = flags;
-
-    let ref: string;
-
-    if (startFromGithubRef) {
-      this.log(`Flag '--start-from-github-ref' passed, switching to '${startFromGithubRef}'`);
-
-      ref = startFromGithubRef;
-    } else {
-      this.log(`Flag '--start-from-npm-dist-tag' passed, looking up version for ${startFromNpmDistTag}`);
-
-      // Classes... I wish this was just a helper function.
-      const temp = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
-      const version = temp.package.getDistTags(temp.package.packageJson.name)[startFromNpmDistTag];
-
-      ref = version;
-    }
+    const ref = await this.getGithubRef(flags['start-from-github-ref'], flags['start-from-npm-dist-tag']);
 
     // Check out "starting point"
     // Works with sha (detached): "git checkout f476e8e"
@@ -198,12 +175,11 @@ export default class build extends SfCommand<void> {
       this.exec(`git commit -m "chore(release): bump to ${nextVersion}"`);
       this.exec(`git push --set-upstream origin ${branchName} --no-verify`, { silent: false });
 
-      const repoOwner = repo.package.packageJson.repository.split('/')[0];
-      const repoName = repo.package.packageJson.repository.split('/')[1];
+      const [repoOwner, repoName] = repo.package.packageJson.repository.split('/');
 
       // TODO: Review this after prerelease flow is solidified
       const prereleaseDetails =
-        '\n**IMPORTANT:**\nPrereleases work differently than regular releases. Github Actions watches for branches prefixed with `prerelease/`. As long as the `package.json` contains a valid "prerelease tag" (1.2.3-dev.0), a new prerelease will be created for EVERY COMMIT pushed to that branch. If you would like to merge this PR into `main`, simply push one more commit that sets the version in the `package.json` to the version you\'d like to release.';
+        '\n**IMPORTANT:**\nPrereleases work differently than regular releases. Github Actions watches for branches prefixed with `prerelease/`. As long as the `package.json` contains a valid "prerelease tag" (1.2.3-dev.0), a new prerelease will be created for EVERY COMMIT pushed to that branch. If you would like to merge this PR into `main`, simply push one more commit to this branch that sets the version in the `package.json` to the version you\'d like to release.';
 
       // If it is a patch, we will set the PR base to the prefixed branch we pushed earlier
       // The Github Action will watch the `patch/` prefix for changes
@@ -218,6 +194,23 @@ export default class build extends SfCommand<void> {
         body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
       });
     }
+  }
+
+  private async getGithubRef(githubRef: string, distTag: string): Promise<string> {
+    let ref: string;
+    if (githubRef) {
+      this.log(`Flag '--start-from-github-ref' passed, switching to '${githubRef}'`);
+
+      ref = githubRef;
+    } else {
+      this.log(`Flag '--start-from-npm-dist-tag' passed, looking up version for ${distTag}`);
+
+      const temp = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
+      const version = temp.package.getDistTags(temp.package.packageJson.name)[distTag];
+      ref = version;
+    }
+
+    return ref;
   }
 
   private exec(cmd: string, options: ExecOptions = { silent: true }): void {
