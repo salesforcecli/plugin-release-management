@@ -25,19 +25,20 @@
     "alias": []
   },
   {
-    "command": "cli:rc:build",
+    "command": "cli:release:build",
     "plugin": "@salesforce/plugin-release-management",
     "flags": [
-      "base",
       "build-only",
       "json",
       "only",
       "patch",
       "pinned-deps",
-      "rc-tag",
+      "prerelease",
       "resolutions",
       "schema",
-      "snapshot"
+      "snapshot",
+      "start-from-github-ref",
+      "start-from-npm-dist-tag"
     ],
     "alias": ["cli:latestrc:build"]
   },
