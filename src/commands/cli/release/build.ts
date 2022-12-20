@@ -6,14 +6,16 @@
  */
 
 import * as os from 'os';
+import { promisify } from 'node:util';
+import { exec as execSync } from 'child_process';
 import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
-import { exec, ExecOptions, set } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
-import { bold } from 'chalk';
 import { Messages, SfError } from '@salesforce/core';
 import { PackageRepo } from '../../../repository';
+
+const exec = promisify(execSync);
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.release.build');
@@ -70,9 +72,6 @@ export default class build extends SfCommand<void> {
   };
 
   public async run(): Promise<void> {
-    // I could not get the shelljs.exec config { fatal: true } to actually throw an error, but this works :shrug:
-    set('-e');
-
     const { flags } = await this.parse(build);
 
     const pushChangesToGitHub = !flags['build-only'];
@@ -90,7 +89,7 @@ export default class build extends SfCommand<void> {
     // Works with sha (detached): "git checkout f476e8e"
     // Works with remote branch:  "git checkout my-branch"
     // Works with tag (detached): "git checkout 7.174.0"
-    this.exec(`git checkout ${ref}`);
+    await this.exec(`git checkout ${ref}`);
 
     const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
@@ -110,7 +109,7 @@ export default class build extends SfCommand<void> {
     this.log(`Starting from '${ref}' (${currentVersion}) and creating branch '${branchName}'`);
 
     // Create a new branch that matches the next version
-    this.exec(`git switch -c ${branchName}`);
+    await this.exec(`git switch -c ${branchName}`);
 
     if (flags.patch && pushChangesToGitHub) {
       // Since patches can be created from any previous dist-tag or github ref,
@@ -119,7 +118,7 @@ export default class build extends SfCommand<void> {
       // The build-patch.yml GHA will watch for merges into this branch to trigger a patch release
       // TODO: ^ update this GHA reference once it is decided
 
-      this.exec(`git push -u origin ${branchName}`);
+      await this.exec(`git push -u origin ${branchName}`);
     }
 
     // bump the version in the pjson to the next version for this tag
@@ -128,7 +127,7 @@ export default class build extends SfCommand<void> {
     repo.package.packageJson.version = nextVersion;
 
     if (flags.only) {
-      this.log(`bumping the following dependencies only: ${flags.only.join(', ')}`);
+      this.log(`Bumping the following dependencies only: ${flags.only.join(', ')}`);
       const bumped = repo.package.bumpDependencyVersions(flags.only);
 
       if (!bumped.length) {
@@ -139,31 +138,33 @@ export default class build extends SfCommand<void> {
     } else {
       // bump resolution deps
       if (flags.resolutions) {
-        this.log('bumping resolutions in the package.json to their "latest"');
+        this.log('Bumping resolutions in the package.json to their "latest"');
         repo.package.bumpResolutions('latest');
       }
 
       // pin the pinned dependencies
       if (flags['pinned-deps']) {
-        this.log('pinning dependencies in pinnedDependencies to "latest-rc"');
+        this.log('Pinning dependencies in pinnedDependencies to "latest-rc"');
         repo.package.pinDependencyVersions('latest-rc');
       }
     }
     repo.package.writePackageJson();
 
-    this.exec('yarn install');
+    await this.exec('yarn install');
     // streamline the lockfile
-    this.exec('npx yarn-deduplicate');
+    await this.exec('npx yarn-deduplicate');
 
     if (flags.snapshot) {
-      this.log('updating snapshots');
-      this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`, { silent: false });
+      this.log('Updating snapshots');
+      await this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`);
     }
 
     if (flags.schema) {
-      this.log('updating schema');
-      this.exec('sf-release cli:schemas:collect', { silent: false });
+      this.log('Updating schema');
+      await this.exec('sf-release cli:schemas:collect');
     }
+
+    this.log('Updates complete');
 
     if (pushChangesToGitHub) {
       const octokit = new Octokit({ auth });
@@ -171,9 +172,9 @@ export default class build extends SfCommand<void> {
       await this.maybeSetGitConfig(octokit);
 
       // commit package.json/yarn.lock and potentially command-snapshot changes
-      this.exec('git add .');
-      this.exec(`git commit -m "chore(release): bump to ${nextVersion}"`);
-      this.exec(`git push --set-upstream origin ${branchName} --no-verify`, { silent: false });
+      await this.exec('git add .');
+      await this.exec(`git commit -m "chore(release): bump to ${nextVersion}"`);
+      await this.exec(`git push --set-upstream origin ${branchName} --no-verify`);
 
       const [repoOwner, repoName] = repo.package.packageJson.repository.split('/');
 
@@ -213,18 +214,26 @@ export default class build extends SfCommand<void> {
     return ref;
   }
 
-  private exec(cmd: string, options: ExecOptions = { silent: true }): void {
-    this.log(bold(cmd));
-    exec(cmd, options);
+  private async exec(command: string, silent = false): Promise<string> {
+    try {
+      const { stdout } = await exec(command);
+      if (!silent) {
+        this.styledHeader(command);
+        this.log(stdout);
+      }
+      return stdout;
+    } catch (err) {
+      throw new SfError((err as Error).message);
+    }
   }
 
   private async maybeSetGitConfig(octokit: Octokit): Promise<void> {
-    const username = exec('git config user.name', { silent: true }).stdout.trim();
-    const email = exec('git config user.email', { silent: true }).stdout.trim();
+    const username = await this.exec('git config user.name', true);
+    const email = await this.exec('git config user.email', true);
     if (!username || !email) {
       const user = await octokit.request('GET /user');
-      if (!username) this.exec(`git config user.name "${user.data.name}"`);
-      if (!email) this.exec(`git config user.email "${user.data.email}"`);
+      if (!username) await this.exec(`git config user.name "${user.data.name}"`);
+      if (!email) await this.exec(`git config user.email "${user.data.email}"`);
     }
   }
 }
