@@ -1559,10 +1559,10 @@
     "@types/node" "*"
     "@types/normalize-package-data" "*"
 
-"@types/conventional-changelog-preset-loader@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@types/conventional-changelog-preset-loader/-/conventional-changelog-preset-loader-2.3.1.tgz#344eb74c99be007c6dfbf9db8ca6f1ceff11ae06"
-  integrity sha512-J/MAuYQOQcKcLkF2WFR8b8mgsYMUxQKNIhCDsNT8nAi2e78VlNRoS7/n0kUEnoyFoua/ETHuC0F2Rg1e9G6DHg==
+"@types/conventional-changelog-preset-loader@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@types/conventional-changelog-preset-loader/-/conventional-changelog-preset-loader-2.3.2.tgz#bc7575736f1645c63e9abb0c86093d7f4c93f6b3"
+  integrity sha512-+i+9yQr0f/8fH0p6oPiJ3WOv5BVIHzBA2JDwPL0ro4XB2AHbx1npI4cN+GI5rWfVuicu5gxWEC7uUYXx4IX//w==
   dependencies:
     "@types/conventional-changelog-core" "*"
     "@types/conventional-changelog-writer" "*"
