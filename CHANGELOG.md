@@ -1,3 +1,21 @@
+## [3.7.6](https://github.com/salesforcecli/plugin-release-management/compare/3.7.5...3.7.6) (2022-12-31)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 1.22.0 to 1.23.0 ([a933e9e](https://github.com/salesforcecli/plugin-release-management/commit/a933e9eaadd0b10cc2574b5095bbdaffd8663030))
+
+
+
+## [3.7.5](https://github.com/salesforcecli/plugin-release-management/compare/3.7.4...3.7.5) (2022-12-24)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/plugin-trust from 2.2.1 to 2.2.3 ([cfafac6](https://github.com/salesforcecli/plugin-release-management/commit/cfafac67d36b5b0597a323013e25ded0c94db41c))
+
+
+
 ## [3.7.4](https://github.com/salesforcecli/plugin-release-management/compare/3.7.3...3.7.4) (2022-12-17)
 
 
