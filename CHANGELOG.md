@@ -1,3 +1,12 @@
+## [3.7.7](https://github.com/salesforcecli/plugin-release-management/compare/3.7.6...3.7.7) (2023-01-05)
+
+
+### Bug Fixes
+
+* bugs around sha and platform ([#631](https://github.com/salesforcecli/plugin-release-management/issues/631)) ([2af9947](https://github.com/salesforcecli/plugin-release-management/commit/2af9947a6d649003e60a1b179a9fee6e9ad0dad6))
+
+
+
 ## [3.7.6](https://github.com/salesforcecli/plugin-release-management/compare/3.7.5...3.7.6) (2022-12-31)
 
 
