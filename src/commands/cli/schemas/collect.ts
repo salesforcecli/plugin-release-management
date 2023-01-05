@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import * as os from 'os';
 import * as fs from 'fs/promises';
 import * as assert from 'assert';
 import { SfCommand } from '@salesforce/sf-plugins-core';
@@ -55,7 +54,7 @@ export default class Collect extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {};
 
   // eslint-disable-next-line class-methods-use-this

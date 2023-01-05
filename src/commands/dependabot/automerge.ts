@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, camelcase*/
-import * as os from 'os';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
@@ -47,7 +46,7 @@ export default class AutoMerge extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
 
   public static readonly flags = {
     owner: Flags.string({
