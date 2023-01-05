@@ -1,3 +1,12 @@
+## [3.7.9](https://github.com/salesforcecli/plugin-release-management/compare/3.7.8...3.7.9) (2023-01-05)
+
+
+### Bug Fixes
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([cb96e8c](https://github.com/salesforcecli/plugin-release-management/commit/cb96e8c2c77f3a782dc87ff693858c021b18d5cf))
+
+
+
 ## [3.7.8](https://github.com/salesforcecli/plugin-release-management/compare/3.7.7...3.7.8) (2023-01-05)
 
 
