@@ -1,0 +1,26 @@
+{
+  "description": "builds a new release from a designated starting point and optionally creates PR in Github",
+  "examples": [
+    "<%= config.bin %> <%= command.id %>",
+    "<%= config.bin %> <%= command.id %> --patch",
+    "<%= config.bin %> <%= command.id %> --start-from-npm-dist-tag latest-rc --patch",
+    "<%= config.bin %> <%= command.id %> --start-from-github-ref 7.144.0",
+    "<%= config.bin %> <%= command.id %> --start-from-github-ref main",
+    "<%= config.bin %> <%= command.id %> --start-from-github-ref f476e8e",
+    "<%= config.bin %> <%= command.id %> --start-from-github-ref main --prerelease beta",
+    "<%= config.bin %> <%= command.id %> --build-only",
+    "<%= config.bin %> <%= command.id %> --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config"
+  ],
+  "flags": {
+    "startFromNpmDistTag": "the npm dist-tag to start the release from, examples: nightly, latest-rc",
+    "startFromGithubRef": "a Github ref to start the release from, examples: main, 7.144.0, f476e8e",
+    "resolutions": "bump the versions of packages listed in the resolutions section",
+    "pinnedDeps": "bump the versions of the packages listed in the pinnedDependencies section",
+    "only": "only bump the version of the packages passed in, uses latest if version is not provided",
+    "patch": "bump the release as a patch of an existing version, not a new minor version",
+    "prerelease": "name of the prerelease to create, examples: dev, alpha",
+    "buildOnly": "only build the release, do not git add/commit/push",
+    "snapshot": "update the snapshots and commit them to the PR",
+    "schema": "update the schemas and commit them to the PR"
+  }
+}
