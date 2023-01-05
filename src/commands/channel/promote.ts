@@ -119,11 +119,11 @@ export default class Promote extends SfCommand<AnyJson> {
     const { sha, version } = await determineShaAndVersion(
       cli,
       this.flags['promote-from-channel'],
-      this.flags.sha,
-      this.flags.version
+      this.flags.version,
+      this.flags.sha
     );
 
-    const platforms = this.flags.platform.map((p) => `--${p}`);
+    const platforms = this.flags.platform?.map((p) => `--${p}`);
 
     if (!this.flags.dryrun) {
       const oclifPlugin = await PluginCommand.create({
@@ -153,7 +153,7 @@ export default class Promote extends SfCommand<AnyJson> {
       this.log(
         messages.getMessage(
           'DryRunMessage',
-          [cli, version, sha, target, this.flags.platform.join(', ')].map((s) => bold(s))
+          [cli, version, sha, target, this.flags.platform?.join(', ') ?? 'all'].map((s) => bold(s))
         )
       );
     }
