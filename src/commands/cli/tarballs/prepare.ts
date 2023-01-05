@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
 import * as fg from 'fast-glob';
 import { pwd, rm } from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
@@ -23,7 +22,7 @@ export default class Prepare extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     dryrun: Flags.boolean({
       summary: messages.getMessage('dryrun'),

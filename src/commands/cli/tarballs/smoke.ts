@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import * as os from 'os';
 import { exec as execSync } from 'child_process';
 import { promisify } from 'node:util';
 import * as chalk from 'chalk';
@@ -24,7 +23,7 @@ export default class SmokeTest extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.string({
       summary: messages.getMessage('cliFlag'),

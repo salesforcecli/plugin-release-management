@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { EOL } from 'os';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { CliUx } from '@oclif/core';
@@ -17,7 +16,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 export default class Repositories extends SfCommand<RepositoryInfo[]> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(EOL);
+  public static readonly examples = messages.getMessages('examples');
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   public static readonly flags = {

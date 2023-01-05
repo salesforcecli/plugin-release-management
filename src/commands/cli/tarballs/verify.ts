@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as fg from 'fast-glob';
@@ -50,7 +49,7 @@ export default class Verify extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.enum({
       summary: messages.getMessage('cli'),
