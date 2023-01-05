@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-
 import { bold } from 'chalk';
 import { valid as validSemVer } from 'semver';
 import { ShellString } from 'shelljs';
@@ -27,8 +25,8 @@ const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64
 export default class Promote extends SfCommand<AnyJson> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('summary');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static flags = {
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly flags = {
     dryrun: Flags.boolean({
       char: 'd',
       default: false,
@@ -142,8 +140,8 @@ export default class Promote extends SfCommand<AnyJson> {
           target,
           '--max-age',
           this.flags['max-age'].toString(),
-          ...platforms,
-          ...this.flags['architecture-target'],
+          ...(platforms ?? []),
+          ...(this.flags['architecture-target'] ?? []),
           indexes,
           xz,
         ],
