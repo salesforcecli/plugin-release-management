@@ -395,7 +395,7 @@ class Installer extends Method.Base {
 export default class Test extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.string({
       summary: messages.getMessage('cliFlag'),

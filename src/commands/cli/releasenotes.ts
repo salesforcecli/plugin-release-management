@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { ensure, ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -47,7 +46,7 @@ function isNotEmpty(obj: Record<string, unknown>): boolean {
 export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.string({
       summary: messages.getMessage('cliFlag'),

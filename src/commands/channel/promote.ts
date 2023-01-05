@@ -5,19 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-
 import { bold } from 'chalk';
 import { valid as validSemVer } from 'semver';
-import { ShellString } from 'shelljs';
 import { Interfaces } from '@oclif/core';
-
+import { exec } from 'shelljs';
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureString } from '@salesforce/ts-types';
 import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
 import { AmazonS3 } from '../../amazonS3';
 import { verifyDependencies } from '../../dependencies';
-import { PluginCommand } from '../../pluginCommand';
 import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types';
 
 Messages.importMessagesDirectory(__dirname);
@@ -27,8 +23,8 @@ const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64
 export default class Promote extends SfCommand<AnyJson> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('summary');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static flags = {
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly flags = {
     dryrun: Flags.boolean({
       char: 'd',
       default: false,
@@ -126,28 +122,21 @@ export default class Promote extends SfCommand<AnyJson> {
     const platforms = this.flags.platform?.map((p) => `--${p}`);
 
     if (!this.flags.dryrun) {
-      const oclifPlugin = await PluginCommand.create({
-        commandBin: 'oclif',
-        npmName: 'oclif',
-        cliRoot: this.config.root,
-      });
-      const results = oclifPlugin.runPluginCmd({
-        command: 'promote',
-        parameters: [
-          '--version',
-          version,
-          '--sha',
-          sha,
-          '--channel',
-          target,
-          '--max-age',
-          this.flags['max-age'].toString(),
-          ...platforms,
-          ...this.flags['architecture-target'],
-          indexes,
-          xz,
-        ],
-      }) as ShellString;
+      const params = [
+        '--version',
+        version,
+        '--sha',
+        sha,
+        '--channel',
+        target,
+        '--max-age',
+        this.flags['max-age'].toString(),
+        ...(platforms ?? []),
+        ...(this.flags['architecture-target'] ?? []),
+        indexes,
+        xz,
+      ];
+      const results = exec(`yarn oclif promote ${params.join(' ')}`);
       this.log(results.stdout);
     } else if (!this.flags.json) {
       this.log(

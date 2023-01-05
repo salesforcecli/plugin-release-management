@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
 import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { exec, ExecOptions } from 'shelljs';
 import { ensureString } from '@salesforce/ts-types';
@@ -21,7 +20,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 export default class build extends SfCommand<void> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     rctag: Flags.string({
       summary: messages.getMessage('flags.rctag'),

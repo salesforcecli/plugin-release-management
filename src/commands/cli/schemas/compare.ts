@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import * as os from 'os';
 import * as fs from 'fs/promises';
 import { parseJsonMap } from '@salesforce/kit';
 import { SfCommand } from '@salesforce/sf-plugins-core';
@@ -29,7 +28,7 @@ type Results = Record<string, Result>;
 export default class Compare extends SfCommand<Results> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {};
 
   public async run(): Promise<Results> {
