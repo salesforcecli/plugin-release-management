@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "3.7.10",
+  "version": "3.8.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -111,7 +111,7 @@
           "install": {
             "description": "utilities for CLI installation"
           },
-          "latestrc": {
+          "release": {
             "description": "utilities for building CLI releases"
           },
           "schemas": {

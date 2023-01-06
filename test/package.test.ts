@@ -300,4 +300,61 @@ describe('Package', () => {
       expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('1.0.1');
     });
   });
+
+  describe('determineNextVersion', () => {
+    it('bumps minor', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion();
+
+      expect(results).to.deep.equal('1.3.0');
+    });
+
+    it('bumps patch', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion(true);
+
+      expect(results).to.deep.equal('1.2.4');
+    });
+
+    it('supports semver with v prefix', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: 'v1.2.3' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion();
+
+      expect(results).to.deep.equal('1.3.0');
+    });
+
+    it('bumps prerelease from standard version', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.3' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion(false, 'beta');
+
+      expect(results).to.deep.equal('1.2.4-beta.0');
+    });
+
+    it('bumps prerelease from existing prerelease', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.2.4-beta.0' })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.determineNextVersion(false, 'beta');
+
+      expect(results).to.deep.equal('1.2.4-beta.1');
+    });
+  });
 });

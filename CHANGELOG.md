@@ -1,3 +1,19 @@
+# [3.8.0](https://github.com/salesforcecli/plugin-release-management/compare/3.7.10...3.8.0) (2023-01-05)
+
+
+### Bug Fixes
+
+* correct codeowner ([ed64d7c](https://github.com/salesforcecli/plugin-release-management/commit/ed64d7cf87308f1fc6b97a66809a999e1de3f6e6))
+* support other dist-tags ([be2e14b](https://github.com/salesforcecli/plugin-release-management/commit/be2e14b8271d0e0da8b6401dd5b02854e602e7a1))
+
+
+### Features
+
+* support prereleases and allow multiple starting points ([7e59d22](https://github.com/salesforcecli/plugin-release-management/commit/7e59d22d6a106bb232565c1a05e06d6f71178dcf))
+* support semver starting point ([4759f65](https://github.com/salesforcecli/plugin-release-management/commit/4759f65810e75344bc5ea1d4e27969235d3d46d7))
+
+
+
 ## [3.7.10](https://github.com/salesforcecli/plugin-release-management/compare/3.7.9...3.7.10) (2023-01-05)
 
 
