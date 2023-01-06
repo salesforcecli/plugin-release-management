@@ -85,7 +85,7 @@ export default class SmokeTest extends SfCommand<void> {
   private async execute(executable: string, args: string, silent = false): Promise<string> {
     const command = `${executable} ${args}`;
     try {
-      const { stdout } = await exec(command);
+      const { stdout } = await exec(command, { maxBuffer: 1024 * 1024 * 100 });
       if (!silent) {
         this.styledHeader(command);
         this.log(stdout);
