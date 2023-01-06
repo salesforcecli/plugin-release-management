@@ -1,3 +1,12 @@
+## [3.8.1](https://github.com/salesforcecli/plugin-release-management/compare/3.8.0...3.8.1) (2023-01-06)
+
+
+### Bug Fixes
+
+* maxBuffer ([8e2ce13](https://github.com/salesforcecli/plugin-release-management/commit/8e2ce13f1160d6f3a4aa5590091819c1c7233c2c))
+
+
+
 # [3.8.0](https://github.com/salesforcecli/plugin-release-management/compare/3.7.10...3.8.0) (2023-01-05)
 
 
