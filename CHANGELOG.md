@@ -1,3 +1,12 @@
+## [3.8.3](https://github.com/salesforcecli/plugin-release-management/compare/3.8.2...3.8.3) (2023-01-10)
+
+
+### Bug Fixes
+
+* set correct PR head ([#643](https://github.com/salesforcecli/plugin-release-management/issues/643)) ([49e3b35](https://github.com/salesforcecli/plugin-release-management/commit/49e3b35d19bfd8e794e2173e494128ab3382221b))
+
+
+
 ## [3.8.2](https://github.com/salesforcecli/plugin-release-management/compare/3.8.1...3.8.2) (2023-01-10)
 
 
