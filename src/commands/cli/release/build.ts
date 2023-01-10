@@ -181,15 +181,11 @@ export default class build extends SfCommand<void> {
       const prereleaseDetails =
         '\n**IMPORTANT:**\nPrereleases work differently than regular releases. Github Actions watches for branches prefixed with `prerelease/`. As long as the `package.json` contains a valid "prerelease tag" (1.2.3-dev.0), a new prerelease will be created for EVERY COMMIT pushed to that branch. If you would like to merge this PR into `main`, simply push one more commit to this branch that sets the version in the `package.json` to the version you\'d like to release.';
 
-      // If it is a patch, we will set the PR base to the prefixed branch we pushed earlier
-      // The Github Action will watch the `patch/` prefix for changes
-      const base = flags.patch ? `${branchName}` : 'main';
-
       await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
         owner: repoOwner,
         repo: repoName,
         head: nextVersion,
-        base,
+        base: 'main',
         title: `Release PR for ${nextVersion}`,
         body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
       });
