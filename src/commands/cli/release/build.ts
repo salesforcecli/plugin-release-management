@@ -184,7 +184,7 @@ export default class build extends SfCommand<void> {
       await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
         owner: repoOwner,
         repo: repoName,
-        head: nextVersion,
+        head: branchName,
         base: 'main',
         title: `Release PR for ${nextVersion}`,
         body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
