@@ -1,3 +1,12 @@
+## [3.8.2](https://github.com/salesforcecli/plugin-release-management/compare/3.8.1...3.8.2) (2023-01-10)
+
+
+### Bug Fixes
+
+* **rc:** set `base` to `main` when creating a PR ([e6d414c](https://github.com/salesforcecli/plugin-release-management/commit/e6d414c2d1de1a0d4f691cd568617a1c5794abb8))
+
+
+
 ## [3.8.1](https://github.com/salesforcecli/plugin-release-management/compare/3.8.0...3.8.1) (2023-01-06)
 
 
