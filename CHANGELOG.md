@@ -1,3 +1,21 @@
+## [3.8.5](https://github.com/salesforcecli/plugin-release-management/compare/3.8.4...3.8.5) (2023-01-14)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 1.21.5 to 1.22.1 ([1c95969](https://github.com/salesforcecli/plugin-release-management/commit/1c9596997e0aa22428e54c2a9238f3e66b8a8253))
+
+
+
+## [3.8.4](https://github.com/salesforcecli/plugin-release-management/compare/3.8.3...3.8.4) (2023-01-14)
+
+
+### Bug Fixes
+
+* **deps:** bump aws-sdk from 2.1238.0 to 2.1295.0 ([62c8667](https://github.com/salesforcecli/plugin-release-management/commit/62c86678f8b872fdad7089b331c0e2445667714c))
+
+
+
 ## [3.8.3](https://github.com/salesforcecli/plugin-release-management/compare/3.8.2...3.8.3) (2023-01-10)
 
 

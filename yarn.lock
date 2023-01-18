@@ -1328,10 +1328,10 @@
   resolved "https://registry.yarnpkg.com/@salesforce/schemas/-/schemas-1.4.0.tgz#7dff427c8059895d8108176047aee600703c82d6"
   integrity sha512-BJ25uphssN42Zy6kksheFHMTLiR98AAHe/Wxnv0T4dYxtrEbUjSXVAGKZqfewJPFXA4xB5gxC+rQZtfz6xKCFg==
 
-"@salesforce/sf-plugins-core@^1.20.0", "@salesforce/sf-plugins-core@^1.21.5", "@salesforce/sf-plugins-core@^1.9.0":
-  version "1.21.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-1.21.5.tgz#2731bdbcf817eaa104daa35b3f6b677742e571b9"
-  integrity sha512-UZm0/53EmFFCz9uva1WwnbBYslnqgR3XNdk5zf/GlAKr8VmRHPkE0JPa0X2yVfgonxCA95WxUk1jPdAfhjyUsg==
+"@salesforce/sf-plugins-core@^1.20.0", "@salesforce/sf-plugins-core@^1.22.1", "@salesforce/sf-plugins-core@^1.9.0":
+  version "1.22.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-1.22.1.tgz#58c445aa8c72ae7ddd6ec39269ae1d944d059e9b"
+  integrity sha512-UAAi7I753+t9zVJDHMzk81XCsYU5q2kq7aSgFbokdvnnPx45i3NptyaKNCRDeOBxp3eYCuNG6iFZ+xzC+v8cfA==
   dependencies:
     "@oclif/core" "^1.23.1"
     "@salesforce/core" "^3.32.12"
@@ -1340,19 +1340,19 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/ts-sinon@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-sinon/-/ts-sinon-1.4.2.tgz#7b76f80c104c891334b84ad664ab048fd1fbb1ff"
-  integrity sha512-yoNaHdw+5IYUs8Jg/c30AuPG5jhWGR/zdy0G2XmLSzVhf/8duNTbnSl3AWYplCvU/Cz3CFIs1XnjePG0Resxmw==
+"@salesforce/ts-sinon@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-sinon/-/ts-sinon-1.4.4.tgz#ee7039f7eb6c488d58b0a3365e7196e9b1b1ebb4"
+  integrity sha512-27kF+8flAEGGikIrLrGkDiFUCgukhRf2cRhYBbD0ihG8RedsYoFTsEW9gG9VApVgWACyhkEmGICisJl8LRD7Rg==
   dependencies:
-    "@salesforce/ts-types" "^1.7.1"
+    "@salesforce/ts-types" "^1.7.2"
     sinon "^5.1.1"
     tslib "^2.2.0"
 
-"@salesforce/ts-types@^1.5.20", "@salesforce/ts-types@^1.5.21", "@salesforce/ts-types@^1.7.1":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.7.1.tgz#86b0d0c3bfd5c9b1752662a019a3d2f3bc8ff118"
-  integrity sha512-jwZb8fYxbOmEckoJTxG2+5ZEJNJOFxmRJ/FioPnSu4IMFzpK3QbyujfqpHwLfPKHq0xlKRMx+F8QAVVKI/PA4w==
+"@salesforce/ts-types@^1.5.20", "@salesforce/ts-types@^1.5.21", "@salesforce/ts-types@^1.7.1", "@salesforce/ts-types@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.7.2.tgz#ab40399d291c7eca57efc9890daf2fa2632197ec"
+  integrity sha512-eCpWKEb03UCKBJ6Svp0Vwcwt+fG6BQbopO4x5wt6CYeT8Rjt0dbDQicZPmVL59j2qyt3Q4Y4EYsxXUGZmdfvDw==
   dependencies:
     tslib "^2.4.1"
 
@@ -2233,10 +2233,10 @@ aws-sdk-mock@^5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1231.0, aws-sdk@^2.1238.0:
-  version "2.1238.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1238.0.tgz#4d67f7c9f2a3d293b94b6f78a15651e8fd886778"
-  integrity sha512-DCXAj98lFW0y2Ickm0MbXnxzbG5IDrhBXs6Wx+vscrYNFRjy7JGau9HACY8aFoesMQz8PzNmJKR82Dg2NsGvDg==
+aws-sdk@^2.1231.0, aws-sdk@^2.1295.0:
+  version "2.1295.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1295.0.tgz#8ca19c5b9c7740e1f6ad95096feddcd7ca3df301"
+  integrity sha512-HVYoFCyfiL8gzL/c0lSRTg8tWBLfqAEDfwzGe338ww/LahpmC6C07S71SBBIvtGq3dpd7IwEobAbubZDijrA0Q==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3615,10 +3615,10 @@ escodegen@^1.8.1:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-prettier@^8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
-  integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
+eslint-config-prettier@^8.5.0, eslint-config-prettier@^8.6.0:
+  version "8.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.6.0.tgz#dec1d29ab728f4fa63061774e1672ac4e363d207"
+  integrity sha512-bAF0eLpLVqP5oEVUFKpMA+NnRFICwn9X8B5jrR9FcqnYBuPbqWEjTEspPWMj5ye6czoSLDweCzSo3Ko7gGrZaA==
 
 eslint-config-salesforce-license@^0.1.6:
   version "0.1.6"
