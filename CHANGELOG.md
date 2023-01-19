@@ -1,3 +1,12 @@
+## [3.8.6](https://github.com/salesforcecli/plugin-release-management/compare/3.8.5...3.8.6) (2023-01-19)
+
+
+### Bug Fixes
+
+* delete remote branches before release build ([#644](https://github.com/salesforcecli/plugin-release-management/issues/644)) ([99c67f8](https://github.com/salesforcecli/plugin-release-management/commit/99c67f85dd6cafa50e41e9c25590fce51e530251))
+
+
+
 ## [3.8.5](https://github.com/salesforcecli/plugin-release-management/compare/3.8.4...3.8.5) (2023-01-14)
 
 
