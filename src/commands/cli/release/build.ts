@@ -95,7 +95,7 @@ export default class build extends SfCommand<void> {
     // Get the current version for the "starting point"
     const currentVersion = repo.package.packageJson.version;
 
-    // TODO: We might want to check and see if nextVersion exists
+    // TODO: We might want to check and see if nextVersion exists in npm
     // Determine the next version based on if --patch was passed in or if it is a prerelease
     const nextVersion = repo.package.determineNextVersion(flags.patch, flags.prerelease);
     repo.nextVersion = nextVersion;
@@ -104,6 +104,14 @@ export default class build extends SfCommand<void> {
     const branchPrefix = flags.patch ? 'patch/' : flags.prerelease ? 'prerelease/' : '';
 
     const branchName = `${branchPrefix}${nextVersion}`;
+
+    // Ensure branch does not already exist on the remote (origin)
+    // We only look at remote branches since they are likely generated
+    // We do not want to delete a locally built `cli:release:build` branch
+    const remoteBranchExists = await this.exec(`git ls-remote --heads origin ${branchName}`);
+    if (remoteBranchExists) {
+      await this.exec(`git push origin --delete ${branchName}`);
+    }
 
     this.log(`Starting from '${ref}' (${currentVersion}) and creating branch '${branchName}'`);
 
