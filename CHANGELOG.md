@@ -1,3 +1,12 @@
+## [3.8.7](https://github.com/salesforcecli/plugin-release-management/compare/3.8.6...3.8.7) (2023-01-21)
+
+
+### Bug Fixes
+
+* **deps:** bump aws-sdk from 2.1295.0 to 2.1299.0 ([0b90978](https://github.com/salesforcecli/plugin-release-management/commit/0b90978b91a8afde6b1cb6b29e513067785f8d7c))
+
+
+
 ## [3.8.6](https://github.com/salesforcecli/plugin-release-management/compare/3.8.5...3.8.6) (2023-01-19)
 
 
