@@ -108,8 +108,7 @@ export default class build extends SfCommand<void> {
     // Ensure branch does not already exist on the remote (origin)
     // We only look at remote branches since they are likely generated
     // We do not want to delete a locally built `cli:release:build` branch
-    const remoteBranchExists = await this.exec(`git ls-remote --heads origin ${branchName}`);
-    if (remoteBranchExists) {
+    if (pushChangesToGitHub && (await this.exec(`git ls-remote --heads origin ${branchName}`))) {
       await this.exec(`git push origin --delete ${branchName}`);
     }
 
