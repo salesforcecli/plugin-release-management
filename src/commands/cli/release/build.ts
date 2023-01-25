@@ -156,9 +156,12 @@ export default class build extends SfCommand<void> {
     }
     repo.package.writePackageJson();
 
-    await this.exec('yarn install');
-    // streamline the lockfile
+    // Run an install to generate the lock file (skip all pre/post scripts)
+    await this.exec('yarn install --ignore-scripts');
+    // Remove duplicates in the lockfile
     await this.exec('npx yarn-deduplicate');
+    // Run an install with deduplicated dependencies (with scripts)
+    await this.exec('yarn install');
 
     if (flags.snapshot) {
       this.log('Updating snapshots');
