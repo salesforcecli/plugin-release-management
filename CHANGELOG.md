@@ -1,3 +1,12 @@
+## [3.8.9](https://github.com/salesforcecli/plugin-release-management/compare/3.8.8...3.8.9) (2023-01-25)
+
+
+### Bug Fixes
+
+* dedup before scripts ([10c4d46](https://github.com/salesforcecli/plugin-release-management/commit/10c4d467e7e1c938b074f8b3f87807ebae1fdfb8))
+
+
+
 ## [3.8.8](https://github.com/salesforcecli/plugin-release-management/compare/3.8.7...3.8.8) (2023-01-23)
 
 
