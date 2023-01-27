@@ -92,7 +92,8 @@ export default class SmokeTest extends SfCommand<void> {
       }
       return stdout;
     } catch (e) {
-      throw new SfError(`Failed: ${command}`);
+      const err = e as Error;
+      throw new SfError(`Failed: ${command}.\n ${err.message}`);
     }
   }
 }
