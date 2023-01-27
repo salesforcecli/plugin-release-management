@@ -1,3 +1,12 @@
+## [3.8.10](https://github.com/salesforcecli/plugin-release-management/compare/3.8.9...3.8.10) (2023-01-27)
+
+
+### Bug Fixes
+
+* don't swallow `execSync` error ([b244b53](https://github.com/salesforcecli/plugin-release-management/commit/b244b530486a842f38afb82381cf7af4995bf0eb))
+
+
+
 ## [3.8.9](https://github.com/salesforcecli/plugin-release-management/compare/3.8.8...3.8.9) (2023-01-25)
 
 
