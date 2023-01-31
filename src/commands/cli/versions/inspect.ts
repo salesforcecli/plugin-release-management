@@ -167,9 +167,10 @@ export default class Inspect extends SfCommand<Info[]> {
       required: true,
       multiple: true,
     }),
-    cli: Flags.enum({
-      summary: messages.getMessage('cli'),
+    cli: Flags.custom<CLI>({
       options: Object.values(CLI),
+    })({
+      summary: messages.getMessage('cli'),
       default: CLI.SFDX,
       required: true,
     }),
@@ -214,7 +215,7 @@ export default class Inspect extends SfCommand<Info[]> {
   }
 
   private initArchives(): void {
-    const cli = ensure<CLI>(this.flags.cli as CLI);
+    const cli = ensure<CLI>(this.flags.cli);
     const stablePath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable`;
     const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
     this.archives = {} as Archives;
@@ -224,7 +225,7 @@ export default class Inspect extends SfCommand<Info[]> {
           if (p.includes('amd64')) {
             return util.format(p, this.flags.cli);
           } else {
-            return util.format(p, CLI_META[this.flags.cli as CLI].packageName);
+            return util.format(p, CLI_META[this.flags.cli].packageName);
           }
         });
       } else if (channel === Channel.STABLE) {
@@ -278,7 +279,7 @@ export default class Inspect extends SfCommand<Info[]> {
   }
 
   private async inspectNpm(channels: Channel[]): Promise<Info[]> {
-    const cliMeta = CLI_META[this.flags.cli as CLI];
+    const cliMeta = CLI_META[this.flags.cli];
     const npmDir = await mkdir(this.workingDir, 'npm');
     const results: Info[] = [];
     const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);

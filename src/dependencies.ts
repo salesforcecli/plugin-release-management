@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Env } from '@salesforce/kit';
-import { OutputFlags } from '@oclif/core/lib/interfaces';
+import { OutputFlags } from '@oclif/core/lib/interfaces/parser';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Flags = OutputFlags<any>;

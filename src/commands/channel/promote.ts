@@ -50,11 +50,12 @@ export default class Promote extends SfCommand<AnyJson> {
       summary: messages.getMessage('platform'),
       options: ['win', 'macos', 'deb'],
     }),
-    cli: Flags.enum({
+    cli: Flags.custom<CLI>({
+      options: Object.values(CLI),
+    })({
       char: 'c',
       summary: messages.getMessage('cli'),
       required: true,
-      options: Object.values(CLI),
     }),
     sha: Flags.string({
       char: 's',
@@ -108,7 +109,7 @@ export default class Promote extends SfCommand<AnyJson> {
     this.flags = flags;
     this.validateFlags();
     // preparing parameters for call to oclif promote commands
-    const cli = this.flags.cli as CLI;
+    const cli = this.flags.cli;
     const target = ensureString(this.flags['promote-to-channel']);
     const indexes = this.flags.indexes ? '--indexes' : '';
     const xz = this.flags.xz ? '--xz' : '--no-xz';
