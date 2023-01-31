@@ -349,8 +349,8 @@ export class Package extends AsyncOptionalCreatable {
           dependencies?.[name] ||
           devDependencies?.[name] ||
           pinnedDependencies?.includes(name) ||
-          oclif.plugins?.includes[name] ||
-          oclif.devPlugins?.includes[name]
+          oclif.plugins?.includes(name) ||
+          oclif.devPlugins?.includes(name)
         ) {
           throw new SfError(
             'JIT plugins should not be listed in dependencies, devDependencies, pinnedDependencies, oclif.plugins or oclif.devPlugins. '
