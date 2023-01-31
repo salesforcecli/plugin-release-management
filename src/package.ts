@@ -11,7 +11,7 @@ import { CliUx } from '@oclif/core';
 import { exec, pwd } from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
-import { AnyJson, get, Nullable } from '@salesforce/ts-types';
+import { AnyJson, get, isObject, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry';
 
 export type PackageJson = {
@@ -22,6 +22,7 @@ export type PackageJson = {
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
+  jitPlugins?: Record<string, string>;
   resolutions?: Record<string, string>;
   repository?: string;
   homepage?: string;
@@ -166,6 +167,32 @@ export class Package extends AsyncOptionalCreatable {
     });
   }
 
+  public calculatePinnedPackageUpdates(pinnedPackages: PinnedPackage[]): PinnedPackage[] {
+    return pinnedPackages.map((dep) => {
+      const versions = this.getDistTags(dep.name);
+      let tag = dep.tag;
+      // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
+      if (!versions[tag]) {
+        tag = 'latest';
+      }
+
+      // If the version in package.json is greater than the version of the requested tag, then we
+      // assume that this is on purpose - so we don't overwrite it. For example, we might want to
+      // include a latest-rc version for a single plugin but everything else we want latest.
+      let version: string;
+      if (semver.gt(dep.version, versions[tag])) {
+        CliUx.ux.warn(
+          `${dep.name} is currently pinned at ${dep.version} which is higher than ${tag} (${versions[tag]}). Assuming that this is intentional...`
+        );
+        version = dep.version;
+        tag = findKey(versions, (v) => v === version);
+      } else {
+        version = versions[tag];
+      }
+      return { name: dep.name, version, tag, alias: dep.alias };
+    });
+  }
+
   public getDistTags(name: string): Record<string, string> {
     const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
@@ -236,10 +263,10 @@ export class Package extends AsyncOptionalCreatable {
         const [, name, version] = npmPackageRegex.exec(dep);
 
         // We will look for packages in dependencies and resolutions
-        const { dependencies, resolutions } = this.packageJson;
+        const { dependencies, resolutions, jitPlugins } = this.packageJson;
 
         // find dependency in package.json (could be an npm alias)
-        const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions });
+        const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions, ...jitPlugins });
 
         // if a version is not provided, we'll look up the "latest" version
         depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
@@ -255,8 +282,10 @@ export class Package extends AsyncOptionalCreatable {
         // update dependency (or resolution) in package.json
         if (dependencies[depInfo.dependencyName]) {
           this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
-        } else {
+        } else if (resolutions[depInfo.dependencyName]) {
           this.packageJson.resolutions[depInfo.dependencyName] = depInfo.finalVersion;
+        } else {
+          this.packageJson.jitPlugins[depInfo.dependencyName] = depInfo.finalVersion;
         }
 
         return depInfo;
@@ -282,69 +311,54 @@ export class Package extends AsyncOptionalCreatable {
     const { pinnedDependencies, dependencies } = this.packageJson;
     const deps = pinnedDependencies
       .map((d) => {
-        const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
-        const [tag] = tagRegex.exec(d) || [];
-        const name = tag ? d.replace(new RegExp(`@${tag}$`), '') : d;
+        const [name, tag] = getNameAndTag(d);
         if (!dependencies[name]) {
           CliUx.ux.warn(`${name} was not found in the dependencies section of your package.json. Skipping...`);
           return;
         }
         const version = dependencies[name];
-
-        if (version.startsWith('npm:')) {
-          return {
-            name: parseAliasedPackageName(version),
-            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-            alias: name,
-            tag: tag || targetTag,
-          };
-        } else {
-          return {
-            name,
-            version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-            alias: null,
-            tag: tag || targetTag,
-          };
-        }
+        return getPinnedPackage({ name, version, tag, targetTag });
       })
-      .filter((d) => !!d);
+      .filter(isObject);
 
-    const pinnedPackages: PinnedPackage[] = [];
-    deps.forEach((dep) => {
-      // get the 'release' tag version or the version specified by the passed in tag
-      const versions = this.getDistTags(dep.name);
-      let tag = dep.tag;
+    const updatedDeps = this.calculatePinnedPackageUpdates(deps);
 
-      // if tag is 'latest-rc' and there's no latest-rc release for a package, default to latest
-      if (!versions[tag]) {
-        tag = 'latest';
-      }
-
-      // If the version in package.json is greater than the version of the requested tag, then we
-      // assume that this is on purpose - so we don't overwrite it. For example, we might want to
-      // include a latest-rc version for a single plugin but everything else we want latest.
-      let version: string;
-      if (semver.gt(dep.version, versions[tag])) {
-        CliUx.ux.warn(
-          `${dep.name} is currently pinned at ${dep.version} which is higher than ${tag} (${versions[tag]}). Assuming that this is intentional...`
-        );
-        version = dep.version;
-        tag = findKey(versions, (v) => v === version);
+    updatedDeps.forEach((pp) => {
+      if (pp.alias) {
+        this.packageJson.dependencies[pp.alias] = `npm:${pp.name}@${pp.version}`;
       } else {
-        version = versions[tag];
+        this.packageJson.dependencies[pp.name] = pp.version;
       }
-
-      // insert the new hardcoded versions into the dependencies in the project's package.json
-      if (dep.alias) {
-        this.packageJson.dependencies[dep.alias] = `npm:${dep.name}@${version}`;
-      } else {
-        this.packageJson.dependencies[dep.name] = version;
-      }
-      // accumulate information to return
-      pinnedPackages.push({ name: dep.name, version, tag, alias: dep.alias });
     });
+    return updatedDeps;
+  }
 
-    return pinnedPackages;
+  public bumpJit(targetTag = 'latest-rc'): ChangedPackageVersions {
+    // no JIT is ok
+    if (!this.packageJson.jitPlugins) {
+      return;
+    }
+
+    const { jitPlugins, pinnedDependencies, dependencies, devDependencies } = this.packageJson;
+    const jitDeps = Object.entries(jitPlugins)
+      .map(([plugin, version]) => {
+        const [name, tag] = getNameAndTag(plugin);
+        if (dependencies?.[name] || devDependencies?.[name] || pinnedDependencies?.includes(name)) {
+          throw new SfError('jit plugins should not be listed in dependencies, devDependencies or pinnedDependencies');
+        }
+        return getPinnedPackage({ name, version, tag, targetTag });
+      })
+      .filter(isObject);
+
+    const updatedDeps = this.calculatePinnedPackageUpdates(jitDeps);
+    updatedDeps.forEach((pp) => {
+      if (pp.alias) {
+        this.packageJson.jitPlugins[pp.alias] = `npm:${pp.name}@${pp.version}`;
+      } else {
+        this.packageJson.jitPlugins[pp.name] = pp.version;
+      }
+    });
+    return updatedDeps;
   }
 
   /**
@@ -375,3 +389,39 @@ export class Package extends AsyncOptionalCreatable {
     };
   }
 }
+
+const getNameAndTag = (plugin: string): [name: string, tag: string] => {
+  const tagRegex = /(?<=(^@.*?)@)(.*?)$/;
+  const [tag] = tagRegex.exec(plugin) || [];
+  const name = tag ? plugin.replace(new RegExp(`@${tag}$`), '') : plugin;
+  return [name, tag];
+};
+
+/** standardize various plugin formats/targets to a PinnedPackage */
+const getPinnedPackage = ({
+  name,
+  version,
+  tag,
+  targetTag,
+}: {
+  name: string;
+  version: string;
+  tag: string;
+  targetTag: string;
+}): PinnedPackage => {
+  if (version.startsWith('npm:')) {
+    return {
+      name: parseAliasedPackageName(version),
+      version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+      alias: name,
+      tag: tag || targetTag,
+    };
+  } else {
+    return {
+      name,
+      version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+      alias: null,
+      tag: tag || targetTag,
+    };
+  }
+};

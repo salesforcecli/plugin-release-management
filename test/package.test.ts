@@ -33,6 +33,9 @@ describe('Package', () => {
         versions: ['0.0.1', '0.0.5', '1.0.0'],
       });
     });
+    afterEach(() => {
+      $$.restore();
+    });
 
     it('should read the package.json in the current working directory', async () => {
       const pkg = await Package.create();
@@ -69,6 +72,9 @@ describe('Package', () => {
         version: '1.0.0',
         versions: ['0.0.1', '0.0.5', '1.0.0'],
       });
+    });
+    afterEach(() => {
+      $$.restore();
     });
 
     it('should validate that next version is valid', async () => {
@@ -110,7 +116,9 @@ describe('Package', () => {
         versions: ['0.0.1', '0.0.5', '1.0.0'],
       });
     });
-
+    afterEach(() => {
+      $$.restore();
+    });
     it('should set and get the next version', async () => {
       const pkg = await Package.create();
       pkg.setNextVersion('1.1.0');
@@ -127,7 +135,9 @@ describe('Package', () => {
         })
       );
     });
-
+    afterEach(() => {
+      $$.restore();
+    });
     it('should return false if the next version is not listed yet', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
         name: pkgName,
@@ -164,7 +174,9 @@ describe('Package', () => {
         })
       );
     });
-
+    afterEach(() => {
+      $$.restore();
+    });
     it('should find dependency using an npm alias', async () => {
       const pkg = await Package.create();
       const deps = pkg.packageJson.dependencies;
@@ -219,16 +231,21 @@ describe('Package', () => {
           resolutions: {
             '@salesforce/source-deploy-retrieve': '1.0.0',
           },
+          jitPlugins: {
+            '@salesforce/jit-me': '1.0.0',
+          },
         })
       );
       stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
         latest: '9.9.9',
       });
     });
-
+    afterEach(() => {
+      $$.restore();
+    });
     it('should look up latest version if not provided', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['@sf/info', '@salesforce/plugin-config']);
+      const results = pkg.bumpDependencyVersions(['@sf/info', '@salesforce/plugin-config', '@salesforce/jit-me']);
 
       expect(results).to.deep.equal([
         {
@@ -243,6 +260,13 @@ describe('Package', () => {
           packageName: '@salesforce/plugin-config',
           alias: null,
           currentVersion: '1.2.3',
+          finalVersion: '9.9.9',
+        },
+        {
+          dependencyName: '@salesforce/jit-me',
+          packageName: '@salesforce/jit-me',
+          alias: null,
+          currentVersion: '1.0.0',
           finalVersion: '9.9.9',
         },
       ]);
@@ -299,9 +323,162 @@ describe('Package', () => {
 
       expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('1.0.1');
     });
+
+    it('should update jit in package.json', async () => {
+      const pkg = await Package.create();
+      pkg.bumpDependencyVersions(['@salesforce/jit-me@1.0.1']);
+
+      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('1.0.1');
+    });
+  });
+
+  describe('jitPlugins', () => {
+    describe('happy path', () => {
+      beforeEach(() => {
+        stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+          Promise.resolve({
+            name: pkgName,
+            version: '1.0.0',
+            dependencies: {
+              '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
+              '@salesforce/plugin-config': '1.2.3',
+              'left-pad': '1.1.1',
+            },
+            jitPlugins: {
+              '@salesforce/jit-me': '1.0.0',
+              '@salesforce/jit-me-too': '9.9.9',
+            },
+          })
+        );
+        stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
+          latest: '9.9.9',
+          'latest-rc': '9.9.10',
+          pre: '9.9.11',
+        });
+      });
+      it('bumps to the requested version', async () => {
+        const pkg = await Package.create();
+        const results = pkg.bumpJit('pre');
+
+        expect(results).to.deep.equal([
+          {
+            name: '@salesforce/jit-me',
+            tag: 'pre',
+            alias: null,
+            version: '9.9.11',
+          },
+          {
+            name: '@salesforce/jit-me-too',
+            tag: 'pre',
+            alias: null,
+            version: '9.9.11',
+          },
+        ]);
+      });
+
+      it('bumps to latest-rc by default', async () => {
+        const pkg = await Package.create();
+        const results = pkg.bumpJit();
+
+        expect(results).to.deep.equal([
+          {
+            name: '@salesforce/jit-me',
+            tag: 'latest-rc',
+            alias: null,
+            version: '9.9.10',
+          },
+          {
+            name: '@salesforce/jit-me-too',
+            tag: 'latest-rc',
+            alias: null,
+            version: '9.9.10',
+          },
+        ]);
+      });
+
+      it('should update dependencies in package.json', async () => {
+        const pkg = await Package.create();
+        pkg.bumpJit();
+
+        expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('9.9.10');
+        expect(pkg.packageJson.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.10');
+        // no change to other plugins
+        expect(pkg.packageJson.dependencies['@sf/info']).to.equal('npm:@salesforce/plugin-info@2.0.1');
+        expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('1.2.3');
+      });
+    });
+
+    it('bumps to latest when latest-rc does not exist', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({
+          name: pkgName,
+          version: '1.0.0',
+          dependencies: {
+            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
+            '@salesforce/plugin-config': '1.2.3',
+            'left-pad': '1.1.1',
+          },
+          jitPlugins: {
+            '@salesforce/jit-me': '1.0.0',
+            '@salesforce/jit-me-too': '9.9.9',
+          },
+        })
+      );
+      stubMethod($$.SANDBOX, Package.prototype, 'getDistTags').returns({
+        latest: '9.9.9',
+        pre: '9.9.11',
+      });
+
+      const pkg = await Package.create();
+      const results = pkg.bumpJit();
+
+      expect(results).to.deep.equal([
+        {
+          name: '@salesforce/jit-me',
+          tag: 'latest',
+          alias: null,
+          version: '9.9.9',
+        },
+        {
+          name: '@salesforce/jit-me-too',
+          tag: 'latest',
+          alias: null,
+          version: '9.9.9',
+        },
+      ]);
+      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('9.9.9');
+      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.9');
+    });
+
+    it('returns empty when no jit', async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({
+          name: pkgName,
+          version: '1.0.0',
+          dependencies: {
+            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
+            '@salesforce/plugin-config': '1.2.3',
+            'left-pad': '1.1.1',
+          },
+        })
+      );
+
+      const pkg = await Package.create();
+      const results = pkg.bumpJit();
+
+      expect(results).to.be.undefined;
+      expect(pkg.packageJson.jitPlugins).to.be.undefined;
+    });
+
+    afterEach(() => {
+      $$.restore();
+    });
   });
 
   describe('determineNextVersion', () => {
+    afterEach(() => {
+      $$.restore();
+    });
     it('bumps minor', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.2.3' })

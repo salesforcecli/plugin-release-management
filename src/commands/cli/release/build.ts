@@ -54,6 +54,11 @@ export default class build extends SfCommand<void> {
       default: true,
       allowNo: true,
     }),
+    jit: Flags.boolean({
+      summary: messages.getMessage('flags.jit'),
+      default: true,
+      allowNo: true,
+    }),
     patch: Flags.boolean({
       summary: messages.getMessage('flags.patch'),
       exclusive: ['prerelease'],
@@ -152,6 +157,11 @@ export default class build extends SfCommand<void> {
       if (flags['pinned-deps']) {
         this.log('Pinning dependencies in pinnedDependencies to "latest-rc"');
         repo.package.pinDependencyVersions('latest-rc');
+      }
+
+      if (flags.jit) {
+        this.log('Bumping just-in-time plugins to "latest-rc"');
+        repo.package.bumpJit('latest-rc');
       }
     }
     repo.package.writePackageJson();
