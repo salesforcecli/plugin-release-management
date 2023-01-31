@@ -1,3 +1,12 @@
+## [3.8.12](https://github.com/salesforcecli/plugin-release-management/compare/3.8.11...3.8.12) (2023-01-31)
+
+
+### Bug Fixes
+
+* always log stdout ([a5a942f](https://github.com/salesforcecli/plugin-release-management/commit/a5a942f662bf5c3be0a7c5beef41d739596ae067))
+
+
+
 ## [3.8.11](https://github.com/salesforcecli/plugin-release-management/compare/3.8.10...3.8.11) (2023-01-28)
 
 
