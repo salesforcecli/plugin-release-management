@@ -6,7 +6,7 @@
  */
 
 import { promisify } from 'node:util';
-import { exec as execSync } from 'child_process';
+import { exec as execSync, ExecException } from 'child_process';
 import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -232,12 +232,22 @@ export default class build extends SfCommand<void> {
   private async exec(command: string, silent = false): Promise<string> {
     try {
       const { stdout } = await exec(command);
+
       if (!silent) {
         this.styledHeader(command);
         this.log(stdout);
       }
+
       return stdout;
     } catch (err) {
+      // An error will throw before `stdout` is able to be log above. The child_process.exec adds stdout and stderr to the error object
+      const error = err as ExecException & {
+        stdout: string;
+        stderr: string;
+      };
+
+      this.log(error.stdout);
+
       throw new SfError((err as Error).message);
     }
   }

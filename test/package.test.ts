@@ -231,8 +231,10 @@ describe('Package', () => {
           resolutions: {
             '@salesforce/source-deploy-retrieve': '1.0.0',
           },
-          jitPlugins: {
-            '@salesforce/jit-me': '1.0.0',
+          oclif: {
+            jitPlugins: {
+              '@salesforce/jit-me': '1.0.0',
+            },
           },
         })
       );
@@ -328,7 +330,7 @@ describe('Package', () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@salesforce/jit-me@1.0.1']);
 
-      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('1.0.1');
+      expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('1.0.1');
     });
   });
 
@@ -344,9 +346,11 @@ describe('Package', () => {
               '@salesforce/plugin-config': '1.2.3',
               'left-pad': '1.1.1',
             },
-            jitPlugins: {
-              '@salesforce/jit-me': '1.0.0',
-              '@salesforce/jit-me-too': '9.9.9',
+            oclif: {
+              jitPlugins: {
+                '@salesforce/jit-me': '1.0.0',
+                '@salesforce/jit-me-too': '9.9.9',
+              },
             },
           })
         );
@@ -400,8 +404,8 @@ describe('Package', () => {
         const pkg = await Package.create();
         pkg.bumpJit();
 
-        expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('9.9.10');
-        expect(pkg.packageJson.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.10');
+        expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('9.9.10');
+        expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.10');
         // no change to other plugins
         expect(pkg.packageJson.dependencies['@sf/info']).to.equal('npm:@salesforce/plugin-info@2.0.1');
         expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('1.2.3');
@@ -418,9 +422,11 @@ describe('Package', () => {
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },
-          jitPlugins: {
-            '@salesforce/jit-me': '1.0.0',
-            '@salesforce/jit-me-too': '9.9.9',
+          oclif: {
+            jitPlugins: {
+              '@salesforce/jit-me': '1.0.0',
+              '@salesforce/jit-me-too': '9.9.9',
+            },
           },
         })
       );
@@ -446,8 +452,8 @@ describe('Package', () => {
           version: '9.9.9',
         },
       ]);
-      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me']).to.equal('9.9.9');
-      expect(pkg.packageJson.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.9');
+      expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('9.9.9');
+      expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.9');
     });
 
     it('returns empty when no jit', async () => {
@@ -460,6 +466,7 @@ describe('Package', () => {
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },
+          oclif: {},
         })
       );
 
@@ -467,7 +474,7 @@ describe('Package', () => {
       const results = pkg.bumpJit();
 
       expect(results).to.be.undefined;
-      expect(pkg.packageJson.jitPlugins).to.be.undefined;
+      expect(pkg.packageJson.oclif.jitPlugins).to.be.undefined;
     });
 
     afterEach(() => {

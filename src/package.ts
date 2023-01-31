@@ -22,13 +22,14 @@ export type PackageJson = {
   scripts: Record<string, string>;
   files?: string[];
   pinnedDependencies?: string[];
-  jitPlugins?: Record<string, string>;
   resolutions?: Record<string, string>;
   repository?: string;
   homepage?: string;
   sfdx?: PackageJsonSfdxProperty;
   oclif?: {
-    plugins: string[];
+    plugins?: string[];
+    devPlugins?: string[];
+    jitPlugins?: Record<string, string>;
   };
 } & AnyJson;
 
@@ -263,7 +264,8 @@ export class Package extends AsyncOptionalCreatable {
         const [, name, version] = npmPackageRegex.exec(dep);
 
         // We will look for packages in dependencies and resolutions
-        const { dependencies, resolutions, jitPlugins } = this.packageJson;
+        const { dependencies, resolutions } = this.packageJson;
+        const { jitPlugins } = this.packageJson.oclif;
 
         // find dependency in package.json (could be an npm alias)
         const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions, ...jitPlugins });
@@ -285,7 +287,7 @@ export class Package extends AsyncOptionalCreatable {
         } else if (resolutions[depInfo.dependencyName]) {
           this.packageJson.resolutions[depInfo.dependencyName] = depInfo.finalVersion;
         } else {
-          this.packageJson.jitPlugins[depInfo.dependencyName] = depInfo.finalVersion;
+          this.packageJson.oclif.jitPlugins[depInfo.dependencyName] = depInfo.finalVersion;
         }
 
         return depInfo;
@@ -335,22 +337,23 @@ export class Package extends AsyncOptionalCreatable {
 
   public bumpJit(targetTag = 'latest-rc'): ChangedPackageVersions {
     // no JIT is ok
-    if (!this.packageJson.jitPlugins) {
+    if (!this.packageJson.oclif.jitPlugins) {
       return;
     }
 
-    const { jitPlugins, pinnedDependencies, dependencies, devDependencies, oclif } = this.packageJson;
-    const jitDeps = Object.entries(jitPlugins)
+    const { pinnedDependencies, dependencies, devDependencies, oclif } = this.packageJson;
+    const jitDeps = Object.entries(oclif.jitPlugins)
       .map(([plugin, version]) => {
         const [name, tag] = getNameAndTag(plugin);
         if (
           dependencies?.[name] ||
           devDependencies?.[name] ||
           pinnedDependencies?.includes(name) ||
-          oclif?.plugins?.includes(name)
+          oclif.plugins?.includes[name] ||
+          oclif.devPlugins?.includes[name]
         ) {
           throw new SfError(
-            'jit plugins should not be listed in dependencies, devDependencies, pinnedDependencies, or oclif.plugins'
+            'JIT plugins should not be listed in dependencies, devDependencies, pinnedDependencies, oclif.plugins or oclif.devPlugins. '
           );
         }
         return getPinnedPackage({ name, version, tag, targetTag });
@@ -360,9 +363,9 @@ export class Package extends AsyncOptionalCreatable {
     const updatedDeps = this.calculatePinnedPackageUpdates(jitDeps);
     updatedDeps.forEach((pp) => {
       if (pp.alias) {
-        this.packageJson.jitPlugins[pp.alias] = `npm:${pp.name}@${pp.version}`;
+        this.packageJson.oclif.jitPlugins[pp.alias] = `npm:${pp.name}@${pp.version}`;
       } else {
-        this.packageJson.jitPlugins[pp.name] = pp.version;
+        this.packageJson.oclif.jitPlugins[pp.name] = pp.version;
       }
     });
     return updatedDeps;
