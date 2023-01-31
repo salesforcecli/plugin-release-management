@@ -7,7 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as semver from 'semver';
-import { CliUx } from '@oclif/core';
+import { ux } from '@oclif/core';
 import { exec, pwd } from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
@@ -182,7 +182,7 @@ export class Package extends AsyncOptionalCreatable {
       // include a latest-rc version for a single plugin but everything else we want latest.
       let version: string;
       if (semver.gt(dep.version, versions[tag])) {
-        CliUx.ux.warn(
+        ux.warn(
           `${dep.name} is currently pinned at ${dep.version} which is higher than ${tag} (${versions[tag]}). Assuming that this is intentional...`
         );
         version = dep.version;
@@ -252,7 +252,7 @@ export class Package extends AsyncOptionalCreatable {
       }
     }
 
-    CliUx.ux.error(`${name} was not found in the dependencies section of the package.json`);
+    ux.error(`${name} was not found in the dependencies section of the package.json`);
   }
 
   public bumpDependencyVersions(targetDependencies: string[]): DependencyInfo[] {
@@ -315,7 +315,7 @@ export class Package extends AsyncOptionalCreatable {
       .map((d) => {
         const [name, tag] = getNameAndTag(d);
         if (!dependencies[name]) {
-          CliUx.ux.warn(`${name} was not found in the dependencies section of your package.json. Skipping...`);
+          ux.warn(`${name} was not found in the dependencies section of your package.json. Skipping...`);
           return;
         }
         const version = dependencies[name];

@@ -51,10 +51,11 @@ export default class Verify extends SfCommand<void> {
 
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
-    cli: Flags.enum({
-      summary: messages.getMessage('cli'),
+    cli: Flags.custom<CLI>({
       options: Object.values(CLI),
-      default: 'sfdx',
+    })({
+      summary: messages.getMessage('cli'),
+      default: CLI.SFDX,
       char: 'c',
     }),
     ['windows-username-buffer']: Flags.integer({
@@ -73,7 +74,7 @@ export default class Verify extends SfCommand<void> {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Verify);
     this.flags = flags;
-    const cli = ensure<CLI>(this.flags.cli as CLI);
+    const cli = ensure<CLI>(this.flags.cli);
     this.baseDir = path.join('tmp', cli);
     const cliRunLists: Record<CLI, Array<() => Promise<void>>> = {
       [CLI.SFDX]: [
@@ -151,7 +152,7 @@ export default class Verify extends SfCommand<void> {
   public async ensureWindowsPathLengths(): Promise<void> {
     const validate = async (): Promise<boolean> => {
       const maxWindowsPath = 259;
-      const cli = ensure<CLI>(this.flags.cli as CLI);
+      const cli = ensure<CLI>(this.flags.cli);
 
       const supportedUsernameLength = ensureNumber(this.flags['windows-username-buffer']);
       const fakeSupportedUsername = 'u'.repeat(supportedUsernameLength);

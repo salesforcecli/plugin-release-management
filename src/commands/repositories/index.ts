@@ -7,7 +7,7 @@
 
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { CliUx } from '@oclif/core';
+import { ux } from '@oclif/core';
 import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
 
 Messages.importMessagesDirectory(__dirname);
@@ -21,7 +21,7 @@ export default class Repositories extends SfCommand<RepositoryInfo[]> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   public static readonly flags = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(CliUx.ux.table.flags() as any),
+    ...(ux.table.flags() as any),
   };
 
   public async run(): Promise<RepositoryInfo[]> {
@@ -29,7 +29,7 @@ export default class Repositories extends SfCommand<RepositoryInfo[]> {
     const repositories = await retrieveKnownRepositories();
 
     if (!flags.json) {
-      CliUx.ux.table(
+      ux.table(
         repositories,
         {
           organization: {},
