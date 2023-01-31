@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
-import { CliUx } from '@oclif/core';
+import { ux } from '@oclif/core';
 import got, { Agents } from 'got';
 import { SfError } from '@salesforce/core';
 import * as chalk from 'chalk';
@@ -69,19 +69,19 @@ export class AmazonS3 {
     const fileWriterStream = fs.createWriteStream(location);
     return new Promise((resolve) => {
       downloadStream.on('error', (error) => {
-        if (!silent) CliUx.ux.error(`Download failed: ${error.message}`);
+        if (!silent) ux.error(`Download failed: ${error.message}`);
       });
 
       fileWriterStream
         .on('error', (error) => {
-          if (!silent) CliUx.ux.action.stop('Failed');
-          if (!silent) CliUx.ux.error(`Could not write file to system: ${error.message}`);
+          if (!silent) ux.action.stop('Failed');
+          if (!silent) ux.error(`Could not write file to system: ${error.message}`);
         })
         .on('finish', () => {
-          if (!silent) CliUx.ux.action.stop();
+          if (!silent) ux.action.stop();
           resolve();
         });
-      if (!silent) CliUx.ux.action.start(`Downloading ${chalk.cyan(url)}`);
+      if (!silent) ux.action.start(`Downloading ${chalk.cyan(url)}`);
       downloadStream.pipe(fileWriterStream);
     });
   }
