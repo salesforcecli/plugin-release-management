@@ -339,12 +339,19 @@ export class Package extends AsyncOptionalCreatable {
       return;
     }
 
-    const { jitPlugins, pinnedDependencies, dependencies, devDependencies } = this.packageJson;
+    const { jitPlugins, pinnedDependencies, dependencies, devDependencies, oclif } = this.packageJson;
     const jitDeps = Object.entries(jitPlugins)
       .map(([plugin, version]) => {
         const [name, tag] = getNameAndTag(plugin);
-        if (dependencies?.[name] || devDependencies?.[name] || pinnedDependencies?.includes(name)) {
-          throw new SfError('jit plugins should not be listed in dependencies, devDependencies or pinnedDependencies');
+        if (
+          dependencies?.[name] ||
+          devDependencies?.[name] ||
+          pinnedDependencies?.includes(name) ||
+          oclif?.plugins?.includes(name)
+        ) {
+          throw new SfError(
+            'jit plugins should not be listed in dependencies, devDependencies, pinnedDependencies, or oclif.plugins'
+          );
         }
         return getPinnedPackage({ name, version, tag, targetTag });
       })
