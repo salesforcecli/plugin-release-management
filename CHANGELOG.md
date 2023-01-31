@@ -1,3 +1,12 @@
+# [3.9.0](https://github.com/salesforcecli/plugin-release-management/compare/3.8.12...3.9.0) (2023-01-31)
+
+
+### Features
+
+* use latest oclif/core ([#668](https://github.com/salesforcecli/plugin-release-management/issues/668)) ([9db3d64](https://github.com/salesforcecli/plugin-release-management/commit/9db3d64e55b9e65c1fa42f0ac49c42cb9b763b9e))
+
+
+
 ## [3.8.12](https://github.com/salesforcecli/plugin-release-management/compare/3.8.11...3.8.12) (2023-01-31)
 
 
