@@ -198,7 +198,10 @@ export class Package extends AsyncOptionalCreatable {
     const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
-    return JSON.parse(result.stdout) as Record<string, string>;
+    if (result.stdout) {
+      return JSON.parse(result.stdout) as Record<string, string>;
+    }
+    ux.error(result.stderr);
   }
 
   public bumpResolutions(tag: string): void {
