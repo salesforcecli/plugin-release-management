@@ -28,6 +28,7 @@ export type PackageJson = {
   sfdx?: PackageJsonSfdxProperty;
   oclif?: {
     plugins: string[];
+    jitPlugins?: Record<string, string>;
   };
 } & AnyJson;
 

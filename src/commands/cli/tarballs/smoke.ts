@@ -5,14 +5,19 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable no-await-in-loop */
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import { exec as execSync } from 'child_process';
+import { exec as execSync, ExecException } from 'child_process';
 import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { ensure } from '@salesforce/ts-types';
+import { parseJson } from '@salesforce/kit';
+import { Interfaces } from '@oclif/core';
 import { CLI } from '../../../types';
+import { PackageJson } from '../../../package';
 
 const exec = promisify(execSync);
 
@@ -25,9 +30,10 @@ export default class SmokeTest extends SfCommand<void> {
 
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
-    cli: Flags.string({
-      summary: messages.getMessage('cliFlag'),
+    cli: Flags.custom<CLI>({
       options: Object.values(CLI),
+    })({
+      summary: messages.getMessage('cliFlag'),
       char: 'c',
       required: true,
     }),
@@ -36,15 +42,13 @@ export default class SmokeTest extends SfCommand<void> {
     }),
   };
 
-  private verbose: boolean;
+  private flags: Interfaces.InferredFlags<typeof SmokeTest.flags>;
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(SmokeTest);
-    this.verbose = flags.verbose;
-    const cli = ensure<CLI>(flags.cli as CLI);
-    const executables = [path.join('tmp', cli, 'bin', cli)];
-    if (cli === CLI.SFDX) {
-      executables.push(path.join('tmp', cli, 'bin', CLI.SF));
+    this.flags = (await this.parse(SmokeTest)).flags;
+    const executables = [path.join('tmp', this.flags.cli, 'bin', this.flags.cli)];
+    if (this.flags.cli === CLI.SFDX) {
+      executables.push(path.join('tmp', this.flags.cli, 'bin', CLI.SF));
     }
     await Promise.all(executables.map((executable) => this.smokeTest(executable)));
   }
@@ -54,14 +58,72 @@ export default class SmokeTest extends SfCommand<void> {
       this.execute(executable, '--version'),
       this.execute(executable, '--help'),
       this.execute(executable, 'plugins --core'),
-      this.execute(executable, 'plugins:install @salesforce/plugin-alias@latest'),
+      this.testInstall(executable, '@salesforce/plugin-alias', 'latest'),
     ]);
+    await this.testJITInstall(executable);
     await this.initializeAllCommands(executable);
   }
 
+  private async testJITInstall(executable: string): Promise<void> {
+    const fileData = await fs.promises.readFile('package.json', 'utf8');
+    const packageJson = parseJson(fileData) as PackageJson;
+    const jitPlugins = Object.keys(packageJson.oclif.jitPlugins ?? {});
+    if (jitPlugins.length === 0) return;
+
+    const manifestData = await fs.promises.readFile(path.join('tmp', this.flags.cli, 'oclif.manifest.json'), 'utf8');
+    const manifest = parseJson(manifestData) as unknown as Interfaces.Manifest;
+
+    const commands = Object.values(manifest.commands);
+    for (const plugin of jitPlugins) {
+      try {
+        this.styledHeader(`Testing JIT install for ${plugin}`);
+        const firstCommand = commands.find((c) => c.pluginName === plugin);
+        // Test that --help works on JIT commands
+        await this.nonVerboseCommandExecution(executable, `${firstCommand.id}`);
+
+        // Test that executing the command will trigger JIT install
+        // This will likely always fail because we're not providing all the required flags or it depends on some other setup.
+        // However, this is okay because all we need to verify is that running the command will trigger the JIT install
+        this.log(`${executable} ${firstCommand.id}`);
+        const { stdout, stderr } = await exec(`${executable} ${firstCommand.id}`, { maxBuffer: 1024 * 1024 * 100 });
+        this.log(stdout);
+        this.log(stderr);
+      } catch (e) {
+        const err = e as ExecException;
+        // @ts-expect-error ExecException type doesn't have a stdout or stderr property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.log(err.stdout);
+        // @ts-expect-error ExecException type doesn't have a stdout or stderr property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.log(err.stderr);
+      } finally {
+        await this.verifyInstall(plugin);
+      }
+    }
+  }
+
+  private async testInstall(executable: string, plugin: string, tag?: string): Promise<void> {
+    await this.execute(executable, `plugins:install ${plugin}${tag ? `@${tag}` : ''}`);
+    await this.verifyInstall(plugin);
+  }
+
+  private async verifyInstall(plugin: string): Promise<void> {
+    const fileData = await fs.promises.readFile(
+      path.join(os.homedir(), '.local', 'share', this.flags.cli, 'package.json'),
+      'utf-8'
+    );
+    const packageJson = parseJson(fileData) as PackageJson;
+    if (!packageJson.dependencies?.[plugin]) {
+      throw new SfError(`Failed to install ${plugin}\n`);
+    } else {
+      this.log('✔️ ', chalk.green(`Verified installation of ${plugin}\n`));
+    }
+  }
+
   private async initializeAllCommands(executable: string): Promise<void> {
+    this.styledHeader(`Initializing help for all ${this.flags.cli} commands`);
     await Promise.all(
-      this.verbose
+      this.flags.verbose
         ? (await this.getAllCommands(executable)).map((command) => this.execute(executable, `${command} --help`))
         : (await this.getAllCommands(executable)).map((command) => this.nonVerboseCommandExecution(executable, command))
     );
