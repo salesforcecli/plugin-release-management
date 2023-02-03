@@ -130,14 +130,14 @@ export default class Update extends SfCommand<void> {
 
     if (/ES[0-9]{4}/g.test(this.flags.target)) return true;
 
-    throw new SfError(messages.getMessage('InvalidTargetVersion'), 'InvalidTargetVersion', [this.flags.target]);
+    throw new SfError(messages.getMessage('InvalidTargetVersion', [this.flags.target]), 'InvalidTargetVersion');
   }
 
   private validateTsVersion(): boolean {
     const version = this.flags.version;
     if (version === 'latest') return true;
     if (version && !this.typescriptPkg.versions.includes(version)) {
-      throw new SfError(messages.getMessage('InvalidTypescriptVersion'), 'InvalidTypescriptVersion', [version]);
+      throw new SfError(messages.getMessage('InvalidTypescriptVersion', [version]), 'InvalidTypescriptVersion');
     }
     return true;
   }

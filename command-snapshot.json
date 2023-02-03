@@ -29,6 +29,7 @@
     "plugin": "@salesforce/plugin-release-management",
     "flags": [
       "build-only",
+      "jit",
       "json",
       "only",
       "patch",
