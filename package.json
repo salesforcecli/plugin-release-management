@@ -33,7 +33,7 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "devDependencies": {
-    "@oclif/plugin-command-snapshot": "^3.2.11",
+    "@oclif/plugin-command-snapshot": "^3.3.2",
     "@salesforce/dev-config": "^3.0.0",
     "@salesforce/dev-scripts": "^4.0.0-beta.9",
     "@salesforce/prettier-config": "^0.0.2",
