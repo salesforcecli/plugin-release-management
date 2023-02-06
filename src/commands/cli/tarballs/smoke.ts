@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable no-await-in-loop */
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -65,40 +64,71 @@ export default class SmokeTest extends SfCommand<void> {
   }
 
   private async testJITInstall(executable: string): Promise<void> {
+    this.styledHeader('Testing JIT installation');
     const fileData = await fs.promises.readFile('package.json', 'utf8');
     const packageJson = parseJson(fileData) as PackageJson;
-    const jitPlugins = Object.keys(packageJson.oclif.jitPlugins ?? {});
+    const jitPlugins = Object.keys(packageJson.oclif?.jitPlugins ?? {});
     if (jitPlugins.length === 0) return;
 
     const manifestData = await fs.promises.readFile(path.join('tmp', this.flags.cli, 'oclif.manifest.json'), 'utf8');
-    const manifest = parseJson(manifestData) as unknown as Interfaces.Manifest;
+    const manifest = parseJson(manifestData) as Interfaces.Manifest;
 
     const commands = Object.values(manifest.commands);
-    for (const plugin of jitPlugins) {
-      try {
-        this.styledHeader(`Testing JIT install for ${plugin}`);
-        const firstCommand = commands.find((c) => c.pluginName === plugin);
-        // Test that --help works on JIT commands
-        await this.nonVerboseCommandExecution(executable, `${firstCommand.id}`);
+    const logs: Record<string, string[]> = jitPlugins.reduce((acc, plugin) => ({ ...acc, [plugin]: [] }), {});
+    let failed = false;
 
+    const help = async (command: string): Promise<boolean> => {
+      try {
+        await exec(`${executable} ${command} --help`);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const promises = jitPlugins.map(async (plugin) => {
+      try {
+        logs[plugin].push(`Testing JIT install for ${plugin}`);
+        const firstCommand = commands.find((c) => c.pluginName === plugin);
+
+        // Test that --help works on JIT commands
+        const helpResult = await help(firstCommand.id);
+        logs[plugin].push(
+          `${executable} ${firstCommand.id} --help ${helpResult ? chalk.green('PASSED') : chalk.red('FAILED')}`
+        );
+
+        logs[plugin].push(`${executable} ${firstCommand.id}`);
         // Test that executing the command will trigger JIT install
         // This will likely always fail because we're not providing all the required flags or it depends on some other setup.
         // However, this is okay because all we need to verify is that running the command will trigger the JIT install
-        this.log(`${executable} ${firstCommand.id}`);
         const { stdout, stderr } = await exec(`${executable} ${firstCommand.id}`, { maxBuffer: 1024 * 1024 * 100 });
-        this.log(stdout);
-        this.log(stderr);
+        logs[plugin].push(stdout);
+        logs[plugin].push(stderr);
       } catch (e) {
         const err = e as ExecException;
         // @ts-expect-error ExecException type doesn't have a stdout or stderr property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.log(err.stdout);
+        logs[plugin].push(err.stdout);
         // @ts-expect-error ExecException type doesn't have a stdout or stderr property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.log(err.stderr);
+        logs[plugin].push(err.stderr);
       } finally {
-        await this.verifyInstall(plugin);
+        const result = await this.verifyInstall(plugin, true);
+        if (result) {
+          logs[plugin].push(`✅ ${chalk.green(`Verified installation of ${plugin}\n`)}`);
+        } else {
+          failed = true;
+          logs[plugin].push(`❌ ${chalk.green(`Failed installation of ${plugin}\n`)}`);
+        }
       }
+    });
+
+    await Promise.all(promises);
+    for (const log of Object.values(logs)) {
+      this.log(log.join('\n'));
+    }
+    if (failed) {
+      throw new SfError('Failed JIT installation');
     }
   }
 
@@ -107,17 +137,24 @@ export default class SmokeTest extends SfCommand<void> {
     await this.verifyInstall(plugin);
   }
 
-  private async verifyInstall(plugin: string): Promise<void> {
+  private async verifyInstall(plugin: string, silent = false): Promise<boolean> {
     const fileData = await fs.promises.readFile(
       path.join(os.homedir(), '.local', 'share', this.flags.cli, 'package.json'),
       'utf-8'
     );
     const packageJson = parseJson(fileData) as PackageJson;
     if (!packageJson.dependencies?.[plugin]) {
-      throw new SfError(`Failed to install ${plugin}\n`);
-    } else {
-      this.log('✔️ ', chalk.green(`Verified installation of ${plugin}\n`));
+      if (silent) {
+        return false;
+      } else {
+        throw new SfError(`Failed to install ${plugin}\n`);
+      }
+    } else if (!silent) {
+      this.log('✅ ', chalk.green(`Verified installation of ${plugin}\n`));
+      return true;
     }
+
+    return true;
   }
 
   private async initializeAllCommands(executable: string): Promise<void> {
