@@ -1,3 +1,12 @@
+# [3.10.0](https://github.com/salesforcecli/plugin-release-management/compare/3.9.2...3.10.0) (2023-02-06)
+
+
+### Features
+
+* smoke tests for JIT plugins ([#669](https://github.com/salesforcecli/plugin-release-management/issues/669)) ([d9afeb3](https://github.com/salesforcecli/plugin-release-management/commit/d9afeb3997b3e4d8173ad3be6bdfb0f384ab9d3c))
+
+
+
 ## [3.9.2](https://github.com/salesforcecli/plugin-release-management/compare/3.9.1...3.9.2) (2023-02-04)
 
 
