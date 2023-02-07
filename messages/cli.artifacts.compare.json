@@ -1,5 +1,5 @@
 {
-  "description": "Look for breaking changes in artifacts (schemas and snapshots) from plugins",
+  "description": "Look for breaking changes in artifacts (schemas and snapshots) from plugins.",
   "examples": ["<%= config.bin %> <%= command.id %>"],
   "error.BreakingChanges": "Breaking changes found in artifacts",
   "flags.previous.summary": "Number of versions to go back for comparison.",
