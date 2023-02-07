@@ -19,6 +19,12 @@
     "alias": []
   },
   {
+    "command": "cli:artifacts:compare",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "plugin", "previous"],
+    "alias": []
+  },
+  {
     "command": "cli:install:test",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["channel", "cli", "json", "method", "output-file"],

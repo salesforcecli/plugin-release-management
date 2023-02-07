@@ -10,6 +10,7 @@
   "dependencies": {
     "@oclif/core": "^2.0.9",
     "@octokit/core": "^4.1.0",
+    "@octokit/plugin-paginate-rest": "^6.0.0",
     "@salesforce/core": "^3.32.12",
     "@salesforce/kit": "^1.8.2",
     "@salesforce/plugin-command-reference": "^2.2.8",
@@ -24,6 +25,7 @@
     "conventional-commits-parser": "^3.2.2",
     "fast-glob": "^3.2.12",
     "got": "^11.8.6",
+    "just-diff": "^5.2.0",
     "proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.1.0",
     "semver": "^7.3.8",
@@ -117,6 +119,9 @@
           },
           "schemas": {
             "description": "utilities for comparing command schemas"
+          },
+          "artifacts": {
+            "description": "utilities for comparing plugin artifacts"
           }
         }
       },

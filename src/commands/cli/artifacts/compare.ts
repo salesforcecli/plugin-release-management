@@ -1,0 +1,461 @@
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+
+import * as fs from 'fs';
+import { exec as execSync } from 'child_process';
+import { promisify } from 'node:util';
+import * as chalk from 'chalk';
+import * as semver from 'semver';
+import got from 'got';
+import { diff, Operation } from 'just-diff';
+import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
+import { Messages } from '@salesforce/core';
+import { env, parseJson } from '@salesforce/kit';
+import { Octokit } from '@octokit/core';
+import { paginateRest, PaginateInterface } from '@octokit/plugin-paginate-rest';
+import { ensureString, get, isNumber, JsonMap } from '@salesforce/ts-types';
+import { Interfaces } from '@oclif/core';
+import { PackageJson } from '../../../package';
+
+const MyOctokit = Octokit.plugin(paginateRest);
+const exec = promisify(execSync);
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.load('@salesforce/plugin-release-management', 'cli.artifacts.compare', [
+  'description',
+  'examples',
+  'error.BreakingChanges',
+  'flags.previous.summary',
+  'flags.previous.description',
+  'flags.plugins.summary',
+]);
+
+async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: string }> {
+  const result = await exec(`npm view ${plugin} repository.url --json`);
+  const parsed = (JSON.parse(result.stdout) as string)
+    .replace('git+https://github.com/', '')
+    .replace('.git', '')
+    .split('/');
+  return { owner: parsed[0], repo: parsed[1] };
+}
+
+async function getNpmVersions(plugin: string): Promise<string[]> {
+  const versions = await exec(`npm view ${plugin} versions --json`);
+  return semver.rsort(JSON.parse(versions.stdout) as string[]);
+}
+
+export type ArtifactsTestResult = {
+  [plugin: string]: {
+    current: {
+      version: string;
+      snapshot: CommandSnapshot[];
+      schemas: Record<string, JsonMap>;
+    };
+    previous: {
+      version: string;
+      snapshot: CommandSnapshot[];
+      schemas: Record<string, JsonMap>;
+    };
+    snapshotChanges: SnapshotChanges;
+    schemaChanges: SchemaChanges;
+  };
+};
+
+type CommandSnapshot = {
+  command: string;
+  plugin: string;
+  flags: string[];
+  alias: string[];
+  args?: string[];
+};
+
+type SnapshotChanges = {
+  commandAdditions: string[];
+  commandRemovals: string[];
+  commands: Array<{
+    command: string;
+    aliasAdditions: string[];
+    aliasRemovals: string[];
+    flagAdditions: string[];
+    flagRemovals: string[];
+    hasChanges: boolean;
+    hasBreakingChanges: boolean;
+  }>;
+  hasChanges: boolean;
+  hasBreakingChanges: boolean;
+};
+
+type SchemaChanges = Array<{ op: Operation; path: Array<string | number>; value: unknown }>;
+
+export class SnapshotComparator {
+  public constructor(public current: CommandSnapshot[], public previous: CommandSnapshot[]) {}
+
+  public getChanges(): SnapshotChanges {
+    const commandAdditions = this.getCommandAdditions();
+    const commandRemovals = this.getCommandRemovals();
+
+    const commands = this.current
+      .map((cmd) => cmd.command)
+      .map((cmd) => {
+        const aliasAdditions = this.getAliasAdditions(cmd);
+        const aliasRemovals = this.getAliasRemovals(cmd);
+        const flagAdditions = this.getFlagAdditions(cmd);
+        const flagRemovals = this.getFlagRemovals(cmd);
+        return {
+          command: cmd,
+          aliasAdditions,
+          aliasRemovals,
+          flagAdditions,
+          flagRemovals,
+          hasChanges: Boolean(
+            aliasAdditions.length || aliasRemovals.length || flagAdditions.length || flagRemovals.length
+          ),
+          hasBreakingChanges: Boolean(aliasRemovals.length || flagRemovals.length),
+        };
+      });
+    const hasRemovals = commands.find((cmd) => cmd.aliasRemovals.length > 0 || cmd.flagRemovals.length > 0);
+    const hasAdditions = commands.find((cmd) => cmd.aliasAdditions.length > 0 || cmd.flagAdditions.length > 0);
+    const hasChanges = Boolean(commandAdditions.length || commandRemovals.length || hasRemovals || hasAdditions);
+    const hasBreakingChanges = Boolean(commandRemovals.length || hasRemovals);
+    return {
+      commandAdditions: this.getCommandAdditions(),
+      commandRemovals: this.getCommandRemovals(),
+      commands,
+      hasChanges,
+      hasBreakingChanges,
+    };
+  }
+
+  public getCommandAdditions(): string[] {
+    return this.current
+      .filter((cmd) => !this.previous.find((snapshot) => snapshot.command === cmd.command))
+      .map((cmd) => cmd.command);
+  }
+
+  public getCommandRemovals(): string[] {
+    return this.previous
+      .filter((cmd) => !this.current.find((snapshot) => snapshot.command === cmd.command))
+      .map((cmd) => cmd.command);
+  }
+
+  public getFlagAdditions(cmd: string): string[] {
+    const current = this.current.find((snapshot) => snapshot.command === cmd);
+    const previous = this.previous.find((snapshot) => snapshot.command === cmd);
+    if (!current || !previous) {
+      return [];
+    }
+    return current.flags.filter((flag) => !previous.flags.includes(flag));
+  }
+
+  public getFlagRemovals(cmd: string): string[] {
+    const current = this.current.find((snapshot) => snapshot.command === cmd);
+    const previous = this.previous.find((snapshot) => snapshot.command === cmd);
+    if (!current || !previous) {
+      return [];
+    }
+    return previous.flags.filter((flag) => !current.flags.includes(flag));
+  }
+
+  public getAliasAdditions(cmd: string): string[] {
+    const current = this.current.find((snapshot) => snapshot.command === cmd);
+    const previous = this.previous.find((snapshot) => snapshot.command === cmd);
+    if (!current || !previous) {
+      return [];
+    }
+    return current.alias.filter((alias) => !previous.alias.includes(alias));
+  }
+
+  public getAliasRemovals(cmd: string): string[] {
+    const current = this.current.find((snapshot) => snapshot.command === cmd);
+    const previous = this.previous.find((snapshot) => snapshot.command === cmd);
+    if (!current || !previous) {
+      return [];
+    }
+    return previous.alias.filter((alias) => !current.alias.includes(alias));
+  }
+}
+
+export class SchemaComparator {
+  public constructor(private current: Record<string, JsonMap>, private previous: Record<string, JsonMap>) {}
+
+  public static makeReadable(
+    current: Record<string, JsonMap>,
+    previous: Record<string, JsonMap>,
+    changes: SchemaChanges
+  ): Record<string, string[]> {
+    const humanReadableChanges: Record<string, string[]> = {};
+    for (const change of changes) {
+      const lastPathElement = change.path[change.path.length - 1];
+      if (SchemaComparator.isMeaningless(lastPathElement)) continue;
+
+      const objPath = change.path.join('.');
+      const existing = get(previous, objPath);
+      const latest = get(current, objPath);
+      const [commandId] = objPath.split('.definitions');
+      const readablePath = objPath.replace(`${commandId}.`, '');
+
+      if (!humanReadableChanges[commandId]) {
+        humanReadableChanges[commandId] = [];
+      }
+
+      const lastElementIsNum = isNumber(lastPathElement);
+      const basePath = lastElementIsNum ? readablePath.replace(`.${lastPathElement}`, '') : readablePath;
+
+      switch (change.op) {
+        case 'replace':
+          humanReadableChanges[commandId].push(
+            `${chalk.underline(readablePath)} was changed from ${chalk.cyan(existing)} to ${chalk.cyan(latest)}`
+          );
+          break;
+        case 'add':
+          humanReadableChanges[commandId].push(
+            lastElementIsNum
+              ? `Array item at ${chalk.underline(basePath)} was ${chalk.cyan('added')} to current schema`
+              : `${chalk.underline(readablePath)} was ${chalk.cyan('added')} to current schema`
+          );
+          break;
+        case 'remove':
+          humanReadableChanges[commandId].push(
+            lastElementIsNum
+              ? `❌ Array item at ${chalk.underline(basePath)} was ${chalk.red.bold('not found')} in current schema`
+              : `❌ ${chalk.underline(readablePath)} was ${chalk.red.bold('not found')} in current schema`
+          );
+          break;
+        default:
+          break;
+      }
+    }
+
+    return humanReadableChanges;
+  }
+
+  public static hasBreakingChange(changes: SchemaChanges): boolean {
+    return changes.some((change) => change.op === 'remove');
+  }
+
+  private static isMeaningless(n: string | number): boolean {
+    const meaninglessKeys: Array<string | number> = ['$comment', '__computed'];
+    return meaninglessKeys.includes(n);
+  }
+
+  public getChanges(): SchemaChanges {
+    return diff(this.previous, this.current);
+  }
+}
+
+export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
+  public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly flags = {
+    plugin: Flags.string({
+      char: 'p',
+      multiple: true,
+      summary: messages.getMessage('flags.plugins.summary'),
+    }),
+    previous: Flags.integer({
+      char: 'v',
+      summary: messages.getMessage('flags.previous.summary'),
+      description: messages.getMessage('flags.previous.description'),
+      default: 1,
+    }),
+  };
+
+  private octokit!: Octokit & { paginate: PaginateInterface };
+  private plugins!: Record<string, string>;
+  private flags: Interfaces.InferredFlags<typeof ArtifactsTest.flags>;
+
+  public async run(): Promise<ArtifactsTestResult> {
+    const { flags } = await this.parse(ArtifactsTest);
+    this.flags = flags;
+    const auth = ensureString(
+      env.getString('GH_TOKEN') ?? env.getString('GITHUB_TOKEN'),
+      'The GH_TOKEN env var is required.'
+    );
+    this.octokit = new MyOctokit({ auth });
+    const fileData = await fs.promises.readFile('package.json', 'utf8');
+    const packageJson = parseJson(fileData) as PackageJson;
+    const pluginNames = [...(packageJson.oclif?.plugins || []), ...Object.keys(packageJson.oclif?.jitPlugins ?? {})];
+    const filtered = (
+      this.flags.plugin ? pluginNames.filter((plugin) => this.flags.plugin?.includes(plugin)) : pluginNames
+    ).filter((plugin) => !plugin.startsWith('@oclif'));
+
+    this.plugins = filtered.reduce(
+      (acc, plugin) => ({ ...acc, [plugin]: packageJson.dependencies[plugin] ?? packageJson.oclif.jitPlugins[plugin] }),
+      {}
+    );
+
+    const promises = filtered.map(async (plugin) => {
+      const { owner, repo } = await getOwnerAndRepo(plugin);
+
+      const { current, previous } = await this.getVersions(plugin, owner, repo);
+      const currentSnapshot = await this.getSnapshot(owner, repo, current);
+      const previousSnapshot = await this.getSnapshot(owner, repo, previous);
+
+      const currentSchemas = await this.getSchemas(owner, repo, current);
+      const previousSchemas = await this.getSchemas(owner, repo, previous);
+      const schemaChanges = new SchemaComparator(currentSchemas, previousSchemas).getChanges();
+
+      return {
+        [plugin]: {
+          current: {
+            version: current,
+            snapshot: currentSnapshot,
+            schemas: currentSchemas,
+          },
+          previous: {
+            version: previous,
+            snapshot: previousSnapshot,
+            schemas: previousSchemas,
+          },
+          snapshotChanges: new SnapshotComparator(currentSnapshot, previousSnapshot).getChanges(),
+          schemaChanges,
+        },
+      };
+    });
+
+    const results = (await Promise.all(promises)).reduce((acc, result) => ({ ...acc, ...result }), {});
+
+    for (const [plugin, result] of Object.entries(results)) {
+      this.styledHeader(plugin);
+      this.log('Current:', result.current.version);
+      this.log('Previous:', result.previous.version);
+      this.log();
+      this.log(chalk.underline.cyan('Snapshot Changes'));
+      if (result.snapshotChanges.commandAdditions.length)
+        this.log(chalk.dim('New Commands:'), result.snapshotChanges.commandAdditions);
+      if (result.snapshotChanges.commandRemovals.length)
+        this.log(chalk.red('❌ Removed Commands:'), result.snapshotChanges.commandRemovals);
+      for (const cmd of result.snapshotChanges.commands) {
+        this.log(cmd.command, !cmd.hasChanges ? chalk.dim('No Changes') : '');
+        if (cmd.flagAdditions.length) this.log(chalk.dim('  Flag Additions:'), cmd.flagAdditions);
+        if (cmd.flagRemovals.length) this.log(chalk.red('  ❌ Flag Removals:'), cmd.flagRemovals);
+        if (cmd.aliasAdditions.length) this.log(chalk.dim('  Alias Additions:'), cmd.aliasAdditions);
+        if (cmd.aliasRemovals.length) this.log(chalk.red('  ❌ Alias Removals:'), cmd.aliasRemovals);
+      }
+      this.log();
+      this.log(chalk.underline.cyan('Schema Changes'));
+      const humanReadableChanges = SchemaComparator.makeReadable(
+        result.current.schemas,
+        result.previous.schemas,
+        result.schemaChanges
+      );
+      if (Object.keys(humanReadableChanges).length === 0) {
+        this.log(chalk.dim('No changes have been detected.'));
+      }
+
+      for (const [commandId, readableChanges] of Object.entries(humanReadableChanges)) {
+        this.log();
+        this.log(commandId);
+        for (const change of readableChanges) {
+          this.log(`  - ${change}`);
+        }
+      }
+      this.log();
+    }
+
+    const hasBreakingSnapshotChanges = Object.values(results).some(
+      (result) => result.snapshotChanges.hasBreakingChanges
+    );
+    const hasBreakingSchemaChanges = Object.values(results).some((result) =>
+      SchemaComparator.hasBreakingChange(result.schemaChanges)
+    );
+    if (hasBreakingSnapshotChanges || hasBreakingSchemaChanges) {
+      throw messages.createError('error.BreakingChanges');
+    }
+
+    return results;
+  }
+
+  private async getVersions(
+    plugin: string,
+    owner: string,
+    repo: string
+  ): Promise<{ current: string; previous: string }> {
+    const versions = await getNpmVersions(plugin);
+    const previousVersion = versions[versions.indexOf(this.plugins[plugin]) + this.flags.previous];
+    const tags = await this.getTags(owner, repo);
+    return {
+      current: tags.includes(this.plugins[plugin]) ? this.plugins[plugin] : `v${this.plugins[plugin]}`,
+      previous: tags.includes(previousVersion) ? previousVersion : `v${previousVersion}`,
+    };
+  }
+
+  private async getSchemas(owner: string, repo: string, ref: string): Promise<Record<string, JsonMap>> {
+    try {
+      const schemas = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        owner,
+        repo,
+        path: 'schemas',
+        accept: 'application/vnd.github.json',
+        ref,
+      });
+
+      const schemaFiles = (schemas.data as Array<{ name: string; download_url: string; type: string }>).filter(
+        (f) => f.type === 'file'
+      );
+      const hasHookFiles = (schemas.data as Array<{ name: string; download_url: string; type: string }>).find(
+        (f) => f.name === 'hooks' && f.type === 'dir'
+      );
+
+      if (hasHookFiles) {
+        const hooks = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner,
+          repo,
+          path: 'schemas/hooks',
+          accept: 'application/vnd.github.json',
+          ref,
+        });
+        schemaFiles.push(
+          ...(hooks.data as Array<{ name: string; download_url: string; type: string }>).filter(
+            (f) => f.type === 'file'
+          )
+        );
+      }
+
+      const files: Record<string, string> = schemaFiles.reduce(
+        (acc, file) => ({ ...acc, [file.name]: file.download_url }),
+        {}
+      );
+
+      const promises = Object.entries(files).map(async ([name, url]) => {
+        const contents = await got.get<JsonMap>(url, { followRedirect: true, responseType: 'json' });
+        return { [name.replace(/-/g, ':').replace('.json', '')]: contents.body };
+      });
+
+      return (await Promise.all(promises)).reduce((acc, result) => ({ ...acc, ...result }), {});
+    } catch {
+      this.warn(`No schemas found for ${owner}/${repo}@${ref}`);
+      return {};
+    }
+  }
+
+  private async getSnapshot(owner: string, repo: string, ref: string): Promise<CommandSnapshot[]> {
+    const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path: 'command-snapshot.json',
+      accept: 'application/vnd.github.json',
+      ref,
+    });
+    // @ts-expect-error octokit doesn't have a type for this
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as CommandSnapshot[];
+  }
+
+  private async getTags(owner: string, repo: string): Promise<string[]> {
+    const response = await this.octokit.paginate('GET /repos/{owner}/{repo}/tags', {
+      owner,
+      repo,
+      // eslint-disable-next-line camelcase
+      per_page: 100,
+    });
+
+    return response.map((tag: { name: string }) => tag.name);
+  }
+}
