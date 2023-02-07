@@ -1,3 +1,12 @@
+## [3.10.1](https://github.com/salesforcecli/plugin-release-management/compare/3.10.0...3.10.1) (2023-02-07)
+
+
+### Bug Fixes
+
+* **deps:** bump http-cache-semantics from 4.1.0 to 4.1.1 ([6bbebab](https://github.com/salesforcecli/plugin-release-management/commit/6bbebaba91dddb7519012012559f73257b09fd96))
+
+
+
 # [3.10.0](https://github.com/salesforcecli/plugin-release-management/compare/3.9.2...3.10.0) (2023-02-06)
 
 
