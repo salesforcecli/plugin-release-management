@@ -1,3 +1,30 @@
+# [3.11.0](https://github.com/salesforcecli/plugin-release-management/compare/3.10.1...3.11.0) (2023-02-07)
+
+
+### Features
+
+* automerge dev-scripts updates when green ([6feba92](https://github.com/salesforcecli/plugin-release-management/commit/6feba92bd717a0ff21463a76b248c0a2eaeac100))
+
+
+
+## [3.10.1](https://github.com/salesforcecli/plugin-release-management/compare/3.10.0...3.10.1) (2023-02-07)
+
+
+### Bug Fixes
+
+* **deps:** bump http-cache-semantics from 4.1.0 to 4.1.1 ([6bbebab](https://github.com/salesforcecli/plugin-release-management/commit/6bbebaba91dddb7519012012559f73257b09fd96))
+
+
+
+# [3.10.0](https://github.com/salesforcecli/plugin-release-management/compare/3.9.2...3.10.0) (2023-02-06)
+
+
+### Features
+
+* smoke tests for JIT plugins ([#669](https://github.com/salesforcecli/plugin-release-management/issues/669)) ([d9afeb3](https://github.com/salesforcecli/plugin-release-management/commit/d9afeb3997b3e4d8173ad3be6bdfb0f384ab9d3c))
+
+
+
 ## [3.9.2](https://github.com/salesforcecli/plugin-release-management/compare/3.9.1...3.9.2) (2023-02-04)
 
 

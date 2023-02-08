@@ -1,14 +1,14 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "3.9.2",
+  "version": "3.11.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
     "sf-release": "bin/run"
   },
   "dependencies": {
-    "@oclif/core": "^2.0.8",
+    "@oclif/core": "^2.0.9",
     "@octokit/core": "^4.1.0",
     "@salesforce/core": "^3.32.12",
     "@salesforce/kit": "^1.8.2",
