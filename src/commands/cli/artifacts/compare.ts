@@ -29,8 +29,6 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.art
   'description',
   'examples',
   'error.BreakingChanges',
-  'flags.previous.summary',
-  'flags.previous.description',
   'flags.plugins.summary',
 ]);
 
@@ -48,7 +46,7 @@ async function getNpmVersions(plugin: string): Promise<string[]> {
   return semver.rsort(JSON.parse(versions.stdout) as string[]);
 }
 
-export type ArtifactsTestResult = {
+export type ArtifactsCompareResult = {
   [plugin: string]: {
     current: {
       version: string;
@@ -247,7 +245,7 @@ export class SchemaComparator {
   }
 }
 
-export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
+export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
@@ -258,19 +256,15 @@ export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
       multiple: true,
       summary: messages.getMessage('flags.plugins.summary'),
     }),
-    previous: Flags.integer({
-      char: 'v',
-      summary: messages.getMessage('flags.previous.summary'),
-      description: messages.getMessage('flags.previous.description'),
-      default: 1,
-    }),
   };
 
   private octokit!: Octokit & { paginate: PaginateInterface };
-  private plugins!: Record<string, string>;
-  private flags: Interfaces.InferredFlags<typeof ArtifactsTest.flags>;
+  private currentPlugins!: Record<string, string>;
+  private previousPlugins!: Record<string, string>;
+  private flags!: Interfaces.InferredFlags<typeof ArtifactsTest.flags>;
+  private packageJson!: PackageJson;
 
-  public async run(): Promise<ArtifactsTestResult> {
+  public async run(): Promise<ArtifactsCompareResult> {
     const { flags } = await this.parse(ArtifactsTest);
     this.flags = flags;
     const auth = ensureString(
@@ -279,18 +273,10 @@ export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
     );
     this.octokit = new MyOctokit({ auth });
     const fileData = await fs.promises.readFile('package.json', 'utf8');
-    const packageJson = parseJson(fileData) as PackageJson;
-    const pluginNames = [...(packageJson.oclif?.plugins || []), ...Object.keys(packageJson.oclif?.jitPlugins ?? {})];
-    const filtered = (
-      this.flags.plugin ? pluginNames.filter((plugin) => this.flags.plugin?.includes(plugin)) : pluginNames
-    ).filter((plugin) => !plugin.startsWith('@oclif'));
-
-    this.plugins = filtered.reduce(
-      (acc, plugin) => ({ ...acc, [plugin]: packageJson.dependencies[plugin] ?? packageJson.oclif.jitPlugins[plugin] }),
-      {}
-    );
-
-    const promises = filtered.map(async (plugin) => {
+    this.packageJson = parseJson(fileData) as PackageJson;
+    this.currentPlugins = this.getCurrentPlugins();
+    this.previousPlugins = await this.getPreviousPlugins();
+    const promises = Object.keys(this.currentPlugins).map(async (plugin) => {
       const { owner, repo } = await getOwnerAndRepo(plugin);
 
       const { current, previous } = await this.getVersions(plugin, owner, repo);
@@ -321,6 +307,27 @@ export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
 
     const results = (await Promise.all(promises)).reduce((acc, result) => ({ ...acc, ...result }), {});
 
+    this.showResults(results);
+
+    const removedPlugins = this.showRemovedPlugins();
+    this.showAddedPlugins();
+
+    this.log();
+
+    const hasBreakingSnapshotChanges = Object.values(results).some(
+      (result) => result.snapshotChanges.hasBreakingChanges
+    );
+    const hasBreakingSchemaChanges = Object.values(results).some((result) =>
+      SchemaComparator.hasBreakingChange(result.schemaChanges)
+    );
+    if (hasBreakingSnapshotChanges || hasBreakingSchemaChanges || removedPlugins.length > 0) {
+      throw messages.createError('error.BreakingChanges');
+    }
+
+    return results;
+  }
+
+  private showResults(results: ArtifactsCompareResult): void {
     for (const [plugin, result] of Object.entries(results)) {
       this.styledHeader(plugin);
       this.log('Current:', result.current.version);
@@ -358,35 +365,86 @@ export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
       }
       this.log();
     }
+  }
 
-    const hasBreakingSnapshotChanges = Object.values(results).some(
-      (result) => result.snapshotChanges.hasBreakingChanges
-    );
-    const hasBreakingSchemaChanges = Object.values(results).some((result) =>
-      SchemaComparator.hasBreakingChange(result.schemaChanges)
-    );
-    if (hasBreakingSnapshotChanges || hasBreakingSchemaChanges) {
-      throw messages.createError('error.BreakingChanges');
+  private showRemovedPlugins(): string[] {
+    const removedPlugins = Object.keys(this.previousPlugins).filter((p) => !this.currentPlugins[p]);
+    if (removedPlugins.length > 0) {
+      this.log(chalk.red('Removed Plugins'));
+      for (const plugin of removedPlugins) {
+        this.log(plugin);
+      }
     }
+    return removedPlugins;
+  }
 
-    return results;
+  private showAddedPlugins(): string[] {
+    const addedPlugins = Object.keys(this.currentPlugins).filter((p) => !this.previousPlugins[p]);
+    if (addedPlugins.length > 0) {
+      this.log(chalk.green('Added Plugins'));
+      for (const plugin of addedPlugins) {
+        this.log(plugin);
+      }
+    }
+    return addedPlugins;
+  }
+
+  private getCurrentPlugins(): Record<string, string> {
+    return this.filterPlugins(this.packageJson);
+  }
+
+  private async getPreviousPlugins(): Promise<Record<string, string>> {
+    const [owner, repo] = this.packageJson.repository.split('/');
+    const versions = await getNpmVersions(this.packageJson.name);
+    const previousVersion = versions[versions.indexOf(this.packageJson.version) + 1];
+    const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path: 'package.json',
+      accept: 'application/vnd.github.json',
+      ref: previousVersion,
+    });
+
+    // @ts-expect-error octokit doesn't have a type for this
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const pJson = JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as PackageJson;
+    return this.filterPlugins(pJson);
+  }
+
+  private filterPlugins(packageJson: PackageJson): Record<string, string> {
+    const pluginNames = [...(packageJson.oclif?.plugins || []), ...Object.keys(packageJson.oclif?.jitPlugins ?? {})];
+    const filtered = (
+      this.flags.plugin ? pluginNames.filter((plugin) => this.flags.plugin?.includes(plugin)) : pluginNames
+    ).filter((plugin) => !plugin.startsWith('@oclif'));
+
+    return filtered.reduce(
+      (acc, plugin) => ({ ...acc, [plugin]: packageJson.dependencies[plugin] ?? packageJson.oclif.jitPlugins[plugin] }),
+      {}
+    );
   }
 
   private async getVersions(
     plugin: string,
     owner: string,
     repo: string
-  ): Promise<{ current: string; previous: string }> {
-    const versions = await getNpmVersions(plugin);
-    const previousVersion = versions[versions.indexOf(this.plugins[plugin]) + this.flags.previous];
+  ): Promise<{ current: string | null; previous: string | null }> {
     const tags = await this.getTags(owner, repo);
     return {
-      current: tags.includes(this.plugins[plugin]) ? this.plugins[plugin] : `v${this.plugins[plugin]}`,
-      previous: tags.includes(previousVersion) ? previousVersion : `v${previousVersion}`,
+      current: this.currentPlugins[plugin]
+        ? tags.includes(this.currentPlugins[plugin])
+          ? this.currentPlugins[plugin]
+          : `v${this.currentPlugins[plugin]}`
+        : null,
+      previous: this.previousPlugins[plugin]
+        ? tags.includes(this.previousPlugins[plugin])
+          ? this.previousPlugins[plugin]
+          : `v${this.previousPlugins[plugin]}`
+        : null,
     };
   }
 
-  private async getSchemas(owner: string, repo: string, ref: string): Promise<Record<string, JsonMap>> {
+  private async getSchemas(owner: string, repo: string, ref: string | null): Promise<Record<string, JsonMap>> {
+    if (!ref) return {};
     try {
       const schemas = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
         owner,
@@ -435,7 +493,8 @@ export default class ArtifactsTest extends SfCommand<ArtifactsTestResult> {
     }
   }
 
-  private async getSnapshot(owner: string, repo: string, ref: string): Promise<CommandSnapshot[]> {
+  private async getSnapshot(owner: string, repo: string, ref: string | null): Promise<CommandSnapshot[]> {
+    if (!ref) return [];
     const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner,
       repo,
