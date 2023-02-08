@@ -206,14 +206,16 @@ export class SchemaComparator {
       switch (change.op) {
         case 'replace':
           humanReadableChanges[commandId].push(
-            `${chalk.underline(readablePath)} was changed from ${chalk.cyan(existing)} to ${chalk.cyan(latest)}`
+            `❌ ${chalk.underline(readablePath)} was ${chalk.red.bold('changed')} from ${chalk.cyan(
+              existing
+            )} to ${chalk.cyan(latest)}`
           );
           break;
         case 'add':
           humanReadableChanges[commandId].push(
             lastElementIsNum
-              ? `Array item at ${chalk.underline(basePath)} was ${chalk.cyan('added')} to current schema`
-              : `${chalk.underline(readablePath)} was ${chalk.cyan('added')} to current schema`
+              ? `- Array item at ${chalk.underline(basePath)} was ${chalk.cyan('added')} to current schema`
+              : `- ${chalk.underline(readablePath)} was ${chalk.cyan('added')} to current schema`
           );
           break;
         case 'remove':
@@ -232,7 +234,7 @@ export class SchemaComparator {
   }
 
   public static hasBreakingChange(changes: SchemaChanges): boolean {
-    return changes.some((change) => change.op === 'remove');
+    return changes.some((change) => change.op === 'remove' || change.op === 'replace');
   }
 
   private static isMeaningless(n: string | number): boolean {
@@ -307,11 +309,23 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
 
     const results = (await Promise.all(promises)).reduce((acc, result) => ({ ...acc, ...result }), {});
 
-    this.showResults(results);
+    const summary = this.showResults(results);
 
+    this.styledHeader('Summary');
+    for (const [plugin, logs] of Object.entries(summary)) {
+      if (logs.length === 0)
+        this.log('✅', plugin, chalk.dim(`(${this.previousPlugins[plugin]} -> ${this.currentPlugins[plugin]})`));
+      else {
+        this.log();
+        this.log('❌', plugin, chalk.dim(`(${this.previousPlugins[plugin]} -> ${this.currentPlugins[plugin]})`));
+        for (const log of logs) this.log('  -', log);
+        this.log();
+      }
+    }
+    this.log();
     const removedPlugins = this.showRemovedPlugins();
+    this.log();
     this.showAddedPlugins();
-
     this.log();
 
     const hasBreakingSnapshotChanges = Object.values(results).some(
@@ -327,23 +341,36 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     return results;
   }
 
-  private showResults(results: ArtifactsCompareResult): void {
+  private showResults(results: ArtifactsCompareResult): Record<string, Array<string | string[]>> {
+    const summary: Record<string, string[]> = {};
     for (const [plugin, result] of Object.entries(results)) {
+      summary[plugin] = [];
       this.styledHeader(plugin);
       this.log('Current:', result.current.version);
       this.log('Previous:', result.previous.version);
       this.log();
       this.log(chalk.underline.cyan('Snapshot Changes'));
-      if (result.snapshotChanges.commandAdditions.length)
+      if (result.snapshotChanges.commandAdditions.length) {
         this.log(chalk.dim('New Commands:'), result.snapshotChanges.commandAdditions);
-      if (result.snapshotChanges.commandRemovals.length)
+      }
+
+      if (result.snapshotChanges.commandRemovals.length) {
+        summary[plugin].push(`Removed commands: ${result.snapshotChanges.commandRemovals.join(', ')}`);
         this.log(chalk.red('❌ Removed Commands:'), result.snapshotChanges.commandRemovals);
+      }
+
       for (const cmd of result.snapshotChanges.commands) {
         this.log(cmd.command, !cmd.hasChanges ? chalk.dim('No Changes') : '');
         if (cmd.flagAdditions.length) this.log(chalk.dim('  Flag Additions:'), cmd.flagAdditions);
-        if (cmd.flagRemovals.length) this.log(chalk.red('  ❌ Flag Removals:'), cmd.flagRemovals);
+        if (cmd.flagRemovals.length) {
+          summary[plugin].push(`${cmd.command} flag removals: ${cmd.flagRemovals.join(', ')}`);
+          this.log(chalk.red('  ❌ Flag Removals:'), cmd.flagRemovals);
+        }
         if (cmd.aliasAdditions.length) this.log(chalk.dim('  Alias Additions:'), cmd.aliasAdditions);
-        if (cmd.aliasRemovals.length) this.log(chalk.red('  ❌ Alias Removals:'), cmd.aliasRemovals);
+        if (cmd.aliasRemovals.length) {
+          summary[plugin].push(`${cmd.command} alias removals: ${cmd.aliasRemovals.join(', ')}`);
+          this.log(chalk.red('  ❌ Alias Removals:'), cmd.aliasRemovals);
+        }
       }
       this.log();
       this.log(chalk.underline.cyan('Schema Changes'));
@@ -360,17 +387,20 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
         this.log();
         this.log(commandId);
         for (const change of readableChanges) {
-          this.log(`  - ${change}`);
+          if (change.startsWith('❌')) summary[plugin].push(change.replace('❌', ''));
+          this.log(`  ${change}`);
         }
       }
       this.log();
     }
+
+    return summary;
   }
 
   private showRemovedPlugins(): string[] {
     const removedPlugins = Object.keys(this.previousPlugins).filter((p) => !this.currentPlugins[p]);
     if (removedPlugins.length > 0) {
-      this.log(chalk.red('Removed Plugins'));
+      this.styledHeader(chalk.red('Removed Plugins'));
       for (const plugin of removedPlugins) {
         this.log(plugin);
       }
@@ -381,7 +411,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   private showAddedPlugins(): string[] {
     const addedPlugins = Object.keys(this.currentPlugins).filter((p) => !this.previousPlugins[p]);
     if (addedPlugins.length > 0) {
-      this.log(chalk.green('Added Plugins'));
+      this.styledHeader(chalk.green('Added Plugins'));
       for (const plugin of addedPlugins) {
         this.log(plugin);
       }
