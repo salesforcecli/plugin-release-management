@@ -1,3 +1,12 @@
+# [3.11.0](https://github.com/salesforcecli/plugin-release-management/compare/3.10.1...3.11.0) (2023-02-07)
+
+
+### Features
+
+* automerge dev-scripts updates when green ([6feba92](https://github.com/salesforcecli/plugin-release-management/commit/6feba92bd717a0ff21463a76b248c0a2eaeac100))
+
+
+
 ## [3.10.1](https://github.com/salesforcecli/plugin-release-management/compare/3.10.0...3.10.1) (2023-02-07)
 
 
