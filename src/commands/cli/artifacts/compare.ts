@@ -29,7 +29,11 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.art
   'description',
   'examples',
   'error.BreakingChanges',
+  'error.VersionNotFound',
+  'error.InvalidVersions',
   'flags.plugins.summary',
+  'flags.current.summary',
+  'flags.previous.summary',
 ]);
 
 async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: string }> {
@@ -44,6 +48,13 @@ async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: s
 async function getNpmVersions(plugin: string): Promise<string[]> {
   const versions = await exec(`npm view ${plugin} versions --json`);
   return semver.rsort(JSON.parse(versions.stdout) as string[]);
+}
+
+function verifyCurrentIsNewer(current: string | undefined, previous: string | undefined): void {
+  if (!current || !previous) return;
+  if (semver.lt(current, previous)) {
+    throw new Error(messages.getMessage('error.InvalidVersions', [current, previous]));
+  }
 }
 
 export type ArtifactsCompareResult = {
@@ -258,6 +269,14 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
       multiple: true,
       summary: messages.getMessage('flags.plugins.summary'),
     }),
+    previous: Flags.string({
+      char: 'r',
+      summary: messages.getMessage('flags.previous.summary'),
+    }),
+    current: Flags.string({
+      char: 'c',
+      summary: messages.getMessage('flags.current.summary'),
+    }),
   };
 
   private octokit!: Octokit & { paginate: PaginateInterface };
@@ -265,6 +284,9 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   private previousPlugins!: Record<string, string>;
   private flags!: Interfaces.InferredFlags<typeof ArtifactsTest.flags>;
   private packageJson!: PackageJson;
+  private versions!: string[];
+  private current!: string;
+  private previous!: string;
 
   public async run(): Promise<ArtifactsCompareResult> {
     const { flags } = await this.parse(ArtifactsTest);
@@ -276,8 +298,14 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     this.octokit = new MyOctokit({ auth });
     const fileData = await fs.promises.readFile('package.json', 'utf8');
     this.packageJson = parseJson(fileData) as PackageJson;
-    this.currentPlugins = this.getCurrentPlugins();
-    this.previousPlugins = await this.getPreviousPlugins();
+    this.versions = await getNpmVersions(this.packageJson.name);
+
+    this.resolveVersions();
+    verifyCurrentIsNewer(this.current, this.previous);
+
+    this.currentPlugins = await this.getCurrentPlugins();
+    this.previousPlugins = await this.getPluginsForVersion(this.previous);
+
     const promises = Object.keys(this.currentPlugins).map(async (plugin) => {
       const { owner, repo } = await getOwnerAndRepo(plugin);
 
@@ -419,20 +447,34 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     return addedPlugins;
   }
 
-  private getCurrentPlugins(): Record<string, string> {
-    return this.filterPlugins(this.packageJson);
+  private resolveVersions(): void {
+    this.current = this.flags.current || this.packageJson.version;
+    this.previous = this.flags.previous ?? this.versions[this.versions.indexOf(this.current) + 1];
+    this.log('Current Version:', this.current);
+    this.log('Previous Version:', this.previous);
+    if (this.flags.current && !this.versions.includes(this.flags.current)) {
+      throw messages.createError('error.VersionNotFound', [this.flags.current]);
+    }
+    if (this.flags.previous && !this.versions.includes(this.flags.previous)) {
+      throw messages.createError('error.VersionNotFound', [this.flags.previous]);
+    }
   }
 
-  private async getPreviousPlugins(): Promise<Record<string, string>> {
+  private async getCurrentPlugins(): Promise<Record<string, string>> {
+    return this.flags.current ? this.getPluginsForVersion(this.current) : this.filterPlugins(this.packageJson);
+  }
+
+  private async getPluginsForVersion(version: string): Promise<Record<string, string>> {
+    if (!this.versions.includes(version)) {
+      throw messages.createError('error.VersionNotFound', [version]);
+    }
     const [owner, repo] = this.packageJson.repository.split('/');
-    const versions = await getNpmVersions(this.packageJson.name);
-    const previousVersion = versions[versions.indexOf(this.packageJson.version) + 1];
     const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner,
       repo,
       path: 'package.json',
       accept: 'application/vnd.github.json',
-      ref: previousVersion,
+      ref: version,
     });
 
     // @ts-expect-error octokit doesn't have a type for this
