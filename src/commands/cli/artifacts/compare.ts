@@ -513,7 +513,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
 
       const promises = Object.entries(files).map(async ([name, url]) => {
         const contents = await got.get<JsonMap>(url, { followRedirect: true, responseType: 'json' });
-        return { [name.replace(/-/g, ':').replace('.json', '')]: contents.body };
+        return { [name.replace(/-/g, ':').replace(/__/g, '-').replace('.json', '')]: contents.body };
       });
 
       return (await Promise.all(promises)).reduce((acc, result) => ({ ...acc, ...result }), {});
