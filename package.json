@@ -15,7 +15,7 @@
     "@salesforce/plugin-command-reference": "^2.2.8",
     "@salesforce/plugin-trust": "^2.2.3",
     "@salesforce/sf-plugins-core": "^2.0.1",
-    "@salesforce/ts-types": "^1.5.21",
+    "@salesforce/ts-types": "^1.7.3",
     "agent-base": "^6.0.2",
     "aws-sdk": "^2.1299.0",
     "chalk": "^4.1.0",
