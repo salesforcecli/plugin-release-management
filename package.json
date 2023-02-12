@@ -43,7 +43,7 @@
     "@types/conventional-commits-parser": "^3.0.3",
     "@types/semver": "^7.3.9",
     "@types/shelljs": "^0.8.8",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.49.0",
     "aws-sdk-mock": "^5.8.0",
     "chai": "^4.3.7",
