@@ -26,11 +26,12 @@ const exec = promisify(execSync);
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-release-management', 'cli.artifacts.compare', [
-  'description',
+  'summary',
   'examples',
   'error.BreakingChanges',
   'error.VersionNotFound',
   'error.InvalidVersions',
+  'error.InvalidRepo',
   'flags.plugins.summary',
   'flags.current.summary',
   'flags.previous.summary',
@@ -259,8 +260,7 @@ export class SchemaComparator {
 }
 
 export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
-  public static readonly summary = messages.getMessage('description');
-  public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
 
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
@@ -298,6 +298,11 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     this.octokit = new MyOctokit({ auth });
     const fileData = await fs.promises.readFile('package.json', 'utf8');
     this.packageJson = parseJson(fileData) as PackageJson;
+
+    if (!['@salesforce/cli', 'sfdx-cli'].includes(this.packageJson.name)) {
+      throw messages.createError('error.InvalidRepo');
+    }
+
     this.versions = await getNpmVersions(this.packageJson.name);
 
     this.resolveVersions();
@@ -465,9 +470,6 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   }
 
   private async getPluginsForVersion(version: string): Promise<Record<string, string>> {
-    if (!this.versions.includes(version)) {
-      throw messages.createError('error.VersionNotFound', [version]);
-    }
     const [owner, repo] = this.packageJson.repository.split('/');
     const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner,
