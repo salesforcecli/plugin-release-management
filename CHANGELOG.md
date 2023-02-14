@@ -1,3 +1,12 @@
+# [3.12.0](https://github.com/salesforcecli/plugin-release-management/compare/3.11.2...3.12.0) (2023-02-14)
+
+
+### Features
+
+* add cli artifacts compare command ([#676](https://github.com/salesforcecli/plugin-release-management/issues/676)) ([115e22a](https://github.com/salesforcecli/plugin-release-management/commit/115e22afba34dd14c81757faa2c4e68b9df1ae15))
+
+
+
 ## [3.11.2](https://github.com/salesforcecli/plugin-release-management/compare/3.11.1...3.11.2) (2023-02-12)
 
 
