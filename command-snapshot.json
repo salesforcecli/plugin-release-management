@@ -21,7 +21,7 @@
   {
     "command": "cli:artifacts:compare",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "plugin"],
+    "flags": ["current", "json", "plugin", "previous"],
     "alias": []
   },
   {
