@@ -132,6 +132,9 @@
           }
         }
       },
+      "dependabot": {
+        "description": "interact with dependabot PRs"
+      },
       "github": {
         "description": "interact with github issues"
       },
