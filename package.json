@@ -136,6 +136,11 @@
         "description": "interact with dependabot PRs"
       },
       "github": {
+        "subtopics": {
+          "check": {
+            "description": "check github status"
+          }
+        },
         "description": "interact with github issues"
       },
       "npm": {

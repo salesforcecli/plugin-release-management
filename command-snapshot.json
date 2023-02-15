@@ -100,7 +100,7 @@
   {
     "command": "github:check:closed",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "name"],
+    "flags": ["github-token", "gus", "json"],
     "alias": []
   },
   {
