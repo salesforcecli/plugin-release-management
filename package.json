@@ -10,6 +10,7 @@
   "dependencies": {
     "@oclif/core": "^2.0.9",
     "@octokit/core": "^4.1.0",
+    "@octokit/plugin-throttling": "^5.0.1",
     "@salesforce/core": "^3.32.12",
     "@salesforce/kit": "^1.8.2",
     "@salesforce/plugin-command-reference": "^2.2.8",

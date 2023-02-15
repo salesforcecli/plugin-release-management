@@ -1120,6 +1120,11 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-14.0.0.tgz#949c5019028c93f189abbc2fb42f333290f7134a"
   integrity sha512-HNWisMYlR8VCnNurDU6os2ikx0s0VyEjDYHNS/h4cgb8DeOxQ0n72HyinUtdDVxJhFy3FWLGl0DJhfEWk3P5Iw==
 
+"@octokit/openapi-types@^16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-16.0.0.tgz#d92838a6cd9fb4639ca875ddb3437f1045cc625e"
+  integrity sha512-JbFWOqTJVLHZSUUoF4FzAZKYtqdxWu9Z5m2QQnOyEa04fOFljvyh7D3GYKbfuaSWisqehImiVIMG4eyJeP5VEA==
+
 "@octokit/plugin-paginate-rest@^2.16.8":
   version "2.17.0"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.17.0.tgz#32e9c7cab2a374421d3d0de239102287d791bce7"
@@ -1139,6 +1144,14 @@
   dependencies:
     "@octokit/types" "^6.34.0"
     deprecation "^2.3.1"
+
+"@octokit/plugin-throttling@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-throttling/-/plugin-throttling-5.0.1.tgz#e3ba0a49830a777097b6d49615782a0a5e51e743"
+  integrity sha512-I4qxs7wYvYlFuY3PAUGWAVPhFXG3RwnvTiSr5Fu/Auz7bYhDLnzS2MjwV8nGLq/FPrWwYiweeZrI5yjs1YG4tQ==
+  dependencies:
+    "@octokit/types" "^9.0.0"
+    bottleneck "^2.15.3"
 
 "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
   version "2.1.0"
@@ -1206,6 +1219,13 @@
   dependencies:
     "@octokit/openapi-types" "^14.0.0"
 
+"@octokit/types@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-9.0.0.tgz#6050db04ddf4188ec92d60e4da1a2ce0633ff635"
+  integrity sha512-LUewfj94xCMH2rbD5YJ+6AQ4AVjFYTgpp6rboWM5T7N3IsIF65SBEOVcYMGAEzO/kKNiNaW4LoWtoThOhH06gw==
+  dependencies:
+    "@octokit/openapi-types" "^16.0.0"
+
 "@salesforce/bunyan@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@salesforce/bunyan/-/bunyan-2.0.0.tgz#8dbe377f2cf7d35348a23260416fee15adba5f97"
@@ -1218,30 +1238,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/core@^3.32.12", "@salesforce/core@^3.32.9", "@salesforce/core@^3.8.0":
-  version "3.32.12"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.12.tgz#853cc5b6a5f95d4896b2d34a40a6042ef9aa6d2c"
-  integrity sha512-27rqSiQWul7b/OkJs19FYDv2M/S4oI4efiGv+6sR7UWv7D7CG1P+0XpgLS3d9xRYF30h98n6VQr4W2a+BWFRvA==
-  dependencies:
-    "@salesforce/bunyan" "^2.0.0"
-    "@salesforce/kit" "^1.8.0"
-    "@salesforce/schemas" "^1.4.0"
-    "@salesforce/ts-types" "^1.5.21"
-    "@types/graceful-fs" "^4.1.5"
-    "@types/semver" "^7.3.13"
-    ajv "^8.11.2"
-    archiver "^5.3.0"
-    change-case "^4.1.2"
-    debug "^3.2.7"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    graceful-fs "^4.2.9"
-    js2xmlparser "^4.0.1"
-    jsforce "^2.0.0-beta.19"
-    jsonwebtoken "9.0.0"
-    ts-retry-promise "^0.7.0"
-
-"@salesforce/core@^3.33.1":
+"@salesforce/core@^3.32.12", "@salesforce/core@^3.32.9", "@salesforce/core@^3.33.1", "@salesforce/core@^3.8.0":
   version "3.33.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.33.1.tgz#3dd0a44ba22763e8e0c2c97df03393e5c2c845d9"
   integrity sha512-jaed8rK+NhSxB6MjYUN8f/2VkvtbFN/Ce/l6JvgFE+cvOf2g+lPv1pSsnKKlaSiiYcXkOvIRDT9d9ns1RLJzUw==
@@ -1309,16 +1306,7 @@
     typescript "^4.1.3"
     wireit "^0.9.3"
 
-"@salesforce/kit@^1.5.17", "@salesforce/kit@^1.7.1", "@salesforce/kit@^1.8.0", "@salesforce/kit@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.8.2.tgz#97d652bef37d02a13dffd6e9b68050e779db2bc4"
-  integrity sha512-UoY1bgWjw198QMyLKYXlF1bdqBqVtffBgtIT1M/cEwBF/Es1Oz3HaF1TwF98CmyC1dr6rL08Hr2SE5zHGijcLw==
-  dependencies:
-    "@salesforce/ts-types" "^1.7.1"
-    shx "^0.3.3"
-    tslib "^2.2.0"
-
-"@salesforce/kit@^1.8.3":
+"@salesforce/kit@^1.5.17", "@salesforce/kit@^1.7.1", "@salesforce/kit@^1.8.0", "@salesforce/kit@^1.8.2", "@salesforce/kit@^1.8.3":
   version "1.8.4"
   resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.8.4.tgz#19918938d5f89ecb4e78a363b38605a529bcd7d4"
   integrity sha512-H2KWT2soWEDf+QbcMLYBNt2iHEEDIihxoWufphu8FGySiAibEZcl2SPZJ87nbUW/Yu+dLqPEKTUZxvDEx7t3UQ==
@@ -2311,6 +2299,11 @@ bl@^4.0.3, bl@^4.1.0:
     buffer "^5.5.0"
     inherits "^2.0.4"
     readable-stream "^3.4.0"
+
+bottleneck@^2.15.3:
+  version "2.19.5"
+  resolved "https://registry.yarnpkg.com/bottleneck/-/bottleneck-2.19.5.tgz#5df0b90f59fd47656ebe63c78a98419205cadd91"
+  integrity sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -3769,52 +3762,7 @@ eslint-visitor-keys@^3.3.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.3.0.tgz#f6480fa6b1f30efe2d1968aa8ac745b862469826"
   integrity sha512-mQ+suqKJVyeuwGYHAdjMFqjCyfl8+Ldnxuyp3ldiMBFKkvytrXUZWaiPCEav8qDHKty44bD+qV1IP4T+w+xXRA==
 
-eslint@^8.31.0:
-  version "8.31.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.31.0.tgz#75028e77cbcff102a9feae1d718135931532d524"
-  integrity sha512-0tQQEVdmPZ1UtUKXjX7EMm9BlgJ08G90IhWh0PKDCb3ZLsgAOHI8fYSIzYVZej92zsgq+ft0FGsxhJ3xo2tbuA==
-  dependencies:
-    "@eslint/eslintrc" "^1.4.1"
-    "@humanwhocodes/config-array" "^0.11.8"
-    "@humanwhocodes/module-importer" "^1.0.1"
-    "@nodelib/fs.walk" "^1.2.8"
-    ajv "^6.10.0"
-    chalk "^4.0.0"
-    cross-spawn "^7.0.2"
-    debug "^4.3.2"
-    doctrine "^3.0.0"
-    escape-string-regexp "^4.0.0"
-    eslint-scope "^7.1.1"
-    eslint-utils "^3.0.0"
-    eslint-visitor-keys "^3.3.0"
-    espree "^9.4.0"
-    esquery "^1.4.0"
-    esutils "^2.0.2"
-    fast-deep-equal "^3.1.3"
-    file-entry-cache "^6.0.1"
-    find-up "^5.0.0"
-    glob-parent "^6.0.2"
-    globals "^13.19.0"
-    grapheme-splitter "^1.0.4"
-    ignore "^5.2.0"
-    import-fresh "^3.0.0"
-    imurmurhash "^0.1.4"
-    is-glob "^4.0.0"
-    is-path-inside "^3.0.3"
-    js-sdsl "^4.1.4"
-    js-yaml "^4.1.0"
-    json-stable-stringify-without-jsonify "^1.0.1"
-    levn "^0.4.1"
-    lodash.merge "^4.6.2"
-    minimatch "^3.1.2"
-    natural-compare "^1.4.0"
-    optionator "^0.9.1"
-    regexpp "^3.2.0"
-    strip-ansi "^6.0.1"
-    strip-json-comments "^3.1.0"
-    text-table "^0.2.0"
-
-eslint@^8.32.0:
+eslint@^8.31.0, eslint@^8.32.0:
   version "8.33.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.33.0.tgz#02f110f32998cb598c6461f24f4d306e41ca33d7"
   integrity sha512-WjOpFQgKK8VrCnAtl8We0SUOy/oVZ5NHykyMiagV1M9r8IFpIJX7DduK6n1mpfhlG7T1NLWm2SuD8QB7KFySaA==
@@ -8613,12 +8561,7 @@ typedoc@0.23.16:
     minimatch "^5.1.0"
     shiki "^0.11.1"
 
-typescript@^4.1.3, typescript@^4.6.4, typescript@^4.9.4:
-  version "4.9.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
-  integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
-
-typescript@~4.9.3:
+typescript@^4.1.3, typescript@^4.6.4, typescript@^4.9.4, typescript@~4.9.3:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==

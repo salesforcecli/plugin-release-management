@@ -98,6 +98,12 @@
     "alias": []
   },
   {
+    "command": "github:check:closed",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json", "name"],
+    "alias": []
+  },
+  {
     "command": "npm:dependencies:pin",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "json", "tag"],
