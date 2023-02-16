@@ -47,10 +47,12 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
       },
     });
 
+    // search open issues for W- in any comments
     const issues = await octokit.request('GET /search/issues', {
       q: 'is:open is:issue repo:forcedotcom/cli W- in:comments',
     });
 
+    // get all comments for those issues
     const commentsWithWI = (
       await Promise.all(
         issues.data.items.map((issue) =>
@@ -63,24 +65,26 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
         )
       )
     )
+      // comment includes W-
       .map((issueComments) => issueComments.data.find((comment) => comment.body.includes('W-')))
       .filter(isObject)
+      // extract url and WI number
       .map((comment) => ({ issueUrl: comment.issue_url, workItem: comment.body.match(/W-[0-9]{8,9}/g) }))
       .filter((item) => item.workItem?.length)
       .map((item) => ({ issueUrl: item.issueUrl, workItem: item.workItem[0] }));
 
     const wiToQuery = commentsWithWI.map((item) => item.workItem);
+    // query all those WI in GUS, and turn into a Map
     const wiQueryResult = new Map<string, string>(
       (
         await flags.gus
           .getConnection()
           .sobject('ADM_Work__c')
-          // eslint-disable-next-line camelcase
-          // .find({ Name: { $in: wiToQuery }, Status__c: { $like: 'Closed%' } })
           .find({ Name: { $in: wiToQuery } })
       ).map((item) => [item.Name, item.Status__c])
     );
 
+    // join GH and GUS results
     const results = commentsWithWI
       .map(
         (item): GithubCheckClosedResult => ({
