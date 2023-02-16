@@ -24,6 +24,26 @@
 
 ## [3.10.1](https://github.com/salesforcecli/plugin-release-management/compare/3.10.0...3.10.1) (2023-02-07)
 
+## [3.11.2](https://github.com/salesforcecli/plugin-release-management/compare/3.11.1...3.11.2) (2023-02-12)
+
+### Bug Fixes
+
+- **deps:** bump aws-sdk from 2.1299.0 to 2.1313.0 ([113ca38](https://github.com/salesforcecli/plugin-release-management/commit/113ca383fb5de2410d08013a4897011b3f7b891c))
+
+## [3.11.1](https://github.com/salesforcecli/plugin-release-management/compare/3.11.0...3.11.1) (2023-02-11)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/ts-types from 1.7.2 to 1.7.3 ([ac423b2](https://github.com/salesforcecli/plugin-release-management/commit/ac423b2593acf32675b434b2d10bea2d2e72b32d))
+
+# [3.11.0](https://github.com/salesforcecli/plugin-release-management/compare/3.10.1...3.11.0) (2023-02-07)
+
+### Features
+
+- automerge dev-scripts updates when green ([6feba92](https://github.com/salesforcecli/plugin-release-management/commit/6feba92bd717a0ff21463a76b248c0a2eaeac100))
+
+## [3.10.1](https://github.com/salesforcecli/plugin-release-management/compare/3.10.0...3.10.1) (2023-02-07)
+
 ### Bug Fixes
 
 - **deps:** bump http-cache-semantics from 4.1.0 to 4.1.1 ([6bbebab](https://github.com/salesforcecli/plugin-release-management/commit/6bbebaba91dddb7519012012559f73257b09fd96))
