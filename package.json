@@ -11,9 +11,10 @@
     "@oclif/core": "^2.0.9",
     "@octokit/core": "^4.1.0",
     "@octokit/plugin-paginate-rest": "^6.0.0",
+    "@octokit/plugin-throttling": "^5.0.1",
     "@salesforce/core": "^3.32.12",
     "@salesforce/kit": "^1.8.2",
-    "@salesforce/plugin-command-reference": "^2.2.8",
+    "@salesforce/plugin-command-reference": "^2.3.1",
     "@salesforce/plugin-trust": "^2.2.3",
     "@salesforce/sf-plugins-core": "^2.0.1",
     "@salesforce/ts-types": "^1.7.3",
@@ -128,16 +129,16 @@
       "channel": {
         "description": "interact with aws channels for clis"
       },
-      "circleci": {
-        "description": "interact with circleci api",
-        "subtopics": {
-          "envvar": {
-            "description": "update and set environment variables in circleci"
-          }
-        }
-      },
       "dependabot": {
         "description": "interact with dependabot PRs"
+      },
+      "github": {
+        "subtopics": {
+          "check": {
+            "description": "check github status"
+          }
+        },
+        "description": "interact with github issues"
       },
       "npm": {
         "description": "release npm packages",
