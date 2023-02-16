@@ -100,7 +100,12 @@ export default class AutoMerge extends SfCommand<void> {
     this.log(`owner: ${this.baseRepoObject.owner}, scope: ${this.baseRepoObject.repo}`);
     const eligiblePRs = (
       await this.octokit.request('GET /repos/{owner}/{repo}/pulls', this.baseRepoObject)
-    ).data.filter((pr) => pr.state === 'open' && pr.user.login === 'dependabot[bot]') as PullRequest[];
+    ).data.filter(
+      (pr) =>
+        pr.state === 'open' &&
+        (pr.user.login === 'dependabot[bot]' ||
+          (pr.title.includes('refactor: devScripts update') && pr.user.login === 'svc-cli-bot'))
+    ) as PullRequest[];
     const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter((pr) => pr !== undefined);
     const mergeablePRs = (await Promise.all(greenPRs.map((pr) => this.isMergeable(pr)))).filter(
       (pr) => pr !== undefined
