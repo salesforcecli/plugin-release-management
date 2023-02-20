@@ -59,6 +59,10 @@ export default class build extends SfCommand<void> {
       default: true,
       allowNo: true,
     }),
+    label: Flags.string({
+      summary: messages.getMessage('flags.label'),
+      multiple: true,
+    }),
     patch: Flags.boolean({
       summary: messages.getMessage('flags.patch'),
       exclusive: ['prerelease'],
@@ -201,7 +205,7 @@ export default class build extends SfCommand<void> {
       const prereleaseDetails =
         '\n**IMPORTANT:**\nPrereleases work differently than regular releases. Github Actions watches for branches prefixed with `prerelease/`. As long as the `package.json` contains a valid "prerelease tag" (1.2.3-dev.0), a new prerelease will be created for EVERY COMMIT pushed to that branch. If you would like to merge this PR into `main`, simply push one more commit to this branch that sets the version in the `package.json` to the version you\'d like to release.';
 
-      await octokit.request(`POST /repos/${repoOwner}/${repoName}/pulls`, {
+      const pr = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
         owner: repoOwner,
         repo: repoName,
         head: branchName,
@@ -209,6 +213,16 @@ export default class build extends SfCommand<void> {
         title: `Release PR for ${nextVersion}`,
         body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
       });
+
+      if (flags.label) {
+        await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+          owner: repoOwner,
+          repo: repoName,
+          // eslint-disable-next-line camelcase
+          issue_number: pr.data.number,
+          labels: flags.label,
+        });
+      }
     }
   }
 
