@@ -1,3 +1,12 @@
+# [3.13.0](https://github.com/salesforcecli/plugin-release-management/compare/3.12.1...3.13.0) (2023-02-22)
+
+
+### Features
+
+* ensure plugin versions are pinned before comparing artifacts ([#689](https://github.com/salesforcecli/plugin-release-management/issues/689)) ([6abc9a3](https://github.com/salesforcecli/plugin-release-management/commit/6abc9a31a1b37335bd698a335f643b55baf454fc))
+
+
+
 ## [3.12.1](https://github.com/salesforcecli/plugin-release-management/compare/3.12.0...3.12.1) (2023-02-18)
 
 
