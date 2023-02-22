@@ -30,6 +30,7 @@ export default class Compare extends SfCommand<Results> {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {};
+  public static readonly state = 'deprecated';
 
   public async run(): Promise<Results> {
     // The "existing schema" is the schema that is stored at the CLI level

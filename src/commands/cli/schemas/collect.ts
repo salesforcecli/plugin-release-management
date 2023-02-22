@@ -57,6 +57,8 @@ export default class Collect extends SfCommand<void> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {};
 
+  public static readonly state = 'deprecated';
+
   // eslint-disable-next-line class-methods-use-this
   public async run(): Promise<void> {
     const schemaFiles = await getLatestSchemaFiles();
