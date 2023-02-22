@@ -32,6 +32,7 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.art
   'error.VersionNotFound',
   'error.InvalidVersions',
   'error.InvalidRepo',
+  'error.VersionNotPinned',
   'flags.plugins.summary',
   'flags.current.summary',
   'flags.previous.summary',
@@ -503,18 +504,23 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     repo: string
   ): Promise<{ current: string | null; previous: string | null }> {
     const tags = await this.getTags(owner, repo);
-    return {
-      current: this.currentPlugins[plugin]
-        ? tags.includes(this.currentPlugins[plugin])
-          ? this.currentPlugins[plugin]
-          : `v${this.currentPlugins[plugin]}`
-        : null,
-      previous: this.previousPlugins[plugin]
-        ? tags.includes(this.previousPlugins[plugin])
-          ? this.previousPlugins[plugin]
-          : `v${this.previousPlugins[plugin]}`
-        : null,
-    };
+    const current = this.currentPlugins[plugin]
+      ? tags.includes(this.currentPlugins[plugin])
+        ? this.currentPlugins[plugin]
+        : `v${this.currentPlugins[plugin]}`
+      : null;
+
+    const previous = this.previousPlugins[plugin]
+      ? tags.includes(this.previousPlugins[plugin])
+        ? this.previousPlugins[plugin]
+        : `v${this.previousPlugins[plugin]}`
+      : null;
+
+    if (current.includes('^') || current.includes('~')) {
+      throw messages.createError('error.VersionNotPinned', [plugin]);
+    }
+
+    return { current, previous };
   }
 
   private async getSchemas(owner: string, repo: string, ref: string | null): Promise<Record<string, JsonMap>> {
