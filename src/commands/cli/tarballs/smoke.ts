@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
+/* eslint-disable no-await-in-loop */
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -74,7 +74,6 @@ export default class SmokeTest extends SfCommand<void> {
     const manifest = parseJson(manifestData) as Interfaces.Manifest;
 
     const commands = Object.values(manifest.commands);
-    const logs: Record<string, string[]> = jitPlugins.reduce((acc, plugin) => ({ ...acc, [plugin]: [] }), {});
     let failed = false;
 
     const help = async (command: string): Promise<boolean> => {
@@ -86,47 +85,42 @@ export default class SmokeTest extends SfCommand<void> {
       }
     };
 
-    const promises = jitPlugins.map(async (plugin) => {
+    // We have to test these serially in order to avoid issues when running plugin installs concurrently.
+    for (const plugin of jitPlugins) {
       try {
-        logs[plugin].push(`Testing JIT install for ${plugin}`);
+        this.log(`Testing JIT install for ${plugin}`);
         const firstCommand = commands.find((c) => c.pluginName === plugin);
 
         // Test that --help works on JIT commands
         const helpResult = await help(firstCommand.id);
-        logs[plugin].push(
-          `${executable} ${firstCommand.id} --help ${helpResult ? chalk.green('PASSED') : chalk.red('FAILED')}`
-        );
+        this.log(`${executable} ${firstCommand.id} --help ${helpResult ? chalk.green('PASSED') : chalk.red('FAILED')}`);
 
-        logs[plugin].push(`${executable} ${firstCommand.id}`);
+        this.log(`${executable} ${firstCommand.id}`);
         // Test that executing the command will trigger JIT install
         // This will likely always fail because we're not providing all the required flags or it depends on some other setup.
         // However, this is okay because all we need to verify is that running the command will trigger the JIT install
         const { stdout, stderr } = await exec(`${executable} ${firstCommand.id}`, { maxBuffer: 1024 * 1024 * 100 });
-        logs[plugin].push(stdout);
-        logs[plugin].push(stderr);
+        this.log(stdout);
+        this.log(stderr);
       } catch (e) {
         const err = e as ExecException;
         // @ts-expect-error ExecException type doesn't have a stdout or stderr property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        logs[plugin].push(err.stdout);
+        this.log(err.stdout);
         // @ts-expect-error ExecException type doesn't have a stdout or stderr property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        logs[plugin].push(err.stderr);
+        this.log(err.stderr);
       } finally {
         const result = await this.verifyInstall(plugin, true);
         if (result) {
-          logs[plugin].push(`✅ ${chalk.green(`Verified installation of ${plugin}\n`)}`);
+          this.log(`✅ ${chalk.green(`Verified installation of ${plugin}\n`)}`);
         } else {
           failed = true;
-          logs[plugin].push(`❌ ${chalk.green(`Failed installation of ${plugin}\n`)}`);
+          this.log(`❌ ${chalk.green(`Failed installation of ${plugin}\n`)}`);
         }
       }
-    });
-
-    await Promise.all(promises);
-    for (const log of Object.values(logs)) {
-      this.log(log.join('\n'));
     }
+
     if (failed) {
       throw new SfError('Failed JIT installation');
     }
