@@ -1,3 +1,12 @@
+## [3.13.2](https://github.com/salesforcecli/plugin-release-management/compare/3.13.1...3.13.2) (2023-02-23)
+
+
+### Bug Fixes
+
+* remove plugin-generate check ([#692](https://github.com/salesforcecli/plugin-release-management/issues/692)) ([8980368](https://github.com/salesforcecli/plugin-release-management/commit/89803686fd79e6ea26707ada0789e033b2ac4ed4))
+
+
+
 ## [3.13.1](https://github.com/salesforcecli/plugin-release-management/compare/3.13.0...3.13.1) (2023-02-22)
 
 
