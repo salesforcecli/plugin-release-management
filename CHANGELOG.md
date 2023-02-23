@@ -1,3 +1,12 @@
+## [3.13.3](https://github.com/salesforcecli/plugin-release-management/compare/3.13.2...3.13.3) (2023-02-23)
+
+
+### Bug Fixes
+
+* only run JIT smoke tests for main executable ([#693](https://github.com/salesforcecli/plugin-release-management/issues/693)) ([276bfc4](https://github.com/salesforcecli/plugin-release-management/commit/276bfc41d699952913b77a0f3b155d919d2cada7))
+
+
+
 ## [3.13.2](https://github.com/salesforcecli/plugin-release-management/compare/3.13.1...3.13.2) (2023-02-23)
 
 
