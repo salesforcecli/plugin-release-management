@@ -59,7 +59,11 @@ export default class SmokeTest extends SfCommand<void> {
       this.execute(executable, 'plugins --core'),
       this.testInstall(executable, '@salesforce/plugin-alias', 'latest'),
     ]);
-    await this.testJITInstall(executable);
+
+    // Only run JIT tests for the main executable
+    if (this.flags.cli === CLI.SFDX && !executable.endsWith('sf')) {
+      await this.testJITInstall(executable);
+    }
     await this.initializeAllCommands(executable);
   }
 
@@ -116,7 +120,7 @@ export default class SmokeTest extends SfCommand<void> {
           this.log(`✅ ${chalk.green(`Verified installation of ${plugin}\n`)}`);
         } else {
           failed = true;
-          this.log(`❌ ${chalk.green(`Failed installation of ${plugin}\n`)}`);
+          this.log(`❌ ${chalk.red(`Failed installation of ${plugin}\n`)}`);
         }
       }
     }
