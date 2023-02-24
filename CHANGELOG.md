@@ -1,3 +1,12 @@
+# [3.14.0](https://github.com/salesforcecli/plugin-release-management/compare/3.13.3...3.14.0) (2023-02-24)
+
+
+### Features
+
+* add labels to release PR ([7daf234](https://github.com/salesforcecli/plugin-release-management/commit/7daf2343181cabba7637bc3e87afc3d4c405ad6b))
+
+
+
 ## [3.13.3](https://github.com/salesforcecli/plugin-release-management/compare/3.13.2...3.13.3) (2023-02-23)
 
 
