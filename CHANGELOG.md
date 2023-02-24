@@ -1,3 +1,12 @@
+## [3.14.1](https://github.com/salesforcecli/plugin-release-management/compare/3.14.0...3.14.1) (2023-02-24)
+
+
+### Bug Fixes
+
+* use correct path for verifying install ([#695](https://github.com/salesforcecli/plugin-release-management/issues/695)) ([c41a0a5](https://github.com/salesforcecli/plugin-release-management/commit/c41a0a5150bbde859b40e8577fc8b8c1bd58721d))
+
+
+
 # [3.14.0](https://github.com/salesforcecli/plugin-release-management/compare/3.13.3...3.14.0) (2023-02-24)
 
 
