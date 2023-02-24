@@ -17,6 +17,7 @@
     "resolutions": "bump the versions of packages listed in the resolutions section",
     "pinnedDeps": "bump the versions of the packages listed in the pinnedDependencies section",
     "jit": "bump the versions of the packages listed in the jitPlugins (just-in-time) section",
+    "label": "add one or more labels to the Github PR",
     "only": "only bump the version of the packages passed in, uses latest if version is not provided",
     "patch": "bump the release as a patch of an existing version, not a new minor version",
     "prerelease": "name of the prerelease to create, examples: dev, alpha",
