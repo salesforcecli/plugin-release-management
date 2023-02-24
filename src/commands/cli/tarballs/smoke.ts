@@ -115,7 +115,7 @@ export default class SmokeTest extends SfCommand<void> {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.log(err.stderr);
       } finally {
-        const result = await this.verifyInstall(plugin, true);
+        const result = await this.verifyInstall(plugin, executable, true);
         if (result) {
           this.log(`✅ ${chalk.green(`Verified installation of ${plugin}\n`)}`);
         } else {
@@ -132,12 +132,12 @@ export default class SmokeTest extends SfCommand<void> {
 
   private async testInstall(executable: string, plugin: string, tag?: string): Promise<void> {
     await this.execute(executable, `plugins:install ${plugin}${tag ? `@${tag}` : ''}`);
-    await this.verifyInstall(plugin);
+    await this.verifyInstall(plugin, executable);
   }
 
-  private async verifyInstall(plugin: string, silent = false): Promise<boolean> {
+  private async verifyInstall(plugin: string, executable: string, silent = false): Promise<boolean> {
     const fileData = await fs.promises.readFile(
-      path.join(os.homedir(), '.local', 'share', this.flags.cli, 'package.json'),
+      path.join(os.homedir(), '.local', 'share', path.basename(executable), 'package.json'),
       'utf-8'
     );
     const packageJson = parseJson(fileData) as PackageJson;
