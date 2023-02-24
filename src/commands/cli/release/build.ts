@@ -39,8 +39,8 @@ export default class build extends SfCommand<void> {
     }),
     'release-channel': Flags.string({
       summary: messages.getMessage('flags.releaseChannel'),
-      options: ['nightly', 'latest-rc', 'latest'],
-      exactlyOne: ['release-channel', 'prerelease'],
+      char: 'c',
+      required: true,
     }),
     'build-only': Flags.boolean({
       summary: messages.getMessage('flags.buildOnly'),
@@ -72,16 +72,23 @@ export default class build extends SfCommand<void> {
       summary: messages.getMessage('flags.patch'),
       exclusive: ['prerelease'],
     }),
-    prerelease: Flags.string({
+    prerelease: Flags.boolean({
       summary: messages.getMessage('flags.prerelease'),
       exclusive: ['patch'],
     }),
   };
 
+  /* eslint-disable complexity */
   public async run(): Promise<void> {
     const { flags } = await this.parse(build);
 
     const pushChangesToGitHub = !flags['build-only'];
+
+    if (!['latest', 'latest-rc', 'nightly'].includes(flags['release-channel']) && !flags.prerelease) {
+      throw new SfError(
+        'The "--prerelease" flag is required when "--release-channel" is not one of: "latest", "latest-rc", or "nightly"'
+      );
+    }
 
     const auth = pushChangesToGitHub
       ? ensureString(
@@ -105,7 +112,10 @@ export default class build extends SfCommand<void> {
 
     // TODO: We might want to check and see if nextVersion exists in npm
     // Determine the next version based on if --patch was passed in or if it is a prerelease
-    const nextVersion = repo.package.determineNextVersion(flags.patch, flags.prerelease);
+    const nextVersion = repo.package.determineNextVersion(
+      flags.patch,
+      flags.prerelease ? flags['release-channel'] : undefined
+    );
     repo.nextVersion = nextVersion;
 
     // Prereleases and patches need special branch prefixes to trigger GitHub Actions
