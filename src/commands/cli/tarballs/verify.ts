@@ -82,7 +82,6 @@ export default class Verify extends SfCommand<void> {
         this.ensureNoHerokuCliUtilNyc.bind(this),
         this.ensureWindowsPathLengths.bind(this),
         this.ensureApexNode.bind(this),
-        this.ensurePluginGenerateTestTemplates.bind(this),
         this.ensureTemplatesCommands.bind(this),
         this.ensureNoDistTestsOrMaps.bind(this),
         this.ensureNoUnexpectedFiles.bind(this),
@@ -211,23 +210,6 @@ export default class Verify extends SfCommand<void> {
     const passed = await this.execute('Ensure apex-node exists', validate);
     if (!passed) {
       throw new SfError(`${apexNodePath} is missing!. Was the clean too aggressive?`);
-    }
-  }
-
-  public async ensurePluginGenerateTestTemplates(): Promise<void> {
-    const pluginGeneratorTestPath = path.join(
-      this.baseDir,
-      'node_modules',
-      '@salesforce',
-      'plugin-generator',
-      'templates',
-      'sfdxPlugin',
-      'test'
-    );
-    const validate = async (): Promise<boolean> => fileExists(pluginGeneratorTestPath);
-    const passed = await this.execute('Ensure plugin generator test template exists', validate);
-    if (!passed) {
-      throw new SfError(`${pluginGeneratorTestPath} is missing!. Was the clean too aggressive?`);
     }
   }
 

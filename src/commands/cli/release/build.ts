@@ -73,9 +73,11 @@ export default class build extends SfCommand<void> {
     }),
     snapshot: Flags.boolean({
       summary: messages.getMessage('flags.snapshot'),
+      deprecated: true,
     }),
     schema: Flags.boolean({
       summary: messages.getMessage('flags.schema'),
+      deprecated: true,
     }),
   };
 
@@ -178,13 +180,11 @@ export default class build extends SfCommand<void> {
     await this.exec('yarn install');
 
     if (flags.snapshot) {
-      this.log('Updating snapshots');
-      await this.exec(`./bin/${repo.name === 'sfdx-cli' ? 'dev.sh' : 'dev'} snapshot:generate`);
+      this.warn('snapshot flag is deprecated. Skipping snapshot updates.');
     }
 
     if (flags.schema) {
-      this.log('Updating schema');
-      await this.exec('sf-release cli:schemas:collect');
+      this.warn('schema flag is deprecated. Skipping schema updates.');
     }
 
     this.log('Updates complete');

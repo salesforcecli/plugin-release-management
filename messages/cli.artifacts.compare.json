@@ -7,5 +7,6 @@
   "flags.current.summary": "Current CLI version to compare against. Defaults to the version on the CLI in the current directory.",
   "error.VersionNotFound": "Version not found: %s.",
   "error.InvalidVersions": "Current version %s must be newer than previous version %s.",
-  "error.InvalidRepo": "This command must be run from the root directory of @salesforce/cli or sfdx-cli."
+  "error.InvalidRepo": "This command must be run from the root directory of @salesforce/cli or sfdx-cli.",
+  "error.VersionNotPinned": "Plugin %s is not pinned in package.json."
 }

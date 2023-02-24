@@ -1,3 +1,39 @@
+## [3.13.3](https://github.com/salesforcecli/plugin-release-management/compare/3.13.2...3.13.3) (2023-02-23)
+
+
+### Bug Fixes
+
+* only run JIT smoke tests for main executable ([#693](https://github.com/salesforcecli/plugin-release-management/issues/693)) ([276bfc4](https://github.com/salesforcecli/plugin-release-management/commit/276bfc41d699952913b77a0f3b155d919d2cada7))
+
+
+
+## [3.13.2](https://github.com/salesforcecli/plugin-release-management/compare/3.13.1...3.13.2) (2023-02-23)
+
+
+### Bug Fixes
+
+* remove plugin-generate check ([#692](https://github.com/salesforcecli/plugin-release-management/issues/692)) ([8980368](https://github.com/salesforcecli/plugin-release-management/commit/89803686fd79e6ea26707ada0789e033b2ac4ed4))
+
+
+
+## [3.13.1](https://github.com/salesforcecli/plugin-release-management/compare/3.13.0...3.13.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* run JIT smoke tests serially ([#691](https://github.com/salesforcecli/plugin-release-management/issues/691)) ([ea9cb90](https://github.com/salesforcecli/plugin-release-management/commit/ea9cb90e0b28eb54f15c4a7ad355001871590242))
+
+
+
+# [3.13.0](https://github.com/salesforcecli/plugin-release-management/compare/3.12.1...3.13.0) (2023-02-22)
+
+
+### Features
+
+* ensure plugin versions are pinned before comparing artifacts ([#689](https://github.com/salesforcecli/plugin-release-management/issues/689)) ([6abc9a3](https://github.com/salesforcecli/plugin-release-management/commit/6abc9a31a1b37335bd698a335f643b55baf454fc))
+
+
+
 ## [3.12.1](https://github.com/salesforcecli/plugin-release-management/compare/3.12.0...3.12.1) (2023-02-18)
 
 
