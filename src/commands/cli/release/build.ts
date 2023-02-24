@@ -37,6 +37,11 @@ export default class build extends SfCommand<void> {
       char: 'g',
       exactlyOne: ['start-from-npm-dist-tag', 'start-from-github-ref'],
     }),
+    'release-channel': Flags.string({
+      summary: messages.getMessage('flags.releaseChannel'),
+      options: ['nightly', 'latest-rc', 'latest'],
+      exactlyOne: ['release-channel', 'prerelease'],
+    }),
     'build-only': Flags.boolean({
       summary: messages.getMessage('flags.buildOnly'),
       default: false,
@@ -70,14 +75,6 @@ export default class build extends SfCommand<void> {
     prerelease: Flags.string({
       summary: messages.getMessage('flags.prerelease'),
       exclusive: ['patch'],
-    }),
-    snapshot: Flags.boolean({
-      summary: messages.getMessage('flags.snapshot'),
-      deprecated: true,
-    }),
-    schema: Flags.boolean({
-      summary: messages.getMessage('flags.schema'),
-      deprecated: true,
     }),
   };
 
@@ -128,16 +125,6 @@ export default class build extends SfCommand<void> {
     // Create a new branch that matches the next version
     await this.exec(`git switch -c ${branchName}`);
 
-    if (flags.patch && pushChangesToGitHub) {
-      // Since patches can be created from any previous dist-tag or github ref,
-      // it is unlikely that we would be able to merge these into main.
-      // Before we make any changes, push this branch to use as our PR `base`.
-      // The build-patch.yml GHA will watch for merges into this branch to trigger a patch release
-      // TODO: ^ update this GHA reference once it is decided
-
-      await this.exec(`git push -u origin ${branchName}`);
-    }
-
     // bump the version in the pjson to the next version for this tag
     this.log(`Setting the version to ${nextVersion}`);
     repo.package.setNextVersion(nextVersion);
@@ -179,14 +166,6 @@ export default class build extends SfCommand<void> {
     // Run an install with deduplicated dependencies (with scripts)
     await this.exec('yarn install');
 
-    if (flags.snapshot) {
-      this.warn('snapshot flag is deprecated. Skipping snapshot updates.');
-    }
-
-    if (flags.schema) {
-      this.warn('schema flag is deprecated. Skipping schema updates.');
-    }
-
     this.log('Updates complete');
 
     if (pushChangesToGitHub) {
@@ -201,17 +180,22 @@ export default class build extends SfCommand<void> {
 
       const [repoOwner, repoName] = repo.package.packageJson.repository.split('/');
 
-      // TODO: Review this after prerelease flow is solidified
-      const prereleaseDetails =
-        '\n**IMPORTANT:**\nPrereleases work differently than regular releases. Github Actions watches for branches prefixed with `prerelease/`. As long as the `package.json` contains a valid "prerelease tag" (1.2.3-dev.0), a new prerelease will be created for EVERY COMMIT pushed to that branch. If you would like to merge this PR into `main`, simply push one more commit to this branch that sets the version in the `package.json` to the version you\'d like to release.';
+      const releaseDetails = `
+> **Note**
+> Patches and prereleases often require very specific starting points and changes.
+> These changes cannot always be shipped from \`main\` since it is likely ahead in commits.
+> Because of this their release process is slightly different, they "ship" from the PR itself.
+> Once your PR is ready to be released, add the "release-it" label.`;
+
+      const includeReleaseDetails = flags.prerelease || (flags.patch && !flags.label.includes('nightly-automerge'));
 
       const pr = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
         owner: repoOwner,
         repo: repoName,
         head: branchName,
         base: 'main',
-        title: `Release PR for ${nextVersion}`,
-        body: `Building ${nextVersion} [skip-validate-pr]${flags.prerelease ? prereleaseDetails : ''}`,
+        title: `Release PR for ${nextVersion} as ${flags['release-channel'] || flags.prerelease}`,
+        body: `Building ${nextVersion}\n[skip-validate-pr]\n${includeReleaseDetails ? releaseDetails : ''}`,
       });
 
       if (flags.label) {
