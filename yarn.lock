@@ -913,10 +913,10 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^2.0.3", "@oclif/core@^2.0.7", "@oclif/core@^2.0.9", "@oclif/core@^2.1.1":
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.1.6.tgz#34a1847da7195616fda62663098c9df0c486ae64"
-  integrity sha512-RMqjKVExVxMmAm3a64LFrIZloKD7emSDro1Mmcc8DOB3O+/pL9drqScc/dw/Alhi6KrmdqwOtxHtKrAwqvyKMg==
+"@oclif/core@^2.0.3", "@oclif/core@^2.0.7", "@oclif/core@^2.0.9", "@oclif/core@^2.1.1", "@oclif/core@^2.1.6":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.3.0.tgz#f63071a8116118ae02e457ac1d28a7649904aecf"
+  integrity sha512-xA53NIZDqz9nuxyCMA5Pz5b1RSgyTNWbtOdwbUJeZa/ajtVrVO9yA8k/4vJRsffUuLyP8tNbh4cH3DDZKwIFnw==
   dependencies:
     "@types/cli-progress" "^3.11.0"
     ansi-escapes "^4.3.2"
@@ -926,7 +926,7 @@
     clean-stack "^3.0.1"
     cli-progress "^3.11.2"
     debug "^4.3.4"
-    ejs "^3.1.6"
+    ejs "^3.1.8"
     fs-extra "^9.1.0"
     get-package-type "^0.1.0"
     globby "^11.1.0"
@@ -1007,12 +1007,12 @@
     chalk "^4.1.0"
     tslib "^2.0.0"
 
-"@oclif/plugin-command-snapshot@^3.3.2":
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-command-snapshot/-/plugin-command-snapshot-3.3.2.tgz#1d5da0d65521fb6a37555b12470a2e1d7326e802"
-  integrity sha512-BKO+Ey2nlI4kQrDFrzFMfxbn82jJKFMCKe4igxffjE8h97/BvfJ9fwzYyK2rCxskyC9vrHDzr/1IFnw/X5nXxQ==
+"@oclif/plugin-command-snapshot@^3.3.6":
+  version "3.3.6"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-command-snapshot/-/plugin-command-snapshot-3.3.6.tgz#8c3175f6e1deb023f8ebcd9574fbae8797c0f79b"
+  integrity sha512-yXWmYRpjy5pv4pmfrsK/PXnwXxXR0DwwkuVYPZEiwMXwdKI7Pd/72Qde4JI9ldwBGxWduf/Md32dzdSPqr3wTQ==
   dependencies:
-    "@oclif/core" "^2.0.3"
+    "@oclif/core" "^2.1.6"
     chalk "^4.1.2"
     just-diff "^5.2.0"
     lodash "^4.17.21"
@@ -3741,6 +3741,13 @@ ejs@^3.1.6:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.7.tgz#c544d9c7f715783dd92f0bddcf73a59e6962d006"
   integrity sha512-BIar7R6abbUxDA3bfXrO4DSgwo8I+fB5/1zgujl3HLLjwd6+9iOnrT+t3grn2qbk9vOgBubXOFwX2m9axoFaGw==
+  dependencies:
+    jake "^10.8.5"
+
+ejs@^3.1.8:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.8.tgz#758d32910c78047585c7ef1f92f9ee041c1c190b"
+  integrity sha512-/sXZeMlhS0ArkfX2Aw780gJzXSMPnKjtspYZv+f3NiKLlubezAHDU5+9xz6gd3/NhG3txQCo6xlglmTS+oTGEQ==
   dependencies:
     jake "^10.8.5"
 
