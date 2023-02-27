@@ -70,11 +70,6 @@ export default class build extends SfCommand<void> {
     }),
     patch: Flags.boolean({
       summary: messages.getMessage('flags.patch'),
-      exclusive: ['prerelease'],
-    }),
-    prerelease: Flags.boolean({
-      summary: messages.getMessage('flags.prerelease'),
-      exclusive: ['patch'],
     }),
   };
 
@@ -84,9 +79,11 @@ export default class build extends SfCommand<void> {
 
     const pushChangesToGitHub = !flags['build-only'];
 
-    if (!['latest', 'latest-rc', 'nightly'].includes(flags['release-channel']) && !flags.prerelease) {
-      throw new SfError(
-        'The "--prerelease" flag is required when "--release-channel" is not one of: "latest", "latest-rc", or "nightly"'
+    const isPrerelease = !['latest', 'latest-rc', 'nightly'].includes(flags['release-channel']);
+
+    if (isPrerelease) {
+      this.log(
+        `NOTE: The release channel '${flags['release-channel']}' is not one of 'latest', 'latest-rc', 'nightly'. It will released as a prerelease.`
       );
     }
 
@@ -114,12 +111,12 @@ export default class build extends SfCommand<void> {
     // Determine the next version based on if --patch was passed in or if it is a prerelease
     const nextVersion = repo.package.determineNextVersion(
       flags.patch,
-      flags.prerelease ? flags['release-channel'] : undefined
+      isPrerelease ? flags['release-channel'] : undefined
     );
     repo.nextVersion = nextVersion;
 
     // Prereleases and patches need special branch prefixes to trigger GitHub Actions
-    const branchPrefix = flags.patch ? 'patch/' : flags.prerelease ? 'prerelease/' : '';
+    const branchPrefix = flags.patch ? 'patch/' : isPrerelease ? 'prerelease/' : '';
 
     const branchName = `${branchPrefix}${nextVersion}`;
 
@@ -197,7 +194,7 @@ export default class build extends SfCommand<void> {
 > Because of this the release process is slightly different, they "ship" from the PR itself.
 > Once your PR is ready to be released, add the "release-it" label.`;
 
-      const includeReleaseDetails = flags.prerelease || (flags.patch && !flags.label.includes('nightly-automerge'));
+      const includeReleaseDetails = isPrerelease || (flags.patch && !flags.label.includes('nightly-automerge'));
 
       const pr = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
         owner: repoOwner,

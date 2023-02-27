@@ -21,7 +21,6 @@
     "label": "add one or more labels to the Github PR",
     "only": "only bump the version of the packages passed in, uses latest if version is not provided",
     "patch": "bump the release as a patch of an existing version, not a new minor version",
-    "prerelease": "create a prerelease, required if --release-channel is not latest, latest-rc, or nightly",
     "buildOnly": "only build the release, do not git add/commit/push"
   }
 }
