@@ -194,7 +194,7 @@ export default class build extends SfCommand<void> {
 > **Note**
 > Patches and prereleases often require very specific starting points and changes.
 > These changes cannot always be shipped from \`main\` since it is likely ahead in commits.
-> Because of this their release process is slightly different, they "ship" from the PR itself.
+> Because of this the release process is slightly different, they "ship" from the PR itself.
 > Once your PR is ready to be released, add the "release-it" label.`;
 
       const includeReleaseDetails = flags.prerelease || (flags.patch && !flags.label.includes('nightly-automerge'));
@@ -204,7 +204,7 @@ export default class build extends SfCommand<void> {
         repo: repoName,
         head: branchName,
         base: 'main',
-        title: `Release PR for ${nextVersion} as ${flags['release-channel'] || flags.prerelease}`,
+        title: `Release PR for ${nextVersion} as ${flags['release-channel']}`,
         body: `Building ${nextVersion}\n[skip-validate-pr]\n${includeReleaseDetails ? releaseDetails : ''}`,
       });
 
