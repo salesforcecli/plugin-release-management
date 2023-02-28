@@ -194,7 +194,7 @@ export default class build extends SfCommand<void> {
 > Because of this the release process is slightly different, they "ship" from the PR itself.
 > Once your PR is ready to be released, add the "release-it" label.`;
 
-      const includeReleaseDetails = isPrerelease || (flags.patch && !flags.label.includes('nightly-automerge'));
+      const includeReleaseDetails = isPrerelease || (flags.patch && flags['release-channel'] !== 'nightly');
 
       const pr = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
         owner: repoOwner,
