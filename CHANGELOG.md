@@ -1,3 +1,12 @@
+## [3.15.1](https://github.com/salesforcecli/plugin-release-management/compare/3.15.0...3.15.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* pr description logic ([ce52aec](https://github.com/salesforcecli/plugin-release-management/commit/ce52aec086637e2dceaec6fc68378ba99e236e1a))
+
+
+
 # [3.15.0](https://github.com/salesforcecli/plugin-release-management/compare/3.14.2...3.15.0) (2023-02-27)
 
 
