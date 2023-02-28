@@ -1,3 +1,12 @@
+# [3.15.0](https://github.com/salesforcecli/plugin-release-management/compare/3.14.2...3.15.0) (2023-02-27)
+
+
+### Features
+
+* add intended release channel ([#694](https://github.com/salesforcecli/plugin-release-management/issues/694)) ([ddcd1b1](https://github.com/salesforcecli/plugin-release-management/commit/ddcd1b10e70ed5ad284a125ebfb32b4a7e9fad00))
+
+
+
 ## [3.14.2](https://github.com/salesforcecli/plugin-release-management/compare/3.14.1...3.14.2) (2023-02-25)
 
 
