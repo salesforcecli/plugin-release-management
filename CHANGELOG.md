@@ -1,3 +1,12 @@
+## [3.15.2](https://github.com/salesforcecli/plugin-release-management/compare/3.15.1...3.15.2) (2023-03-01)
+
+
+### Bug Fixes
+
+* warn if plugin doesnt have snapshot ([#703](https://github.com/salesforcecli/plugin-release-management/issues/703)) ([1eed6c2](https://github.com/salesforcecli/plugin-release-management/commit/1eed6c2c3a792be3cc9d6ab030932740c1b22765))
+
+
+
 ## [3.15.1](https://github.com/salesforcecli/plugin-release-management/compare/3.15.0...3.15.1) (2023-02-28)
 
 
