@@ -1,3 +1,39 @@
+## [3.15.1](https://github.com/salesforcecli/plugin-release-management/compare/3.15.0...3.15.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* pr description logic ([ce52aec](https://github.com/salesforcecli/plugin-release-management/commit/ce52aec086637e2dceaec6fc68378ba99e236e1a))
+
+
+
+# [3.15.0](https://github.com/salesforcecli/plugin-release-management/compare/3.14.2...3.15.0) (2023-02-27)
+
+
+### Features
+
+* add intended release channel ([#694](https://github.com/salesforcecli/plugin-release-management/issues/694)) ([ddcd1b1](https://github.com/salesforcecli/plugin-release-management/commit/ddcd1b10e70ed5ad284a125ebfb32b4a7e9fad00))
+
+
+
+## [3.14.2](https://github.com/salesforcecli/plugin-release-management/compare/3.14.1...3.14.2) (2023-02-25)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/plugin-trust from 2.4.1 to 2.4.2 ([951276e](https://github.com/salesforcecli/plugin-release-management/commit/951276e4384a9bd908e34eb2155872760dd915f4))
+
+
+
+## [3.14.1](https://github.com/salesforcecli/plugin-release-management/compare/3.14.0...3.14.1) (2023-02-24)
+
+
+### Bug Fixes
+
+* use correct path for verifying install ([#695](https://github.com/salesforcecli/plugin-release-management/issues/695)) ([c41a0a5](https://github.com/salesforcecli/plugin-release-management/commit/c41a0a5150bbde859b40e8577fc8b8c1bd58721d))
+
+
+
 # [3.14.0](https://github.com/salesforcecli/plugin-release-management/compare/3.13.3...3.14.0) (2023-02-24)
 
 
