@@ -575,16 +575,22 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
 
   private async getSnapshot(owner: string, repo: string, ref: string | null): Promise<CommandSnapshot[]> {
     if (!ref) return [];
-    const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner,
-      repo,
-      path: 'command-snapshot.json',
-      accept: 'application/vnd.github.json',
-      ref,
-    });
-    // @ts-expect-error octokit doesn't have a type for this
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as CommandSnapshot[];
+    try {
+      const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        owner,
+        repo,
+        path: 'command-snapshot.json',
+        accept: 'application/vnd.github.json',
+        ref,
+      });
+      // @ts-expect-error octokit doesn't have a type for this
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as CommandSnapshot[];
+    } catch {
+      this.warn(`No command-snapshot.json found for ${owner}/${repo}@${ref}`);
+      return [];
+    }
+
   }
 
   private async getTags(owner: string, repo: string): Promise<string[]> {
