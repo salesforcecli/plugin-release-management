@@ -277,7 +277,8 @@ export default class Inspect extends SfCommand<Info[]> {
         const curlResult = exec(`curl ${archivePath} -Os`, { cwd: tarDir });
         this.spinner.stop();
         if (curlResult.code !== 0) {
-          throw new SfError(`Failed to download tar from ${archivePath}. Investigate immediately.`);
+          this.log(red('Download failed. That is a big deal. Investigate immediately.'));
+          continue;
         }
         const filename = path.basename(archivePath);
         const unpackedDir = await mkdir(this.workingDir, 'unpacked', filename);
@@ -285,7 +286,8 @@ export default class Inspect extends SfCommand<Info[]> {
         const tarResult = exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
         this.spinner.stop();
         if (tarResult.code !== 0) {
-          throw new SfError(`Failed to unpack ${filename}. Stopping.`);
+          this.log(red('Failed to unpack. Skipping...'));
+          continue;
         }
         const pkgJson = await readPackageJson(unpackedDir);
         results.push({
