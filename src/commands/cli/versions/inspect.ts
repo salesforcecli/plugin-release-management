@@ -55,6 +55,7 @@ export enum Channel {
   STABLE_RC = 'stable-rc',
   LATEST = 'latest',
   LATEST_RC = 'latest-rc',
+  NIGHTLY = 'nightly',
 }
 
 export enum Location {
@@ -62,7 +63,7 @@ export enum Location {
   NPM = 'npm',
 }
 
-type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.LEGACY>;
+type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.NIGHTLY | Channel.LEGACY>;
 type Archives = Record<ArchiveChannel, string[]>;
 type ChannelMapping = Record<Location, Record<Channel, Channel>>;
 
@@ -70,6 +71,8 @@ const ARCHIVES: Archives = {
   [Channel.STABLE]: [
     '%s/%s-darwin-x64.tar.gz',
     '%s/%s-darwin-x64.tar.xz',
+    '%s/%s-darwin-arm64.tar.gz',
+    '%s/%s-darwin-arm64.tar.xz',
     '%s/%s-linux-arm.tar.gz',
     '%s/%s-linux-arm.tar.xz',
     '%s/%s-linux-x64.tar.gz',
@@ -82,6 +85,22 @@ const ARCHIVES: Archives = {
   [Channel.STABLE_RC]: [
     '%s/%s-darwin-x64.tar.gz',
     '%s/%s-darwin-x64.tar.xz',
+    '%s/%s-darwin-arm64.tar.gz',
+    '%s/%s-darwin-arm64.tar.xz',
+    '%s/%s-linux-arm.tar.gz',
+    '%s/%s-linux-arm.tar.xz',
+    '%s/%s-linux-x64.tar.gz',
+    '%s/%s-linux-x64.tar.xz',
+    '%s/%s-win32-x64.tar.gz',
+    '%s/%s-win32-x64.tar.xz',
+    '%s/%s-win32-x86.tar.gz',
+    '%s/%s-win32-x86.tar.xz',
+  ],
+  [Channel.NIGHTLY]: [
+    '%s/%s-darwin-x64.tar.gz',
+    '%s/%s-darwin-x64.tar.xz',
+    '%s/%s-darwin-arm64.tar.gz',
+    '%s/%s-darwin-arm64.tar.xz',
     '%s/%s-linux-arm.tar.gz',
     '%s/%s-linux-arm.tar.xz',
     '%s/%s-linux-x64.tar.gz',
@@ -112,6 +131,7 @@ const CHANNEL_MAPPING: ChannelMapping = {
     [Channel.STABLE_RC]: Channel.LATEST_RC,
     [Channel.STABLE]: Channel.LATEST,
     [Channel.LATEST_RC]: Channel.LATEST_RC,
+    [Channel.NIGHTLY]: Channel.NIGHTLY,
     [Channel.LATEST]: Channel.LATEST,
     [Channel.LEGACY]: Channel.LEGACY,
   },
@@ -119,6 +139,7 @@ const CHANNEL_MAPPING: ChannelMapping = {
     [Channel.LATEST_RC]: Channel.STABLE_RC,
     [Channel.LATEST]: Channel.STABLE,
     [Channel.STABLE_RC]: Channel.STABLE_RC,
+    [Channel.NIGHTLY]: Channel.NIGHTLY,
     [Channel.STABLE]: Channel.STABLE,
     [Channel.LEGACY]: Channel.LEGACY,
   },
@@ -218,6 +239,7 @@ export default class Inspect extends SfCommand<Info[]> {
     const cli = ensure<CLI>(this.flags.cli);
     const stablePath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable`;
     const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
+    const nightlyPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/nightly`;
     this.archives = {} as Archives;
     for (const [channel, paths] of Object.entries(ARCHIVES)) {
       if (channel === Channel.LEGACY && cli === CLI.SFDX) {
@@ -232,6 +254,8 @@ export default class Inspect extends SfCommand<Info[]> {
         this.archives[channel] = paths.map((p) => util.format(p, stablePath, this.flags.cli));
       } else if (channel === Channel.STABLE_RC) {
         this.archives[channel] = paths.map((p) => util.format(p, stableRcPath, this.flags.cli));
+      } else if (channel === Channel.NIGHTLY) {
+        this.archives[channel] = paths.map((p) => util.format(p, nightlyPath, this.flags.cli));
       }
     }
   }
