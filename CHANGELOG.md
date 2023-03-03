@@ -1,3 +1,12 @@
+## [3.15.3](https://github.com/salesforcecli/plugin-release-management/compare/3.15.2...3.15.3) (2023-03-03)
+
+
+### Bug Fixes
+
+* adds nightly channel, adds arm64 tars ([#704](https://github.com/salesforcecli/plugin-release-management/issues/704)) ([6e4a44b](https://github.com/salesforcecli/plugin-release-management/commit/6e4a44b90d24a3e4d3fcc228f4477bd1a729a13e))
+
+
+
 ## [3.15.2](https://github.com/salesforcecli/plugin-release-management/compare/3.15.1...3.15.2) (2023-03-01)
 
 
