@@ -102,6 +102,11 @@ export default class build extends SfCommand<void> {
     // Works with tag (detached): "git checkout 7.174.0"
     await this.exec(`git checkout ${ref}`);
 
+    // Create branch from the starting `ref` to use as a PR base for patches and prereleases
+    // Note: the base branch for 'nightly' will always be 'main'
+    const baseBranch =
+      flags['release-channel'] !== 'nightly' && pushChangesToGitHub ? await this.createAndPushBaseBranch(ref) : 'main';
+
     const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
     // Get the current version for the "starting point"
@@ -115,10 +120,7 @@ export default class build extends SfCommand<void> {
     );
     repo.nextVersion = nextVersion;
 
-    // Prereleases and patches need special branch prefixes to trigger GitHub Actions
-    const branchPrefix = flags.patch ? 'patch/' : isPrerelease ? 'prerelease/' : '';
-
-    const branchName = `${branchPrefix}${nextVersion}`;
+    const branchName = `release/${nextVersion}`;
 
     // Ensure branch does not already exist on the remote (origin)
     // We only look at remote branches since they are likely generated
@@ -190,9 +192,9 @@ export default class build extends SfCommand<void> {
       const releaseDetails = `
 > **Note**
 > Patches and prereleases often require very specific starting points and changes.
-> These changes cannot always be shipped from \`main\` since it is likely ahead in commits.
-> Because of this the release process is slightly different, they "ship" from the PR itself.
-> Once your PR is ready to be released, add the "release-it" label.`;
+> These changes often cannot be shipped from \`main\` since it is ahead in commits.
+> Because of this the release process is different, they "ship" from a branch based on the starting ref (\`${ref}\`).
+> Once your PR is ready to be released, merge it into \`${baseBranch}\`.`;
 
       const includeReleaseDetails = isPrerelease || (flags.patch && flags['release-channel'] !== 'nightly');
 
@@ -200,7 +202,7 @@ export default class build extends SfCommand<void> {
         owner: repoOwner,
         repo: repoName,
         head: branchName,
-        base: 'main',
+        base: baseBranch,
         title: `Release PR for ${nextVersion} as ${flags['release-channel']}`,
         body: `Building ${nextVersion}\n[skip-validate-pr]\n${includeReleaseDetails ? releaseDetails : ''}`,
       });
@@ -232,6 +234,26 @@ export default class build extends SfCommand<void> {
     }
 
     return ref;
+  }
+
+  private async createAndPushBaseBranch(ref: string): Promise<string> {
+    // Since patches and prereleases can be created from any previous dist-tag or github ref,
+    // it is unlikely that we would be able to merge these into main.
+    // Before we make any changes, push the starting point ref to a branch to use as our PR `base`.
+    // The create-cli-release.yml GHA will watch for merges into this base branch to trigger a release
+    const baseBranch = `release-base/${ref}`;
+
+    // Create new branch based on ref
+    await this.exec(`git checkout -b ${baseBranch}`);
+
+    // Ensure the base branch does not exist at remote before attempting to push
+    if (await this.exec(`git ls-remote --heads origin ${baseBranch}`)) {
+      await this.exec(`git push origin --delete ${baseBranch}`);
+    }
+
+    await this.exec(`git push -u origin ${baseBranch} --no-verify`);
+
+    return baseBranch;
   }
 
   private async exec(command: string, silent = false): Promise<string> {
