@@ -1,3 +1,12 @@
+## [3.15.5](https://github.com/salesforcecli/plugin-release-management/compare/3.15.4...3.15.5) (2023-03-08)
+
+
+### Bug Fixes
+
+* adds base branch for patches ([e240754](https://github.com/salesforcecli/plugin-release-management/commit/e240754fb0e398e012ac588cbfc5f62f516bb90f))
+
+
+
 ## [3.15.4](https://github.com/salesforcecli/plugin-release-management/compare/3.15.3...3.15.4) (2023-03-04)
 
 
