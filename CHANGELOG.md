@@ -1,3 +1,12 @@
+## [3.15.6](https://github.com/salesforcecli/plugin-release-management/compare/3.15.5...3.15.6) (2023-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/kit from 1.9.0 to 1.9.2 ([4a635b1](https://github.com/salesforcecli/plugin-release-management/commit/4a635b139910d03288e299a773139f72259f8005))
+
+
+
 ## [3.15.5](https://github.com/salesforcecli/plugin-release-management/compare/3.15.4...3.15.5) (2023-03-08)
 
 
