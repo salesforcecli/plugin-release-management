@@ -9,7 +9,7 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
-import { Messages } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 
 Messages.importMessagesDirectory(__dirname);
 
@@ -83,10 +83,10 @@ export default class AutoMerge extends SfCommand<void> {
 
     // Check if PR is able to be merged.
     const stop = (reason: string): void => {
-      this.warn(`CANNOT MERGE: ${reason}`);
-      this.warn('Run with --verbose to see PR response object');
       if (verbose) this.styledJSON(prData);
-      process.exit(1);
+      throw new SfError(`CANNOT MERGE: ${reason}`, 'AUTOMERGE_FAILURE', [
+        'Run with --verbose to see PR response object',
+      ]);
     };
 
     if (prData.state !== 'open') {
