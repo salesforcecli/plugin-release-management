@@ -1,3 +1,12 @@
+## [3.15.9](https://github.com/salesforcecli/plugin-release-management/compare/3.15.8...3.15.9) (2023-03-25)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/plugin-command-reference from 2.3.1 to 2.4.1 ([c0052be](https://github.com/salesforcecli/plugin-release-management/commit/c0052be0e59f25c6d0c5f002734f8758fed92544))
+
+
+
 ## [3.15.8](https://github.com/salesforcecli/plugin-release-management/compare/3.15.7...3.15.8) (2023-03-18)
 
 
