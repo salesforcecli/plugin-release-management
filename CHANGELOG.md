@@ -1,3 +1,12 @@
+# [3.16.0](https://github.com/salesforcecli/plugin-release-management/compare/3.15.9...3.16.0) (2023-03-27)
+
+
+### Features
+
+* add release automerge ([0540100](https://github.com/salesforcecli/plugin-release-management/commit/054010012ad6f87e13a9b82b6a04cc7c16325d76))
+
+
+
 ## [3.15.9](https://github.com/salesforcecli/plugin-release-management/compare/3.15.8...3.15.9) (2023-03-25)
 
 
