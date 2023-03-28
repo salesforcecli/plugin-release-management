@@ -86,6 +86,7 @@ export default class AutoMerge extends SfCommand<void> {
       if (verbose) this.styledJSON(prData);
       throw new SfError(`CANNOT MERGE: ${reason}`, 'AUTOMERGE_FAILURE', [
         'Run with --verbose to see PR response object',
+        'Also try running this locally with the "--dry-run" flag',
       ]);
     };
 
@@ -102,7 +103,7 @@ export default class AutoMerge extends SfCommand<void> {
       stop('PR must be created by "svc-cli-bot"');
     }
 
-    if (!(await this.isGreen(prData))) {
+    if (!(await this.isGreen(prData, verbose))) {
       stop('PR checks failed');
     }
 
@@ -127,7 +128,7 @@ export default class AutoMerge extends SfCommand<void> {
     }
   }
 
-  private async isGreen(pr): Promise<boolean> {
+  private async isGreen(pr, verbose): Promise<boolean> {
     const statusResponse = await this.octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
       ...this.baseRepoParams,
       ref: pr.head.sha,
@@ -142,9 +143,11 @@ export default class AutoMerge extends SfCommand<void> {
       ref: pr.head.sha,
     });
 
+    if (verbose) this.styledJSON(checkRunResponse);
+
     if (
       checkRunResponse.data.check_runs.every(
-        (cr) => cr.status === 'completed' && ['success', 'skipped'].includes(cr.conclusion)
+        (cr) => cr.name === 'automerge' || (cr.status === 'completed' && ['success', 'skipped'].includes(cr.conclusion))
       )
     ) {
       return true;
