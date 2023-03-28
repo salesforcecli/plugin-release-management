@@ -1,3 +1,13 @@
+## [3.16.1](https://github.com/salesforcecli/plugin-release-management/compare/3.16.0...3.16.1) (2023-03-28)
+
+
+### Bug Fixes
+
+* add verbose to check runs ([8f17935](https://github.com/salesforcecli/plugin-release-management/commit/8f17935da5df4d6c066020158578e2e79c03db05))
+* skip automerge checks ([9c85eea](https://github.com/salesforcecli/plugin-release-management/commit/9c85eea56659575d49b18a2c74574ae4d552e149))
+
+
+
 # [3.16.0](https://github.com/salesforcecli/plugin-release-management/compare/3.15.9...3.16.0) (2023-03-27)
 
 
