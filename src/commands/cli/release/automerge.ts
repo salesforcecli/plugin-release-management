@@ -127,7 +127,7 @@ export default class AutoMerge extends SfCommand<void> {
     }
   }
 
-  private async isGreen(pr): Promise<boolean> {
+  private async isGreen(pr, verbose): Promise<boolean> {
     const statusResponse = await this.octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
       ...this.baseRepoParams,
       ref: pr.head.sha,
@@ -141,6 +141,8 @@ export default class AutoMerge extends SfCommand<void> {
       ...this.baseRepoParams,
       ref: pr.head.sha,
     });
+
+    if (verbose) this.styledJSON(checkRunResponse);
 
     if (
       checkRunResponse.data.check_runs.every(
