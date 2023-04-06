@@ -1,3 +1,12 @@
+## [3.16.3](https://github.com/salesforcecli/plugin-release-management/compare/3.16.2...3.16.3) (2023-04-06)
+
+
+### Bug Fixes
+
+* add error to cause ([90f3e6e](https://github.com/salesforcecli/plugin-release-management/commit/90f3e6e9f386891a9a58cc99630c0a8ed91d42f0))
+
+
+
 ## [3.16.2](https://github.com/salesforcecli/plugin-release-management/compare/3.16.1...3.16.2) (2023-04-01)
 
 
