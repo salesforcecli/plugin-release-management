@@ -13,7 +13,7 @@ import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { parseJson } from '@salesforce/kit';
+import { Duration, parseJson, ThrottledPromiseAll } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
 import { CLI } from '../../../types';
 import { PackageJson } from '../../../package';
@@ -157,11 +157,19 @@ export default class SmokeTest extends SfCommand<void> {
 
   private async initializeAllCommands(executable: string): Promise<void> {
     this.styledHeader(`Initializing help for all ${this.flags.cli} commands`);
-    await Promise.all(
+    // Ran into memory issues when running all commands at once. Now we run them in batches of 10.
+    const throttledPromise = new ThrottledPromiseAll({ concurrency: 10, timeout: Duration.minutes(10) });
+
+    const allCommands = await this.getAllCommands(executable);
+
+    const executePromise = async (command: string): Promise<string | void> =>
       this.flags.verbose
-        ? (await this.getAllCommands(executable)).map((command) => this.execute(executable, `${command} --help`))
-        : (await this.getAllCommands(executable)).map((command) => this.nonVerboseCommandExecution(executable, command))
-    );
+        ? this.execute(executable, `${command} --help`)
+        : this.nonVerboseCommandExecution(executable, command);
+
+    throttledPromise.add(allCommands, executePromise);
+
+    await throttledPromise.all();
   }
 
   private async getAllCommands(executable: string): Promise<string[]> {
