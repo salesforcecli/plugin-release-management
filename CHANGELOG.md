@@ -1,3 +1,12 @@
+## [3.16.4](https://github.com/salesforcecli/plugin-release-management/compare/3.16.3...3.16.4) (2023-04-07)
+
+
+### Bug Fixes
+
+* throttle help smoke tests ([54b2703](https://github.com/salesforcecli/plugin-release-management/commit/54b2703b94570d764e49883cf0e2d7215f20f346))
+
+
+
 ## [3.16.3](https://github.com/salesforcecli/plugin-release-management/compare/3.16.2...3.16.3) (2023-04-06)
 
 
