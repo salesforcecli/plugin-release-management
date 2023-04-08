@@ -1,3 +1,12 @@
+## [3.16.5](https://github.com/salesforcecli/plugin-release-management/compare/3.16.4...3.16.5) (2023-04-08)
+
+
+### Bug Fixes
+
+* **deps:** bump vm2 from 3.9.11 to 3.9.15 ([7c33330](https://github.com/salesforcecli/plugin-release-management/commit/7c333306c0313744b51939b14a3c3feb3b138403))
+
+
+
 ## [3.16.4](https://github.com/salesforcecli/plugin-release-management/compare/3.16.3...3.16.4) (2023-04-07)
 
 
