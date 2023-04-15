@@ -19,7 +19,7 @@
     "@salesforce/sf-plugins-core": "^2.2.4",
     "@salesforce/ts-types": "^1.7.3",
     "agent-base": "^6.0.2",
-    "aws-sdk": "^2.1338.0",
+    "aws-sdk": "^2.1359.0",
     "chalk": "^4.1.0",
     "conventional-changelog-conventionalcommits": "^4.6.1",
     "conventional-changelog-preset-loader": "^2.3.4",
