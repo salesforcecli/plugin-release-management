@@ -590,7 +590,6 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
       this.warn(`No command-snapshot.json found for ${owner}/${repo}@${ref}`);
       return [];
     }
-
   }
 
   private async getTags(owner: string, repo: string): Promise<string[]> {
