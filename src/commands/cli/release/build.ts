@@ -71,6 +71,9 @@ export default class build extends SfCommand<void> {
     patch: Flags.boolean({
       summary: messages.getMessage('flags.patch'),
     }),
+    empty: Flags.boolean({
+      summary: messages.getMessage('flags.empty'),
+    }),
   };
 
   /* eslint-disable complexity */
@@ -139,7 +142,9 @@ export default class build extends SfCommand<void> {
     repo.package.setNextVersion(nextVersion);
     repo.package.packageJson.version = nextVersion;
 
-    if (flags.only) {
+    if (flags.empty) {
+      this.log(`Creating empty release PR for ${nextVersion}`);
+    } else if (flags.only) {
       this.log(`Bumping the following dependencies only: ${flags.only.join(', ')}`);
       const bumped = repo.package.bumpDependencyVersions(flags.only);
 
