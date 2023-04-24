@@ -1,3 +1,12 @@
+## [3.16.10](https://github.com/salesforcecli/plugin-release-management/compare/3.16.9...3.16.10) (2023-04-22)
+
+
+### Bug Fixes
+
+* **deps:** bump @octokit/plugin-throttling from 5.0.1 to 5.1.1 ([c31157a](https://github.com/salesforcecli/plugin-release-management/commit/c31157a5948a97eb8af1ad06a667809d93842ef1))
+
+
+
 ## [3.16.9](https://github.com/salesforcecli/plugin-release-management/compare/3.16.8...3.16.9) (2023-04-21)
 
 
