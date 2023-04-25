@@ -455,7 +455,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
 
   private resolveVersions(): void {
     this.current = this.flags.current || this.packageJson.version;
-    this.previous = this.flags.previous ?? this.versions[this.versions.indexOf(this.current) + 1];
+    this.previous = this.flags.previous ?? this.versions.find((version) => semver.lt(version, this.current));
     this.log('Current Version:', this.current);
     this.log('Previous Version:', this.previous);
     if (this.flags.current && !this.versions.includes(this.flags.current)) {
@@ -590,7 +590,6 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
       this.warn(`No command-snapshot.json found for ${owner}/${repo}@${ref}`);
       return [];
     }
-
   }
 
   private async getTags(owner: string, repo: string): Promise<string[]> {
