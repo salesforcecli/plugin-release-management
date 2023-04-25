@@ -1,3 +1,12 @@
+## [3.16.11](https://github.com/salesforcecli/plugin-release-management/compare/3.16.10...3.16.11) (2023-04-25)
+
+
+### Bug Fixes
+
+* correctly find the closest previous version ([5bb2f90](https://github.com/salesforcecli/plugin-release-management/commit/5bb2f904e4bdae7465056604c4775e0f81c5bca9))
+
+
+
 ## [3.16.10](https://github.com/salesforcecli/plugin-release-management/compare/3.16.9...3.16.10) (2023-04-22)
 
 
