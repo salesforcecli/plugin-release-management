@@ -1,3 +1,12 @@
+# [3.17.0](https://github.com/salesforcecli/plugin-release-management/compare/3.16.12...3.17.0) (2023-05-01)
+
+
+### Features
+
+* allow the pr-base-branch to be passed ([b93711e](https://github.com/salesforcecli/plugin-release-management/commit/b93711e1417a2993f575c8874dd7dcfcc70137cb))
+
+
+
 ## [3.16.12](https://github.com/salesforcecli/plugin-release-management/compare/3.16.11...3.16.12) (2023-04-29)
 
 
