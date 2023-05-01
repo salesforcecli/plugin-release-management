@@ -48,6 +48,7 @@
       "only",
       "patch",
       "pinned-deps",
+      "pr-base-branch",
       "release-channel",
       "resolutions",
       "start-from-github-ref",

@@ -22,6 +22,7 @@
     "only": "only bump the version of the packages passed in, uses latest if version is not provided",
     "patch": "bump the release as a patch of an existing version, not a new minor version",
     "buildOnly": "only build the release, do not git add/commit/push",
-    "empty": "create an empty release PR for pushing changes to later (version will still be bumped)"
+    "empty": "create an empty release PR for pushing changes to later (version will still be bumped)",
+    "prBaseBranch": "base branch to create the PR against; if not specified, the build determines the branch for you"
   }
 }

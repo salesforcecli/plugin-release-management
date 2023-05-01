@@ -74,6 +74,9 @@ export default class build extends SfCommand<void> {
     empty: Flags.boolean({
       summary: messages.getMessage('flags.empty'),
     }),
+    'pr-base-branch': Flags.string({
+      summary: messages.getMessage('flags.prBaseBranch'),
+    }),
   };
 
   /* eslint-disable complexity */
@@ -105,10 +108,16 @@ export default class build extends SfCommand<void> {
     // Works with tag (detached): "git checkout 7.174.0"
     await this.exec(`git checkout ${ref}`);
 
-    // Create branch from the starting `ref` to use as a PR base for patches and prereleases
-    // Note: the base branch for 'nightly' will always be 'main'
-    const baseBranch =
-      flags['release-channel'] !== 'nightly' && pushChangesToGitHub ? await this.createAndPushBaseBranch(ref) : 'main';
+    // If the pr-base-branch flag is provided, use it
+    let baseBranch = flags['pr-base-branch'];
+    if (!baseBranch) {
+      // If not, determine the pr base on other conditions
+      // Note: the base branch for 'nightly' will always be 'main'
+      baseBranch =
+        flags['release-channel'] !== 'nightly' && pushChangesToGitHub
+          ? await this.createAndPushBaseBranch(ref)
+          : 'main';
+    }
 
     const repo = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
 
