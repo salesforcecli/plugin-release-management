@@ -13,7 +13,7 @@ import * as semver from 'semver';
 import got from 'got';
 import { diff, Operation } from 'just-diff';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
-import { Messages } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { env, parseJson } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { paginateRest, PaginateInterface } from '@octokit/plugin-paginate-rest';
@@ -62,12 +62,12 @@ function verifyCurrentIsNewer(current: string | undefined, previous: string | un
 export type ArtifactsCompareResult = {
   [plugin: string]: {
     current: {
-      version: string;
+      version: string | null;
       snapshot: CommandSnapshot[];
       schemas: Record<string, JsonMap>;
     };
     previous: {
-      version: string;
+      version: string | null;
       snapshot: CommandSnapshot[];
       schemas: Record<string, JsonMap>;
     };
@@ -455,7 +455,10 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
 
   private resolveVersions(): void {
     this.current = this.flags.current || this.packageJson.version;
-    this.previous = this.flags.previous ?? this.versions.find((version) => semver.lt(version, this.current));
+    this.previous = ensureString(
+      this.flags.previous ?? this.versions.find((version) => semver.lt(version, this.current)),
+      'previous version not found'
+    );
     this.log('Current Version:', this.current);
     this.log('Previous Version:', this.previous);
     if (this.flags.current && !this.versions.includes(this.flags.current)) {
@@ -471,6 +474,9 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   }
 
   private async getPluginsForVersion(version: string): Promise<Record<string, string>> {
+    if (!this.packageJson.repository) {
+      throw new SfError('the package json does not have a repository field');
+    }
     const [owner, repo] = this.packageJson.repository.split('/');
     const response = await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner,
@@ -493,7 +499,10 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     ).filter((plugin) => !plugin.startsWith('@oclif'));
 
     return filtered.reduce(
-      (acc, plugin) => ({ ...acc, [plugin]: packageJson.dependencies[plugin] ?? packageJson.oclif.jitPlugins[plugin] }),
+      (acc, plugin) => ({
+        ...acc,
+        [plugin]: packageJson.dependencies[plugin] ?? packageJson.oclif?.jitPlugins?.[plugin],
+      }),
       {}
     );
   }
@@ -516,7 +525,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
         : `v${this.previousPlugins[plugin]}`
       : null;
 
-    if (current.includes('^') || current.includes('~')) {
+    if (current?.includes('^') || current?.includes('~')) {
       throw messages.createError('error.VersionNotPinned', [plugin]);
     }
 

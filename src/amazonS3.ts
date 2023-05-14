@@ -125,7 +125,7 @@ export class AmazonS3 {
     return objects.CommonPrefixes;
   }
 
-  public async listKeyContents(key: string, filter = (entry): boolean => !!entry): Promise<ObjectList[]> {
+  public async listKeyContents(key: string, filter = (entry): boolean => Boolean(entry)): Promise<ObjectList[]> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const objects = await this.s3
       .listObjectsV2({ Bucket: this.options.bucket || BUCKET, Delimiter: '/', Prefix: prefix })

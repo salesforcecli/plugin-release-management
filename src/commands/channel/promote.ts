@@ -102,7 +102,7 @@ export default class Promote extends SfCommand<AnyJson> {
     }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Promote.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Promote.flags>;
 
   public async run(): Promise<AnyJson> {
     const { flags } = await this.parse(Promote);
@@ -210,7 +210,7 @@ const findVersionForSha = async (cli: CLI, sha: string): Promise<string> => {
     )
   )
     .flat()
-    .find((s) => s.Prefix.replace(/\/$/, '').endsWith(sha));
+    .find((s) => s.Prefix?.replace(/\/$/, '').endsWith(sha));
   if (foundVersion) {
     // Prefix looks like this "media/salesforce-cli/sf/versions/0.0.10/1d4b10d/",
     // when reversed after split version number should occupy entry 1 of the array
@@ -263,7 +263,7 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
   const logger = Logger.childFromRoot('Promote.findShaForVersion');
   const amazonS3 = new AmazonS3({ cli });
   const versions = await amazonS3.listCommonPrefixes('versions');
-  const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
+  const foundVersion = versions.find((v) => v.Prefix?.endsWith(`${version}/`))?.Prefix;
   if (foundVersion) {
     logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
     const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
@@ -291,6 +291,11 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
         Key: manifestForMostRecentSha.Key,
         ResponseContentType: 'application/json',
       });
+      if (!manifest.Body) {
+        throw new SfError(
+          `Could not load manifest body from S3 getObject response for ${manifestForMostRecentSha.Key}`
+        );
+      }
       logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
       const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
       return json.sha;

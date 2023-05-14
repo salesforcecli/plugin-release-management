@@ -41,7 +41,7 @@ export default class SmokeTest extends SfCommand<void> {
     }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof SmokeTest.flags>;
+  private flags!: Interfaces.InferredFlags<typeof SmokeTest.flags>;
 
   public async run(): Promise<void> {
     this.flags = (await this.parse(SmokeTest)).flags;
@@ -94,6 +94,9 @@ export default class SmokeTest extends SfCommand<void> {
       try {
         this.log(`Testing JIT install for ${plugin}`);
         const firstCommand = commands.find((c) => c.pluginName === plugin);
+        if (!firstCommand) {
+          throw new SfError(`Unable to find command for ${plugin}`);
+        }
 
         // Test that --help works on JIT commands
         const helpResult = await help(firstCommand.id);

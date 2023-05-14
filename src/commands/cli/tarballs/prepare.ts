@@ -39,7 +39,7 @@ export default class Prepare extends SfCommand<void> {
     }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Prepare.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Prepare.flags>;
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Prepare);
@@ -140,7 +140,7 @@ const find = async (
     const parts = globPattern.split('/').slice();
     const lastPart = parts.pop();
     for (const dir of options.excludeDirectories) {
-      const patternParts = parts.concat([dir, '**', lastPart]);
+      const patternParts = parts.concat([dir, '**', lastPart ?? '']);
       const exclusionPattern = `!${patternParts.join('/')}`;
       patterns.push(exclusionPattern);
     }
