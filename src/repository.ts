@@ -15,7 +15,6 @@ import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { Package, VersionValidation } from './package';
 import { Registry } from './registry';
-import { inspectCommits } from './inspectCommits';
 import { SigningResponse } from './codeSigning/SimplifiedSigning';
 import { api as packAndSignApi } from './codeSigning/packAndSign';
 
@@ -161,20 +160,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     return found;
   }
 
-  /**
-   * If the commit type isn't fix (patch bump), feat (minor bump), or breaking (major bump),
-   * then standard-version always defaults to a patch bump.
-   * See https://github.com/conventional-changelog/standard-version/issues/577
-   *
-   * We, however, don't want to publish a new version for chore, docs, etc. So we analyze
-   * the commits to see if any of them indicate that a new release should be published.
-   */
-  // eslint-disable-next-line class-methods-use-this
-  protected async isReleasable(pkg: Package): Promise<boolean> {
-    const commitInspection = await inspectCommits(pkg);
-    return commitInspection.shouldRelease;
-  }
-
   public abstract getSuccessMessage(): string;
   public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
@@ -260,7 +245,6 @@ export class PackageRepo extends Repository {
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
     this.package = await Package.create();
-    this.shouldBePublished = await this.isReleasable(this.package);
     this.nextVersion = this.determineNextVersion();
     this.package.setNextVersion(this.nextVersion);
 
