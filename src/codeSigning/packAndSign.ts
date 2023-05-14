@@ -12,7 +12,6 @@ import * as fs from 'fs/promises';
 import { exec } from 'child_process';
 import { EOL } from 'os';
 import { join as pathJoin } from 'path';
-import { Agent } from 'https';
 import { Agents } from 'got';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
@@ -22,7 +21,7 @@ import { getProxyForUrl } from 'proxy-from-env';
 import { PackageJson } from '../package';
 import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
 import { ExecProcessFailed } from './error';
-import { NpmName } from './NpmName';
+import { parseNpmName } from './NpmName';
 
 class PathGetter {
   private static packageJson = 'package.json';
@@ -85,7 +84,7 @@ export const api = {
         command,
         { cwd: pathGetter.target, maxBuffer: 1024 * 4096 },
         // we expect an error code from this command, so we're adding it to the normal Error type
-        (error: Error & { code?: number | string }, stdout: string, stderr: string) => {
+        (error: null | (Error & { code?: number | string }), stdout: string, stderr: string) => {
           if (error?.code) {
             return reject(new ExecProcessFailed(command, error['code'], stderr));
           } else {
@@ -241,7 +240,7 @@ export const api = {
       }
 
       // get the packageJson name/version
-      const npmName: NpmName = NpmName.parse(packageJson.name);
+      const npmName = parseNpmName(packageJson.name);
       logger.debug(`parsed the following npmName components: ${JSON.stringify(npmName, null, 4)}`);
       npmName.tag = packageJson.version;
 
@@ -276,9 +275,8 @@ export const api = {
   },
 
   getAgentForUri(url: string): false | Agents {
-    /* eslint-disable @typescript-eslint/no-unsafe-call */
-    const proxyUrl: string = getProxyForUrl(url) as string;
-    const agent = ProxyAgent(proxyUrl) as Agent;
+    const proxyUrl = getProxyForUrl(url);
+    const agent = ProxyAgent(proxyUrl);
     /* eslint-disable @typescript-eslint/no-unsafe-call */
     return { https: agent, http: agent };
   },
