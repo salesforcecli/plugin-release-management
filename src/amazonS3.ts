@@ -14,7 +14,8 @@ import * as chalk from 'chalk';
 import * as AWS from 'aws-sdk';
 import { S3, WebIdentityCredentials } from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
-import { CommonPrefixList, ObjectList } from 'aws-sdk/clients/s3';
+import { isString } from '@salesforce/ts-types';
+
 import { GetObjectRequest, GetObjectOutput } from 'aws-sdk/clients/s3';
 import { Channel, CLI, S3Manifest, ServiceAvailability } from './types';
 import { api } from './codeSigning/packAndSign';
@@ -117,20 +118,20 @@ export class AmazonS3 {
     return object;
   }
 
-  public async listCommonPrefixes(key: string): Promise<CommonPrefixList> {
+  public async listCommonPrefixes(key: string): Promise<string[]> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const objects = await this.s3
       .listObjectsV2({ Bucket: this.options.bucket || BUCKET, Delimiter: '/', Prefix: prefix })
       .promise();
-    return objects.CommonPrefixes;
+    return (objects.CommonPrefixes ?? [])?.map((item) => item.Prefix).filter(isString);
   }
 
-  public async listKeyContents(key: string, filter = (entry): boolean => Boolean(entry)): Promise<ObjectList[]> {
+  public async listKeyContents(key: string): Promise<S3.ObjectList> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const objects = await this.s3
       .listObjectsV2({ Bucket: this.options.bucket || BUCKET, Delimiter: '/', Prefix: prefix })
       .promise();
-    return objects.Contents.filter(filter) as ObjectList[];
+    return objects.Contents ?? [];
   }
 
   private resolveCredentials(): { credentials: CredentialsOptions } | Record<string, string> {
