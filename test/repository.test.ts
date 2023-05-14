@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import * as shelljs from 'shelljs';
 import { expect } from 'chai';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
@@ -24,116 +22,6 @@ describe('PackageRepo', () => {
 
   beforeEach(async () => {
     uxStub = stubInterface<Ux>($$.SANDBOX, {}) as unknown as Ux;
-  });
-
-  describe('isReleasable', () => {
-    function buildCommitLog(...commitTypes: string[]): string {
-      const commitHash = '2b5efa1bed4934a9f5e3d1b8ed4c411ff4121261';
-      let final = '';
-      for (const type of commitTypes) {
-        final += `${type}: made some changes${os.EOL}${os.EOL}-hash-${os.EOL}${commitHash}${os.EOL}SPLIT${os.EOL}`;
-      }
-      return final;
-    }
-
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-    });
-
-    it('should be published if version was manually bumped', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '2.0.0' })
-      );
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand')
-        .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0')
-        .withArgs(sinon.match('git tag'), true)
-        .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), true)
-        .returns({ stdout: buildCommitLog('chore', 'chore') });
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.shouldBePublished).to.be.true;
-    });
-
-    it('should be published if any commit indicates a major bump', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand')
-        .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0');
-      stubMethod($$.SANDBOX, shelljs, 'exec')
-        .withArgs(sinon.match('npm config'))
-        .returns({ stdout: 'https://registry.npmjs.org/' })
-        .withArgs(sinon.match('git tag'), { silent: true })
-        .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), { silent: true })
-        .returns({ stdout: buildCommitLog('feat!', 'chore') });
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.shouldBePublished).to.be.true;
-    });
-
-    it('should be published if any commit indicates a minor bump', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand')
-        .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0');
-      stubMethod($$.SANDBOX, shelljs, 'exec')
-        .withArgs(sinon.match('npm config'))
-        .returns({ stdout: 'https://registry.npmjs.org/' })
-        .withArgs(sinon.match('git tag'), { silent: true })
-        .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), { silent: true })
-        .returns({ stdout: buildCommitLog('feat', 'chore') });
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.shouldBePublished).to.be.true;
-    });
-
-    it('should be published if any commit indicates a patch bump', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand')
-        .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0');
-      stubMethod($$.SANDBOX, shelljs, 'exec')
-        .withArgs(sinon.match('npm config'))
-        .returns({ stdout: 'https://registry.npmjs.org/' })
-        .withArgs(sinon.match('git tag'), { silent: true })
-        .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), { silent: true })
-        .returns({ stdout: buildCommitLog('fix', 'chore') });
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.shouldBePublished).to.be.true;
-    });
-
-    it('should not be published if no commit indicates a major, minor, or patch bump', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand')
-        .withArgs(sinon.match('standard-version'), true)
-        .returns('1.0.0 to 1.1.0');
-      stubMethod($$.SANDBOX, shelljs, 'exec')
-        .withArgs(sinon.match('npm config'))
-        .returns({ stdout: 'https://registry.npmjs.org/' })
-        .withArgs(sinon.match('git tag'), { silent: true })
-        .returns({ stdout: 'v1.0.0' })
-        .withArgs(sinon.match('git log'), { silent: true })
-        .returns({ stdout: buildCommitLog('chore', 'docs', 'style', 'test', 'ci') });
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.shouldBePublished).to.be.false;
-    });
   });
 
   describe('determineNextVersion', () => {
@@ -158,7 +46,6 @@ describe('PackageRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'isReleasable').returns(true);
       execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0');
       const repo = await PackageRepo.create({ ux: uxStub });
       expect(repo.nextVersion).to.equal('1.1.0');
@@ -168,7 +55,6 @@ describe('PackageRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'isReleasable').returns(true);
       execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-0');
       const repo = await PackageRepo.create({ ux: uxStub, useprerelease: '' });
       expect(repo.nextVersion).to.equal('1.1.0-0');
@@ -179,7 +65,6 @@ describe('PackageRepo', () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'isReleasable').returns(true);
       execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-beta.0');
       const repo = await PackageRepo.create({ ux: uxStub, useprerelease: 'beta' });
       expect(repo.nextVersion).to.equal('1.1.0-beta.0');

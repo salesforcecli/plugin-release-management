@@ -8,7 +8,7 @@ import { Env } from '@salesforce/kit';
 import { OutputFlags } from '@oclif/core/lib/interfaces/parser';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Flags = OutputFlags<any>;
+type Flags = OutputFlags<any>;
 type ConditionFn = (flags: Flags) => boolean;
 type DependencyType = 'env';
 
