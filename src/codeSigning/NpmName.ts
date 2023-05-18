@@ -14,6 +14,16 @@ interface NpmNameResponse {
   tag: string;
 }
 
+/**
+ * Get the parsed components of an NpmName
+ *
+ * @example
+ * const f = parseNpmName('@salesforce/jj@foo');
+ * console.log(f.tag === 'foo')
+ * console.log(f.name === 'jj')
+ * console.log(f.scope === 'salesforce')
+ */
+
 export const parseNpmName = (npmName: string): NpmNameResponse => {
   if (!npmName || npmName.length < 1) {
     throw new NamedError('MissingOrInvalidNpmName', 'The npm name is missing or invalid.');
@@ -37,65 +47,6 @@ export const parseNpmName = (npmName: string): NpmNameResponse => {
     return setNameAndScope(components[0], components[1]);
   }
 };
-/**
- * String representing the parsed components of an NpmName
- *
- * @example
- * const f: NpmName = NpmName.parse('@salesforce/jj@foo');
- * console.log(f.tag === 'foo')
- */
-// export class NpmName {
-//   public static readonly DEFAULT_TAG = 'latest';
-//   public tag: string;
-//   public scope: string;
-//   public name: string;
-
-//   /**
-//    * Private ctor. Use static parse method.
-//    */
-//   private constructor() {
-//     this.tag = NpmName.DEFAULT_TAG;
-//   }
-
-//   /**
-//    * Parse an NPM package name into {scope, name, tag}. The tag is 'latest' by default and can be any semver string.
-//    *
-//    * @param {string} npmName - The npm name to parse.
-//    * @return {NpmName} - An object with the parsed components.
-//    */
-//   public static parse(npmName: string): NpmName {
-//     if (!npmName || npmName.length < 1) {
-//       throw new NamedError('MissingOrInvalidNpmName', 'The npm name is missing or invalid.');
-//     }
-
-//     const returnNpmName = new NpmName();
-
-//     const components = npmName.split('@');
-
-//     // salesforce/jj
-//     if (components.length === 1) {
-//       NpmName.setNameAndScope(components[0], returnNpmName);
-//       return returnNpmName;
-//     }
-
-//     if (components[0].includes('/')) {
-//       // salesforce/jj@tag
-//       NpmName.setNameAndScope(components[0], returnNpmName);
-//     } else if (components[1].includes('/')) {
-//       // @salesforce/jj@tag
-//       NpmName.setNameAndScope(components[1], returnNpmName);
-//     } else {
-//       // Allow something like salesforcedx/pre-release
-//       NpmName.setNameAndScope(components[0], returnNpmName);
-//       returnNpmName.tag = components[1];
-//     }
-
-//     if (components.length > 2) {
-//       returnNpmName.tag = components[2];
-//     }
-//     return returnNpmName;
-//   }
-// }
 
 /**
  * Subroutine for getting name and scope

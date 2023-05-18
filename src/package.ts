@@ -210,16 +210,13 @@ export class Package extends AsyncOptionalCreatable {
         return [key, versions[tag]];
       })
     );
-
-    // Object.keys(this.packageJson.resolutions).map((key: string) => {
-    //   const versions = this.getDistTags(key);
-    //   this.packageJson.resolutions[key] = versions[tag];
-    // });
   }
 
-  // Lookup dependency info by package name or npm alias
-  // Examples: @salesforce/plugin-info or @sf/info
-  // Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
+  /**
+   * Lookup dependency info by package name or npm alias
+   * Examples: @salesforce/plugin-info or @sf/info
+   * Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
+   */
   // eslint-disable-next-line class-methods-use-this
   public getDependencyInfo(name: string, dependencies: Record<string, string>): DependencyInfo {
     for (const [key, value] of Object.entries(dependencies)) {
