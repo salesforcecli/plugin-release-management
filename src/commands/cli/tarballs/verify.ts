@@ -69,7 +69,7 @@ export default class Verify extends SfCommand<void> {
   private step = 1;
   private totalSteps = 1;
 
-  private flags: Interfaces.InferredFlags<typeof Verify.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Verify.flags>;
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Verify);

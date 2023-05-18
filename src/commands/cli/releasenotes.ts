@@ -32,16 +32,12 @@ type Change = {
 type ChangesByPlugin = Record<string, Change[]>;
 
 type Differences = {
-  removed: Record<string, string>;
-  added: Record<string, string>;
-  upgraded: Record<string, string>;
-  downgraded: Record<string, string>;
-  unchanged: Record<string, string>;
+  removed: Map<string, string>;
+  added: Map<string, string>;
+  upgraded: Map<string, string>;
+  downgraded: Map<string, string>;
+  unchanged: Map<string, string>;
 };
-
-function isNotEmpty(obj: Record<string, unknown>): boolean {
-  return Object.keys(obj).length > 0;
-}
 
 export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
   public static readonly summary = messages.getMessage('description');
@@ -65,7 +61,7 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
     }),
   };
   private octokit!: Octokit;
-  private usernames: Record<string, string> = {};
+  private usernames = new Map<string, string>();
 
   public async run(): Promise<ChangesByPlugin> {
     const { flags } = await this.parse(ReleaseNotes);
@@ -82,38 +78,38 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
 
     const differences = findDifferences(oldPlugins, newPlugins);
 
-    if (isNotEmpty(differences.upgraded)) {
+    if (differences.upgraded.size) {
       this.styledHeader('Upgraded Plugins');
-      for (const [plugin, version] of Object.entries(differences.upgraded)) {
-        this.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
+      for (const [plugin, version] of differences.upgraded.entries()) {
+        this.log(`• ${plugin} ${oldPlugins.get(plugin)} => ${version}`);
       }
     }
 
-    if (isNotEmpty(differences.downgraded)) {
+    if (differences.downgraded.size) {
       this.styledHeader('Downgraded Plugins');
-      for (const [plugin, version] of Object.entries(differences.downgraded)) {
-        this.log(`• ${plugin} ${oldPlugins[plugin]} => ${version}`);
+      for (const [plugin, version] of differences.downgraded.entries()) {
+        this.log(`• ${plugin} ${oldPlugins.get(plugin)} => ${version}`);
       }
     }
 
-    if (isNotEmpty(differences.added)) {
+    if (differences.added.size) {
       this.styledHeader('Added Plugins');
-      for (const [plugin, version] of Object.entries(differences.added)) {
+      for (const [plugin, version] of differences.added.entries()) {
         this.log(`• ${plugin} ${version}`);
       }
     }
 
-    if (isNotEmpty(differences.removed)) {
+    if (differences.removed.size) {
       this.styledHeader('Removed Plugins');
-      for (const [plugin, version] of Object.entries(differences.removed)) {
+      for (const [plugin, version] of differences.removed.entries()) {
         this.log(`• ${plugin} ${version}`);
       }
     }
 
     const changesByPlugin: ChangesByPlugin = {};
-    for (const [plugin] of Object.entries(differences.upgraded)) {
-      const pkg = getNpmPackage(plugin, oldPlugins[plugin]);
-      const publishDate = pkg.time[pkg.version];
+    for (const plugin of differences.upgraded.keys()) {
+      const pkg = getNpmPackage(plugin, oldPlugins.get(plugin));
+      const publishDate = pkg.time?.[pkg.version];
       // eslint-disable-next-line no-await-in-loop
       const changes = await this.getPullsForPlugin(plugin, publishDate);
       if (changes.length) changesByPlugin[plugin] = changes;
@@ -129,15 +125,16 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
   }
 
   private async getNameOfUser(username: string): Promise<string> {
-    if (this.usernames[username]) return this.usernames[username];
+    const value = this.usernames.get(username);
+    if (value) return value;
 
     const { data } = await this.octokit.request('GET /users/{username}', { username });
     const name = (data.name ?? data.login ?? username) as string;
-    this.usernames[username] = name;
+    this.usernames.set(username, name);
     return name;
   }
 
-  private async getPullsForPlugin(plugin: string, publishDate: string): Promise<Change[]> {
+  private async getPullsForPlugin(plugin: string, publishDate?: string): Promise<Change[]> {
     const npmPackage = getNpmPackage(plugin);
     const homepage = npmPackage.homepage ?? (npmPackage.name === 'salesforce-alm' ? 'salesforcecli/toolbelt' : null);
     if (!homepage) {
@@ -154,10 +151,14 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
     });
     const changes = (await Promise.all(
       pullRequests.data
-        .filter((pr) => pr.merged_at && pr.merged_at > publishDate && !pr.user.login.includes('dependabot'))
+        .filter(
+          (pr) => pr.merged_at && (!publishDate || pr.merged_at > publishDate) && !pr.user?.login.includes('dependabot')
+        )
         .map(async (pr) => {
-          const username = await this.getNameOfUser(pr.user.login);
-          const author = pr.user.login === username ? username : `${username} (${pr.user.login})`;
+          const username = await this.getNameOfUser(
+            ensureString(pr.user?.login, `No user.login property found for ${JSON.stringify(pr)}`)
+          );
+          const author = pr.user?.login === username ? username : `${username} (${pr.user?.login})`;
           return {
             author,
             mergedAt: pr.merged_at,
@@ -216,39 +217,44 @@ const getNpmPackage = (name: string, version = 'latest'): NpmPackage => {
   return JSON.parse(result.stdout) as NpmPackage;
 };
 
-const normalizePlugins = (npmPackage: NpmPackage): Record<string, string> => {
+const normalizePlugins = (npmPackage: NpmPackage): Map<string, string> => {
   const plugins = npmPackage.oclif?.plugins ?? [];
-  const normalized = { [npmPackage.name]: npmPackage.version };
-  plugins.forEach((p) => {
-    const version = parsePackageVersion(npmPackage.dependencies[p]);
-    if (npmPackage.dependencies[p].startsWith('npm:')) {
-      const name = parseAliasedPackageName(npmPackage.dependencies[p]);
-      normalized[name] = version;
-    } else {
-      normalized[p] = version;
-    }
-  });
+  const dependencies = npmPackage.dependencies ?? {};
 
-  return normalized;
+  // return normalized;
+  const pluginsTuples = plugins.map((p): [string, string] => {
+    const version = parsePackageVersion(dependencies[p]);
+    if (!version) {
+      throw new SfError(`Could not find version for ${p}`, 'VersionNotFound');
+    }
+    const name = dependencies[p].startsWith('npm:') ? parseAliasedPackageName(dependencies[p]) : p;
+    return [name, version];
+  });
+  return new Map<string, string>([[npmPackage.name, npmPackage.version], ...pluginsTuples]);
 };
 
-const findDifferences = (oldPlugins: Record<string, string>, newPlugins: Record<string, string>): Differences => {
-  const removed = {};
-  const added = {};
-  const upgraded = {};
-  const downgraded = {};
-  const unchanged = {};
+const findDifferences = (oldPlugins: Map<string, string>, newPlugins: Map<string, string>): Differences => {
+  const removed = new Map<string, string>();
+  const added = new Map<string, string>();
+  const upgraded = new Map<string, string>();
+  const downgraded = new Map<string, string>();
+  const unchanged = new Map<string, string>();
 
-  for (const [name, version] of Object.entries(oldPlugins)) {
-    if (!newPlugins[name]) removed[name] = version;
-  }
+  // if it's in the old, but not in the new
+  oldPlugins.forEach((version, name) => {
+    if (!newPlugins.has(name)) removed.set(name, version);
+  });
 
-  for (const [name, version] of Object.entries(newPlugins)) {
-    if (!oldPlugins[name]) added[name] = version;
-    else if (semver.gt(version, oldPlugins[name])) upgraded[name] = version;
-    else if (semver.lt(version, oldPlugins[name])) downgraded[name] = version;
-    else unchanged[name] = version;
-  }
+  newPlugins.forEach((version, name) => {
+    // these are in the new, but not in the old
+    if (!oldPlugins.has(name)) added.set(name, version);
+    // non-null because they aren't added (new, but not old, so we know that must be in the old)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    else if (semver.gt(version, oldPlugins.get(name)!)) upgraded.set(name, version);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    else if (semver.lt(version, oldPlugins.get(name)!)) downgraded.set(name, version);
+    else unchanged.set(name, version);
+  });
 
   return { removed, added, upgraded, downgraded, unchanged };
 };

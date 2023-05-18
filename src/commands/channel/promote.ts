@@ -171,7 +171,7 @@ export default class Promote extends SfCommand<AnyJson> {
     const deps = verifyDependencies(
       this.flags,
       (dep) => dep.name.startsWith('AWS'),
-      (args: typeof this.flags) => !args.dryrun
+      (args) => !args.dryrun
     );
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';

@@ -7,12 +7,12 @@
 import * as AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
 import { expect } from 'chai';
-import { testSetup } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import * as upload from '../../src/codeSigning/upload';
 
-const $$ = testSetup();
-
 describe('Upload', () => {
+  const $$ = new TestContext();
+
   beforeEach(() => {
     AWSMock.setSDKInstance(AWS);
   });
@@ -24,7 +24,7 @@ describe('Upload', () => {
 
   it('should upload an object to S3', async () => {
     AWSMock.mock('S3', 'putObject', (params, callback) => {
-      callback(null, { ETag: '12345' });
+      callback(undefined, { ETag: '12345' });
     });
     const response = await upload.putObject('my-plugin-1.0.0.sig', 'my-bucket', 'media/signatures');
     expect(response).to.deep.equal({ ETag: '12345' });

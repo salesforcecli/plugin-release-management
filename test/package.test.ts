@@ -7,16 +7,16 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { expect } from 'chai';
-import { testSetup } from '@salesforce/core/lib/testSetup';
+import { assert, expect } from 'chai';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import * as sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Package } from '../src/package';
 
-const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
 
 describe('Package', () => {
+  const $$ = new TestContext();
   describe('readPackageJson', () => {
     let readStub: sinon.SinonStub;
 
@@ -79,8 +79,7 @@ describe('Package', () => {
 
     it('should validate that next version is valid', async () => {
       const pkg = await Package.create();
-      pkg.setNextVersion('1.1.0');
-      const validation = pkg.validateNextVersion();
+      const validation = pkg.validateNextVersion('1.1.0');
       expect(validation).to.deep.equal({
         nextVersion: '1.1.0',
         currentVersion: '1.0.0',
@@ -91,38 +90,13 @@ describe('Package', () => {
 
     it('should invalidate that next version when it already exists', async () => {
       const pkg = await Package.create();
-      pkg.setNextVersion('1.0.0');
-      const validation = pkg.validateNextVersion();
+      const validation = pkg.validateNextVersion('1.0.0');
       expect(validation).to.deep.equal({
         nextVersion: '1.0.0',
         currentVersion: '1.0.0',
         valid: false,
         name: pkgName,
       });
-    });
-  });
-
-  describe('get/set nextVersion', () => {
-    beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({
-          name: pkgName,
-          version: '1.0.0',
-        })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['0.0.1', '0.0.5', '1.0.0'],
-      });
-    });
-    afterEach(() => {
-      $$.restore();
-    });
-    it('should set and get the next version', async () => {
-      const pkg = await Package.create();
-      pkg.setNextVersion('1.1.0');
-      expect(pkg.getNextVersion()).to.equal('1.1.0');
     });
   });
 
@@ -145,8 +119,7 @@ describe('Package', () => {
         versions: ['0.0.1', '0.0.5', '1.0.0'],
       });
       const pkg = await Package.create();
-      pkg.setNextVersion('1.1.0');
-      expect(pkg.nextVersionIsAvailable()).to.equal(false);
+      expect(pkg.nextVersionIsAvailable('1.1.0')).to.equal(false);
     });
 
     it('should return true if the next version is listed', async () => {
@@ -156,8 +129,7 @@ describe('Package', () => {
         versions: ['0.0.1', '0.0.5', '1.0.0', '1.1.0'],
       });
       const pkg = await Package.create();
-      pkg.setNextVersion('1.1.0');
-      expect(pkg.nextVersionIsAvailable()).to.equal(true);
+      expect(pkg.nextVersionIsAvailable('1.1.0')).to.equal(true);
     });
   });
 
@@ -322,14 +294,14 @@ describe('Package', () => {
     it('should update resolutions in package.json', async () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@salesforce/source-deploy-retrieve@1.0.1']);
-
+      assert(pkg.packageJson.resolutions);
       expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('1.0.1');
     });
 
     it('should update jit in package.json', async () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@salesforce/jit-me@1.0.1']);
-
+      assert(pkg.packageJson.oclif?.jitPlugins);
       expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('1.0.1');
     });
   });
@@ -403,7 +375,7 @@ describe('Package', () => {
       it('should update dependencies in package.json', async () => {
         const pkg = await Package.create();
         pkg.bumpJit();
-
+        assert(pkg.packageJson.oclif?.jitPlugins);
         expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('9.9.10');
         expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.10');
         // no change to other plugins
@@ -452,6 +424,7 @@ describe('Package', () => {
           version: '9.9.9',
         },
       ]);
+      assert(pkg.packageJson.oclif?.jitPlugins);
       expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('9.9.9');
       expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.9');
     });
@@ -474,7 +447,7 @@ describe('Package', () => {
       const results = pkg.bumpJit();
 
       expect(results).to.be.undefined;
-      expect(pkg.packageJson.oclif.jitPlugins).to.be.undefined;
+      expect(pkg.packageJson.oclif?.jitPlugins).to.be.undefined;
     });
 
     afterEach(() => {

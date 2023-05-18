@@ -6,17 +6,17 @@
  */
 
 import { expect } from 'chai';
-import { testSetup } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import * as sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Package } from '../src/package';
 import { PackageRepo } from '../src/repository';
 
-const $$ = testSetup();
 const pkgName = '@salesforce/my-plugin';
 
 describe('PackageRepo', () => {
+  const $$ = new TestContext();
   let uxStub: Ux;
   let execStub: sinon.SinonStub;
 
@@ -69,52 +69,6 @@ describe('PackageRepo', () => {
       const repo = await PackageRepo.create({ ux: uxStub, useprerelease: 'beta' });
       expect(repo.nextVersion).to.equal('1.1.0-beta.0');
       expect(execStub.args[0][0]).to.include('--prerelease');
-    });
-  });
-
-  describe('validate', () => {
-    it('should validate that next version is valid', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
-
-      const repo = await PackageRepo.create({ ux: uxStub });
-      repo.package.setNextVersion('2.0.0');
-      const validation = repo.validate();
-      expect(validation).to.deep.equal({
-        nextVersion: '2.0.0',
-        currentVersion: '1.0.0',
-        valid: true,
-        name: pkgName,
-      });
-    });
-
-    it('should invalidate the next version when it already exists', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
-
-      const repo = await PackageRepo.create({ ux: uxStub });
-      repo.package.setNextVersion('1.0.0');
-      const validation = repo.validate();
-      expect(validation).to.deep.equal({
-        nextVersion: '1.0.0',
-        currentVersion: '1.0.0',
-        valid: false,
-        name: pkgName,
-      });
     });
   });
 

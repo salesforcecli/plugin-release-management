@@ -9,7 +9,7 @@ import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
-import { isObject } from '@salesforce/ts-types';
+import { ensureString, isObject } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'github.check.closed');
@@ -28,6 +28,7 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
   public static readonly flags = {
     gus: Flags.requiredOrg({
       summary: messages.getMessage('flags.gus'),
+      required: true,
     }),
     'github-token': Flags.string({
       summary: messages.getMessage('flags.github-token'),
@@ -66,12 +67,16 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
       )
     )
       // comment includes W-
-      .map((issueComments) => issueComments.data.find((comment) => comment.body.includes('W-')))
+      .map((issueComments) => issueComments.data.find((comment) => comment.body?.includes('W-')))
       .filter(isObject)
       // extract url and WI number
-      .map((comment) => ({ issueUrl: comment.issue_url, workItem: comment.body.match(/W-[0-9]{8,9}/g) }))
+      .map((comment) => ({ issueUrl: comment?.issue_url, workItem: comment?.body?.match(/W-[0-9]{8,9}/g) }))
       .filter((item) => item.workItem?.length)
-      .map((item) => ({ issueUrl: item.issueUrl, workItem: item.workItem[0] }));
+      .map((item) => ({ issueUrl: item.issueUrl, workItem: item.workItem?.[0] }))
+      .filter(
+        (item): item is { issueUrl: string; workItem: string } =>
+          typeof item.issueUrl === 'string' && typeof item.workItem === 'string'
+      );
 
     const wiToQuery = commentsWithWI.map((item) => item.workItem);
     // query all those WI in GUS, and turn into a Map
@@ -89,7 +94,7 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
       .map(
         (item): GithubCheckClosedResult => ({
           ...item,
-          status: wiQueryResult.get(item.workItem),
+          status: ensureString(wiQueryResult.get(item.workItem)),
           issueUrl: item.issueUrl.replace('api.', '').replace('repos/', ''),
         })
       )

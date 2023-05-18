@@ -77,8 +77,9 @@ export default class AutoMerge extends SfCommand<void> {
     }),
   };
 
-  private octokit: Octokit;
-  private baseRepoObject: {
+  // private props initialized early in run()
+  private octokit!: Octokit;
+  private baseRepoObject!: {
     owner: string;
     repo: string;
   };
@@ -89,13 +90,8 @@ export default class AutoMerge extends SfCommand<void> {
       new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
       'GH_TOKEN is required to be set in the environment'
     );
-    const { owner, repo } = await getOwnerAndRepo(flags.owner, flags.repo);
-
+    this.baseRepoObject = await getOwnerAndRepo(flags.owner, flags.repo);
     this.octokit = new Octokit({ auth });
-    this.baseRepoObject = {
-      owner,
-      repo,
-    };
 
     this.log(`owner: ${this.baseRepoObject.owner}, scope: ${this.baseRepoObject.repo}`);
     const eligiblePRs = (
@@ -103,13 +99,11 @@ export default class AutoMerge extends SfCommand<void> {
     ).data.filter(
       (pr) =>
         pr.state === 'open' &&
-        (pr.user.login === 'dependabot[bot]' ||
-          (pr.title.includes('refactor: devScripts update') && pr.user.login === 'svc-cli-bot'))
+        (pr.user?.login === 'dependabot[bot]' ||
+          (pr.title.includes('refactor: devScripts update') && pr.user?.login === 'svc-cli-bot'))
     ) as PullRequest[];
-    const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter((pr) => pr !== undefined);
-    const mergeablePRs = (await Promise.all(greenPRs.map((pr) => this.isMergeable(pr)))).filter(
-      (pr) => pr !== undefined
-    );
+    const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter(isPrNotUndefined);
+    const mergeablePRs = (await Promise.all(greenPRs.map((pr) => this.isMergeable(pr)))).filter(isPrNotUndefined);
 
     this.table(
       mergeablePRs.map((pr) => ({ title: pr.title, html_url: pr.html_url })),
@@ -120,12 +114,12 @@ export default class AutoMerge extends SfCommand<void> {
     );
     this.log('');
 
-    if (mergeablePRs.length === 0) {
+    const prToMerge = mergeablePRs[0];
+
+    if (!prToMerge) {
       this.log('No PRs can be automerged');
       return;
     }
-
-    const prToMerge = mergeablePRs[0];
 
     if (flags.dryrun === false) {
       this.log(`merging ${prToMerge.number.toString()} | ${prToMerge.title}`);
@@ -163,7 +157,7 @@ export default class AutoMerge extends SfCommand<void> {
 
     if (
       checkRunResponse.data.check_runs.every(
-        (cr) => cr.status === 'completed' && ['success', 'skipped'].includes(cr.conclusion)
+        (cr) => cr.status === 'completed' && cr.conclusion && ['success', 'skipped'].includes(cr.conclusion)
       )
     ) {
       return pr;
@@ -183,3 +177,5 @@ export default class AutoMerge extends SfCommand<void> {
     }
   }
 }
+
+const isPrNotUndefined = (pr: PullRequest | undefined): pr is PullRequest => pr !== undefined;

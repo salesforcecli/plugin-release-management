@@ -10,6 +10,7 @@ import * as chalk from 'chalk';
 import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { exec } from 'shelljs';
+import { isString } from '@salesforce/ts-types';
 import { PackageInfo } from '../../../repository';
 import { verifyDependencies } from '../../../dependencies';
 import { Access, PackageRepo } from '../../../repository';
@@ -71,7 +72,10 @@ export default class Release extends SfCommand<ReleaseResult> {
     const deps = verifyDependencies(flags);
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
-      const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
+      const missing = deps.results
+        .filter((d) => d.passed === false)
+        .map((d) => d.message)
+        .filter(isString);
       throw new SfError(messages.getMessage(errType), errType, missing);
     }
 
@@ -79,25 +83,11 @@ export default class Release extends SfCommand<ReleaseResult> {
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       useprerelease: flags.prerelease,
     });
-    if (!pkg.shouldBePublished) {
-      this.log('Found no commits that warrant a release. Exiting...');
-      return;
-    }
 
     await pkg.writeNpmToken();
 
     if (flags.githubtag) {
       this.log(`Using Version: ${pkg.nextVersion}`);
-    } else {
-      pkg.printStage('Validate Next Version');
-      const pkgValidation = pkg.validate();
-      if (!pkgValidation.valid) {
-        const errType = 'InvalidNextVersion';
-        throw new SfError(messages.getMessage(errType, [pkgValidation.nextVersion]), errType);
-      }
-      this.log(`Name: ${pkgValidation.name}`);
-      this.log(`Current Version: ${pkgValidation.currentVersion}`);
-      this.log(`Next Version: ${pkgValidation.nextVersion}`);
     }
 
     if (flags.install) {
@@ -108,11 +98,7 @@ export default class Release extends SfCommand<ReleaseResult> {
       pkg.build();
     }
 
-    if (!flags.githubtag) {
-      pkg.printStage('Prepare Release');
-      pkg.prepare({ dryrun: flags.dryrun });
-    }
-    let signature: SigningResponse;
+    let signature: SigningResponse | undefined;
     if (flags.sign && !flags.dryrun) {
       pkg.printStage('Sign and Upload Security Files');
       signature = await pkg.sign();
@@ -121,7 +107,7 @@ export default class Release extends SfCommand<ReleaseResult> {
     pkg.printStage('Publish');
     try {
       await pkg.publish({
-        signatures: [signature],
+        ...(signature ? { signatures: [signature] } : {}),
         access: flags.npmaccess as Access,
         tag: flags.npmtag,
         dryrun: flags.dryrun,
@@ -141,16 +127,9 @@ export default class Release extends SfCommand<ReleaseResult> {
       }
     }
 
-    try {
-      if (flags.sign && flags.verify && !flags.dryrun) {
-        pkg.printStage('Verify Signed Packaged');
-        this.verifySign(pkg.getPkgInfo());
-      }
-    } finally {
-      if (!flags.dryrun && !flags.githubtag) {
-        pkg.printStage('Push Changes to Git');
-        pkg.pushChangesToGit();
-      }
+    if (flags.sign && flags.verify && !flags.dryrun) {
+      pkg.printStage('Verify Signed Packaged');
+      this.verifySign(pkg.getPkgInfo());
     }
 
     this.log(pkg.getSuccessMessage());

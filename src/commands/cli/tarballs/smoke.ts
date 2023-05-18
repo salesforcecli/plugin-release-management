@@ -161,7 +161,10 @@ export default class SmokeTest extends SfCommand<void> {
   private async initializeAllCommands(executable: string): Promise<void> {
     this.styledHeader(`Initializing help for all ${this.flags.cli} commands`);
     // Ran into memory issues when running all commands at once. Now we run them in batches of 10.
-    const throttledPromise = new ThrottledPromiseAll({ concurrency: 10, timeout: Duration.minutes(10) });
+    const throttledPromise = new ThrottledPromiseAll<string, string | void>({
+      concurrency: 10,
+      timeout: Duration.minutes(10),
+    });
 
     const allCommands = await this.getAllCommands(executable);
 

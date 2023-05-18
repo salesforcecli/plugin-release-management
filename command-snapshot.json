@@ -31,12 +31,6 @@
     "alias": []
   },
   {
-    "command": "cli:release:automerge",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dry-run", "json", "owner", "pull-number", "repo", "verbose"],
-    "alias": []
-  },
-  {
     "command": "cli:release:build",
     "plugin": "@salesforce/plugin-release-management",
     "flags": [

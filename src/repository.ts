@@ -13,7 +13,7 @@ import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
-import { Package, VersionValidation } from './package';
+import { Package } from './package';
 import { Registry } from './registry';
 import { SigningResponse } from './codeSigning/SimplifiedSigning';
 import { api as packAndSignApi } from './codeSigning/packAndSign';
@@ -43,22 +43,19 @@ type PollFunction = () => boolean;
 type RepositoryOptions = {
   ux: Ux;
   useprerelease?: string;
-  shouldBePublished?: boolean;
 };
 
 abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
-  protected options: RepositoryOptions;
+  protected options?: RepositoryOptions;
   protected ux: Ux;
-  protected shouldBePublished: boolean;
   protected env: Env;
   protected registry: Registry;
   private stepCounter = 1;
 
-  public constructor(options: RepositoryOptions) {
+  public constructor(options: RepositoryOptions | undefined) {
     super(options);
     this.options = options;
-    this.ux = options.ux;
-    this.shouldBePublished = options.shouldBePublished;
+    this.ux = options?.ux ?? new Ux();
     this.env = new Env();
     this.registry = new Registry();
   }
@@ -84,8 +81,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   public getBranchName(): string {
-    const branch =
-      this.env.getString('CIRCLE_BRANCH', null) || exec('git branch --show-current', { silent: true }).stdout;
+    const branch = this.env.getString('CIRCLE_BRANCH', exec('git branch --show-current', { silent: true }).stdout);
     return ensureString(branch);
   }
 
@@ -161,7 +157,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   public abstract getSuccessMessage(): string;
-  public abstract validate(): VersionValidation | VersionValidation[];
   public abstract prepare(options: PrepareOpts): void;
   public abstract getPkgInfo(packageNames?: string[]): PackageInfo | PackageInfo[];
   public abstract publish(options: PublishOpts): Promise<void>;
@@ -171,21 +166,17 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
 }
 
 export class PackageRepo extends Repository {
-  public name: string;
-  public nextVersion: string;
-  public package: Package;
-  public shouldBePublished: boolean;
+  // all props are set in init(), so ! is safe
+  public name!: string;
+  public nextVersion!: string;
+  public package!: Package;
 
   // Both loggers are used because some logs we only want to show in the debug output
   // but other logs we always want to go to stdout
-  private logger: Logger;
+  private logger!: Logger;
 
-  public constructor(options: RepositoryOptions) {
+  public constructor(options: RepositoryOptions | undefined) {
     super(options);
-  }
-
-  public validate(): VersionValidation {
-    return this.package.validateNextVersion();
   }
 
   public prepare(opts: PrepareOpts = {}): void {
@@ -230,12 +221,12 @@ export class PackageRepo extends Repository {
     if (tag) cmd += ` --tag ${tag}`;
     if (dryrun) cmd += ' --dry-run';
     cmd += ` ${this.registry.getRegistryParameter()}`;
-    cmd += ` --access ${access || 'public'}`;
+    cmd += ` --access ${access ?? 'public'}`;
     this.execCommand(cmd);
   }
 
   public async waitForAvailability(): Promise<boolean> {
-    return this.poll(() => this.package.nextVersionIsAvailable());
+    return this.poll(() => this.package.nextVersionIsAvailable(this.nextVersion));
   }
 
   public getSuccessMessage(): string {
@@ -244,9 +235,8 @@ export class PackageRepo extends Repository {
 
   protected async init(): Promise<void> {
     this.logger = await Logger.child(this.constructor.name);
-    this.package = await Package.create();
+    this.package = await Package.create({ location: undefined });
     this.nextVersion = this.determineNextVersion();
-    this.package.setNextVersion(this.nextVersion);
 
     this.name = this.package.npmPackage.name;
   }
@@ -261,12 +251,16 @@ export class PackageRepo extends Repository {
       this.logger.debug('Using standard-version to determine next version');
       let command = 'npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog';
       // It can be an empty string if they want
-      if (isString(this.options.useprerelease)) {
-        command += ` --prerelease ${this.options.useprerelease}`;
+      if (isString(this.options?.useprerelease)) {
+        command += ` --prerelease ${this.options?.useprerelease}`;
       }
       const result = this.execCommand(command, true);
       const nextVersionRegex = /(?<=to\s)([0-9]{1,}\.|.){2,}/gi;
-      return result.match(nextVersionRegex)[0];
+      const nextVersion = result.match(nextVersionRegex)?.[0];
+      if (!nextVersion) {
+        throw new SfError(`Could not determine next version from ${result} using regex`);
+      }
+      return nextVersion;
     }
   }
 }

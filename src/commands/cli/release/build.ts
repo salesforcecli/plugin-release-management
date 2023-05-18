@@ -100,7 +100,9 @@ export default class build extends SfCommand<void> {
         )
       : undefined;
 
-    const ref = await this.getGithubRef(flags['start-from-github-ref'], flags['start-from-npm-dist-tag']);
+    // if the github ref is not provided, the dist tag must be
+    const ref =
+      flags['start-from-github-ref'] ?? (await this.distTagToGithubRef(ensureString(flags['start-from-npm-dist-tag'])));
 
     // Check out "starting point"
     // Works with sha (detached): "git checkout f476e8e"
@@ -148,7 +150,6 @@ export default class build extends SfCommand<void> {
 
     // bump the version in the pjson to the next version for this tag
     this.log(`Setting the version to ${nextVersion}`);
-    repo.package.setNextVersion(nextVersion);
     repo.package.packageJson.version = nextVersion;
 
     if (flags.empty) {
@@ -166,7 +167,7 @@ export default class build extends SfCommand<void> {
       // bump resolution deps
       if (flags.resolutions) {
         this.log('Bumping resolutions in the package.json to their "latest"');
-        repo.package.bumpResolutions('latest');
+        repo.package.packageJson.resolutions = repo.package.bumpResolutions('latest');
       }
 
       // pin the pinned dependencies
@@ -201,6 +202,11 @@ export default class build extends SfCommand<void> {
       await this.exec(`git commit -m "chore(release): bump to ${nextVersion}"`);
       await this.exec(`git push --set-upstream origin ${branchName} --no-verify`);
 
+      if (!repo.package.packageJson.repository) {
+        throw new SfError(
+          'The repository field is required in the package.json. This is used to determine the repo owner and name to create the release PR.'
+        );
+      }
       const [repoOwner, repoName] = repo.package.packageJson.repository.split('/');
 
       const releaseDetails = `
@@ -233,21 +239,11 @@ export default class build extends SfCommand<void> {
     }
   }
 
-  private async getGithubRef(githubRef: string, distTag: string): Promise<string> {
-    let ref: string;
-    if (githubRef) {
-      this.log(`Flag '--start-from-github-ref' passed, switching to '${githubRef}'`);
+  private async distTagToGithubRef(distTag: string): Promise<string> {
+    this.log(`Flag '--start-from-npm-dist-tag' passed, looking up version for ${distTag}`);
 
-      ref = githubRef;
-    } else {
-      this.log(`Flag '--start-from-npm-dist-tag' passed, looking up version for ${distTag}`);
-
-      const temp = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
-      const version = temp.package.getDistTags(temp.package.packageJson.name)[distTag];
-      ref = version;
-    }
-
-    return ref;
+    const temp = await PackageRepo.create({ ux: new Ux({ jsonEnabled: this.jsonEnabled() }) });
+    return temp.package.getDistTags(temp.package.packageJson.name)[distTag];
   }
 
   private async createAndPushBaseBranch(ref: string): Promise<string> {

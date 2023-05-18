@@ -21,7 +21,7 @@ const messages = Messages.load('@salesforce/plugin-release-management', 'cli.sch
 ]);
 
 type Result = {
-  correspondingFile: string;
+  correspondingFile: string | null;
   matches: boolean;
   reason?: string;
 };
@@ -82,10 +82,9 @@ export default class Compare extends SfCommand<Results> {
       )
     );
 
-    const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>(
-      (x, [file, d]) => x.concat(Object.assign({ file }, d)),
-      []
-    );
+    const data = Object.entries(results).reduce<
+      Array<{ file: string; correspondingFile: string | null; matches: boolean }>
+    >((x, [file, d]) => x.concat(Object.assign({ file }, d)), []);
     const columns = {
       file: { header: 'File' },
       correspondingFile: { header: 'Corresponding File' },

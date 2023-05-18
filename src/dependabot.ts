@@ -23,8 +23,8 @@ export const maxVersionBumpFlag = Flags.string({
 });
 
 export const getOwnerAndRepo = async (
-  ownerFlag: string,
-  repoFlag: string
+  ownerFlag?: string,
+  repoFlag?: string
 ): Promise<{ owner: string; repo: string }> => {
   if (ownerFlag && repoFlag) {
     return { owner: ownerFlag, repo: repoFlag };
