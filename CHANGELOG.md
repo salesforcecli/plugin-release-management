@@ -1,3 +1,12 @@
+## [3.17.5](https://github.com/salesforcecli/plugin-release-management/compare/3.17.4...3.17.5) (2023-05-20)
+
+
+### Bug Fixes
+
+* **deps:** bump semver and @types/semver ([79b670d](https://github.com/salesforcecli/plugin-release-management/commit/79b670d776f3b84ff38c615ed353ac4c484ae755))
+
+
+
 ## [3.17.4](https://github.com/salesforcecli/plugin-release-management/compare/3.17.3...3.17.4) (2023-05-16)
 
 
