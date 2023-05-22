@@ -18,12 +18,7 @@ import { Interfaces } from '@oclif/core';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.tarballs.verify', [
-  'description',
-  'examples',
-  'cli',
-  'windowsUsernameBuffer',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.verify');
 
 const PASSED = green.bold('PASSED');
 const FAILED = red.bold('FAILED');

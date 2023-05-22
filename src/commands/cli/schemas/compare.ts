@@ -15,10 +15,7 @@ import * as fg from 'fast-glob';
 import { JsonMap } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.schemas.compare', [
-  'description',
-  'examples',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.compare');
 
 type Result = {
   correspondingFile: string | null;

@@ -12,7 +12,7 @@ import { ensureString, isString } from '@salesforce/ts-types';
 import { PackageJson } from './package';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
 
 export const maxVersionBumpFlag = Flags.string({
   description: messages.getMessage('maxVersionBump'),

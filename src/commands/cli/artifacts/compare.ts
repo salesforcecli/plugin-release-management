@@ -25,18 +25,7 @@ const MyOctokit = Octokit.plugin(paginateRest);
 const exec = promisify(execSync);
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.artifacts.compare', [
-  'summary',
-  'examples',
-  'error.BreakingChanges',
-  'error.VersionNotFound',
-  'error.InvalidVersions',
-  'error.InvalidRepo',
-  'error.VersionNotPinned',
-  'flags.plugins.summary',
-  'flags.current.summary',
-  'flags.previous.summary',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.artifacts.compare');
 
 async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: string }> {
   const result = await exec(`npm view ${plugin} repository.url --json`);

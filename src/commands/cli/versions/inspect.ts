@@ -22,15 +22,7 @@ import { PackageJson } from '../../../package';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.versions.inspect', [
-  'description',
-  'examples',
-  'deps',
-  'salesforce',
-  'channels',
-  'locations',
-  'cli',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
 
 const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
 const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
