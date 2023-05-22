@@ -43,7 +43,7 @@ export class AmazonS3 {
   private baseKey: string;
 
   public constructor(private options: AmazonS3Options) {
-    this.directory = `https://developer.salesforce.com/media/salesforce-cli/${this.options.cli || ''}`;
+    this.directory = `https://developer.salesforce.com/media/salesforce-cli/${this.options.cli ?? ''}`;
     this.baseKey = this.directory.replace(BASE_URL, '').replace(/^\//, '');
     const agent = api.getAgentForUri('https://s3.amazonaws.com') as Agents;
     this.s3 = new AWS.S3({
@@ -113,7 +113,7 @@ export class AmazonS3 {
   public async getObject(options: GetObjectOption): Promise<GetObjectOutput> {
     options.Key = options.Key.replace(BASE_URL, '').replace(/^\//, '');
     const object = (await this.s3
-      .getObject({ ...options, ...{ Bucket: this.options.bucket || BUCKET } })
+      .getObject({ ...options, ...{ Bucket: this.options.bucket ?? BUCKET } })
       .promise()) as GetObjectOutput;
     return object;
   }
@@ -121,7 +121,7 @@ export class AmazonS3 {
   public async listCommonPrefixes(key: string): Promise<string[]> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const objects = await this.s3
-      .listObjectsV2({ Bucket: this.options.bucket || BUCKET, Delimiter: '/', Prefix: prefix })
+      .listObjectsV2({ Bucket: this.options.bucket ?? BUCKET, Delimiter: '/', Prefix: prefix })
       .promise();
     return (objects.CommonPrefixes ?? [])?.map((item) => item.Prefix).filter(isString);
   }
@@ -129,7 +129,7 @@ export class AmazonS3 {
   public async listKeyContents(key: string): Promise<S3.ObjectList> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const objects = await this.s3
-      .listObjectsV2({ Bucket: this.options.bucket || BUCKET, Delimiter: '/', Prefix: prefix })
+      .listObjectsV2({ Bucket: this.options.bucket ?? BUCKET, Delimiter: '/', Prefix: prefix })
       .promise();
     return objects.Contents ?? [];
   }

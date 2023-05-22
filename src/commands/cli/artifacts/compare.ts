@@ -130,7 +130,7 @@ export class SnapshotComparator {
       });
     const hasRemovals = commands.find((cmd) => cmd.aliasRemovals.length > 0 || cmd.flagRemovals.length > 0);
     const hasAdditions = commands.find((cmd) => cmd.aliasAdditions.length > 0 || cmd.flagAdditions.length > 0);
-    const hasChanges = Boolean(commandAdditions.length || commandRemovals.length || hasRemovals || hasAdditions);
+    const hasChanges = Boolean(commandAdditions.length ?? commandRemovals.length ?? hasRemovals ?? hasAdditions);
     const hasBreakingChanges = Boolean(commandRemovals.length || hasRemovals);
     return {
       commandAdditions: this.getCommandAdditions(),
@@ -454,7 +454,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   }
 
   private resolveVersions(): void {
-    this.current = this.flags.current || this.packageJson.version;
+    this.current = this.flags.current ?? this.packageJson.version;
     this.previous = ensureString(
       this.flags.previous ?? this.versions.find((version) => semver.lt(version, this.current)),
       'previous version not found'
@@ -493,7 +493,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
   }
 
   private filterPlugins(packageJson: PackageJson): Record<string, string> {
-    const pluginNames = [...(packageJson.oclif?.plugins || []), ...Object.keys(packageJson.oclif?.jitPlugins ?? {})];
+    const pluginNames = [...(packageJson.oclif?.plugins ?? []), ...Object.keys(packageJson.oclif?.jitPlugins ?? {})];
     const filtered = (
       this.flags.plugin ? pluginNames.filter((plugin) => this.flags.plugin?.includes(plugin)) : pluginNames
     ).filter((plugin) => !plugin.startsWith('@oclif'));
