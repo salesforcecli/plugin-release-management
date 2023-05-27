@@ -1,3 +1,12 @@
+## [3.17.8](https://github.com/salesforcecli/plugin-release-management/compare/3.17.7...3.17.8) (2023-05-27)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 3.36.1 to 3.36.2 ([9c93270](https://github.com/salesforcecli/plugin-release-management/commit/9c9327055079cb889b00044633fe2dd01bc1357c))
+
+
+
 ## [3.17.7](https://github.com/salesforcecli/plugin-release-management/compare/3.17.6...3.17.7) (2023-05-27)
 
 
