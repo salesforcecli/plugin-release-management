@@ -1,3 +1,15 @@
+## [3.17.8](https://github.com/salesforcecli/plugin-release-management/compare/3.17.7...3.17.8) (2023-05-27)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 3.36.1 to 3.36.2 ([9c93270](https://github.com/salesforcecli/plugin-release-management/commit/9c9327055079cb889b00044633fe2dd01bc1357c))
+
+## [3.17.7](https://github.com/salesforcecli/plugin-release-management/compare/3.17.6...3.17.7) (2023-05-27)
+
+### Bug Fixes
+
+- **deps:** bump @octokit/plugin-paginate-rest from 6.0.0 to 6.1.2 ([4400cce](https://github.com/salesforcecli/plugin-release-management/commit/4400ccee07923d9413496a0c5a88a72d0bab2914))
+
 ## [3.17.6](https://github.com/salesforcecli/plugin-release-management/compare/3.17.5...3.17.6) (2023-05-20)
 
 ### Bug Fixes
