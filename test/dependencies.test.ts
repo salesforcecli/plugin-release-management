@@ -6,13 +6,14 @@
  */
 
 import { expect } from 'chai';
-import { testSetup } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { Env } from '@salesforce/kit';
+import { stubMethod } from '@salesforce/ts-sinon';
 import { verifyDependencies } from '../src/dependencies';
 
-const $$ = testSetup();
-
 describe('Dependencies', () => {
+  const $$ = new TestContext();
+
   it('should pass when all required env variables exist', () => {
     $$.SANDBOX.stub(Env.prototype, 'getString').returns('foobar');
     const validation = verifyDependencies({ sign: true });
@@ -26,7 +27,7 @@ describe('Dependencies', () => {
   });
 
   it('should pass when required env variables are NOT set', () => {
-    $$.SANDBOX.stub(Env.prototype, 'getString').returns(null);
+    stubMethod($$.SANDBOX, Env.prototype, 'getString').returns(undefined);
     const validation = verifyDependencies({ sign: true });
     expect(validation.failures).to.equal(3);
     expect(validation.results).to.deep.equal([

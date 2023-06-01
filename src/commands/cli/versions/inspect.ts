@@ -22,15 +22,7 @@ import { PackageJson } from '../../../package';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.versions.inspect', [
-  'description',
-  'examples',
-  'deps',
-  'salesforce',
-  'channels',
-  'locations',
-  'cli',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
 
 const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
 const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
@@ -41,7 +33,7 @@ export type Info = {
   version: string;
   channel: Channel;
   location: Location;
-  dependencies?: Dependency[];
+  dependencies: Dependency[];
 };
 
 export type Dependency = {
@@ -198,9 +190,9 @@ export default class Inspect extends SfCommand<Info[]> {
   };
 
   public workingDir = path.join(os.tmpdir(), 'cli_inspection');
-  public archives: Archives;
+  public archives?: Archives;
 
-  private flags: Interfaces.InferredFlags<typeof Inspect.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Inspect.flags>;
 
   public async run(): Promise<Info[]> {
     const { flags } = await this.parse(Inspect);
@@ -265,14 +257,15 @@ export default class Inspect extends SfCommand<Info[]> {
 
     const pathsByChannel = Object.fromEntries(
       channels
-        .map((c) => CHANNEL_MAPPING[Location.ARCHIVE][c])
-        .map((c) => [c, this.archives[CHANNEL_MAPPING[Location.ARCHIVE][c]]])
+        // the enums are not smart enough to know that they'll definitely be archive channels
+        .map((c) => CHANNEL_MAPPING[Location.ARCHIVE][c] as ArchiveChannel)
+        .map((c) => [c, this.archives?.[CHANNEL_MAPPING[Location.ARCHIVE][c] as ArchiveChannel]])
     );
 
     const results: Info[] = [];
     for (const channel of Object.keys(pathsByChannel) as Channel[]) {
       this.log(`---- ${Location.ARCHIVE} ${channel} ----`);
-      for (const archivePath of pathsByChannel[channel] as string[]) {
+      for (const archivePath of pathsByChannel[channel] ?? []) {
         this.spinner.start(`Downloading: ${cyan(archivePath)}`);
         const curlResult = exec(`curl ${archivePath} -Os`, { cwd: tarDir });
         this.spinner.stop();
@@ -350,8 +343,8 @@ export default class Inspect extends SfCommand<Info[]> {
   }
 
   private logResults(results: Info[], locations: Location[], channels: Channel[]): void {
-    let allMatch: boolean;
-    let npmAndArchivesMatch: boolean;
+    let allMatch: boolean | undefined;
+    let npmAndArchivesMatch: boolean | undefined;
     this.log();
     results.forEach((result) => {
       this.log(bold(`${result.origin}: ${green(result.version)}`));

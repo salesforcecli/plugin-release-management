@@ -7,6 +7,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, camelcase*/
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
+import { components } from '@octokit/openapi-types';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
@@ -21,6 +22,11 @@ type BaseRepoParams = {
 };
 
 type PullRequestParams = BaseRepoParams & { pull_number: number };
+
+const auth = ensureString(
+  new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
+  'GH_TOKEN is required to be set in the environment'
+);
 
 export default class AutoMerge extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
@@ -54,22 +60,15 @@ export default class AutoMerge extends SfCommand<void> {
     }),
   };
 
-  private octokit: Octokit;
-  private baseRepoParams: BaseRepoParams;
-  private pullRequestParams: PullRequestParams;
+  private octokit: Octokit = new Octokit({ auth });
+  // 2 props set early in run method
+  private baseRepoParams!: BaseRepoParams;
+  private pullRequestParams!: PullRequestParams;
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(AutoMerge);
 
     const { 'dry-run': dryRun, owner, repo, verbose, 'pull-number': pullNumber } = flags;
-
-    const auth = ensureString(
-      new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
-      'GH_TOKEN is required to be set in the environment'
-    );
-
-    this.octokit = new Octokit({ auth });
-
     this.baseRepoParams = { owner, repo };
 
     this.pullRequestParams = {
@@ -95,11 +94,11 @@ export default class AutoMerge extends SfCommand<void> {
     }
 
     const automergeLabels = ['automerge', 'nightly-automerge'];
-    if (!prData.labels.some((label) => automergeLabels.includes(label.name))) {
+    if (!prData.labels.some((label) => label.name && automergeLabels.includes(label.name))) {
       stop(`Missing automerge label: [${automergeLabels.join(', ')}]`);
     }
 
-    if (prData.user.login !== 'svc-cli-bot') {
+    if (prData.user?.login !== 'svc-cli-bot') {
       stop('PR must be created by "svc-cli-bot"');
     }
 
@@ -128,7 +127,7 @@ export default class AutoMerge extends SfCommand<void> {
     }
   }
 
-  private async isGreen(pr, verbose): Promise<boolean> {
+  private async isGreen(pr: components['schemas']['pull-request'], verbose: boolean): Promise<boolean> {
     const statusResponse = await this.octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/status', {
       ...this.baseRepoParams,
       ref: pr.head.sha,
@@ -145,13 +144,11 @@ export default class AutoMerge extends SfCommand<void> {
 
     if (verbose) this.styledJSON(checkRunResponse);
 
-    if (
-      checkRunResponse.data.check_runs.every(
-        (cr) => cr.name === 'automerge' || (cr.status === 'completed' && ['success', 'skipped'].includes(cr.conclusion))
-      )
-    ) {
-      return true;
-    }
+    return checkRunResponse.data.check_runs.every(
+      (cr) =>
+        cr.name === 'automerge' ||
+        (cr.status === 'completed' && cr.conclusion && ['success', 'skipped'].includes(cr.conclusion))
+    );
   }
 
   private async isMergeable(): Promise<boolean> {
@@ -160,8 +157,6 @@ export default class AutoMerge extends SfCommand<void> {
     });
     // mergeable_state of 'blocked' is ok because it is either missing an approval or the commit is not signed.
     // We're screening out 'behind' which might be merge conflicts.
-    if (statusResponse.data.mergeable === true && statusResponse.data.mergeable_state !== 'behind') {
-      return true;
-    }
+    return statusResponse.data.mergeable === true && statusResponse.data.mergeable_state !== 'behind';
   }
 }

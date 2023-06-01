@@ -31,12 +31,6 @@
     "alias": []
   },
   {
-    "command": "cli:release:automerge",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["dry-run", "json", "owner", "pull-number", "repo", "verbose"],
-    "alias": []
-  },
-  {
     "command": "cli:release:build",
     "plugin": "@salesforce/plugin-release-management",
     "flags": [
@@ -60,12 +54,6 @@
     "command": "cli:releasenotes",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["cli", "json", "markdown", "since"],
-    "alias": []
-  },
-  {
-    "command": "cli:schemas:collect",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json"],
     "alias": []
   },
   {
@@ -105,12 +93,6 @@
     "alias": []
   },
   {
-    "command": "dependabot:consolidate",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["base-branch", "dryrun", "ignore", "json", "max-version-bump", "no-pr", "owner", "repo", "target-branch"],
-    "alias": []
-  },
-  {
     "command": "github:check:closed",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["github-token", "gus", "json"],
@@ -123,21 +105,9 @@
     "alias": []
   },
   {
-    "command": "npm:package:promote",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["candidate", "dryrun", "json", "target"],
-    "alias": []
-  },
-  {
     "command": "npm:package:release",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["dryrun", "githubtag", "install", "json", "npmaccess", "npmtag", "prerelease", "sign", "verify"],
-    "alias": []
-  },
-  {
-    "command": "npm:release:validate",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "verbose"],
     "alias": []
   },
   {
@@ -150,12 +120,6 @@
     "command": "repositories",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["columns", "csv", "extended", "filter", "json", "no-header", "no-truncate", "output", "sort"],
-    "alias": []
-  },
-  {
-    "command": "typescript:update",
-    "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json", "target", "version"],
     "alias": []
   }
 ]

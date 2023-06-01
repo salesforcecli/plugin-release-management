@@ -7,19 +7,18 @@
 
 import * as path from 'path';
 import * as fs from 'fs/promises';
+import { strict as assert } from 'node:assert';
 import { parseJsonMap } from '@salesforce/kit';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { getExistingSchemaFiles, getLatestSchemaFiles, deepEqual } from './collect';
+import * as fg from 'fast-glob';
+import { JsonMap } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.schemas.compare', [
-  'description',
-  'examples',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.compare');
 
 type Result = {
-  correspondingFile: string;
+  correspondingFile: string | null;
   matches: boolean;
   reason?: string;
 };
@@ -80,10 +79,9 @@ export default class Compare extends SfCommand<Results> {
       )
     );
 
-    const data = Object.entries(results).reduce<Array<{ file: string; correspondingFile: string; matches: boolean }>>(
-      (x, [file, d]) => x.concat(Object.assign({ file }, d)),
-      []
-    );
+    const data = Object.entries(results).reduce<
+      Array<{ file: string; correspondingFile: string | null; matches: boolean }>
+    >((x, [file, d]) => x.concat(Object.assign({ file }, d)), []);
     const columns = {
       file: { header: 'File' },
       correspondingFile: { header: 'Corresponding File' },
@@ -112,4 +110,33 @@ const normalizeFilename = (file: string): string => {
     .filter((p) => !['node_modules', 'schemas'].includes(p))
     .join(path.sep);
   return path.join('schemas', normalized);
+};
+
+const getLatestSchemaFiles = async (): Promise<string[]> => {
+  const fileData = await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8');
+  const pjson: { oclif: { plugins: string[] } } = parseJsonMap(fileData, path.join(process.cwd(), 'package.json'));
+
+  const globs = (pjson.oclif?.plugins || []).map((plugin) => {
+    const normalized = plugin.replace(/\\/g, '/');
+    return `node_modules/${normalized}/schemas/**/*.json`; // We need to use / for path sep since fg only works with Unix paths
+  });
+  const schemaFiles = (await fg(globs))
+    .map((f) => path.normalize(f)) // normalize paths so this will work on Windows since fg only returns Unix paths
+    .filter((f) => !f.includes(path.join('@salesforce', 'schemas')));
+  return schemaFiles;
+};
+
+export const getExistingSchemaFiles = async (): Promise<string[]> => {
+  const globs = ['schemas/**/*.json'];
+  const schemaFiles = await fg(globs);
+  return schemaFiles;
+};
+
+export const deepEqual = (a: JsonMap, b: JsonMap): boolean => {
+  try {
+    assert.deepEqual(a, b);
+    return true;
+  } catch {
+    return false;
+  }
 };

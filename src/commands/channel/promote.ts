@@ -10,7 +10,7 @@ import { valid as validSemVer } from 'semver';
 import { Interfaces } from '@oclif/core';
 import { exec } from 'shelljs';
 import { Logger, Messages, SfError } from '@salesforce/core';
-import { AnyJson, ensureString } from '@salesforce/ts-types';
+import { AnyJson, ensureString, isString } from '@salesforce/ts-types';
 import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
 import { AmazonS3 } from '../../amazonS3';
 import { verifyDependencies } from '../../dependencies';
@@ -102,7 +102,7 @@ export default class Promote extends SfCommand<AnyJson> {
     }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Promote.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Promote.flags>;
 
   public async run(): Promise<AnyJson> {
     const { flags } = await this.parse(Promote);
@@ -171,11 +171,14 @@ export default class Promote extends SfCommand<AnyJson> {
     const deps = verifyDependencies(
       this.flags,
       (dep) => dep.name.startsWith('AWS'),
-      (args: typeof this.flags) => !args.dryrun
+      (args) => !args.dryrun
     );
     if (deps.failures > 0) {
       const errType = 'MissingDependencies';
-      const missing = deps.results.filter((d) => d.passed === false).map((d) => d.message);
+      const missing = deps.results
+        .filter((d) => d.passed === false)
+        .map((d) => d.message)
+        .filter(isString);
       throw new SfError(messages.getMessage(errType), errType, missing);
     }
   }
@@ -202,19 +205,19 @@ const findManifestForCandidate = async (cli: CLI, channel: Channel): Promise<S3M
  */
 const findVersionForSha = async (cli: CLI, sha: string): Promise<string> => {
   const amazonS3 = new AmazonS3({ cli });
-  const foundVersion = (
+  const foundVersionPrefix = (
     await Promise.all(
       (
         await amazonS3.listCommonPrefixes('versions')
-      ).map(async (version) => amazonS3.listCommonPrefixes(version.Prefix))
+      ).map(async (versionPrefix) => amazonS3.listCommonPrefixes(versionPrefix))
     )
   )
     .flat()
-    .find((s) => s.Prefix.replace(/\/$/, '').endsWith(sha));
-  if (foundVersion) {
+    .find((s) => s.replace(/\/$/, '').endsWith(sha));
+  if (foundVersionPrefix) {
     // Prefix looks like this "media/salesforce-cli/sf/versions/0.0.10/1d4b10d/",
     // when reversed after split version number should occupy entry 1 of the array
-    return foundVersion.Prefix.replace(/\/$/, '').split('/').reverse()[1];
+    return foundVersionPrefix?.replace(/\/$/, '').split('/').reverse()[1];
   }
   const error = new SfError(messages.getMessage('CouldNotLocateVersionForSha', [sha]));
   const logger = Logger.childFromRoot('Promote.findVersionForSha');
@@ -263,7 +266,7 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
   const logger = Logger.childFromRoot('Promote.findShaForVersion');
   const amazonS3 = new AmazonS3({ cli });
   const versions = await amazonS3.listCommonPrefixes('versions');
-  const foundVersion = versions.find((v) => v.Prefix.endsWith(`${version}/`))?.Prefix;
+  const foundVersion = versions.find((v) => v.endsWith(`${version}/`));
   if (foundVersion) {
     logger.debug(`Looking for version ${version} for cli ${cli}. Found ${foundVersion}`);
     const versionShas = await amazonS3.listCommonPrefixes(foundVersion);
@@ -272,9 +275,10 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
       (
         await Promise.all(
           versionShas.map(async (versionSha) => {
-            const versionShaContents = (await amazonS3.listKeyContents(
-              versionSha.Prefix
-            )) as unknown as VersionShaContents[];
+            if (!versionSha) {
+              throw new SfError(`Could not find prefix for ${versionSha}`);
+            }
+            const versionShaContents = (await amazonS3.listKeyContents(versionSha)) as unknown as VersionShaContents[];
             return versionShaContents.map((content) => ({
               ...content,
               ...{ LastModifiedDate: new Date(content.LastModified) },
@@ -291,6 +295,11 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
         Key: manifestForMostRecentSha.Key,
         ResponseContentType: 'application/json',
       });
+      if (!manifest.Body) {
+        throw new SfError(
+          `Could not load manifest body from S3 getObject response for ${manifestForMostRecentSha.Key}`
+        );
+      }
       logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
       const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
       return json.sha;

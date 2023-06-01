@@ -18,12 +18,7 @@ import { Interfaces } from '@oclif/core';
 import { CLI } from '../../../types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'cli.tarballs.verify', [
-  'description',
-  'examples',
-  'cli',
-  'windowsUsernameBuffer',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.verify');
 
 const PASSED = green.bold('PASSED');
 const FAILED = red.bold('FAILED');
@@ -69,7 +64,7 @@ export default class Verify extends SfCommand<void> {
   private step = 1;
   private totalSteps = 1;
 
-  private flags: Interfaces.InferredFlags<typeof Verify.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Verify.flags>;
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Verify);

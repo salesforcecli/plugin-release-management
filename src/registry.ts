@@ -19,7 +19,11 @@ export class Registry {
   private env: Env;
 
   public constructor(public registryUrl?: string, public authToken?: string) {
-    this.init();
+    this.env = new Env();
+    this.registryUrl = this.env.getString('NPM_REGISTRY') ?? this.registryUrl;
+    this.authToken = this.env.getString('NPM_TOKEN') ?? this.authToken;
+    this.registryEntryLocal = exec('npm config get registry', { silent: true }).stdout.trim();
+    this.registryEntryGlobal = exec('npm config get registry -g', { silent: true }).stdout.trim();
     this.loadNpmConfigs();
   }
 
@@ -42,7 +46,7 @@ export class Registry {
       if (npmrc.find((line) => line.includes('registry='))) {
         npmrc = npmrc.map((line) => {
           if (line.includes('registry=')) {
-            if (line.endsWith(this.registryUrl)) return line;
+            if (this.registryUrl && line.endsWith(this.registryUrl)) return line;
             return `registry=${this.registryUrl}`;
           }
           return line;
@@ -84,8 +88,6 @@ export class Registry {
 
   public loadNpmConfigs(): void {
     // check npm configs for registry
-    this.registryEntryLocal = exec('npm config get registry', { silent: true }).stdout.trim();
-    this.registryEntryGlobal = exec('npm config get registry -g', { silent: true }).stdout.trim();
     if (!this.registryUrl) {
       if (this.registryEntryLocal) {
         this.registryUrl = this.registryEntryLocal;
@@ -118,14 +120,9 @@ export class Registry {
   }
 
   private normalizeRegistryUrl(): string {
+    if (!this.registryUrl) throw new SfError('registry is not set');
     const registryDomain = new URL(this.registryUrl);
     const pathPart = registryDomain.pathname?.length ? `${registryDomain.pathname.replace(/\/$/, '')}` : '';
     return `//${registryDomain.host}${pathPart}/`;
-  }
-
-  private init(): void {
-    this.env = new Env();
-    this.registryUrl = this.env.getString('NPM_REGISTRY') ?? this.registryUrl;
-    this.authToken = this.env.getString('NPM_TOKEN') ?? this.authToken;
   }
 }

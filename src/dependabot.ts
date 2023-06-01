@@ -5,30 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as fs from 'fs';
-import { diff, ReleaseType } from 'semver';
 import { Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { parseJson } from '@salesforce/kit';
 import { ensureString, isString } from '@salesforce/ts-types';
 import { PackageJson } from './package';
 
-export type BumpType = Extract<ReleaseType, 'major' | 'minor' | 'patch'>;
-
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-release-management', 'dependabot.consolidate', ['maxVersionBump']);
-
-const inclusionMap = {
-  major: ['major', 'minor', 'patch'] as BumpType[],
-  minor: ['minor', 'patch'] as BumpType[],
-  patch: ['patch'] as BumpType[],
-};
-
-export const meetsVersionCriteria = (title: string, maxVersionBump: BumpType): boolean => {
-  const versionsRegex = /[0-9]+.[0-9]+.[0-9]+/g;
-  const [from, to] = title.match(versionsRegex);
-  const bumpType = diff(from, to) as BumpType;
-  return inclusionMap[maxVersionBump].includes(bumpType);
-};
+const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
 
 export const maxVersionBumpFlag = Flags.string({
   description: messages.getMessage('maxVersionBump'),
@@ -39,8 +23,8 @@ export const maxVersionBumpFlag = Flags.string({
 });
 
 export const getOwnerAndRepo = async (
-  ownerFlag: string,
-  repoFlag: string
+  ownerFlag?: string,
+  repoFlag?: string
 ): Promise<{ owner: string; repo: string }> => {
   if (ownerFlag && repoFlag) {
     return { owner: ownerFlag, repo: repoFlag };

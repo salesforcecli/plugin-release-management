@@ -35,7 +35,7 @@ export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => 
   const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
 
   return repositories.map((repository) => {
-    const [, organization, name] = /https:\/\/github.com\/([\w_-]+)\/([\w_-]+)/.exec(repository.url);
+    const [, organization, name] = /https:\/\/github.com\/([\w_-]+)\/([\w_-]+)/.exec(repository.url) ?? [];
     const packages = repository.packages.map((pkg) =>
       Object.assign(pkg, { url: `${PACKAGE_REGISTRY_BASE_URL}/${pkg.name}` })
     );
