@@ -23,10 +23,14 @@ type BaseRepoParams = {
 
 type PullRequestParams = BaseRepoParams & { pull_number: number };
 
-const auth = ensureString(
-  new Env().getString('GH_TOKEN') ?? new Env().getString('GITHUB_TOKEN'),
-  'GH_TOKEN is required to be set in the environment'
-);
+function getGitHubToken(): string {
+  const env = new Env();
+
+  return ensureString(
+    env.getString('GH_TOKEN') ?? env.getString('GITHUB_TOKEN'),
+    'GH_TOKEN or GITHUB_TOKEN is required to be set in the environment.'
+  );
+}
 
 export default class AutoMerge extends SfCommand<void> {
   public static readonly summary = messages.getMessage('description');
@@ -60,7 +64,7 @@ export default class AutoMerge extends SfCommand<void> {
     }),
   };
 
-  private octokit: Octokit = new Octokit({ auth });
+  private octokit: Octokit = new Octokit({ auth: getGitHubToken() });
   // 2 props set early in run method
   private baseRepoParams!: BaseRepoParams;
   private pullRequestParams!: PullRequestParams;
