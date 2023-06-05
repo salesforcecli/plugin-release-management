@@ -1,3 +1,12 @@
+## [4.0.4](https://github.com/salesforcecli/plugin-release-management/compare/4.0.3...4.0.4) (2023-06-05)
+
+
+### Bug Fixes
+
+* check GH token exists at runtime ([#789](https://github.com/salesforcecli/plugin-release-management/issues/789)) ([702cc6b](https://github.com/salesforcecli/plugin-release-management/commit/702cc6b16652618f4258364f32115f035df08d49))
+
+
+
 ## [4.0.3](https://github.com/salesforcecli/plugin-release-management/compare/4.0.2...4.0.3) (2023-06-04)
 
 
