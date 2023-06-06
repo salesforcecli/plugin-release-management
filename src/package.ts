@@ -150,7 +150,7 @@ export class Package extends AsyncOptionalCreatable {
 
   public nextVersionIsAvailable(nextVersion: string): boolean {
     const pkg = this.retrieveNpmPackage();
-    return pkg?.versions.includes(nextVersion) ?? false;
+    return pkg?.versions?.includes(nextVersion) ?? false;
   }
 
   public writePackageJson(rootDir?: string): void {
