@@ -1,3 +1,12 @@
+## [4.0.5](https://github.com/salesforcecli/plugin-release-management/compare/4.0.4...4.0.5) (2023-06-06)
+
+
+### Bug Fixes
+
+* unexpected null versions ([563da96](https://github.com/salesforcecli/plugin-release-management/commit/563da96e361045061b9b897fe0baa0497984d4e1))
+
+
+
 ## [4.0.4](https://github.com/salesforcecli/plugin-release-management/compare/4.0.3...4.0.4) (2023-06-05)
 
 
