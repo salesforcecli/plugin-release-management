@@ -129,7 +129,7 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
     if (value) return value;
 
     const { data } = await this.octokit.request('GET /users/{username}', { username });
-    const name = (data.name ?? data.login ?? username) as string;
+    const name = data.name ?? data.login ?? username;
     this.usernames.set(username, name);
     return name;
   }
