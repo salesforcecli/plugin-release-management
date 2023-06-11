@@ -1,3 +1,12 @@
+## [4.0.8](https://github.com/salesforcecli/plugin-release-management/compare/4.0.7...4.0.8) (2023-06-11)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/kit from 3.0.2 to 3.0.3 ([0f772bb](https://github.com/salesforcecli/plugin-release-management/commit/0f772bb24b612dbac94c950de17a9da0e7d4fcce))
+
+
+
 ## [4.0.7](https://github.com/salesforcecli/plugin-release-management/compare/4.0.6...4.0.7) (2023-06-10)
 
 
