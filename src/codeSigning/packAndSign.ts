@@ -16,8 +16,7 @@ import { Agents } from 'got';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
-import * as ProxyAgent from 'proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import { ProxyAgent } from 'proxy-agent';
 import { PackageJson } from '../package';
 import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
 import { ExecProcessFailed } from './error';
@@ -275,8 +274,7 @@ export const api = {
   },
 
   getAgentForUri(url: string): false | Agents {
-    const proxyUrl = getProxyForUrl(url);
-    const agent = ProxyAgent(proxyUrl);
+    const agent = new ProxyAgent();
     /* eslint-disable @typescript-eslint/no-unsafe-call */
     return { https: agent, http: agent };
   },
