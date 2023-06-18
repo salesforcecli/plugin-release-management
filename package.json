@@ -19,7 +19,7 @@
     "@salesforce/plugin-trust": "^2.4.2",
     "@salesforce/sf-plugins-core": "^3.0.4",
     "@salesforce/ts-types": "^2.0.3",
-    "aws-sdk": "^2.1395.0",
+    "aws-sdk": "^2.1399.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.12",
     "got": "^11.8.6",
