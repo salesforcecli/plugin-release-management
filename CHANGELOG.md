@@ -1,3 +1,12 @@
+## [4.0.13](https://github.com/salesforcecli/plugin-release-management/compare/4.0.12...4.0.13) (2023-06-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @octokit/core from 4.2.1 to 4.2.4 ([641c0fa](https://github.com/salesforcecli/plugin-release-management/commit/641c0facc994bf406fafc2038b7c0bd6907bcc7a))
+
+
+
 ## [4.0.12](https://github.com/salesforcecli/plugin-release-management/compare/4.0.11...4.0.12) (2023-06-18)
 
 
