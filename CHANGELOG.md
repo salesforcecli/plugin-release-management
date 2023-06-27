@@ -1,3 +1,12 @@
+## [4.1.1](https://github.com/salesforcecli/plugin-release-management/compare/4.1.0...4.1.1) (2023-06-27)
+
+
+### Bug Fixes
+
+* force rm shrinkwrap lockfile ([f825ec9](https://github.com/salesforcecli/plugin-release-management/commit/f825ec92ca80c46e0e988e5ef66cfabd2cb02914))
+
+
+
 # [4.1.0](https://github.com/salesforcecli/plugin-release-management/compare/4.0.15...4.1.0) (2023-06-27)
 
 
