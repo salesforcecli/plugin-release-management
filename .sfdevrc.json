@@ -1,5 +1,8 @@
 {
   "test": {
     "testsPath": "test/**/*.test.ts"
+  },
+  "scripts": {
+    "prepack": "sf-prepack && npm shrinkwrap"
   }
 }
