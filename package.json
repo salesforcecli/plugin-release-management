@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "4.0.15",
+  "version": "4.1.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -168,7 +168,6 @@
     "format": "wireit",
     "lint": "wireit",
     "oclif-artifacts": "oclif manifest",
-    "postpack": "shx rm -f oclif.manifest.json",
     "postpack": "shx rm oclif.manifest.json npm-shrinkwrap.json",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
