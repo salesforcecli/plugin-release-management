@@ -73,7 +73,8 @@
     "bin",
     "oclif.manifest.json",
     "/lib",
-    "/messages"
+    "/messages",
+    "/npm-shrinkwrap.json"
   ],
   "homepage": "https://github.com/salesforcecli/plugin-release-management",
   "keywords": [
@@ -168,8 +169,10 @@
     "lint": "wireit",
     "oclif-artifacts": "oclif manifest",
     "postpack": "shx rm -f oclif.manifest.json",
+    "postpack": "shx rm oclif.manifest.json npm-shrinkwrap.json",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
+    "prepublishOnly": "npm shrinkwrap",
     "test": "wireit",
     "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "test:only": "wireit",
