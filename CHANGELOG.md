@@ -1,3 +1,12 @@
+## [4.1.2](https://github.com/salesforcecli/plugin-release-management/compare/4.1.1...4.1.2) (2023-06-27)
+
+
+### Bug Fixes
+
+* generate shrinkwrap lockfile before packing tarball ([6498816](https://github.com/salesforcecli/plugin-release-management/commit/6498816b7c7cbb768b4c9e710c95c46a12deb8f6))
+
+
+
 ## [4.1.1](https://github.com/salesforcecli/plugin-release-management/compare/4.1.0...4.1.1) (2023-06-27)
 
 
