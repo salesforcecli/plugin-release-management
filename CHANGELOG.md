@@ -1,3 +1,12 @@
+## [4.1.4](https://github.com/salesforcecli/plugin-release-management/compare/4.1.3...4.1.4) (2023-07-01)
+
+
+### Bug Fixes
+
+* **deps:** bump tslib from 2.5.3 to 2.6.0 ([a231624](https://github.com/salesforcecli/plugin-release-management/commit/a2316241b300396cf4d6b474290e2212d02f4158))
+
+
+
 ## [4.1.3](https://github.com/salesforcecli/plugin-release-management/compare/4.1.2...4.1.3) (2023-07-01)
 
 
