@@ -1,3 +1,12 @@
+## [4.1.5](https://github.com/salesforcecli/plugin-release-management/compare/4.1.4...4.1.5) (2023-07-02)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 4.3.1 to 4.3.5 ([f2e9842](https://github.com/salesforcecli/plugin-release-management/commit/f2e98427a555f3875471c910fb4eac1f34720911))
+
+
+
 ## [4.1.4](https://github.com/salesforcecli/plugin-release-management/compare/4.1.3...4.1.4) (2023-07-01)
 
 
