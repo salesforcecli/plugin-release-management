@@ -1,3 +1,12 @@
+## [4.1.7](https://github.com/salesforcecli/plugin-release-management/compare/4.1.6...4.1.7) (2023-07-08)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/ts-types from 2.0.3 to 2.0.4 ([7e34200](https://github.com/salesforcecli/plugin-release-management/commit/7e342004a14b40cb5faa8c7aa30278fd6a23ad84))
+
+
+
 ## [4.1.6](https://github.com/salesforcecli/plugin-release-management/compare/4.1.5...4.1.6) (2023-07-08)
 
 
