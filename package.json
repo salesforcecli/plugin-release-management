@@ -21,7 +21,7 @@
     "@salesforce/ts-types": "^2.0.4",
     "aws-sdk": "^2.1413.0",
     "chalk": "^4.1.0",
-    "fast-glob": "^3.2.12",
+    "fast-glob": "^3.3.0",
     "got": "^11.8.6",
     "just-diff": "^5.2.0",
     "proxy-agent": "^6.2.1",
