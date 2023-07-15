@@ -1,3 +1,12 @@
+## [4.1.11](https://github.com/salesforcecli/plugin-release-management/compare/4.1.10...4.1.11) (2023-07-15)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 3.0.4 to 3.1.7 ([5e352bf](https://github.com/salesforcecli/plugin-release-management/commit/5e352bfd759ef42b006d7b7199daa09bc1d8c962))
+
+
+
 ## [4.1.10](https://github.com/salesforcecli/plugin-release-management/compare/4.1.9...4.1.10) (2023-07-15)
 
 
