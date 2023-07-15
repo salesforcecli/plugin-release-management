@@ -1,3 +1,12 @@
+## [4.1.10](https://github.com/salesforcecli/plugin-release-management/compare/4.1.9...4.1.10) (2023-07-15)
+
+
+### Bug Fixes
+
+* **deps:** bump fast-glob from 3.2.12 to 3.3.0 ([4f83dcb](https://github.com/salesforcecli/plugin-release-management/commit/4f83dcb7f1ba5943f735b33a5b6724323f316fe7))
+
+
+
 ## [4.1.9](https://github.com/salesforcecli/plugin-release-management/compare/4.1.8...4.1.9) (2023-07-09)
 
 
