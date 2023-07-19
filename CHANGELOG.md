@@ -1,3 +1,12 @@
+## [4.1.12](https://github.com/salesforcecli/plugin-release-management/compare/4.1.11...4.1.12) (2023-07-19)
+
+
+### Bug Fixes
+
+* **deps:** bump word-wrap from 1.2.3 to 1.2.4 ([a6005d5](https://github.com/salesforcecli/plugin-release-management/commit/a6005d5cd98673cac03547d7a5259983cbd03802))
+
+
+
 ## [4.1.11](https://github.com/salesforcecli/plugin-release-management/compare/4.1.10...4.1.11) (2023-07-15)
 
 
