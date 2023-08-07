@@ -1,3 +1,12 @@
+## [4.1.19](https://github.com/salesforcecli/plugin-release-management/compare/4.1.18...4.1.19) (2023-08-07)
+
+
+### Bug Fixes
+
+* **deps:** core 5 ([c6d1588](https://github.com/salesforcecli/plugin-release-management/commit/c6d158892a274f5a03223b42bb83fb5e8f104f4a))
+
+
+
 ## [4.1.18](https://github.com/salesforcecli/plugin-release-management/compare/4.1.17...4.1.18) (2023-08-05)
 
 
