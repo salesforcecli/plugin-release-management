@@ -1,3 +1,12 @@
+## [4.1.25](https://github.com/salesforcecli/plugin-release-management/compare/4.1.24...4.1.25) (2023-09-01)
+
+
+### Bug Fixes
+
+* bump core and sf-plugins-core ([#861](https://github.com/salesforcecli/plugin-release-management/issues/861)) ([d6542d7](https://github.com/salesforcecli/plugin-release-management/commit/d6542d7ea2409d034c4978ffaa82a66cf93ec4e8))
+
+
+
 ## [4.1.24](https://github.com/salesforcecli/plugin-release-management/compare/4.1.23...4.1.24) (2023-08-26)
 
 
