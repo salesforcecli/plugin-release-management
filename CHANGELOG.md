@@ -1,3 +1,12 @@
+## [4.1.26](https://github.com/salesforcecli/plugin-release-management/compare/4.1.25...4.1.26) (2023-09-02)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/plugin-trust from 2.6.1 to 2.6.8 ([ed7eef4](https://github.com/salesforcecli/plugin-release-management/commit/ed7eef4a48e713556d869e5ca6cf430401faa71e))
+
+
+
 ## [4.1.25](https://github.com/salesforcecli/plugin-release-management/compare/4.1.24...4.1.25) (2023-09-01)
 
 
