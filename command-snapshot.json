@@ -29,6 +29,14 @@
     "flagAliases": []
   },
   {
+    "command": "cli:install:jit:test",
+    "plugin": "@salesforce/plugin-release-management",
+    "flags": ["json"],
+    "alias": [],
+    "flagChars": [],
+    "flagAliases": []
+  },
+  {
     "command": "cli:install:test",
     "plugin": "@salesforce/plugin-release-management",
     "flags": ["channel", "cli", "json", "method", "output-file"],
