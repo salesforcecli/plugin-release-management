@@ -1,3 +1,12 @@
+## [4.1.30](https://github.com/salesforcecli/plugin-release-management/compare/4.1.29...4.1.30) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 5.2.1 to 5.2.7 ([b6eab7c](https://github.com/salesforcecli/plugin-release-management/commit/b6eab7ce6d7ac39e64ee497eb9e530d1fd07dc6d))
+
+
+
 ## [4.1.29](https://github.com/salesforcecli/plugin-release-management/compare/4.1.28...4.1.29) (2023-09-09)
 
 
