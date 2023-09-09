@@ -1,3 +1,12 @@
+## [4.1.29](https://github.com/salesforcecli/plugin-release-management/compare/4.1.28...4.1.29) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump proxy-agent from 6.3.0 to 6.3.1 ([6799a3c](https://github.com/salesforcecli/plugin-release-management/commit/6799a3c5f6da5c929b2f89d3fc644a24585b1fe4))
+
+
+
 ## [4.1.28](https://github.com/salesforcecli/plugin-release-management/compare/4.1.27...4.1.28) (2023-09-03)
 
 
