@@ -1,3 +1,30 @@
+## [4.1.31](https://github.com/salesforcecli/plugin-release-management/compare/4.1.30...4.1.31) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/cli-plugins-testkit from 4.3.2 to 4.3.4 ([da99fa1](https://github.com/salesforcecli/plugin-release-management/commit/da99fa118e4417caa4872d9f8874078a88a28ab1))
+
+
+
+## [4.1.30](https://github.com/salesforcecli/plugin-release-management/compare/4.1.29...4.1.30) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 5.2.1 to 5.2.7 ([b6eab7c](https://github.com/salesforcecli/plugin-release-management/commit/b6eab7ce6d7ac39e64ee497eb9e530d1fd07dc6d))
+
+
+
+## [4.1.29](https://github.com/salesforcecli/plugin-release-management/compare/4.1.28...4.1.29) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump proxy-agent from 6.3.0 to 6.3.1 ([6799a3c](https://github.com/salesforcecli/plugin-release-management/commit/6799a3c5f6da5c929b2f89d3fc644a24585b1fe4))
+
+
+
 ## [4.1.28](https://github.com/salesforcecli/plugin-release-management/compare/4.1.27...4.1.28) (2023-09-03)
 
 
