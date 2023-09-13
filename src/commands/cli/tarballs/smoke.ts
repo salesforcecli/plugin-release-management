@@ -15,7 +15,6 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { Duration, parseJson, ThrottledPromiseAll } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
-import { CLI } from '../../../types';
 import { PackageJson } from '../../../package';
 import { testJITInstall } from '../../../jit';
 
@@ -30,13 +29,6 @@ export default class SmokeTest extends SfCommand<void> {
 
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
-    cli: Flags.custom<CLI>({
-      options: Object.values(CLI),
-    })({
-      summary: messages.getMessage('cliFlag'),
-      char: 'c',
-      required: true,
-    }),
     verbose: Flags.boolean({
       summary: messages.getMessage('verboseFlag'),
     }),
@@ -46,7 +38,7 @@ export default class SmokeTest extends SfCommand<void> {
 
   public async run(): Promise<void> {
     this.flags = (await this.parse(SmokeTest)).flags;
-    await this.smokeTest(path.join('tmp', this.flags.cli, 'bin', this.flags.cli));
+    await this.smokeTest(path.join('tmp', 'sf', 'bin', 'sf'));
   }
 
   private async smokeTest(executable: string): Promise<void> {
@@ -65,7 +57,7 @@ export default class SmokeTest extends SfCommand<void> {
     await testJITInstall({
       jsonEnabled: this.jsonEnabled(),
       executable,
-      manifestPath: path.join('tmp', this.flags.cli, 'oclif.manifest.json'),
+      manifestPath: path.join('tmp', 'sf', 'oclif.manifest.json'),
     });
   }
 
@@ -95,7 +87,7 @@ export default class SmokeTest extends SfCommand<void> {
   }
 
   private async initializeAllCommands(executable: string): Promise<void> {
-    this.styledHeader(`Initializing help for all ${this.flags.cli} commands`);
+    this.styledHeader("Initializing help for all 'sf' commands");
     // Ran into memory issues when running all commands at once. Now we run them in batches of 10.
     const throttledPromise = new ThrottledPromiseAll<string, string | void>({
       concurrency: 10,

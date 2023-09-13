@@ -101,9 +101,9 @@
   {
     "command": "cli:tarballs:smoke",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["cli", "json", "verbose"],
+    "flags": ["json", "verbose"],
     "alias": [],
-    "flagChars": ["c"],
+    "flagChars": [],
     "flagAliases": []
   },
   {
