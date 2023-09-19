@@ -127,6 +127,11 @@ export async function testJITInstall(options: Options): Promise<void> {
         ux.log(`❌ ${chalk.red(`Failed installation of ${plugin}\n`)}`);
         failedInstalls.push(plugin);
       }
+      // Move the data dir so that we can start with a clean slate for the next plugin
+      // Deleting the dir would waste time, especially on Windows
+      // These prevents the 'oclif.lock' install refresh from slowing down the test
+      // There are integration tests in '@oclif/plugin-plugins' that test the oclif.lock refresh
+      await fs.promises.rename(dataDir, path.join(tmpDir, `data-${plugin.replace('@salesforce/', '')}`));
     }
   }
 
