@@ -1,3 +1,9 @@
+## [4.2.2](https://github.com/salesforcecli/plugin-release-management/compare/4.2.1...4.2.2) (2023-09-19)
+
+### Bug Fixes
+
+- prevent lock refresh ([abbcb7a](https://github.com/salesforcecli/plugin-release-management/commit/abbcb7a2216f431c42f230324e4a0c9d3f744573))
+
 ## [4.2.1](https://github.com/salesforcecli/plugin-release-management/compare/4.2.0...4.2.1) (2023-09-16)
 
 ### Bug Fixes
