@@ -9,12 +9,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { promisify } from 'util';
-import { exec as execSync } from 'child_process';
+import { exec as execSync, ExecException } from 'child_process';
 import { Ux } from '@salesforce/sf-plugins-core';
 import * as chalk from 'chalk';
 import { SfError } from '@salesforce/core';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
+import stripAnsi = require('strip-ansi');
 import { PackageJson } from './package';
 
 const exec = promisify(execSync);
@@ -86,6 +87,9 @@ export async function testJITInstall(options: Options): Promise<void> {
       await fs.promises.mkdir(cacheDir, { recursive: true });
       await fs.promises.mkdir(configDir, { recursive: true });
 
+      let resultStdout = '';
+      let resultStderr = '';
+
       try {
         const firstCommand = commands.find((c) => c.pluginName === plugin);
         if (!firstCommand) {
@@ -100,7 +104,7 @@ export async function testJITInstall(options: Options): Promise<void> {
         // Test that executing the command will trigger JIT install
         // This will likely always fail because we're not providing all the required flags or it depends on some other setup.
         // However, this is okay because all we need to verify is that running the command will trigger the JIT install
-        await exec(`${executable} ${firstCommand.id}`, {
+        const { stdout, stderr } = await exec(`${executable} ${firstCommand.id}`, {
           env: {
             ...process.env,
             SF_DATA_DIR: dataDir,
@@ -108,6 +112,16 @@ export async function testJITInstall(options: Options): Promise<void> {
             SF_CONFIG_DIR: configDir,
           },
         });
+        resultStdout = stripAnsi(stdout);
+        resultStderr = stripAnsi(stderr);
+      } catch (e) {
+        const err = e as ExecException;
+        // @ts-expect-error ExecException type doesn't have a stdout or stderr property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        resultStdout = stripAnsi(err.stdout);
+        // @ts-expect-error ExecException type doesn't have a stdout or stderr property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        resultStderr = stripAnsi(err.stderr);
       } finally {
         const result = await verifyInstall(plugin, dataDir);
         if (result) {
@@ -116,6 +130,8 @@ export async function testJITInstall(options: Options): Promise<void> {
         } else {
           ux.log(`❌ ${chalk.red(`Failed installation of ${plugin}\n`)}`);
           failedInstalls.push(plugin);
+          ux.log(`stdout:\n${resultStdout}`);
+          ux.log(`stderr:\n${resultStderr}`);
         }
       }
     })
