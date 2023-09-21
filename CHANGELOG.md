@@ -1,3 +1,13 @@
+# [4.3.0](https://github.com/salesforcecli/plugin-release-management/compare/4.2.2...4.3.0) (2023-09-21)
+
+### Bug Fixes
+
+- logging output ([d591750](https://github.com/salesforcecli/plugin-release-management/commit/d591750636fb0cb98f4075bc8e24ac24e2d5e2da))
+
+### Features
+
+- parallelize jit tests ([d59ebcc](https://github.com/salesforcecli/plugin-release-management/commit/d59ebcc027aea0bafa5ad791ab0c0ecfe32c1076))
+
 ## [4.2.2](https://github.com/salesforcecli/plugin-release-management/compare/4.2.1...4.2.2) (2023-09-19)
 
 ### Bug Fixes
