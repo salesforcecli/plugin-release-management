@@ -22,7 +22,7 @@ const exec = promisify(execSync);
 
 type Options = {
   jsonEnabled: boolean;
-  jitPlugin?: string[] | undefined;
+  jitPlugin?: string[];
   executable: string;
   manifestPath?: string;
 };
