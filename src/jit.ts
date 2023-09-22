@@ -22,12 +22,13 @@ const exec = promisify(execSync);
 
 type Options = {
   jsonEnabled: boolean;
+  jitPlugin?: string[] | undefined;
   executable: string;
   manifestPath?: string;
 };
 
 export async function testJITInstall(options: Options): Promise<void> {
-  const { jsonEnabled, executable } = options;
+  const { jsonEnabled, jitPlugin, executable } = options;
   const ux = new Ux({ jsonEnabled });
 
   const tmpDir = path.join(os.tmpdir(), 'sf-jit-test');
@@ -39,7 +40,7 @@ export async function testJITInstall(options: Options): Promise<void> {
 
   const fileData = await fs.promises.readFile('package.json', 'utf8');
   const packageJson = parseJson(fileData) as PackageJson;
-  const jitPlugins = Object.keys(packageJson.oclif?.jitPlugins ?? {});
+  const jitPlugins = jitPlugin ?? Object.keys(packageJson.oclif?.jitPlugins ?? {});
   if (jitPlugins.length === 0) return;
 
   let manifestData;
