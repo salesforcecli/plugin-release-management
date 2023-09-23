@@ -100,197 +100,129 @@ sfdx plugins
 
 <!-- commands -->
 
-- [`sfdx channel:promote -t <string> -c sf|sfdx [-d] [-p <array>] [-m <number>] [-i] [-x] [-T <array>] [-T <string> | | [-C <string> | -s <string>]] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-channelpromote--t-string--c-sfsfdx--d--p-array--m-number--i--x--t-array--t-string-----c-string---s-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circleci--t-pluginlibraryorb---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarcreate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-circlecienvvarupdate--e-string--s-string---dryrun---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:install:test -c <string> -m <string> [--channel <string>] [--output-file <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliinstalltest--c-string--m-string---channel-string---output-file-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:latestrc:build [--rctag <string>] [--build-only] [--resolutions] [--only <array>] [--pinned-deps] [--patch] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clilatestrcbuild---rctag-string---build-only---resolutions---only-array---pinned-deps---patch---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:releasenotes -c <string> [-s <string>] [-m] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clireleasenotes--c-string--s-string--m---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:schemas:collect [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clischemascollect---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:schemas:compare [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clischemascompare---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:tarballs:prepare [-d] [-t] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballsprepare--d--t---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:tarballs:smoke -c <string> [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballssmoke--c-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:tarballs:verify [-c sf|sfdx] [-w <number>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-clitarballsverify--c-sfsfdx--w-number---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx cli:versions:inspect -c <string> -l <string> --cli sf|sfdx [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-cliversionsinspect--c-string--l-string---cli-sfsfdx--d-string--s---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx dependabot:automerge -m major|minor|patch [-o <string> -r <string>] [-d] [-s] [--merge-method merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-dependabotautomerge--m-majorminorpatch--o-string--r-string--d--s---merge-method-mergesquashrebase---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx dependabot:consolidate -m major|minor|patch -b <string> -t <string> [--ignore <array>] [-d] [--no-pr] [-r <string> -o <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-dependabotconsolidate--m-majorminorpatch--b-string--t-string---ignore-array--d---no-pr--r-string--o-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmdependenciespin--d--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx npm:package:promote -c <string> [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmpackagepromote--c-string--d--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--verify] [--githubtag <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmpackagerelease--d--s--t-string--a-string---install---prerelease-string---verify---githubtag-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx npm:release:validate [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-npmreleasevalidate---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx plugins:trust:verify -n <string> [-r <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-pluginstrustverify--n-string--r-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx`](#sfdx)
-- [`sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-typescriptupdate--v-string--t-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx channel:promote`](#sfdx-channelpromote)
+- [`sfdx cli:artifacts:compare`](#sfdx-cliartifactscompare)
+- [`sfdx cli:install:jit:test`](#sfdx-cliinstalljittest)
+- [`sfdx cli:install:test`](#sfdx-cliinstalltest)
+- [`sfdx cli:release:automerge`](#sfdx-clireleaseautomerge)
+- [`sfdx cli:release:build`](#sfdx-clireleasebuild)
+- [`sfdx cli:releasenotes`](#sfdx-clireleasenotes)
+- [`sfdx cli:schemas:compare`](#sfdx-clischemascompare)
+- [`sfdx cli:tarballs:prepare`](#sfdx-clitarballsprepare)
+- [`sfdx cli:tarballs:smoke`](#sfdx-clitarballssmoke)
+- [`sfdx cli:tarballs:verify`](#sfdx-clitarballsverify)
+- [`sfdx cli:versions:inspect`](#sfdx-cliversionsinspect)
+- [`sfdx dependabot:automerge`](#sfdx-dependabotautomerge)
+- [`sfdx github:check:closed`](#sfdx-githubcheckclosed)
+- [`sfdx npm:dependencies:pin`](#sfdx-npmdependenciespin)
+- [`sfdx npm:package:release`](#sfdx-npmpackagerelease)
+- [`sfdx plugins:trust:verify`](#sfdx-pluginstrustverify)
+- [`sfdx repositories`](#sfdx-repositories)
 
-## `sfdx channel:promote -t <string> -c sf|sfdx [-d] [-p <array>] [-m <number>] [-i] [-x] [-T <array>] [-T <string> | | [-C <string> | -s <string>]] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx channel:promote`
 
 promote a s3 channel
 
 ```
 USAGE
-  $ sfdx channel:promote -t <string> -c sf|sfdx [-d] [-p <array>] [-m <number>] [-i] [-x] [-T <array>] [-T <string> |
-    | [-C <string> | -s <string>]] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx channel:promote -t <value> -c sf|sfdx [--json] [-d] [-C <value>] [-p win|macos|deb] [-s <value>] [-m
+    <value>] [-i] [-x] [-T linux-x64|linux-arm|win32-x64|win32-x86|darwin-x64] [-v <value>]
 
 FLAGS
-  -C, --candidate=<value>                                                           the channel name that you want to
-                                                                                    promote
-  -T, --targets=<value>                                                             comma-separated targets to promote
-                                                                                    (e.g.: linux-arm,win32-x64)
-  -T, --version=<value>                                                             the version of the candidate to be
-                                                                                    promoted, which must exist already
-                                                                                    in s3. Used to fetch the correct sha
-  -c, --cli=(sf|sfdx)                                                               (required) the cli name to promote
-  -d, --dryrun                                                                      If true, only show what would happen
-  -i, --[no-]indexes                                                                append the promoted urls into the
-                                                                                    index files
-  -m, --maxage=<value>                                                              [default: 300] cache control max-age
-                                                                                    in seconds
-  -p, --platform=<value>...                                                         [default: ] the platform to promote
-  -s, --sha=<value>                                                                 the short sha to promote
-  -t, --target=<value>                                                              (required) [default: stable] the
-                                                                                    channel name that you are promoting
-                                                                                    to
-  -x, --[no-]xz                                                                     also upload xz
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -C, --promote-from-channel=<value>     the channel name that you want to promote
+  -T, --architecture-target=<option>...  comma-separated targets to promote (e.g.: linux-arm,win32-x64)
+                                         <options: linux-x64|linux-arm|win32-x64|win32-x86|darwin-x64>
+  -c, --cli=<option>                     (required) the cli name to promote
+                                         <options: sf|sfdx>
+  -d, --dryrun                           If true, only show what would happen
+  -i, --[no-]indexes                     append the promoted urls into the index files
+  -m, --max-age=<value>                  [default: 300] cache control max-age in seconds
+  -p, --platform=<option>...             the platform to promote
+                                         <options: win|macos|deb>
+  -s, --sha=<value>                      the short sha to promote
+  -t, --promote-to-channel=<value>       (required) [default: stable] the channel name that you are promoting to
+  -v, --version=<value>                  the version of the candidate to be promoted, which must exist already in s3.
+                                         Used to fetch the correct sha
+  -x, --[no-]xz                          also upload xz
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  promote a s3 channel
+
   promote a s3 channel
 
 EXAMPLES
   $ sfdx channel:promote --candidate latest-rc --target latest --platform win --platform mac
 ```
 
-_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/channel/promote.ts)_
+_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/channel/promote.ts)_
 
-## `sfdx circleci [-t plugin|library|orb] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:artifacts:compare`
 
-list known Circle CI slugs from 'sfdx repositories'
-
-```
-USAGE
-  $ sfdx circleci [-t plugin|library|orb] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -t, --contains-package-type=(plugin|library|orb)                                  filter based on type of package
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  list known Circle CI slugs from 'sfdx repositories'
-
-EXAMPLES
-  $ sfdx circleci -t plugin
-```
-
-_See code: [src/commands/circleci/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/circleci/index.ts)_
-
-## `sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-update environment variable(s) on Circle CI slug(s)
+Look for breaking changes in artifacts (schemas and snapshots) from plugins. Must be run in CLI directory.
 
 ```
 USAGE
-  $ sfdx circleci:envvar:create -e <string> [-s <string>] [--dryrun] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:artifacts:compare [--json] [-p <value>] [-r <value>] [-c <value>]
 
 FLAGS
-  -e, --envvar=<value>...                                                           (required) a environment variables
-                                                                                    to set on the given circle slug(s)
-  -s, --slug=<value>...                                                             a circle ci slugs in the format
-                                                                                    <vcs>/<org name>/<repo name>
-  --dryrun                                                                          do validation but do not update the
-                                                                                    environment variable values
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -c, --current=<value>    Current CLI version to compare against. Defaults to the version on the CLI in the current
+                           directory.
+  -p, --plugin=<value>...  List of plugins to check for breaking changes.
+  -r, --previous=<value>   Previous CLI version to compare against. Defaults to the last published version.
 
-DESCRIPTION
-  update environment variable(s) on Circle CI slug(s)
-
-  Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist
-  on the slug. You will be prompted for the environment variable values unless they already exist on the process. The
-  slugs can be piped in. If so, the environment variables must be on the process (prompting is disabled).
+GLOBAL FLAGS
+  --json  Format output as json.
 
 EXAMPLES
-  $ sfdx circleci:envvar:create -e 'MY_ENV_VAR' -s 'gh/<org>/<repository>'
-
-  echo "gh/<org>/<repository>" | sfdx circleci:envvar:create -e 'MY_ENV_VAR'
-
-  $ sfdx circleci -t plugin | sfdx circleci:envvar:create -e 'MY_ENV_VAR' -e 'MY_OTHER_ENV_VAR'
+  $ sfdx cli:artifacts:compare
 ```
 
-_See code: [src/commands/circleci/envvar/create.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/circleci/envvar/create.ts)_
+_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/artifacts/compare.ts)_
 
-## `sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:install:jit:test`
 
-update environment variable(s) on Circle CI slug(s)
+Test that all JIT plugins can be successfully installed.
 
 ```
 USAGE
-  $ sfdx circleci:envvar:update -e <string> [-s <string>] [--dryrun] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:install:jit:test [--json]
 
-FLAGS
-  -e, --envvar=<value>...                                                           (required) a environment variables
-                                                                                    to set on the given circle slug(s)
-  -s, --slug=<value>...                                                             a circle ci slugs in the format
-                                                                                    <vcs>/<org name>/<repo name>
-  --dryrun                                                                          do validation but do not update the
-                                                                                    environment variable values
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  update environment variable(s) on Circle CI slug(s)
-
-  Updates one or more environment variables on one or more CIrcle CI slugs. The environment variables must already exist
-  on the slug. You will be prompted for the environment variable values unless they already exist on the process. The
-  slugs can be piped in. If so, the environment variables must be on the process (prompting is disabled).
+GLOBAL FLAGS
+  --json  Format output as json.
 
 EXAMPLES
-  $ sfdx circleci:envvar:update -e 'MY_ENV_VAR' -s 'gh/<org>/<repository>'
-
-  echo "gh/<org>/<repository>" | sfdx circleci:envvar:update -e 'MY_ENV_VAR'
-
-  $ sfdx circleci -t plugin | sfdx circleci:envvar:update -e 'MY_ENV_VAR' -e 'MY_OTHER_ENV_VAR'
+  $ sfdx cli:install:jit:test
 ```
 
-_See code: [src/commands/circleci/envvar/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/circleci/envvar/update.ts)_
+_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/install/jit/test.ts)_
 
-## `sfdx cli:install:test -c <string> -m <string> [--channel <string>] [--output-file <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:install:test`
 
 install sf or sfdx
 
 ```
 USAGE
-  $ sfdx cli:install:test -c <string> -m <string> [--channel <string>] [--output-file <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:install:test -c sf|sfdx -m installer|npm|tarball [--json] [--channel
+    legacy|stable|stable-rc|latest|latest-rc] [--output-file <value>]
 
 FLAGS
-  -c, --cli=<option>                                                                (required) the cli to install
-                                                                                    <options: sf|sfdx>
-  -m, --method=<option>                                                             (required) the installation method
-                                                                                    to use
-                                                                                    <options: installer|npm|tarball>
-  --channel=<option>                                                                [default: stable] the channel to
-                                                                                    install from
-                                                                                    <options: legacy|stable|stable-rc|la
-                                                                                    test|latest-rc>
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --output-file=<value>                                                             [default: test-results.json] the
-                                                                                    file to write the JSON results to
-                                                                                    (must be .json)
+  -c, --cli=<option>     (required) the cli to install
+                         <options: sf|sfdx>
+  -m, --method=<option>  (required) the installation method to use
+                         <options: installer|npm|tarball>
+  --channel=<option>     [default: stable] the channel to install from
+                         <options: legacy|stable|stable-rc|latest|latest-rc>
+  --output-file=<value>  [default: test-results.json] the file to write the JSON results to (must be .json)
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  install sf or sfdx
+
   install sf or sfdx
 
 EXAMPLES
@@ -305,78 +237,120 @@ EXAMPLES
   $ sfdx cli:install:test --cli sf --method tarball --channel stable-rc
 ```
 
-_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/install/test.ts)_
+_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/install/test.ts)_
 
-## `sfdx cli:latestrc:build [--rctag <string>] [--build-only] [--resolutions] [--only <array>] [--pinned-deps] [--patch] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:release:automerge`
 
-creates a PR to the repository property defined in the package.json to release a latest-rc build
+Attempt to automerge nightly PR
 
 ```
 USAGE
-  $ sfdx cli:latestrc:build [--rctag <string>] [--build-only] [--resolutions] [--only <array>] [--pinned-deps] [--patch]
-    [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:release:automerge (--owner <value> --repo <value>) --pull-number <value> [--json] [-d] [--verbose]
 
 FLAGS
-  --build-only                                                                      only build the latest rc, do not git
-                                                                                    add/commit/push
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --only=<value>                                                                    only bump the version of the
-                                                                                    packages passed in, uses latest if
-                                                                                    version is not provided
-  --patch                                                                           bump the release as a patch of an
-                                                                                    existing version, not a new minor
-                                                                                    version
-  --[no-]pinned-deps                                                                bump the versions of the packages
-                                                                                    listed in the pinnedDependencies
-                                                                                    section
-  --rctag=<value>                                                                   [default: latest-rc] the tag name
-                                                                                    that corresponds to the npm RC
-                                                                                    build, usually latest-rc or
-                                                                                    stable-rc
-  --[no-]resolutions                                                                bump the versions of packages listed
-                                                                                    in the resolutions section
+  -d, --dry-run          Run all checks, but do not merge PR
+  --owner=<value>        (required) Github owner (org), example: salesforcecli
+  --pull-number=<value>  (required) Github pull request number to merge
+  --repo=<value>         (required) Github repo, example: sfdx-cli
+  --verbose              Show additional debug output
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  creates a PR to the repository property defined in the package.json to release a latest-rc build
+  Attempt to automerge nightly PR
+
+  Attempt to automerge nightly PR
 
 EXAMPLES
-  $ sfdx cli:latestrc:build
-
-  $ sfdx cli:latestrc:build --patch
-
-  $ sfdx cli:latestrc:build --build-only
-
-  $ sfdx cli:latestrc:build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
+  $ sfdx cli:release:automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
 ```
 
-_See code: [src/commands/cli/latestrc/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/latestrc/build.ts)_
+_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/release/automerge.ts)_
 
-## `sfdx cli:releasenotes -c <string> [-s <string>] [-m] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:release:build`
+
+builds a new release from a designated starting point and optionally creates PR in Github
+
+```
+USAGE
+  $ sfdx cli:release:build -c <value> [--json] [-d <value>] [-g <value>] [--build-only] [--resolutions] [--only
+    <value>] [--pinned-deps] [--jit] [--label <value>] [--patch] [--empty] [--pr-base-branch <value>]
+
+FLAGS
+  -c, --release-channel=<value>          (required) the channel intended for this release, examples: nightly, latest-rc,
+                                         latest, dev, beta, etc...
+  -d, --start-from-npm-dist-tag=<value>  the npm dist-tag to start the release from, examples: nightly, latest-rc
+  -g, --start-from-github-ref=<value>    a Github ref to start the release from, examples: main, 7.144.0, f476e8e
+  --build-only                           only build the release, do not git add/commit/push
+  --empty                                create an empty release PR for pushing changes to later (version will still be
+                                         bumped)
+  --[no-]jit                             bump the versions of the packages listed in the jitPlugins (just-in-time)
+                                         section
+  --label=<value>...                     add one or more labels to the Github PR
+  --only=<value>...                      only bump the version of the packages passed in, uses latest if version is not
+                                         provided
+  --patch                                bump the release as a patch of an existing version, not a new minor version
+  --[no-]pinned-deps                     bump the versions of the packages listed in the pinnedDependencies section
+  --pr-base-branch=<value>               base branch to create the PR against; if not specified, the build determines
+                                         the branch for you
+  --[no-]resolutions                     bump the versions of packages listed in the resolutions section
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  builds a new release from a designated starting point and optionally creates PR in Github
+
+  builds a new release from a designated starting point and optionally creates PR in Github
+
+ALIASES
+  $ sfdx cli:latestrc:build
+
+EXAMPLES
+  $ sfdx cli:release:build
+
+  $ sfdx cli:release:build --patch
+
+  $ sfdx cli:release:build --start-from-npm-dist-tag latest-rc --patch
+
+  $ sfdx cli:release:build --start-from-github-ref 7.144.0
+
+  $ sfdx cli:release:build --start-from-github-ref main
+
+  $ sfdx cli:release:build --start-from-github-ref f476e8e
+
+  $ sfdx cli:release:build --start-from-github-ref main --prerelease beta
+
+  $ sfdx cli:release:build --build-only
+
+  $ sfdx cli:release:build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
+```
+
+_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/release/build.ts)_
+
+## `sfdx cli:releasenotes`
 
 pull all relevant information for writing release notes.
 
 ```
 USAGE
-  $ sfdx cli:releasenotes -c <string> [-s <string>] [-m] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:releasenotes -c sf|sfdx [--json] [-s <value>] [-m]
 
 FLAGS
-  -c, --cli=<option>                                                                (required) the cli to pull
-                                                                                    information for
-                                                                                    <options: sf|sfdx>
-  -m, --markdown                                                                    format the output in markdown
-  -s, --since=<value>                                                               the version number of the previous
-                                                                                    release. Defaults to the latest-rc
-                                                                                    version on npm
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -c, --cli=<option>   (required) the cli to pull information for
+                       <options: sf|sfdx>
+  -m, --markdown       format the output in markdown
+  -s, --since=<value>  the version number of the previous release. Defaults to the latest-rc version on npm
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   pull all relevant information for writing release notes.
+  Requires the GH_TOKEN to be set in the environment.
 
+  pull all relevant information for writing release notes.
   Requires the GH_TOKEN to be set in the environment.
 
 EXAMPLES
@@ -393,130 +367,105 @@ EXAMPLES
   $ sfdx cli:releasenotes --cli sf --markdown > changes.md
 ```
 
-_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/releasenotes.ts)_
+_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/releasenotes.ts)_
 
-## `sfdx cli:schemas:collect [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-collect schemas from installed plugins
-
-```
-USAGE
-  $ sfdx cli:schemas:collect [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  collect schemas from installed plugins
-
-EXAMPLES
-  $ sfdx cli:schemas:collect
-```
-
-_See code: [src/commands/cli/schemas/collect.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/schemas/collect.ts)_
-
-## `sfdx cli:schemas:compare [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:schemas:compare`
 
 compare schemas from installed plugins
 
 ```
 USAGE
-  $ sfdx cli:schemas:compare [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:schemas:compare [--json]
 
-FLAGS
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  compare schemas from installed plugins
+
   compare schemas from installed plugins
 
 EXAMPLES
   $ sfdx cli:schemas:compare
 ```
 
-_See code: [src/commands/cli/schemas/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/schemas/compare.ts)_
+_See code: [src/commands/cli/schemas/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/schemas/compare.ts)_
 
-## `sfdx cli:tarballs:prepare [-d] [-t] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:tarballs:prepare`
 
 remove unnecessary files from node_modules
 
 ```
 USAGE
-  $ sfdx cli:tarballs:prepare [-d] [-t] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:tarballs:prepare [--json] [-d] [-t] [--verbose]
 
 FLAGS
-  -d, --dryrun                                                                      only show what would be removed from
-                                                                                    node_modules
-  -t, --types                                                                       remove all types (.d.ts) files from
-                                                                                    node_modules
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         show all files paths being removed
+  -d, --dryrun  only show what would be removed from node_modules
+  -t, --types   remove all types (.d.ts) files from node_modules
+  --verbose     show all files paths being removed
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  remove unnecessary files from node_modules
+
   remove unnecessary files from node_modules
 
 EXAMPLES
   $ sfdx cli:tarballs:prepare
 ```
 
-_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/tarballs/prepare.ts)_
+_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/tarballs/prepare.ts)_
 
-## `sfdx cli:tarballs:smoke -c <string> [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:tarballs:smoke`
 
-smoke tests for the tarballed CLI
+smoke tests for the sf CLI
 
 ```
 USAGE
-  $ sfdx cli:tarballs:smoke -c <string> [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:tarballs:smoke [--json] [--verbose]
 
 FLAGS
-  -c, --cli=<option>                                                                (required) the cli to install
-                                                                                    <options: sf|sfdx>
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         show the --help output for each
-                                                                                    command
+  --verbose  show the --help output for each command
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  smoke tests for the tarballed CLI
+  smoke tests for the sf CLI
+  Tests that the CLI and every command can be initialized.
 
+  smoke tests for the sf CLI
   Tests that the CLI and every command can be initialized.
 
 EXAMPLES
-  $ sfdx cli:tarballs:smoke --cli sfdx
+  $ sfdx cli:tarballs:smoke
 
-  $ sfdx cli:tarballs:smoke --cli sf
+  $ sfdx cli:tarballs:smoke
 ```
 
-_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/tarballs/smoke.ts)_
+_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/tarballs/smoke.ts)_
 
-## `sfdx cli:tarballs:verify [-c sf|sfdx] [-w <number>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:tarballs:verify`
 
 verify that tarballs are ready to be uploaded
 
 ```
 USAGE
-  $ sfdx cli:tarballs:verify [-c sf|sfdx] [-w <number>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:tarballs:verify [--json] [-c sf|sfdx] [-w <value>]
 
 FLAGS
-  -c, --cli=(sf|sfdx)                                                               [default: sfdx] the cli to verify
-  -w, --windows-username-buffer=<value>                                             [default: 41] the number of
-                                                                                    characters to allow for windows
-                                                                                    usernames
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -c, --cli=<option>                     [default: sfdx] the cli to verify
+                                         <options: sf|sfdx>
+  -w, --windows-username-buffer=<value>  [default: 41] the number of characters to allow for windows usernames
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  verify that tarballs are ready to be uploaded
+
   verify that tarballs are ready to be uploaded
 
 EXAMPLES
@@ -527,43 +476,34 @@ EXAMPLES
   $ sfdx cli:tarballs:verify --cli sf
 ```
 
-_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/tarballs/verify.ts)_
+_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/tarballs/verify.ts)_
 
-## `sfdx cli:versions:inspect -c <string> -l <string> --cli sf|sfdx [-d <string>] [-s] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx cli:versions:inspect`
 
 inspect the CLI version across all install paths
 
 ```
 USAGE
-  $ sfdx cli:versions:inspect -c <string> -l <string> --cli sf|sfdx [-d <string>] [-s] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx cli:versions:inspect -c legacy|stable|stable-rc|latest|latest-rc|nightly -l archive|npm --cli sf|sfdx [--json]
+    [-d <value>] [-s]
 
 FLAGS
-  -c, --channels=<option>...
-      (required) the channel you want to inspect (for achives, latest and latest-rc are translated to stable and
-      stable-rc. And vice-versa for npm)
-      <options: legacy|stable|stable-rc|latest|latest-rc>
+  -c, --channels=<option>...     (required) the channel you want to inspect (for achives, latest and latest-rc are
+                                 translated to stable and stable-rc. And vice-versa for npm)
+                                 <options: legacy|stable|stable-rc|latest|latest-rc|nightly>
+  -d, --dependencies=<value>...  glob pattern of dependencies you want to see the version of
+  -l, --locations=<option>...    (required) the location you want to inspect
+                                 <options: archive|npm>
+  -s, --salesforce               show versions of salesforce owned dependencies
+  --cli=<option>                 (required) [default: sfdx] the CLI you want to inspect
+                                 <options: sf|sfdx>
 
-  -d, --dependencies=<value>...
-      glob pattern of dependencies you want to see the version of
-
-  -l, --locations=<option>...
-      (required) the location you want to inspect
-      <options: archive|npm>
-
-  -s, --salesforce
-      show versions of salesforce owned dependencies
-
-  --cli=(sf|sfdx)
-      (required) [default: sfdx] the CLI you want to inspect
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  inspect the CLI version across all install paths
+
   inspect the CLI version across all install paths
 
 EXAMPLES
@@ -588,38 +528,35 @@ EXAMPLES
   $ sfdx cli:versions:inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/cli/versions/inspect.ts)_
 
-## `sfdx dependabot:automerge -m major|minor|patch [-o <string> -r <string>] [-d] [-s] [--merge-method merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx dependabot:automerge`
 
 automatically merge one green, mergeable PR up to the specified maximum bump type
 
 ```
 USAGE
-  $ sfdx dependabot:automerge -m major|minor|patch [-o <string> -r <string>] [-d] [-s] [--merge-method
-    merge|squash|rebase] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx dependabot:automerge -m major|minor|patch [--json] [-o <value> -r <value>] [-d] [-s] [--merge-method
+    merge|squash|rebase]
 
 FLAGS
-  -d, --dryrun                                                                      only show what would happen if you
-                                                                                    consolidated dependabot PRs
-  -m, --max-version-bump=(major|minor|patch)                                        (required) [default: minor] the
-                                                                                    maximum version bump you want to be
-                                                                                    included
-  -o, --owner=<value>                                                               the organization that the repository
-                                                                                    belongs to. This defaults to the
-                                                                                    owner specified in the package.json
-  -r, --repo=<value>                                                                the repository you want to
-                                                                                    consolidate PRs on. This defaults to
-                                                                                    the repository specified in the
-                                                                                    package.json
-  -s, --skip-ci                                                                     add [skip ci] to the merge commit
-                                                                                    title
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --merge-method=(merge|squash|rebase)                                              [default: merge] merge method to use
+  -d, --dryrun                     only show what would happen if you consolidated dependabot PRs
+  -m, --max-version-bump=<option>  (required) [default: minor] the maximum version bump you want to be included
+                                   <options: major|minor|patch>
+  -o, --owner=<value>              the organization that the repository belongs to. This defaults to the owner specified
+                                   in the package.json
+  -r, --repo=<value>               the repository you want to consolidate PRs on. This defaults to the repository
+                                   specified in the package.json
+  -s, --skip-ci                    add [skip ci] to the merge commit title
+  --merge-method=<option>          [default: merge] merge method to use
+                                   <options: merge|squash|rebase>
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
+  automatically merge one green, mergeable PR up to the specified maximum bump type
+
   automatically merge one green, mergeable PR up to the specified maximum bump type
 
 EXAMPLES
@@ -630,192 +567,109 @@ EXAMPLES
   $ sfdx dependabot:automerge --max-version-bump major
 ```
 
-_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/dependabot/automerge.ts)_
+_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/dependabot/automerge.ts)_
 
-## `sfdx dependabot:consolidate -m major|minor|patch -b <string> -t <string> [--ignore <array>] [-d] [--no-pr] [-r <string> -o <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx github:check:closed`
 
-consolidate dependabot PRs into a single PR
+Show open Github issues with GUS WI
 
 ```
 USAGE
-  $ sfdx dependabot:consolidate -m major|minor|patch -b <string> -t <string> [--ignore <array>] [-d] [--no-pr] [-r <string>
-    -o <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx github:check:closed -o <value> --github-token <value> [--json]
 
 FLAGS
-  -b, --base-branch=<value>                                                         (required) [default: main] name of
-                                                                                    the base branch for merging
-  -d, --dryrun                                                                      only show what would happen if you
-                                                                                    consolidated dependabot PRs
-  -m, --max-version-bump=(major|minor|patch)                                        (required) [default: minor] the
-                                                                                    maximum version bump you want to be
-                                                                                    included
-  -o, --owner=<value>                                                               the organization that the repository
-                                                                                    belongs to. This defaults to the
-                                                                                    owner specified in the package.json
-  -r, --repo=<value>                                                                the repository you want to
-                                                                                    consolidate PRs on. This defaults to
-                                                                                    the repository specified in the
-                                                                                    package.json
-  -t, --target-branch=<value>                                                       (required) [default:
-                                                                                    consolidate-dependabot] name of the
-                                                                                    target branch for merging
-  --ignore=<value>                                                                  [default: ] ignore any PRs with
-                                                                                    titles that include this value
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --no-pr                                                                           do everything but create the PR
+  -o, --gus=<value>       (required) Username/alias of your GUS org connection
+  --github-token=<value>  (required) Github token--store this in the environment as GITHUB_TOKEN
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  consolidate dependabot PRs into a single PR
+  Show open Github issues with GUS WI
+
+  Description of a command.
 
 EXAMPLES
-  $ sfdx dependabot:consolidate --max-version-bump patch
-
-  $ sfdx dependabot:consolidate --max-version-bump minor
-
-  $ sfdx dependabot:consolidate --max-version-bump major
+  $ sfdx github:check:closed -o me@gus.com
 ```
 
-_See code: [src/commands/dependabot/consolidate.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/dependabot/consolidate.ts)_
+_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/github/check/closed.ts)_
 
-## `sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx npm:dependencies:pin`
 
 lock a list of dependencies to a target tag or default to 'latest', place these entries in 'pinnedDependencies' entry in the package.json
 
 ```
 USAGE
-  $ sfdx npm:dependencies:pin [-d] [-t <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx npm:dependencies:pin [--json] [-d] [-t <value>]
 
 FLAGS
-  -d, --dryrun                                                                      If true, will not make any changes
-                                                                                    to the package.json
-  -t, --tag=<value>                                                                 [default: latest] The name of the
-                                                                                    tag you want, e.g. 'latest-rc', or
-                                                                                    'latest'
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -d, --dryrun       If true, will not make any changes to the package.json
+  -t, --tag=<value>  [default: latest] The name of the tag you want, e.g. 'latest-rc', or 'latest'
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   lock a list of dependencies to a target tag or default to 'latest', place these entries in 'pinnedDependencies' entry
   in the package.json
+
+  lock a list of dependencies to a target tag or default to 'latest', place these entries in 'pinnedDependencies' entry
+  in the package.json
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/npm/dependencies/pin.ts)_
 
-## `sfdx npm:package:promote -c <string> [-d] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-promote an npm package
-
-```
-USAGE
-  $ sfdx npm:package:promote -c <string> [-d] [-t <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -c, --candidate=<value>                                                           (required) the npm tag that you want
-                                                                                    to promote
-  -d, --dryrun                                                                      If true, only show what would happen
-  -t, --target=<value>                                                              [default: latest] the npm tag that
-                                                                                    you are promoting to
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  promote an npm package
-
-EXAMPLES
-  $ sfdx npm:package:promote --candidate latest-rc --target latest
-```
-
-_See code: [src/commands/npm/package/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/npm/package/promote.ts)_
-
-## `sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--verify] [--githubtag <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx npm:package:release`
 
 publish npm package
 
 ```
 USAGE
-  $ sfdx npm:package:release [-d] [-s] [-t <string>] [-a <string>] [--install] [--prerelease <string>] [--verify]
-    [--githubtag <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx npm:package:release [--json] [-d] [-s] [-t <value>] [-a <value>] [--install] [--prerelease <value>] [--verify]
+    [--githubtag <value>]
 
 FLAGS
-  -a, --npmaccess=<value>                                                           [default: public] access level to
-                                                                                    use when publishing to npm
-  -d, --dryrun                                                                      If true, will not commit changes to
-                                                                                    repo or push any tags
-  -s, --sign                                                                        If true, then the package will be
-                                                                                    signed and the signature will be
-                                                                                    uploaded to S3
-  -t, --npmtag=<value>                                                              [default: latest] tag to use when
-                                                                                    publishing to npm
-  --githubtag=<value>                                                               given a github tag, release the
-                                                                                    version specified in the
-                                                                                    package.json as is. Useful when
-                                                                                    you've already done a release and
-                                                                                    only need npm publish features
-  --[no-]install                                                                    run yarn install and build on
-                                                                                    repository
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --prerelease=<value>                                                              determine the next version as
-                                                                                    <version>-<prerelease>.0 if version
-                                                                                    is not manually set
-  --[no-]verify                                                                     verify npm registry has new version
-                                                                                    after publish and digital signature
+  -a, --npmaccess=<value>  [default: public] access level to use when publishing to npm
+  -d, --dryrun             If true, will not commit changes to repo or push any tags
+  -s, --sign               If true, then the package will be signed and the signature will be uploaded to S3
+  -t, --npmtag=<value>     [default: latest] tag to use when publishing to npm
+  --githubtag=<value>      given a github tag, release the version specified in the package.json as is. Useful when
+                           you've already done a release and only need npm publish features
+  --[no-]install           run yarn install and build on repository
+  --prerelease=<value>     determine the next version as <version>-<prerelease>.0 if version is not manually set
+  --[no-]verify            verify npm registry has new version after publish and digital signature
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   publish npm package
+
+  publish npm package
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/npm/package/release.ts)_
 
-## `sfdx npm:release:validate [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx plugins:trust:verify`
 
-inspects the git commits to see if there are any commits that will warrant a new release
-
-```
-USAGE
-  $ sfdx npm:release:validate [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         show all commits for all packages
-                                                                                    (only works with --json flag)
-
-DESCRIPTION
-  inspects the git commits to see if there are any commits that will warrant a new release
-```
-
-_See code: [src/commands/npm/release/validate.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/npm/release/validate.ts)_
-
-## `sfdx plugins:trust:verify -n <string> [-r <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-Validate a digital signature for a npm package.
+Validate a digital signature.
 
 ```
 USAGE
-  $ sfdx plugins:trust:verify -n <string> [-r <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx plugins:trust:verify -n <value> [--json] [-r <value>]
 
 FLAGS
-  -n, --npm=<value>                                                                 (required) Specify the npm name.
-                                                                                    This can include a tag/version.
-  -r, --registry=<value>                                                            The registry name. The behavior is
-                                                                                    the same as npm.
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -n, --npm=<value>       (required) Specify the npm name. This can include a tag/version.
+  -r, --registry=<value>  The registry name. The behavior is the same as npm.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Validate a digital signature for a npm package.
+  Validate a digital signature.
+
+  Verifies the digital signature on an npm package matches the signature and key stored at the expected URLs.
 
 EXAMPLES
   $ sfdx plugins:trust:verify --npm @scope/npmName --registry http://my.repo.org:4874
@@ -823,40 +677,36 @@ EXAMPLES
   $ sfdx plugins:trust:verify --npm @scope/npmName
 ```
 
-_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/v2.0.3/src/commands/plugins/trust/verify.ts)_
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/2.6.8/src/commands/plugins/trust/verify.ts)_
 
-## `sfdx`
+## `sfdx repositories`
 
 list repositories owned and supported by Salesforce CLI
 
 ```
 USAGE
-  $ sfdx repositories [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-    [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  | [--csv | --no-truncate]]
-    [--no-header | ]
+  $ sfdx repositories [--json] [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output
+    csv|json|yaml |  | [--csv | --no-truncate]] [--no-header | ]
 
 FLAGS
-  -x, --extended                                                                    show extra columns
-  --columns=<value>                                                                 only show provided columns
-                                                                                    (comma-separated)
-  --csv                                                                             output is csv format [alias:
-                                                                                    --output=csv]
-  --filter=<value>                                                                  filter property by partial string
-                                                                                    matching, ex: name=foo
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --no-header                                                                       hide table header from output
-  --no-truncate                                                                     do not truncate output to fit screen
-  --output=<option>                                                                 output in a more machine friendly
-                                                                                    format
-                                                                                    <options: csv|json|yaml>
-  --sort=<value>                                                                    property to sort by (prepend '-' for
-                                                                                    descending)
+  -x, --extended     show extra columns
+  --columns=<value>  only show provided columns (comma-separated)
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-header        hide table header from output
+  --no-truncate      do not truncate output to fit screen
+  --output=<option>  output in a more machine friendly format
+                     <options: csv|json|yaml>
+  --sort=<value>     property to sort by (prepend '-' for descending)
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   list repositories owned and supported by Salesforce CLI
+  For more information on the list of repositories, visit https://github.com/salesforcecli/status.
 
+  list repositories owned and supported by Salesforce CLI
   For more information on the list of repositories, visit https://github.com/salesforcecli/status.
 
 EXAMPLES
@@ -865,33 +715,6 @@ EXAMPLES
   $ sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/repositories/index.ts)_
-
-## `sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-Runs tests with updated typescript version and ES target
-
-```
-USAGE
-  $ sfdx typescript:update [-v <string>] [-t <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -t, --target=<value>                                                              [default: ESNext] Specify the ES
-                                                                                    target you'd like to use. Defaults
-                                                                                    to ESNext if not specified
-  -v, --version=<value>                                                             [default: latest] Specify the
-                                                                                    typescript version you'd like to
-                                                                                    update to. Defaults to latest if not
-                                                                                    specified
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  Runs tests with updated typescript version and ES target
-```
-
-_See code: [src/commands/typescript/update.ts](https://github.com/salesforcecli/plugin-release-management/blob/v3.1.0/src/commands/typescript/update.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.3.1/src/commands/repositories/index.ts)_
 
 <!-- commandsstop -->
