@@ -1,3 +1,11 @@
+# [4.4.0](https://github.com/salesforcecli/plugin-release-management/compare/4.3.3...4.4.0) (2023-09-26)
+
+## [4.3.1-dev.0](https://github.com/salesforcecli/plugin-release-management/compare/4.3.0...4.3.1-dev.0) (2023-09-22)
+
+### Features
+
+- allow passing jitPlugins to install test ([5d13b00](https://github.com/salesforcecli/plugin-release-management/commit/5d13b007e032b91ba533cbe7a182976dbc42961c))
+
 ## [4.3.3](https://github.com/salesforcecli/plugin-release-management/compare/4.3.2...4.3.3) (2023-09-23)
 
 ### Bug Fixes
@@ -10,11 +18,17 @@
 
 - **deps:** bump @salesforce/cli-plugins-testkit from 4.3.4 to 4.3.6 ([f8274e8](https://github.com/salesforcecli/plugin-release-management/commit/f8274e8eaf07c341e799d30711c034fff9daa1b1))
 
-## [4.3.1](https://github.com/salesforcecli/plugin-release-management/compare/4.3.0...4.3.1) (2023-09-23)
+## [4.3.1](https://github.com/salesforcecli/plugin-release-management/compare/4.3.1-dev.0...4.3.1) (2023-09-23)
 
 ### Bug Fixes
 
 - **deps:** bump @salesforce/core from 5.2.9 to 5.2.10 ([2f8ebf8](https://github.com/salesforcecli/plugin-release-management/commit/2f8ebf8d7a46a4f660856b06463a50a1f067f6b2))
+
+## [4.3.1-dev.0](https://github.com/salesforcecli/plugin-release-management/compare/4.3.0...4.3.1-dev.0) (2023-09-22)
+
+### Features
+
+- allow passing jitPlugins to install test ([5d13b00](https://github.com/salesforcecli/plugin-release-management/commit/5d13b007e032b91ba533cbe7a182976dbc42961c))
 
 # [4.3.0](https://github.com/salesforcecli/plugin-release-management/compare/4.2.2...4.3.0) (2023-09-21)
 
