@@ -31,9 +31,9 @@
   {
     "command": "cli:install:jit:test",
     "plugin": "@salesforce/plugin-release-management",
-    "flags": ["json"],
+    "flags": ["jit-plugin", "json"],
     "alias": [],
-    "flagChars": [],
+    "flagChars": ["j"],
     "flagAliases": []
   },
   {

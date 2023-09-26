@@ -6,7 +6,7 @@
  */
 
 import { join } from 'path';
-import { SfCommand } from '@salesforce/sf-plugins-core';
+import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { testJITInstall } from '../../../../jit';
 
@@ -16,10 +16,19 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 export default class Test extends SfCommand<void> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly flags = {
+    'jit-plugin': Flags.string({
+      summary: messages.getMessage('flags.jit-plugin.summary'),
+      char: 'j',
+      multiple: true,
+    }),
+  };
 
   public async run(): Promise<void> {
+    const { flags } = await this.parse(Test);
     await testJITInstall({
       jsonEnabled: this.jsonEnabled(),
+      jitPlugin: flags['jit-plugin'],
       executable: process.platform === 'win32' ? join('bin', 'run.cmd') : join('bin', 'run'),
     });
   }
