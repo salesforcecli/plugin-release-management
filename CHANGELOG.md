@@ -1,3 +1,9 @@
+## [4.4.1](https://github.com/salesforcecli/plugin-release-management/compare/4.4.0...4.4.1) (2023-09-28)
+
+### Bug Fixes
+
+- **deps:** bump get-func-name from 2.0.0 to 2.0.2 ([b15085a](https://github.com/salesforcecli/plugin-release-management/commit/b15085ac9199aabc73f521fbe75b7d35374f3929))
+
 # [4.4.0](https://github.com/salesforcecli/plugin-release-management/compare/4.3.3...4.4.0) (2023-09-26)
 
 ## [4.3.1-dev.0](https://github.com/salesforcecli/plugin-release-management/compare/4.3.0...4.3.1-dev.0) (2023-09-22)
