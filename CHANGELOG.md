@@ -1,3 +1,9 @@
+## [4.4.2](https://github.com/salesforcecli/plugin-release-management/compare/4.4.1...4.4.2) (2023-09-29)
+
+### Bug Fixes
+
+- generate readme during cli PR build ([8c13ede](https://github.com/salesforcecli/plugin-release-management/commit/8c13ede6668c1039883ac743f207a23a2dfa7c35))
+
 ## [4.4.1](https://github.com/salesforcecli/plugin-release-management/compare/4.4.0...4.4.1) (2023-09-28)
 
 ### Bug Fixes
