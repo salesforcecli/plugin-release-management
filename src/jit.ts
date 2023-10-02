@@ -27,9 +27,26 @@ type Options = {
   manifestPath?: string;
 };
 
+async function exists(filePath: string): Promise<boolean> {
+  try {
+    await fs.promises.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function testJITInstall(options: Options): Promise<void> {
-  const { jsonEnabled, jitPlugin, executable } = options;
+  const { jsonEnabled, jitPlugin } = options;
+  let { executable } = options;
   const ux = new Ux({ jsonEnabled });
+
+  if (executable.endsWith('run') && !(await exists(executable))) {
+    // This is a workaround for the ESM branch of sf.
+    // If the executable is bin/run but it doesn't exist, that likely means
+    // that bin/run.js is the executable.
+    executable += '.js';
+  }
 
   const tmpDir = path.join(os.tmpdir(), 'sf-jit-test');
   // Clear tmp dir before test to ensure that we're starting from a clean slate
