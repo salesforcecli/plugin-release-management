@@ -189,7 +189,8 @@ export default class build extends SfCommand<void> {
     await this.exec('npx yarn-deduplicate');
     // Run an install with deduplicated dependencies (with scripts)
     await this.exec('yarn install');
-    // Generate a new readme with the latest dependencies
+    // Generate a new readme with the latest dependencies. Requires source to be compiled.
+    await this.exec('yarn compile');
     await this.exec(
       'yarn oclif readme --no-aliases --repository-prefix "<%- repo %>/blob/<%- version %>/<%- commandPath %>"'
     );
