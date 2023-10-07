@@ -14,7 +14,7 @@
     "@octokit/plugin-throttling": "^5.2.3",
     "@salesforce/cli-plugins-testkit": "^4.3.6",
     "@salesforce/core": "^5.3.1",
-    "@salesforce/kit": "^3.0.9",
+    "@salesforce/kit": "^3.0.13",
     "@salesforce/plugin-command-reference": "^3.0.36",
     "@salesforce/plugin-trust": "^2.6.8",
     "@salesforce/sf-plugins-core": "^3.1.22",
