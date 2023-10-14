@@ -1,3 +1,9 @@
+## [4.4.11](https://github.com/salesforcecli/plugin-release-management/compare/4.4.10...4.4.11) (2023-10-14)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/cli-plugins-testkit from 4.3.6 to 4.4.7 ([a18c863](https://github.com/salesforcecli/plugin-release-management/commit/a18c863964c873e0830fc786f0735e1634db2b20))
+
 ## [4.4.10](https://github.com/salesforcecli/plugin-release-management/compare/4.4.9...4.4.10) (2023-10-14)
 
 ### Bug Fixes
