@@ -12,7 +12,7 @@
     "@octokit/core": "^4.2.4",
     "@octokit/plugin-paginate-rest": "^6.1.2",
     "@octokit/plugin-throttling": "^5.2.3",
-    "@salesforce/cli-plugins-testkit": "^4.3.6",
+    "@salesforce/cli-plugins-testkit": "^4.4.7",
     "@salesforce/core": "^5.3.1",
     "@salesforce/kit": "^3.0.13",
     "@salesforce/plugin-command-reference": "^3.0.36",
