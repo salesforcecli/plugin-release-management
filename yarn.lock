@@ -605,46 +605,7 @@
     treeverse "^1.0.4"
     walk-up-path "^1.0.0"
 
-"@npmcli/arborist@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@npmcli/arborist/-/arborist-6.3.0.tgz#df37c79f7b82a2de8986fb9061b40efb4d188a38"
-  integrity sha512-XrS14qBDhK95RdGhjTSx8AgeZPNah949qp3b0v3GUFOugtPc9Z85rpWid57mONS8gHbuGIHjFzuA+5hSM7BuBA==
-  dependencies:
-    "@isaacs/string-locale-compare" "^1.1.0"
-    "@npmcli/fs" "^3.1.0"
-    "@npmcli/installed-package-contents" "^2.0.2"
-    "@npmcli/map-workspaces" "^3.0.2"
-    "@npmcli/metavuln-calculator" "^5.0.0"
-    "@npmcli/name-from-folder" "^2.0.0"
-    "@npmcli/node-gyp" "^3.0.0"
-    "@npmcli/package-json" "^4.0.0"
-    "@npmcli/query" "^3.0.0"
-    "@npmcli/run-script" "^6.0.0"
-    bin-links "^4.0.1"
-    cacache "^17.0.4"
-    common-ancestor-path "^1.0.1"
-    hosted-git-info "^6.1.1"
-    json-parse-even-better-errors "^3.0.0"
-    json-stringify-nice "^1.1.4"
-    minimatch "^9.0.0"
-    nopt "^7.0.0"
-    npm-install-checks "^6.0.0"
-    npm-package-arg "^10.1.0"
-    npm-pick-manifest "^8.0.1"
-    npm-registry-fetch "^14.0.3"
-    npmlog "^7.0.1"
-    pacote "^15.0.8"
-    parse-conflict-json "^3.0.0"
-    proc-log "^3.0.0"
-    promise-all-reject-late "^1.0.0"
-    promise-call-limit "^1.0.2"
-    read-package-json-fast "^3.0.2"
-    semver "^7.3.7"
-    ssri "^10.0.1"
-    treeverse "^3.0.0"
-    walk-up-path "^3.0.1"
-
-"@npmcli/arborist@^6.5.0":
+"@npmcli/arborist@^6.3.0", "@npmcli/arborist@^6.5.0":
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/@npmcli/arborist/-/arborist-6.5.0.tgz#ee24ecc56e4c387d78c3bce66918b386df6bd560"
   integrity sha512-Ir14P+DyH4COJ9fVbmxVy+9GmyU3e/DnlBtijVN7B3Ri53Y9QmAqi1S9IifG0PTGsfa2U4zhAF8e6I/0VXfWjg==
@@ -1236,10 +1197,10 @@
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-4.0.1.tgz#662ffaa4409713553aaf68eed93e7d2429c3ff0e"
   integrity sha512-0zMjXG4Vjlu/mB7zbuKSXfXiP7CEZBwsPtYqNgburk/wZIU9KcMspLwVBDUxmUj9ltRksD9o1ubRUblN5M3Z0g==
 
-"@salesforce/dev-scripts@^5.10.0":
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-5.10.0.tgz#8fad794032860f456eadd6b26cec13330e633517"
-  integrity sha512-xtFHID4iMEXdXrOXh0FBqAKN/byZ9k9mWAYH9YRmvLgdIAM9TXsI4yTPsqXcTAHrXpzUG0ku5fJcPFKFaAk5vA==
+"@salesforce/dev-scripts@^5.11.0":
+  version "5.11.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-5.11.0.tgz#e5632f0e46f2d821710ca06bb6d60378399b17cd"
+  integrity sha512-DLgjqBsYc0AiBb5BPiSMSJrwoP9ceAFePPcB6xvLrH9gas+8X3z79vc4xzlBhwzsF1WJsSOoVVTtJbPDwxvF0g==
   dependencies:
     "@commitlint/cli" "^17.1.2"
     "@commitlint/config-conventional" "^17.1.0"
@@ -1249,7 +1210,7 @@
     "@types/mocha" "^9.0.0"
     "@types/node" "^15.6.1"
     "@types/sinon" "10.0.11"
-    chai "^4.3.7"
+    chai "^4.3.8"
     chalk "^4.0.0"
     cosmiconfig "^7.0.0"
     eslint "^8.41.0"
@@ -2530,7 +2491,7 @@ cardinal@^2.1.1:
     ansicolors "~0.3.2"
     redeyed "~2.1.0"
 
-chai@^4.3.10, chai@^4.3.7:
+chai@^4.3.10, chai@^4.3.8:
   version "4.3.10"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.10.tgz#d784cec635e3b7e2ffb66446a63b4e33bd390384"
   integrity sha512-0UXG04VuVbruMUYbJ6JctvH0YnC/4q3/AkT18q4NaITo91CUm0liMS9VqzT9vZhVQ/1eqPanMWjBM+Juhfb/9g==
@@ -4341,18 +4302,7 @@ glob@7.2.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^10.2.2:
-  version "10.3.4"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-10.3.4.tgz#c85c9c7ab98669102b6defda76d35c5b1ef9766f"
-  integrity sha512-6LFElP3A+i/Q8XQKEvZjkEWEOTgAIALR9AO2rwT8bgPhDd1anmqDJDZ6lLddI4ehxxxR1S5RIqKe1uapMQfYaQ==
-  dependencies:
-    foreground-child "^3.1.0"
-    jackspeak "^2.0.3"
-    minimatch "^9.0.1"
-    minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
-    path-scurry "^1.10.1"
-
-glob@^10.2.7:
+glob@^10.2.2, glob@^10.2.7:
   version "10.3.10"
   resolved "https://registry.yarnpkg.com/glob/-/glob-10.3.10.tgz#0351ebb809fd187fe421ab96af83d3a70715df4b"
   integrity sha512-fa46+tv1Ak0UPK1TOy/pZrIybNNt4HCv7SDzwyfiOZkvZLEbjsZkJBPtDHVshZjbecAoAGSC20MjLDG/qr679g==
@@ -5202,15 +5152,6 @@ istanbul-reports@^3.0.2:
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
-
-jackspeak@^2.0.3:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-2.2.1.tgz#655e8cf025d872c9c03d3eb63e8f0c024fef16a6"
-  integrity sha512-MXbxovZ/Pm42f6cDIDkl3xpwv1AGwObKwfmjs2nQePiy85tP3fatofl3FC1aBsOtP/6fq5SbtgHwWcMsLP+bDw==
-  dependencies:
-    "@isaacs/cliui" "^8.0.2"
-  optionalDependencies:
-    "@pkgjs/parseargs" "^0.11.0"
 
 jackspeak@^2.3.5:
   version "2.3.6"
@@ -8088,14 +8029,7 @@ socks@^2.6.2, socks@^2.7.1:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-sonic-boom@^3.0.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/sonic-boom/-/sonic-boom-3.3.0.tgz#cffab6dafee3b2bcb88d08d589394198bee1838c"
-  integrity sha512-LYxp34KlZ1a2Jb8ZQgFCK3niIHzibdwtwNUWKg0qQRzsDoJ3Gfgkf8KdBTFU3SkejDEIlWwnSnpVdOZIhFMl/g==
-  dependencies:
-    atomic-sleep "^1.0.0"
-
-sonic-boom@^3.7.0:
+sonic-boom@^3.0.0, sonic-boom@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/sonic-boom/-/sonic-boom-3.7.0.tgz#b4b7b8049a912986f4a92c51d4660b721b11f2f2"
   integrity sha512-IudtNvSqA/ObjN97tfgNmOKyDOs4dNcg4cUUsHDebqsgb8wGBBwb31LIgShNO8fye0dFI52X1+tFoKKI6Rq1Gg==
@@ -8396,19 +8330,7 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-tar@^6.0.2, tar@^6.1.0, tar@^6.1.11, tar@^6.1.13, tar@^6.1.2:
-  version "6.1.15"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.15.tgz#c9738b0b98845a3b344d334b8fa3041aaba53a69"
-  integrity sha512-/zKt9UyngnxIT/EAGYuxaMYgOIJiP81ab9ZfkILq4oNLPFX50qyYmu7jRj9qeXoxmJHjGlbH0+cm2uy1WCs10A==
-  dependencies:
-    chownr "^2.0.0"
-    fs-minipass "^2.0.0"
-    minipass "^5.0.0"
-    minizlib "^2.1.1"
-    mkdirp "^1.0.3"
-    yallist "^4.0.0"
-
-tar@^6.1.15:
+tar@^6.0.2, tar@^6.1.0, tar@^6.1.11, tar@^6.1.13, tar@^6.1.15, tar@^6.1.2:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/tar/-/tar-6.2.0.tgz#b14ce49a79cb1cd23bc9b016302dea5474493f73"
   integrity sha512-/Wo7DcT0u5HUV486xg675HtjNd3BXZ6xDbzsCUZPt5iw8bTQ63bP0Raut3mvro9u+CUyq7YQd8Cx55fsZXxqLQ==
