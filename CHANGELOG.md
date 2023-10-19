@@ -1,3 +1,9 @@
+## [4.4.12](https://github.com/salesforcecli/plugin-release-management/compare/4.4.11...4.4.12) (2023-10-19)
+
+### Bug Fixes
+
+- **deps:** bump @babel/traverse from 7.22.5 to 7.23.2 ([ba9596f](https://github.com/salesforcecli/plugin-release-management/commit/ba9596f62fd47a5e4dd45447d5045e1cc4a133cc))
+
 ## [4.4.11](https://github.com/salesforcecli/plugin-release-management/compare/4.4.10...4.4.11) (2023-10-14)
 
 ### Bug Fixes
