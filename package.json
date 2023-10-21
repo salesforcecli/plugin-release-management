@@ -64,7 +64,7 @@
     "sinon": "10.0.0",
     "ts-node": "^10.0.0",
     "typescript": "^5.2.2",
-    "wireit": "^0.14.0"
+    "wireit": "^0.14.1"
   },
   "config": {},
   "engines": {
