@@ -1,3 +1,9 @@
+## [4.4.17](https://github.com/salesforcecli/plugin-release-management/compare/4.4.16...4.4.17) (2023-10-28)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/kit from 3.0.14 to 3.0.15 ([db9e382](https://github.com/salesforcecli/plugin-release-management/commit/db9e3826d036449605572a3687cc1136e3d0a03b))
+
 ## [4.4.16](https://github.com/salesforcecli/plugin-release-management/compare/4.4.15...4.4.16) (2023-10-28)
 
 ### Bug Fixes
