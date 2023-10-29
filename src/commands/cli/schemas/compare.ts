@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs/promises';
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import { strict as assert } from 'node:assert';
 import { parseJsonMap } from '@salesforce/kit';
 import { SfCommand } from '@salesforce/sf-plugins-core';

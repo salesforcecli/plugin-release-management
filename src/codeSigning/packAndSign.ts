@@ -8,10 +8,10 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import * as fs from 'fs/promises';
-import { exec } from 'child_process';
-import { EOL } from 'os';
-import { join as pathJoin } from 'path';
+import * as fs from 'node:fs/promises';
+import { exec } from 'node:child_process';
+import { EOL } from 'node:os';
+import { join as pathJoin } from 'node:path';
 import { Agents } from 'got';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';

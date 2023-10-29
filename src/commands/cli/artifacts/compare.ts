@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
-import { exec as execSync } from 'child_process';
+import * as fs from 'node:fs';
+import { exec as execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import * as semver from 'semver';
@@ -257,7 +257,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     plugin: Flags.string({
       char: 'p',
       multiple: true,
-      summary: messages.getMessage('flags.plugins.summary'),
+      summary: messages.getMessage('flags.plugin.summary'),
     }),
     previous: Flags.string({
       char: 'r',

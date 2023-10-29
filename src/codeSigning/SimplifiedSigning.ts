@@ -21,8 +21,8 @@
  *
  * For security reasons, the url paths and bucket are hardcoded.
  */
-import { generateKeyPair, createSign, createVerify } from 'crypto';
-import { createReadStream } from 'fs';
+import { generateKeyPair, createSign, createVerify } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import { S3 } from 'aws-sdk';
 import { putObject } from '../codeSigning/upload';
 import { PackageJsonSfdxProperty } from '../package';

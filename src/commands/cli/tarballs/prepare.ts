@@ -25,17 +25,17 @@ export default class Prepare extends SfCommand<void> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     dryrun: Flags.boolean({
-      summary: messages.getMessage('dryrun'),
+      summary: messages.getMessage('flags.dryrun.summary'),
       default: false,
       char: 'd',
     }),
     types: Flags.boolean({
-      summary: messages.getMessage('types'),
+      summary: messages.getMessage('flags.types.summary'),
       default: false,
       char: 't',
     }),
     verbose: Flags.boolean({
-      summary: messages.getMessage('verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 

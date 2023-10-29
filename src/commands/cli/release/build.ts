@@ -6,7 +6,7 @@
  */
 
 import { promisify } from 'node:util';
-import { exec as execSync, ExecException } from 'child_process';
+import { exec as execSync, ExecException } from 'node:child_process';
 import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
@@ -26,28 +26,28 @@ export default class build extends SfCommand<void> {
   public static readonly aliases = ['cli:latestrc:build'];
   public static readonly flags = {
     'start-from-npm-dist-tag': Flags.string({
-      summary: messages.getMessage('flags.startFromNpmDistTag'),
+      summary: messages.getMessage('flags.start-from-npm-dist-tag.summary'),
       char: 'd',
       aliases: ['rctag'],
       deprecateAliases: true,
       exactlyOne: ['start-from-npm-dist-tag', 'start-from-github-ref'],
     }),
     'start-from-github-ref': Flags.string({
-      summary: messages.getMessage('flags.startFromGithubRef'),
+      summary: messages.getMessage('flags.start-from-github-ref.summary'),
       char: 'g',
       exactlyOne: ['start-from-npm-dist-tag', 'start-from-github-ref'],
     }),
     'release-channel': Flags.string({
-      summary: messages.getMessage('flags.releaseChannel'),
+      summary: messages.getMessage('flags.release-channel.summary'),
       char: 'c',
       required: true,
     }),
     'build-only': Flags.boolean({
-      summary: messages.getMessage('flags.buildOnly'),
+      summary: messages.getMessage('flags.build-only.summary'),
       default: false,
     }),
     resolutions: Flags.boolean({
-      summary: messages.getMessage('flags.resolutions'),
+      summary: messages.getMessage('flags.resolutions.summary'),
       default: true,
       allowNo: true,
     }),
@@ -55,27 +55,27 @@ export default class build extends SfCommand<void> {
       summary: messages.getMessage('flags.only'),
     }),
     'pinned-deps': Flags.boolean({
-      summary: messages.getMessage('flags.pinnedDeps'),
+      summary: messages.getMessage('flags.pinned-deps.summary'),
       default: true,
       allowNo: true,
     }),
     jit: Flags.boolean({
-      summary: messages.getMessage('flags.jit'),
+      summary: messages.getMessage('flags.jit.summary'),
       default: true,
       allowNo: true,
     }),
     label: Flags.string({
-      summary: messages.getMessage('flags.label'),
+      summary: messages.getMessage('flags.label.summary'),
       multiple: true,
     }),
     patch: Flags.boolean({
-      summary: messages.getMessage('flags.patch'),
+      summary: messages.getMessage('flags.patch.summary'),
     }),
     empty: Flags.boolean({
-      summary: messages.getMessage('flags.empty'),
+      summary: messages.getMessage('flags.empty.summary'),
     }),
     'pr-base-branch': Flags.string({
-      summary: messages.getMessage('flags.prBaseBranch'),
+      summary: messages.getMessage('flags.pr-base-branch.summary'),
     }),
   };
 

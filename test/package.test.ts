@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { assert, expect } from 'chai';
 import { TestContext } from '@salesforce/core/lib/testSetup';
 import * as sinon from 'sinon';

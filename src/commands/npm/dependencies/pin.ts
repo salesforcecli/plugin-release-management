@@ -21,11 +21,11 @@ export default class Pin extends SfCommand<ChangedPackageVersions> {
     dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      summary: messages.getMessage('flags.dryrun'),
+      summary: messages.getMessage('flags.dryrun.summary'),
     }),
     tag: Flags.string({
       char: 't',
-      summary: messages.getMessage('flags.tag'),
+      summary: messages.getMessage('flags.tag.summary'),
       default: 'latest',
     }),
   };
