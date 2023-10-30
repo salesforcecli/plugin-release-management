@@ -1,7 +1,0 @@
-{
-  "description": "remove unnecessary files from node_modules",
-  "dryrun": "only show what would be removed from node_modules",
-  "verbose": "show all files paths being removed",
-  "types": "remove all types (.d.ts) files from node_modules ",
-  "examples": ["<%= config.bin %> <%= command.id %>"]
-}

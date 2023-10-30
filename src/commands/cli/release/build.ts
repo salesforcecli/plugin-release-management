@@ -52,7 +52,7 @@ export default class build extends SfCommand<void> {
       allowNo: true,
     }),
     only: arrayWithDeprecation({
-      summary: messages.getMessage('flags.only'),
+      summary: messages.getMessage('flags.only.summary'),
     }),
     'pinned-deps': Flags.boolean({
       summary: messages.getMessage('flags.pinned-deps.summary'),

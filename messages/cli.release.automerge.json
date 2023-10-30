@@ -1,9 +1,0 @@
-{
-  "description": "Attempt to automerge nightly PR",
-  "owner": "Github owner (org), example: salesforcecli",
-  "repo": "Github repo, example: sfdx-cli",
-  "pull-number": "Github pull request number to merge",
-  "dry-run": "Run all checks, but do not merge PR",
-  "verbose": "Show additional debug output",
-  "examples": ["<%= config.bin %> <%= command.id %> --owner salesforcecli --repo sfdx-cli --pul-number 1049"]
-}

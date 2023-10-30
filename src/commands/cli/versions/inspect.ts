@@ -183,7 +183,7 @@ export default class Inspect extends SfCommand<Info[]> {
     cli: Flags.custom<CLI>({
       options: Object.values(CLI),
     })({
-      summary: messages.getMessage('cli'),
+      summary: messages.getMessage('flags.cli.summary'),
       default: CLI.SFDX,
       required: true,
     }),

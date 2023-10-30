@@ -47,14 +47,14 @@ export default class Promote extends SfCommand<AnyJson> {
     }),
     platform: arrayWithDeprecation({
       char: 'p',
-      summary: messages.getMessage('platform'),
+      summary: messages.getMessage('flags.platform.summary'),
       options: ['win', 'macos', 'deb'],
     }),
     cli: Flags.custom<CLI>({
       options: Object.values(CLI),
     })({
       char: 'c',
-      summary: messages.getMessage('cli'),
+      summary: messages.getMessage('flags.cli.summary'),
       required: true,
     }),
     sha: Flags.string({
