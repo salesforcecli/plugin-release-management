@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
@@ -54,7 +54,7 @@ export default class Verify extends SfCommand<void> {
       char: 'c',
     }),
     ['windows-username-buffer']: Flags.integer({
-      summary: messages.getMessage('windowsUsernameBuffer'),
+      summary: messages.getMessage('flags.windows-username-buffer.summary'),
       default: 41,
       char: 'w',
     }),

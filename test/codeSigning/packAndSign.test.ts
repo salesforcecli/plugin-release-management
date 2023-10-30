@@ -10,10 +10,10 @@
 /* eslint-disable camelcase */
 
 import child_process = require('child_process');
-import { EOL } from 'os';
-import { join } from 'path';
-import { Readable } from 'stream';
-import * as fs from 'fs/promises';
+import { EOL } from 'node:os';
+import { join } from 'node:path';
+import { Readable } from 'node:stream';
+import * as fs from 'node:fs/promises';
 import { expect } from 'chai';
 import { TestContext } from '@salesforce/core/lib/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';

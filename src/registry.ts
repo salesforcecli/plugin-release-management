@@ -5,10 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { URL } from 'url';
-import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs/promises';
+import { URL } from 'node:url';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import * as fs from 'node:fs/promises';
 import { exec } from 'shelljs';
 import { SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';

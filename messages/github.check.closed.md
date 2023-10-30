@@ -14,10 +14,10 @@ Description of a flag.
 
 - <%= config.bin %> <%= command.id %> -o me@gus.com
 
-# flags.gus
+# flags.gus.summary
 
 Username/alias of your GUS org connection
 
-# flags.github-token
+# flags.github-token.summary
 
 Github token--store this in the environment as GITHUB_TOKEN

@@ -5,9 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs/promises';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import * as fs from 'node:fs/promises';
 import { exec } from 'shelljs';
 import { ux } from '@oclif/core';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
@@ -391,24 +391,24 @@ export default class Test extends SfCommand<void> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.string({
-      summary: messages.getMessage('cliFlag'),
+      summary: messages.getMessage('flags.cli.summary'),
       options: Object.values(CLI),
       char: 'c',
       required: true,
     }),
     method: Flags.string({
-      summary: messages.getMessage('methodFlag'),
+      summary: messages.getMessage('flags.method.summary'),
       options: Object.values(Method.Type),
       char: 'm',
       required: true,
     }),
     channel: Flags.string({
-      summary: messages.getMessage('channelFlag'),
+      summary: messages.getMessage('flags.channel.summary'),
       options: Object.values(Channel),
       default: 'stable',
     }),
     'output-file': Flags.string({
-      summary: messages.getMessage('outputFileFlag'),
+      summary: messages.getMessage('flags.output-file.summary'),
       default: 'test-results.json',
     }),
   };

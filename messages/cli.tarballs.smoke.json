@@ -1,5 +1,0 @@
-{
-  "description": "smoke tests for the sf CLI\n Tests that the CLI and every command can be initialized.",
-  "examples": ["<%= config.bin %> <%= command.id %>", "<%= config.bin %> <%= command.id %>"],
-  "verboseFlag": "show the --help output for each command"
-}

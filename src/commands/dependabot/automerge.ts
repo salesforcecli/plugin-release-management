@@ -50,6 +50,7 @@ export default class AutoMerge extends SfCommand<void> {
 
   public static readonly flags = {
     owner: Flags.string({
+      // eslint-disable-next-line sf-plugin/dash-o
       char: 'o',
       summary: messagesFromConsolidate.getMessage('owner'),
       dependsOn: ['repo'],
@@ -66,12 +67,12 @@ export default class AutoMerge extends SfCommand<void> {
       default: false,
     }),
     'skip-ci': Flags.boolean({
-      summary: messages.getMessage('skipCi'),
+      summary: messages.getMessage('flags.skip-ci.summary'),
       char: 's',
       default: false,
     }),
     'merge-method': Flags.string({
-      summary: messages.getMessage('mergeMethod'),
+      summary: messages.getMessage('flags.merge-method.summary'),
       options: ['merge', 'squash', 'rebase'],
       default: 'merge',
     }),

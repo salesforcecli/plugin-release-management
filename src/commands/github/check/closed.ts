@@ -27,11 +27,11 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
 
   public static readonly flags = {
     gus: Flags.requiredOrg({
-      summary: messages.getMessage('flags.gus'),
+      summary: messages.getMessage('flags.gus.summary'),
       required: true,
     }),
     'github-token': Flags.string({
-      summary: messages.getMessage('flags.github-token'),
+      summary: messages.getMessage('flags.github-token.summary'),
       env: 'GITHUB_TOKEN',
       required: true,
     }),
@@ -83,6 +83,7 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
     const wiQueryResult = new Map<string, string>(
       (
         await flags.gus
+          // eslint-disable-next-line sf-plugin/get-connection-with-version
           .getConnection()
           .sobject('ADM_Work__c')
           .find({ Name: { $in: wiToQuery } })

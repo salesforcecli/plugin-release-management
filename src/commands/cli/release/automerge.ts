@@ -39,27 +39,27 @@ export default class AutoMerge extends SfCommand<void> {
 
   public static readonly flags = {
     owner: Flags.string({
-      summary: messages.getMessage('owner'),
+      summary: messages.getMessage('flags.owner.summary'),
       dependsOn: ['repo'],
       aliases: ['org'],
       required: true,
     }),
     repo: Flags.string({
-      summary: messages.getMessage('repo'),
+      summary: messages.getMessage('flags.repo.summary'),
       dependsOn: ['owner'],
       required: true,
     }),
     'pull-number': Flags.integer({
-      summary: messages.getMessage('pull-number'),
+      summary: messages.getMessage('flags.pull-number.summary'),
       required: true,
     }),
     'dry-run': Flags.boolean({
-      summary: messages.getMessage('dry-run'),
+      summary: messages.getMessage('flags.dry-run.summary'),
       char: 'd',
       default: false,
     }),
     verbose: Flags.boolean({
-      summary: messages.getMessage('verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
       default: false,
     }),
   };

@@ -28,38 +28,38 @@ export default class Promote extends SfCommand<AnyJson> {
     dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      summary: messages.getMessage('dryrun'),
+      summary: messages.getMessage('flags.dryrun.summary'),
     }),
     'promote-to-channel': Flags.string({
       char: 't',
       default: Channel.STABLE,
-      summary: messages.getMessage('target'),
+      summary: messages.getMessage('flags.promote-to-channel.summary'),
       // options: Object.values(Channel),
       required: true,
       aliases: ['target'],
     }),
     'promote-from-channel': Flags.string({
       char: 'C',
-      summary: messages.getMessage('candidate'),
+      summary: messages.getMessage('flags.promote-from-channel.summary'),
       // options: Object.values(Channel),
       exactlyOne: ['sha', 'version', 'promote-from-channel'],
       aliases: ['candidate'],
     }),
     platform: arrayWithDeprecation({
       char: 'p',
-      summary: messages.getMessage('platform'),
+      summary: messages.getMessage('flags.platform.summary'),
       options: ['win', 'macos', 'deb'],
     }),
     cli: Flags.custom<CLI>({
       options: Object.values(CLI),
     })({
       char: 'c',
-      summary: messages.getMessage('cli'),
+      summary: messages.getMessage('flags.cli.summary'),
       required: true,
     }),
     sha: Flags.string({
       char: 's',
-      summary: messages.getMessage('sha'),
+      summary: messages.getMessage('flags.sha.summary'),
       exactlyOne: ['sha', 'version', 'promote-from-channel'],
       parse: (input: string): Promise<string> => Promise.resolve(input.slice(0, 7)),
       validate: (input: string): boolean => {
@@ -71,19 +71,19 @@ export default class Promote extends SfCommand<AnyJson> {
     }),
     'max-age': Flags.integer({
       char: 'm',
-      summary: messages.getMessage('maxage'),
+      summary: messages.getMessage('flags.max-age.summary'),
       default: 300,
       aliases: ['maxage'],
     }),
     indexes: Flags.boolean({
       char: 'i',
-      summary: messages.getMessage('indexes'),
+      summary: messages.getMessage('flags.indexes.summary'),
       default: true,
       allowNo: true,
     }),
     xz: Flags.boolean({
       char: 'x',
-      summary: messages.getMessage('xz'),
+      summary: messages.getMessage('flags.xz.summary'),
       default: true,
       allowNo: true,
     }),
@@ -95,7 +95,7 @@ export default class Promote extends SfCommand<AnyJson> {
     }),
     version: Flags.string({
       char: 'v',
-      summary: messages.getMessage('version'),
+      summary: messages.getMessage('flags.version.summary'),
       exactlyOne: ['sha', 'version', 'promote-from-channel'],
       parse: (input: string): Promise<string> => Promise.resolve(input.trim()),
       validate: (input: string): boolean => validSemVer(input) !== null,

@@ -5,10 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable no-await-in-loop */
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-import { exec as execSync } from 'child_process';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { exec as execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import * as chalk from 'chalk';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
@@ -30,7 +30,7 @@ export default class SmokeTest extends SfCommand<void> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     verbose: Flags.boolean({
-      summary: messages.getMessage('verboseFlag'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 

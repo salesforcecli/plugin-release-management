@@ -1,4 +1,0 @@
-{
-  "description": "collect schemas from installed plugins",
-  "examples": ["<%= config.bin %> <%= command.id %>"]
-}

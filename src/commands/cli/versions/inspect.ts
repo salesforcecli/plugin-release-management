@@ -6,10 +6,10 @@
  */
 /* eslint-disable no-await-in-loop */
 
-import * as os from 'os';
-import * as path from 'path';
-import * as util from 'util';
-import * as fs from 'fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import * as util from 'node:util';
+import * as fs from 'node:fs/promises';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
@@ -157,24 +157,24 @@ export default class Inspect extends SfCommand<Info[]> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     dependencies: Flags.string({
-      summary: messages.getMessage('deps'),
+      summary: messages.getMessage('flags.dependencies.summary'),
       char: 'd',
       multiple: true,
     }),
     salesforce: Flags.boolean({
-      summary: messages.getMessage('salesforce'),
+      summary: messages.getMessage('flags.salesforce.summary'),
       char: 's',
       default: false,
     }),
     channels: Flags.string({
-      summary: messages.getMessage('channels'),
+      summary: messages.getMessage('flags.channels.summary'),
       char: 'c',
       options: Object.values(Channel),
       required: true,
       multiple: true,
     }),
     locations: Flags.string({
-      summary: messages.getMessage('locations'),
+      summary: messages.getMessage('flags.locations.summary'),
       char: 'l',
       options: Object.values(Location),
       required: true,
@@ -183,7 +183,7 @@ export default class Inspect extends SfCommand<Info[]> {
     cli: Flags.custom<CLI>({
       options: Object.values(CLI),
     })({
-      summary: messages.getMessage('cli'),
+      summary: messages.getMessage('flags.cli.summary'),
       default: CLI.SFDX,
       required: true,
     }),

@@ -45,17 +45,17 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     cli: Flags.string({
-      summary: messages.getMessage('cliFlag'),
+      summary: messages.getMessage('flags.cli.summary'),
       options: Object.values(CLI),
       char: 'c',
       required: true,
     }),
     since: Flags.string({
-      summary: messages.getMessage('sinceFlag'),
+      summary: messages.getMessage('flags.since.summary'),
       char: 's',
     }),
     markdown: Flags.boolean({
-      summary: messages.getMessage('markdownFlag'),
+      summary: messages.getMessage('flags.markdown.summary'),
       char: 'm',
       default: false,
     }),

@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
+import * as os from 'node:os';
 import * as chalk from 'chalk';
 import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
@@ -32,38 +32,38 @@ export default class Release extends SfCommand<ReleaseResult> {
     dryrun: Flags.boolean({
       char: 'd',
       default: false,
-      summary: messages.getMessage('dryrun'),
+      summary: messages.getMessage('flags.dryrun.summary'),
     }),
     sign: Flags.boolean({
       char: 's',
       default: false,
-      summary: messages.getMessage('sign'),
+      summary: messages.getMessage('flags.sign.summary'),
     }),
     npmtag: Flags.string({
       char: 't',
       default: 'latest',
-      summary: messages.getMessage('npmTag'),
+      summary: messages.getMessage('flags.npmtag.summary'),
     }),
     npmaccess: Flags.string({
       char: 'a',
       default: 'public',
-      summary: messages.getMessage('npmAccess'),
+      summary: messages.getMessage('flags.npmaccess.summary'),
     }),
     install: Flags.boolean({
       default: true,
-      summary: messages.getMessage('install'),
+      summary: messages.getMessage('flags.install.summary'),
       allowNo: true,
     }),
     prerelease: Flags.string({
-      summary: messages.getMessage('prerelease'),
+      summary: messages.getMessage('flags.prerelease.summary'),
     }),
     verify: Flags.boolean({
-      summary: messages.getMessage('verify'),
+      summary: messages.getMessage('flags.verify.summary'),
       default: true,
       allowNo: true,
     }),
     githubtag: Flags.string({
-      summary: messages.getMessage('githubtag'),
+      summary: messages.getMessage('flags.githubtag.summary'),
     }),
   };
 
