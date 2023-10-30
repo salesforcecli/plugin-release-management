@@ -1,8 +1,0 @@
-{
-  "description": "pack an npm package and produce a tgz file along with a corresponding digital signature",
-  "signatureUrl": "the url location where the signature will be hosted minus the name of the actual signature file.",
-  "publicKeyUrl": "the url where the public key/certificate will be hosted.",
-  "privateKeyPath": "the local file path for the private key.",
-  "target": "the package path you want to target for signing. Defaults to the current working directory.",
-  "tarPath": "specify the package tgz path to sign instead of generating one from the target package"
-}

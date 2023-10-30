@@ -50,6 +50,7 @@ export default class AutoMerge extends SfCommand<void> {
 
   public static readonly flags = {
     owner: Flags.string({
+      // eslint-disable-next-line sf-plugin/dash-o
       char: 'o',
       summary: messagesFromConsolidate.getMessage('owner'),
       dependsOn: ['repo'],
