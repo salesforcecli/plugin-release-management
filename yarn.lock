@@ -1169,7 +1169,7 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/core@^5.2.10", "@salesforce/core@^5.3.1", "@salesforce/core@^5.3.10", "@salesforce/core@^5.3.14", "@salesforce/core@^5.3.9":
+"@salesforce/core@^5.2.10", "@salesforce/core@^5.3.1", "@salesforce/core@^5.3.10", "@salesforce/core@^5.3.14":
   version "5.3.14"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-5.3.14.tgz#a5a3d02be6727492469ed39b23eaf3c56675496b"
   integrity sha512-IFmLZCpFBcreTFEaH+Rn4BozUpFx3vvf43yWuXWdOvALz4ad18yU3Kzk9GxwzablrQxPFmJ43ClQG10dmoh/ig==
@@ -1259,13 +1259,13 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-trust@^2.6.21":
-  version "2.6.21"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-2.6.21.tgz#f1a23bf9013cfb0a0f4e7631f61a9c104cb692f2"
-  integrity sha512-v2XN4WXLiTBQjDMEpwDMhUdh2wlTHSe9rZi7mXqjdip6yvV929S5v1eX4a0yK80wrBESpjFLA38/GSp2efNU5w==
+"@salesforce/plugin-trust@^2.6.22":
+  version "2.6.22"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-2.6.22.tgz#c046552340cdf490d60e40289b97d8fa15d16641"
+  integrity sha512-UqG0LoMrQmnIw/yGbmwukQ5nlg3Fo0zxu/QsINuyjNWpLKgj75Ll+oYoZMf74JiCbgAHpwNhrgTUe7Zfqoy9oA==
   dependencies:
     "@oclif/core" "^2.15.0"
-    "@salesforce/core" "^5.3.9"
+    "@salesforce/core" "^5.3.10"
     "@salesforce/sf-plugins-core" "^3.1.23"
     got "^11"
     npm "9.8.1"
