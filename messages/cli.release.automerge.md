@@ -1,6 +1,6 @@
 # description
 
-Attempt to automerge nightly PR
+Attempt to automerge nightly PR Foo-test
 
 # flags.owner.summary
 
