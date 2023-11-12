@@ -354,10 +354,10 @@ export class Package extends AsyncOptionalCreatable {
       .map(([plugin, version]) => {
         const [name, tag] = getNameAndTag(plugin);
         if (
-          dependencies?.[name] ||
-          devDependencies?.[name] ||
-          pinnedDependencies?.includes(name) ||
-          oclif.plugins?.includes(name) ||
+          dependencies?.[name] ??
+          devDependencies?.[name] ??
+          pinnedDependencies?.includes(name) ??
+          oclif.plugins?.includes(name) ??
           oclif.devPlugins?.includes(name)
         ) {
           throw new SfError(

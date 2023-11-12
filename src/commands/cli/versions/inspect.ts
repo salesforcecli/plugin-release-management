@@ -15,7 +15,7 @@ import { exec } from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { green, red, cyan, yellow, bold } from 'chalk';
-import { ensure } from '@salesforce/ts-types';
+import { ensure, entriesOf } from '@salesforce/ts-types';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
 import { PackageJson } from '../../../package';
@@ -233,7 +233,7 @@ export default class Inspect extends SfCommand<Info[]> {
     const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
     const nightlyPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/nightly`;
     this.archives = {} as Archives;
-    for (const [channel, paths] of Object.entries(ARCHIVES)) {
+    for (const [channel, paths] of entriesOf(ARCHIVES)) {
       if (channel === Channel.LEGACY && cli === CLI.SFDX) {
         this.archives[channel] = paths.map((p) => {
           if (p.includes('amd64')) {

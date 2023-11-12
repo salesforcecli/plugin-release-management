@@ -300,8 +300,8 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
           `Could not load manifest body from S3 getObject response for ${manifestForMostRecentSha.Key}`
         );
       }
-      logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${manifest.toString()}`);
-      const json = JSON.parse(manifest.Body.toString()) as S3Manifest;
+      logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${String(manifest)}`);
+      const json = JSON.parse(String(manifest.Body)) as S3Manifest;
       return json.sha;
     }
   }

@@ -273,6 +273,8 @@ export const api = {
     }
   },
 
+  // preserve previous behavior when the param was used.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getAgentForUri(url: string): false | Agents {
     const agent = new ProxyAgent();
     /* eslint-disable @typescript-eslint/no-unsafe-call */
