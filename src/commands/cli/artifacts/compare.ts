@@ -514,7 +514,7 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
         : `v${this.previousPlugins[plugin]}`
       : null;
 
-    if (current?.includes('^') || current?.includes('~')) {
+    if (current?.includes('^') ?? current?.includes('~')) {
       throw messages.createError('error.VersionNotPinned', [plugin]);
     }
 
