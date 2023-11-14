@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-// eslint-disable-next-line node/shebang
-async function main() {
-  const { execute } = await import('@oclif/core');
-  await execute({ dir: __dirname });
-}
-
-await main();
+// eslint-disable-next-line unicorn/prefer-top-level-await
+(async () => {
+  const oclif = await import('@oclif/core');
+  await oclif.execute({ development: false, dir: __dirname });
+})();
