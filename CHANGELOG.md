@@ -1,3 +1,9 @@
+# [4.5.0](https://github.com/salesforcecli/plugin-release-management/compare/4.4.24...4.5.0) (2023-11-20)
+
+### Features
+
+- bump libs ([#936](https://github.com/salesforcecli/plugin-release-management/issues/936)) ([166a11a](https://github.com/salesforcecli/plugin-release-management/commit/166a11ad7078ccf940d02aa17705a648ffc52de8))
+
 ## [4.4.24](https://github.com/salesforcecli/plugin-release-management/compare/4.4.23...4.4.24) (2023-11-18)
 
 ### Bug Fixes
