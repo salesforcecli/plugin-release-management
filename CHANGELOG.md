@@ -1,3 +1,15 @@
+## [4.4.24](https://github.com/salesforcecli/plugin-release-management/compare/4.4.23...4.4.24) (2023-11-18)
+
+### Bug Fixes
+
+- **deps:** bump aws-sdk from 2.1488.0 to 2.1499.0 ([0272b83](https://github.com/salesforcecli/plugin-release-management/commit/0272b8324857f3d86f43055aa119f90fd584d6f2))
+
+## [4.4.23](https://github.com/salesforcecli/plugin-release-management/compare/4.4.22...4.4.23) (2023-11-18)
+
+### Bug Fixes
+
+- **deps:** bump fast-glob from 3.3.1 to 3.3.2 ([55223ac](https://github.com/salesforcecli/plugin-release-management/commit/55223acc4d681927a2352c3efadf585ff473b5fd))
+
 ## [4.4.22](https://github.com/salesforcecli/plugin-release-management/compare/4.4.21...4.4.22) (2023-11-11)
 
 ### Bug Fixes

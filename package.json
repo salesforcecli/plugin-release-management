@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "4.4.22",
+  "version": "4.4.24",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "bin": {
@@ -19,9 +19,9 @@
     "@salesforce/plugin-trust": "^2.6.23",
     "@salesforce/sf-plugins-core": "^4",
     "@salesforce/ts-types": "^2.0.9",
-    "aws-sdk": "^2.1488.0",
+    "aws-sdk": "^2.1499.0",
     "chalk": "^4.1.0",
-    "fast-glob": "^3.3.1",
+    "fast-glob": "^3.3.2",
     "got": "^11.8.6",
     "just-diff": "^5.2.0",
     "proxy-agent": "^6.3.1",
@@ -35,9 +35,9 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^4.0.16",
     "@salesforce/dev-scripts": "^6.0.3",
-    "@salesforce/ts-sinon": "1.4.17",
+    "@salesforce/ts-sinon": "1.4.19",
     "@types/semver": "^7.5.4",
-    "@types/shelljs": "^0.8.8",
+    "@types/shelljs": "^0.8.15",
     "aws-sdk-mock": "^5.8.0",
     "eslint-plugin-sf-plugin": "^1.16.14",
     "oclif": "^4",
