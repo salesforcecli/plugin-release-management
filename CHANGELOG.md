@@ -1,3 +1,9 @@
+## [4.5.1](https://github.com/salesforcecli/plugin-release-management/compare/4.5.0...4.5.1) (2023-11-20)
+
+### Bug Fixes
+
+- use run.js for bin ([baec524](https://github.com/salesforcecli/plugin-release-management/commit/baec524cacf8edf8f1e31feec30756db1d512ace))
+
 # [4.5.0](https://github.com/salesforcecli/plugin-release-management/compare/4.4.24...4.5.0) (2023-11-20)
 
 ### Features
