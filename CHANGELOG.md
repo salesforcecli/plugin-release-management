@@ -1,3 +1,9 @@
+## [4.5.4](https://github.com/salesforcecli/plugin-release-management/compare/4.5.3...4.5.4) (2023-11-29)
+
+### Bug Fixes
+
+- remove unused jsforce stuff ([ec982f3](https://github.com/salesforcecli/plugin-release-management/commit/ec982f34111b69ccd9fb55a1558ebfeb411e9728))
+
 ## [4.5.3](https://github.com/salesforcecli/plugin-release-management/compare/4.5.2...4.5.3) (2023-11-25)
 
 ### Bug Fixes
