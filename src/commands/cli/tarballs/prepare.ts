@@ -101,9 +101,21 @@ export default class Prepare extends SfCommand<void> {
     const nycOutput = await find(`${baseDirGlob}/**/.nyc_output`);
     this.remove(nycOutput, '.nyc_output files');
 
-    // Large files shipped with jsforce
-    const jsforceBuild = await find(`${baseDirGlob}/jsforce/build`, { onlyDirectories: true });
-    this.remove(jsforceBuild, 'jsforce/build directory');
+    // START TODO: delete after `sf` moves to `jsforce-node`
+    // Delete large files shipped with jsforce
+    //
+    // Browser bundles
+    const jsforceBuild = await find(`${baseDirGlob}/jsforce/dist`, { onlyDirectories: true });
+    this.remove(jsforceBuild, 'jsforce/dist directory');
+
+    // TS source code
+    const jsforceSrc = await find(`${baseDirGlob}/jsforce/src`, { onlyDirectories: true });
+    this.remove(jsforceSrc, 'jsforce/src directory');
+
+    // ESM browser build
+    const jsforceESMBrowserBuild = await find(`${baseDirGlob}/jsforce/browser`, { onlyDirectories: true });
+    this.remove(jsforceESMBrowserBuild, 'jsforce/browser directory');
+    // END
 
     // This breaks compilation. We need to probably do this right before the pack, but then this will
     // break compilation the next time compile is ran without doing a yarn install --force
