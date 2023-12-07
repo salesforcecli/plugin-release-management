@@ -426,23 +426,21 @@ export default class Test extends SfCommand<void> {
 
     let results: Results = {};
     switch (method) {
-      case 'tarball': {
+      case Method.Type.TARBALL: {
         const tarball = new Tarball({ cli, channel, directory, method });
         results = await tarball.execute();
         break;
       }
-      case 'npm': {
+      case Method.Type.NPM: {
         const npm = new Npm({ cli, channel, directory, method });
         results = await npm.execute();
         break;
       }
-      case 'installer': {
+      case Method.Type.INSTALLER: {
         const installer = new Installer({ cli, channel, directory, method });
         results = await installer.execute();
         break;
       }
-      default:
-        break;
     }
     const hasFailures = Object.values(results)
       .flatMap(Object.values)
