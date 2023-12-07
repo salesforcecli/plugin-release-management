@@ -1,3 +1,9 @@
+## [4.5.7](https://github.com/salesforcecli/plugin-release-management/compare/4.5.6...4.5.7) (2023-12-07)
+
+### Bug Fixes
+
+- strict enum comparisons ([959214a](https://github.com/salesforcecli/plugin-release-management/commit/959214a2b6f6f2f13ed7b75d71ccbf066baa075a))
+
 ## [4.5.6](https://github.com/salesforcecli/plugin-release-management/compare/4.5.5...4.5.6) (2023-12-02)
 
 ### Bug Fixes
