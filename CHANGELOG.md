@@ -1,3 +1,9 @@
+## [4.5.8](https://github.com/salesforcecli/plugin-release-management/compare/4.5.7...4.5.8) (2023-12-09)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 3.13.1 to 3.14.1 ([d09b219](https://github.com/salesforcecli/plugin-release-management/commit/d09b2199d4f2587a4928e62a7b3ebf5bbdeb0649))
+
 ## [4.5.7](https://github.com/salesforcecli/plugin-release-management/compare/4.5.6...4.5.7) (2023-12-07)
 
 ### Bug Fixes
