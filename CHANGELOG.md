@@ -1,3 +1,9 @@
+## [4.5.11](https://github.com/salesforcecli/plugin-release-management/compare/4.5.10...4.5.11) (2023-12-16)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-command-reference ([6b71e22](https://github.com/salesforcecli/plugin-release-management/commit/6b71e22ccdcb5af32e3febaa60ad57497b9364ce))
+
 ## [4.5.10](https://github.com/salesforcecli/plugin-release-management/compare/4.5.9...4.5.10) (2023-12-09)
 
 ### Bug Fixes
