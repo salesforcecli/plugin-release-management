@@ -1,3 +1,9 @@
+## [4.5.12](https://github.com/salesforcecli/plugin-release-management/compare/4.5.11...4.5.12) (2023-12-23)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 6.4.1 to 6.4.2 ([d156bc2](https://github.com/salesforcecli/plugin-release-management/commit/d156bc2b035725bfc9659c745c46919a3a86b57d))
+
 ## [4.5.11](https://github.com/salesforcecli/plugin-release-management/compare/4.5.10...4.5.11) (2023-12-16)
 
 ### Bug Fixes
