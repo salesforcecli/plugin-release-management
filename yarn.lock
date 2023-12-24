@@ -907,7 +907,7 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^3", "@oclif/core@^3.0.0", "@oclif/core@^3.0.4", "@oclif/core@^3.10.1", "@oclif/core@^3.14.1", "@oclif/core@^3.15.0", "@oclif/core@^3.3.1", "@oclif/core@^3.5.0":
+"@oclif/core@^3", "@oclif/core@^3.0.0", "@oclif/core@^3.0.4", "@oclif/core@^3.10.1", "@oclif/core@^3.15.0", "@oclif/core@^3.3.1", "@oclif/core@^3.5.0":
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.15.0.tgz#28405012137fa92efcc5a2c4d61336dd64c697cb"
   integrity sha512-A1EVh4gv7mqAJ9OGVxLugaLcHvQnGwvOnPToP8OT9AldJ0LwVExOwhhlnOstYca33MIpGH00twYxWMS5nxMuDQ==
@@ -1217,7 +1217,7 @@
     semver "^7.5.4"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/core@^6.4.0", "@salesforce/core@^6.4.1", "@salesforce/core@^6.4.2":
+"@salesforce/core@^6.4.1", "@salesforce/core@^6.4.2":
   version "6.4.2"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-6.4.2.tgz#e6e5e2d5e6ad17f1cbe0feb5a0e55e8b74c91e3c"
   integrity sha512-ZtLwgI18f1th6SY0fKmuiyVGGwTXPy4nI+KfXzkww/vqdPxDhAfoHwqvFeo4tjFE2rldK7IPiIIYdtpsaI8d5g==
@@ -1286,13 +1286,13 @@
     "@salesforce/ts-types" "^2.0.9"
     tslib "^2.6.2"
 
-"@salesforce/plugin-command-reference@^3.0.54":
-  version "3.0.54"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.54.tgz#55718d05e4d6192056c7de0811c7209bdf75d9db"
-  integrity sha512-qTdkyVVn2g6KCnkrULfdo3fzGij3mN/H/UvqnNBwsE74dJdUBUKcFqWZCHxFbNLnItu6VFz4QaSmrtJQb3Td2w==
+"@salesforce/plugin-command-reference@^3.0.56":
+  version "3.0.56"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.56.tgz#538a9ad005cae322c43848e69952a7cc9474dd57"
+  integrity sha512-4+C8GwXpl7jlyEsJXiMPFG4QTk3Y6N+H+58AZ50RB7qIzXcWROLeIazuvRyZedPvzAdze02hVHPBAO+pltdh4w==
   dependencies:
-    "@oclif/core" "^3.14.1"
-    "@salesforce/core" "^6.4.0"
+    "@oclif/core" "^3.15.0"
+    "@salesforce/core" "^6.4.1"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/sf-plugins-core" "^5.0.8"
     "@salesforce/ts-types" "^2.0.9"
