@@ -1,3 +1,9 @@
+## [4.5.19](https://github.com/salesforcecli/plugin-release-management/compare/4.5.18...4.5.19) (2023-12-30)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/sf-plugins-core from 5.0.12 to 5.0.13 ([9c88992](https://github.com/salesforcecli/plugin-release-management/commit/9c88992c4c7cf55cfe98fd1f51461ba1e5d88d00))
+
 ## [4.5.18](https://github.com/salesforcecli/plugin-release-management/compare/4.5.17...4.5.18) (2023-12-30)
 
 ### Bug Fixes
