@@ -36,6 +36,8 @@ export type Info = {
   dependencies: Dependency[];
 };
 
+export type InspectResult = Info[];
+
 export type Dependency = {
   name: string;
   version: string;
@@ -150,7 +152,7 @@ const CLI_META = {
   },
 };
 
-export default class Inspect extends SfCommand<Info[]> {
+export default class Inspect extends SfCommand<InspectResult> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
 
@@ -194,7 +196,7 @@ export default class Inspect extends SfCommand<Info[]> {
 
   private flags!: Interfaces.InferredFlags<typeof Inspect.flags>;
 
-  public async run(): Promise<Info[]> {
+  public async run(): Promise<InspectResult> {
     const { flags } = await this.parse(Inspect);
     this.flags = flags;
 

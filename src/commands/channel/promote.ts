@@ -10,7 +10,7 @@ import { valid as validSemVer } from 'semver';
 import { Interfaces } from '@oclif/core';
 import shelljs from 'shelljs';
 import { Logger, Messages, SfError } from '@salesforce/core';
-import { AnyJson, ensureString, isString } from '@salesforce/ts-types';
+import { ensureString, isString } from '@salesforce/ts-types';
 import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
 import { AmazonS3 } from '../../amazonS3.js';
 import { verifyDependencies } from '../../dependencies.js';
@@ -20,7 +20,16 @@ Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
 const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64'];
 
-export default class Promote extends SfCommand<AnyJson> {
+export type PromoteResult = {
+  dryRun: boolean;
+  cli: CLI;
+  target: string;
+  sha: string;
+  version: string;
+  platforms: string[];
+};
+
+export default class Promote extends SfCommand<PromoteResult> {
   public static readonly description = messages.getMessage('description');
   public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
@@ -104,7 +113,7 @@ export default class Promote extends SfCommand<AnyJson> {
 
   private flags!: Interfaces.InferredFlags<typeof Promote.flags>;
 
-  public async run(): Promise<AnyJson> {
+  public async run(): Promise<PromoteResult> {
     const { flags } = await this.parse(Promote);
     this.flags = flags;
     this.validateFlags();

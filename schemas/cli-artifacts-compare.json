@@ -1,0 +1,268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/ArtifactsCompareResult",
+  "definitions": {
+    "ArtifactsCompareResult": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "current": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": ["string", "null"]
+              },
+              "snapshot": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "type": "string"
+                    },
+                    "plugin": {
+                      "type": "string"
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "alias": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "args": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["command", "plugin", "flags", "alias"],
+                  "additionalProperties": false
+                }
+              },
+              "schemas": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/definitions/JsonMap"
+                }
+              }
+            },
+            "required": ["version", "snapshot", "schemas"],
+            "additionalProperties": false
+          },
+          "previous": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": ["string", "null"]
+              },
+              "snapshot": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "type": "string"
+                    },
+                    "plugin": {
+                      "type": "string"
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "alias": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "args": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["command", "plugin", "flags", "alias"],
+                  "additionalProperties": false
+                }
+              },
+              "schemas": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/definitions/JsonMap"
+                }
+              }
+            },
+            "required": ["version", "snapshot", "schemas"],
+            "additionalProperties": false
+          },
+          "snapshotChanges": {
+            "type": "object",
+            "properties": {
+              "commandAdditions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "commandRemovals": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "commands": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "type": "string"
+                    },
+                    "aliasAdditions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "aliasRemovals": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "flagAdditions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "flagRemovals": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "hasChanges": {
+                      "type": "boolean"
+                    },
+                    "hasBreakingChanges": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "command",
+                    "aliasAdditions",
+                    "aliasRemovals",
+                    "flagAdditions",
+                    "flagRemovals",
+                    "hasChanges",
+                    "hasBreakingChanges"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "hasChanges": {
+                "type": "boolean"
+              },
+              "hasBreakingChanges": {
+                "type": "boolean"
+              }
+            },
+            "required": ["commandAdditions", "commandRemovals", "commands", "hasChanges", "hasBreakingChanges"],
+            "additionalProperties": false
+          },
+          "schemaChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "$ref": "#/definitions/Operation"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": ["string", "number"]
+                  }
+                },
+                "value": {}
+              },
+              "required": ["op", "path", "value"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["current", "previous", "snapshotChanges", "schemaChanges"],
+        "additionalProperties": false
+      }
+    },
+    "JsonMap": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Optional%3CAnyJson%3E"
+      },
+      "properties": {},
+      "description": "Any JSON-compatible object."
+    },
+    "Optional<AnyJson>": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AnyJson"
+        },
+        {
+          "not": {}
+        }
+      ],
+      "description": "A union type for either the parameterized type `T` or `undefined` -- the opposite of  {@link  NonOptional  } ."
+    },
+    "AnyJson": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/JsonPrimitive"
+        },
+        {
+          "$ref": "#/definitions/JsonCollection"
+        }
+      ],
+      "description": "Any valid JSON value."
+    },
+    "JsonPrimitive": {
+      "type": ["null", "boolean", "number", "string"],
+      "description": "Any valid JSON primitive value."
+    },
+    "JsonCollection": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/JsonMap"
+        },
+        {
+          "$ref": "#/definitions/JsonArray"
+        }
+      ],
+      "description": "Any valid JSON collection value."
+    },
+    "JsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AnyJson"
+      },
+      "description": "Any JSON-compatible array."
+    },
+    "Operation": {
+      "type": "string",
+      "enum": ["add", "replace", "remove"]
+    }
+  }
+}

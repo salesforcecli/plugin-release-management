@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/RepositoryResult",
+  "definitions": {
+    "RepositoryResult": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/RepositoryInfo"
+      }
+    },
+    "RepositoryInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["package", "library", "orb"]
+              }
+            },
+            "required": ["name", "type"],
+            "additionalProperties": false
+          }
+        },
+        "organization": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "organization", "packages", "url"]
+    }
+  }
+}

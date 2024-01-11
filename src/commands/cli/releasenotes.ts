@@ -29,7 +29,7 @@ type Change = {
   title: string;
 };
 
-type ChangesByPlugin = Record<string, Change[]>;
+export type ChangesByPlugin = Record<string, Change[]>;
 
 type Differences = {
   removed: Map<string, string>;

@@ -13,7 +13,8 @@ import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories.js
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'repositories');
 
-export default class Repositories extends SfCommand<RepositoryInfo[]> {
+export type RepositoryResult = RepositoryInfo[];
+export default class Repositories extends SfCommand<RepositoryResult> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -24,7 +25,7 @@ export default class Repositories extends SfCommand<RepositoryInfo[]> {
     ...(ux.table.flags() as any),
   };
 
-  public async run(): Promise<RepositoryInfo[]> {
+  public async run(): Promise<RepositoryResult> {
     const { flags } = await this.parse(Repositories);
     const repositories = await retrieveKnownRepositories();
 

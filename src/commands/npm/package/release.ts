@@ -19,10 +19,10 @@ import { SigningResponse } from '../../../codeSigning/SimplifiedSigning.js';
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
 
-interface ReleaseResult {
+export type ReleaseResult = {
   version: string;
   name: string;
-}
+};
 
 export default class Release extends SfCommand<ReleaseResult> {
   public static readonly summary = messages.getMessage('description');
