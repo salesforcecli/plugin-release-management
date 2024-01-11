@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node16",
     "skipLibCheck": true
   },
