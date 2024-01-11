@@ -9,7 +9,7 @@ import path from 'node:path';
 import semver from 'semver';
 import { ux } from '@oclif/core';
 import shelljs from 'shelljs';
-import { Logger, SfError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
 import { AnyJson, get, isObject, isPlainObject, Nullable } from '@salesforce/ts-types';
 import { Registry } from './registry.js';
@@ -91,8 +91,6 @@ export class Package extends AsyncOptionalCreatable {
   public packageJson!: PackageJson;
   public location: string;
 
-  // set during init
-  private logger!: Logger;
   private registry: Registry;
 
   public constructor(opts: { location?: string } | undefined) {
@@ -123,28 +121,6 @@ export class Package extends AsyncOptionalCreatable {
     }
     if (result.stdout) {
       return JSON.parse(result.stdout) as NpmPackage;
-    }
-  }
-
-  public validateNextVersion(nextVersion: string): VersionValidation {
-    const nextVersionExists = (this.npmPackage.versions ?? []).includes(nextVersion);
-    const currentVersion = this.npmPackage.version ?? null;
-    if (!nextVersionExists) {
-      this.logger.debug(`${this.npmPackage.name}@${nextVersion} does not exist in the registry. Proceeding...`);
-      return {
-        nextVersion,
-        currentVersion,
-        valid: true,
-        name: this.name,
-      };
-    } else {
-      this.logger.debug(`${this.npmPackage.name}@${nextVersion} already exists in the registry. Exiting...`);
-      return {
-        nextVersion,
-        currentVersion,
-        valid: false,
-        name: this.name,
-      };
     }
   }
 
@@ -397,7 +373,6 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   protected async init(): Promise<void> {
-    this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
     this.npmPackage = this.retrieveNpmPackage() ?? this.createDefaultNpmPackage();
