@@ -16,7 +16,7 @@ import { ensure } from '@salesforce/ts-types';
 import got from 'got';
 import chalk from 'chalk';
 import { Channel, CLI, ServiceAvailability } from '../../../types.js';
-import { AmazonS3 } from '../../../amazonS3.js';
+import { AmazonS3, download } from '../../../amazonS3.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
@@ -136,7 +136,7 @@ class Tarball extends Method.Base {
     for (const [tarball, location] of Object.entries(tarballs)) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        await this.s3.download(tarball, location);
+        await download(tarball, location);
         // eslint-disable-next-line no-await-in-loop
         const extracted = await this.extract(location);
         const testResults = this.test(extracted);
@@ -308,7 +308,7 @@ class Installer extends Method.Base {
     const pkg = `${this.options.cli}.pkg`;
     const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
-    await this.s3.download(url, location);
+    await download(url, location);
     const result = shelljs.exec(`sudo installer -pkg ${location} -target /`);
     const results: Results = {};
     if (result.code === 0) {
@@ -335,7 +335,7 @@ class Installer extends Method.Base {
       const url = `${this.s3.directory}/channels/${this.options.channel}/${exe}`;
       const location = path.join(this.options.directory, exe);
       // eslint-disable-next-line no-await-in-loop
-      await this.s3.download(url, location);
+      await download(url, location);
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
       ux.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
