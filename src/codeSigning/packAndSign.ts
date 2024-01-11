@@ -9,7 +9,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import fs from 'node:fs/promises';
-import { exec } from 'node:child_process';
+import cp from 'node:child_process';
 import { EOL } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import { Agents } from 'got';
@@ -79,7 +79,7 @@ export const api = {
     if (!pathGetter) pathGetter = new PathGetter();
     return new Promise<string>((resolve, reject) => {
       const command = 'npm pack -p';
-      exec(
+      cp.exec(
         command,
         { cwd: pathGetter.target, maxBuffer: 1024 * 4096 },
         // we expect an error code from this command, so we're adding it to the normal Error type
