@@ -12,7 +12,7 @@ import { Octokit } from '@octokit/core';
 import chalk from 'chalk';
 import { Messages, SfError } from '@salesforce/core';
 import shelljs from 'shelljs';
-import * as semver from 'semver';
+import semver from 'semver';
 import { CLI } from '../../types.js';
 import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package.js';
 

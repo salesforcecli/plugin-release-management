@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as AWS from 'aws-sdk';
+import AWS from 'aws-sdk';
 import { Agents } from 'got';
 import { WebIdentityCredentials } from 'aws-sdk';
 import { api } from './packAndSign.js';

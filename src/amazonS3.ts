@@ -11,7 +11,7 @@ import { ux } from '@oclif/core';
 import got, { Agents } from 'got';
 import { SfError } from '@salesforce/core';
 import chalk from 'chalk';
-import * as AWS from 'aws-sdk';
+import AWS from 'aws-sdk';
 import { S3, WebIdentityCredentials } from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials.js';
 import { isString } from '@salesforce/ts-types';

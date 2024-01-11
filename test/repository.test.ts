@@ -8,7 +8,7 @@
 import { expect } from 'chai';
 import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Package } from '../src/package.js';
 import { PackageRepo } from '../src/repository.js';

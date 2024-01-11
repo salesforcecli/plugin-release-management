@@ -153,6 +153,7 @@ describe('packAndSign', () => {
 
     describe('validateNpmIgnore', () => {
       it('no content', () => {
+        // @ts-expect-error testing invalid input
         expect(() => packAndSignApi.validateNpmIgnorePatterns(undefined))
           .to.throw(Error)
           .and.have.property('name', 'MissingNpmIgnoreFile');

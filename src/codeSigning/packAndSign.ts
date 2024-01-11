@@ -8,7 +8,7 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import * as fs from 'node:fs/promises';
+import fs from 'node:fs/promises';
 import { exec } from 'node:child_process';
 import { EOL } from 'node:os';
 import { join as pathJoin } from 'node:path';

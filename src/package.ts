@@ -4,9 +4,9 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as semver from 'semver';
+import fs from 'node:fs';
+import path from 'node:path';
+import semver from 'semver';
 import { ux } from '@oclif/core';
 import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
