@@ -8,10 +8,10 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { assert, expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import * as sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { Package } from '../src/package';
+import { Package } from '../src/package.js';
 
 const pkgName = '@salesforce/my-plugin';
 

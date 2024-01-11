@@ -5,23 +5,23 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import * as fg from 'fast-glob';
-import { exec } from 'shelljs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import fg from 'fast-glob';
+import shelljs from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { ensure, ensureNumber, get } from '@salesforce/ts-types';
-import { red, yellow, green } from 'chalk';
+import chalk from 'chalk';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
-import { CLI } from '../../../types';
+import { CLI } from '../../../types.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.verify');
 
-const PASSED = green.bold('PASSED');
-const FAILED = red.bold('FAILED');
+const PASSED = chalk.green.bold('PASSED');
+const FAILED = chalk.red.bold('FAILED');
 
 /**
  * Checks if a file path exists
@@ -179,14 +179,14 @@ export default class Verify extends SfCommand<void> {
       const errorPaths = paths.filter((p) => p.length >= supportedWindowsPathLength).sort();
       if (warnPaths.length) {
         this.log(
-          `${yellow.bold(
+          `${chalk.yellow.bold(
             'WARNING:'
           )} Some paths could result in errors for Windows users with usernames that are ${maxUsernameLength} characters!`
         );
         warnPaths.forEach((p) => this.log(`${p.length} - ${p}`));
       }
       if (errorPaths.length) {
-        this.log(`${red.bold('ERROR:')} Unacceptably long paths detected in base build!`);
+        this.log(`${chalk.red.bold('ERROR:')} Unacceptably long paths detected in base build!`);
         errorPaths.forEach((p) => this.log(`${p.length} - ${p}`));
         return false;
       }
@@ -221,7 +221,7 @@ export default class Verify extends SfCommand<void> {
     const validate = async (): Promise<boolean> => {
       const files = await fg([`${this.baseDir}/dist/*.test.js`, `${this.baseDir}/dist/*.js.map`]);
       if (files.length) {
-        this.log(red.bold('Found the following in dist:'));
+        this.log(chalk.red.bold('Found the following in dist:'));
         for (const file of files) this.log(file);
         return false;
       }
@@ -252,7 +252,7 @@ export default class Verify extends SfCommand<void> {
       const allFiles = await fg([`${this.baseDir}/**/*`, `!${this.baseDir}/node_modules/**/*`]);
       const unexpectedFiles = allFiles.filter((f) => !expectedFiles.includes(f));
       if (unexpectedFiles.length) {
-        this.log(red.bold('Found unexpected files in base build dir:'));
+        this.log(chalk.red.bold('Found unexpected files in base build dir:'));
         for (const file of unexpectedFiles) this.log(file);
         return false;
       }
@@ -285,8 +285,8 @@ export default class Verify extends SfCommand<void> {
       const sfBinExists = await fileExists(sfBin);
       const sfCmd = path.join(this.baseDir, 'bin', 'sf.cmd');
       const sfCmdExists = await fileExists(sfCmd);
-      const version = exec(`${sfBin} --version`, { silent: false });
-      const help = exec(`${sfBin} --help`, { silent: false });
+      const version = shelljs.exec(`${sfBin} --version`, { silent: false });
+      const help = shelljs.exec(`${sfBin} --help`, { silent: false });
       return sfBinExists && sfCmdExists && version.code === 0 && help.code === 0;
     };
     const passed = await this.execute('Ensure sf is included\n', validate);

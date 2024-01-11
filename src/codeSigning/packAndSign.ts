@@ -17,10 +17,10 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import { ProxyAgent } from 'proxy-agent';
-import { PackageJson } from '../package';
-import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
-import { ExecProcessFailed } from './error';
-import { parseNpmName } from './NpmName';
+import { PackageJson } from '../package.js';
+import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning.js';
+import { ExecProcessFailed } from './error.js';
+import { parseNpmName } from './NpmName.js';
 
 class PathGetter {
   private static packageJson = 'package.json';

@@ -5,18 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'node:os';
+import os from 'node:os';
 import { ensureString } from '@salesforce/ts-types';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { exec, ShellString } from 'shelljs';
+import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
-import * as chalk from 'chalk';
-import { Package } from './package';
-import { Registry } from './registry';
-import { SigningResponse } from './codeSigning/SimplifiedSigning';
-import { api as packAndSignApi } from './codeSigning/packAndSign';
+import chalk from 'chalk';
+import { Package } from './package.js';
+import { Registry } from './registry.js';
+import { SigningResponse } from './codeSigning/SimplifiedSigning.js';
+import { api as packAndSignApi } from './codeSigning/packAndSign.js';
 
 interface PrepareOpts {
   dryrun?: boolean;
@@ -81,7 +81,10 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   public getBranchName(): string {
-    const branch = this.env.getString('CIRCLE_BRANCH', exec('git branch --show-current', { silent: true }).stdout);
+    const branch = this.env.getString(
+      'CIRCLE_BRANCH',
+      shelljs.exec('git branch --show-current', { silent: true }).stdout
+    );
     return ensureString(branch);
   }
 
@@ -97,17 +100,18 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
 
   // eslint-disable-next-line class-methods-use-this
   public revertUnstagedChanges(): void {
-    const changedFiles = exec('git diff --name-only', { silent: true })
+    const changedFiles = shelljs
+      .exec('git diff --name-only', { silent: true })
       .stdout.split(os.EOL)
       .filter((f) => !!f);
     changedFiles.forEach((file) => {
-      exec(`git checkout -- ${file}`, { silent: false });
+      shelljs.exec(`git checkout -- ${file}`, { silent: false });
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
   public revertAllChanges(): void {
-    exec('git reset --hard HEAD', { silent: true });
+    shelljs.exec('git reset --hard HEAD', { silent: true });
   }
 
   public printStage(msg: string): void {
@@ -121,9 +125,9 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     await this.registry.setNpmRegistry(home);
   }
 
-  protected execCommand(cmd: string, silent?: boolean): ShellString {
+  protected execCommand(cmd: string, silent?: boolean): shelljs.ShellString {
     if (!silent) this.ux.log(`${chalk.dim(cmd)}${os.EOL}`);
-    const result = exec(cmd, { silent });
+    const result = shelljs.exec(cmd, { silent });
     if (result.code !== 0) {
       throw new SfError(result.stderr, 'FailedCommandExecution');
     } else {

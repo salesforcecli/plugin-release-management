@@ -8,7 +8,7 @@
 import * as AWS from 'aws-sdk';
 import { Agents } from 'got';
 import { WebIdentityCredentials } from 'aws-sdk';
-import { api } from './packAndSign';
+import { api } from './packAndSign.js';
 import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
 export async function putObject(bucket: string, key: string, body: string): Promise<AWS.S3.PutObjectOutput> {

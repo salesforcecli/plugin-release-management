@@ -5,22 +5,22 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable no-await-in-loop */
-import * as fs from 'node:fs';
-import * as os from 'node:os';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { exec as execSync } from 'node:child_process';
 import { promisify } from 'node:util';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { Duration, parseJson, ThrottledPromiseAll } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
-import { PackageJson } from '../../../package';
-import { testJITInstall } from '../../../jit';
+import { PackageJson } from '../../../package.js';
+import { testJITInstall } from '../../../jit.js';
 
 const exec = promisify(execSync);
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.smoke');
 
 export default class SmokeTest extends SfCommand<void> {

@@ -4,13 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
-import * as shell from 'shelljs';
-import * as sinon from 'sinon';
+import fs from 'node:fs';
+import shell from 'shelljs';
+import sinon from 'sinon';
 import { Config } from '@oclif/core';
 import { expect } from 'chai';
 import { stubMethod, fromStub, stubInterface } from '@salesforce/ts-sinon';
-import Pin from '../../src/commands/npm/dependencies/pin';
+import Pin from '../../src/commands/npm/dependencies/pin.js';
 
 describe('dependencies:pin', () => {
   const sandbox = sinon.createSandbox();

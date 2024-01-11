@@ -5,16 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs/promises';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { strict as assert } from 'node:assert';
 import { parseJsonMap } from '@salesforce/kit';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import * as fg from 'fast-glob';
+import fg from 'fast-glob';
 import { JsonMap } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.schemas.compare');
 
 type Result = {

@@ -8,11 +8,11 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as semver from 'semver';
 import { ux } from '@oclif/core';
-import { exec, pwd } from 'shelljs';
+import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
 import { AnyJson, get, isObject, isPlainObject, Nullable } from '@salesforce/ts-types';
-import { Registry } from './registry';
+import { Registry } from './registry.js';
 
 export type PackageJson = {
   name: string;
@@ -97,7 +97,7 @@ export class Package extends AsyncOptionalCreatable {
 
   public constructor(opts: { location?: string } | undefined) {
     super();
-    this.location = opts?.location ?? pwd().stdout;
+    this.location = opts?.location ?? shelljs.pwd().stdout;
     this.registry = new Registry();
   }
 
@@ -114,12 +114,12 @@ export class Package extends AsyncOptionalCreatable {
    * If that version doesn't exist, it'll find the version tagged as latest
    */
   public retrieveNpmPackage(): NpmPackage | undefined {
-    let result = exec(
+    let result = shelljs.exec(
       `npm view ${this.name}@${this.packageJson.version} ${this.registry.getRegistryParameter()} --json`,
       { silent: true }
     );
     if (!result.stdout) {
-      result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+      result = shelljs.exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     }
     if (result.stdout) {
       return JSON.parse(result.stdout) as NpmPackage;
@@ -190,7 +190,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public getDistTags(name: string): Record<string, string> {
-    const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+    const result = shelljs.exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
     if (result.stdout) {

@@ -4,21 +4,21 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'node:fs';
 import { ux } from '@oclif/core';
 import got, { Agents } from 'got';
 import { SfError } from '@salesforce/core';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as AWS from 'aws-sdk';
 import { S3, WebIdentityCredentials } from 'aws-sdk';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials.js';
 import { isString } from '@salesforce/ts-types';
 
-import { GetObjectRequest, GetObjectOutput } from 'aws-sdk/clients/s3';
-import { Channel, CLI, S3Manifest, ServiceAvailability } from './types';
-import { api } from './codeSigning/packAndSign';
+import { GetObjectRequest, GetObjectOutput } from 'aws-sdk/clients/s3.js';
+import { Channel, CLI, S3Manifest, ServiceAvailability } from './types.js';
+import { api } from './codeSigning/packAndSign.js';
 import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
 const BASE_URL = 'https://developer.salesforce.com';

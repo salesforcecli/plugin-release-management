@@ -5,18 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { bold } from 'chalk';
+import chalk from 'chalk';
 import { valid as validSemVer } from 'semver';
 import { Interfaces } from '@oclif/core';
-import { exec } from 'shelljs';
+import shelljs from 'shelljs';
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { AnyJson, ensureString, isString } from '@salesforce/ts-types';
 import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
-import { AmazonS3 } from '../../amazonS3';
-import { verifyDependencies } from '../../dependencies';
-import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types';
+import { AmazonS3 } from '../../amazonS3.js';
+import { verifyDependencies } from '../../dependencies.js';
+import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'channel.promote');
 const TARGETS = ['linux-x64', 'linux-arm', 'win32-x64', 'win32-x86', 'darwin-x64'];
 
@@ -137,13 +137,13 @@ export default class Promote extends SfCommand<AnyJson> {
         indexes,
         xz,
       ];
-      const results = exec(`yarn oclif promote ${params.join(' ')}`);
+      const results = shelljs.exec(`yarn oclif promote ${params.join(' ')}`);
       this.log(results.stdout);
     } else if (!this.flags.json) {
       this.log(
         messages.getMessage(
           'DryRunMessage',
-          [cli, version, sha, target, this.flags.platform?.join(', ') ?? 'all'].map((s) => bold(s))
+          [cli, version, sha, target, this.flags.platform?.join(', ') ?? 'all'].map((s) => chalk.bold(s))
         )
       );
     }

@@ -6,22 +6,22 @@
  */
 /* eslint-disable no-await-in-loop */
 
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as util from 'node:util';
-import * as fs from 'node:fs/promises';
-import * as fg from 'fast-glob';
-import { exec } from 'shelljs';
+import os from 'node:os';
+import path from 'node:path';
+import util from 'node:util';
+import fs from 'node:fs/promises';
+import fg from 'fast-glob';
+import shelljs from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { green, red, cyan, yellow, bold } from 'chalk';
+import chalk from 'chalk';
 import { ensure, entriesOf } from '@salesforce/ts-types';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
-import { PackageJson } from '../../../package';
-import { CLI } from '../../../types';
+import { PackageJson } from '../../../package.js';
+import { CLI } from '../../../types.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
 
 const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
@@ -266,20 +266,20 @@ export default class Inspect extends SfCommand<Info[]> {
     for (const channel of Object.keys(pathsByChannel) as Channel[]) {
       this.log(`---- ${Location.ARCHIVE} ${channel} ----`);
       for (const archivePath of pathsByChannel[channel] ?? []) {
-        this.spinner.start(`Downloading: ${cyan(archivePath)}`);
-        const curlResult = exec(`curl ${archivePath} -Os`, { cwd: tarDir });
+        this.spinner.start(`Downloading: ${chalk.cyan(archivePath)}`);
+        const curlResult = shelljs.exec(`curl ${archivePath} -Os`, { cwd: tarDir });
         this.spinner.stop();
         if (curlResult.code !== 0) {
-          this.log(red('Download failed. That is a big deal. Investigate immediately.'));
+          this.log(chalk.red('Download failed. That is a big deal. Investigate immediately.'));
           continue;
         }
         const filename = path.basename(archivePath);
         const unpackedDir = await mkdir(this.workingDir, 'unpacked', filename);
-        this.spinner.start(`Unpacking: ${cyan(unpackedDir)}`);
-        const tarResult = exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
+        this.spinner.start(`Unpacking: ${chalk.cyan(unpackedDir)}`);
+        const tarResult = shelljs.exec(`tar -xf ${filename} -C ${unpackedDir} --strip-components 1`, { cwd: tarDir });
         this.spinner.stop();
         if (tarResult.code !== 0) {
-          this.log(red('Failed to unpack. Skipping...'));
+          this.log(chalk.red('Failed to unpack. Skipping...'));
           continue;
         }
         const pkgJson = await readPackageJson(unpackedDir);
@@ -304,8 +304,8 @@ export default class Inspect extends SfCommand<Info[]> {
       this.log(`---- ${Location.NPM} ${tag} ----`);
       const installDir = await mkdir(npmDir, tag);
       const name = `${cliMeta.packageName}@${tag}`;
-      this.spinner.start(`Installing: ${cyan(name)}`);
-      exec(`npm install ${name}`, { cwd: installDir, silent: true });
+      this.spinner.start(`Installing: ${chalk.cyan(name)}`);
+      shelljs.exec(`npm install ${name}`, { cwd: installDir, silent: true });
       this.spinner.stop();
       const pkgJson = await readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
       results.push({
@@ -347,7 +347,7 @@ export default class Inspect extends SfCommand<Info[]> {
     let npmAndArchivesMatch: boolean | undefined;
     this.log();
     results.forEach((result) => {
-      this.log(bold(`${result.origin}: ${green(result.version)}`));
+      this.log(chalk.bold(`${result.origin}: ${chalk.green(result.version)}`));
       result.dependencies.forEach((dep) => {
         this.log(`  ${dep.name}: ${dep.version}`);
       });
@@ -357,12 +357,14 @@ export default class Inspect extends SfCommand<Info[]> {
     if (locations.includes(Location.ARCHIVE)) {
       const archivesMatch =
         new Set(results.filter((r) => r.location === Location.ARCHIVE).map((r) => r.version)).size === 1;
-      this.log(`${'All archives match?'} ${archivesMatch ? green(archivesMatch) : yellow(archivesMatch)}`);
+      this.log(`${'All archives match?'} ${archivesMatch ? chalk.green(archivesMatch) : chalk.yellow(archivesMatch)}`);
 
       channels.forEach((channel) => {
         allMatch = new Set(results.filter((r) => r.channel === channel).map((r) => r.version)).size === 1;
         this.log(
-          `${`All ${Location.ARCHIVE}@${channel} versions match?`} ${allMatch ? green(allMatch) : red(allMatch)}`
+          `${`All ${Location.ARCHIVE}@${channel} versions match?`} ${
+            allMatch ? chalk.green(allMatch) : chalk.red(allMatch)
+          }`
         );
       });
     }
@@ -379,7 +381,7 @@ export default class Inspect extends SfCommand<Info[]> {
               results.filter((r) => r.channel === npmChannel || r.channel === archiveChannel).map((r) => r.version)
             ).size === 1;
 
-          const match = npmAndArchivesMatch ? green(true) : red(false);
+          const match = npmAndArchivesMatch ? chalk.green(true) : chalk.red(false);
           this.log(
             `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
           );

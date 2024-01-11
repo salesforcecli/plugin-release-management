@@ -8,9 +8,9 @@
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { ux } from '@oclif/core';
-import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories';
+import { RepositoryInfo, retrieveKnownRepositories } from '../../repositories.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'repositories');
 
 export default class Repositories extends SfCommand<RepositoryInfo[]> {

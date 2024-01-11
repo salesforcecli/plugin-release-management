@@ -5,20 +5,20 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as os from 'node:os';
-import * as fs from 'node:fs/promises';
-import { exec } from 'shelljs';
+import path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs/promises';
+import shelljs from 'shelljs';
 import { ux } from '@oclif/core';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import got from 'got';
-import * as chalk from 'chalk';
-import { Channel, CLI, ServiceAvailability } from '../../../types';
-import { AmazonS3 } from '../../../amazonS3';
+import chalk from 'chalk';
+import { Channel, CLI, ServiceAvailability } from '../../../types.js';
+import { AmazonS3 } from '../../../amazonS3.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
 
 type Results = Record<string, Record<CLI, boolean>>;
@@ -181,7 +181,7 @@ class Tarball extends Method.Base {
           ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
           : `tar -xf ${file} -C ${dir} --strip-components 1`;
       const opts = process.platform === 'win32' ? { shell: 'powershell.exe' } : {};
-      exec(cmd, { ...opts, silent: true }, (code: number, stdout: string, stderr: string) => {
+      shelljs.exec(cmd, { ...opts, silent: true }, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
           ux.action.stop();
           ux.log(stdout);
@@ -201,7 +201,9 @@ class Tarball extends Method.Base {
       const executable = path.join(directory, 'bin', cli);
       ux.log(`Testing ${chalk.cyan(executable)}`);
       const result =
-        process.platform === 'win32' ? exec(`cmd /c "${executable}.cmd" --version`) : exec(`${executable} --version`);
+        process.platform === 'win32'
+          ? shelljs.exec(`cmd /c "${executable}.cmd" --version`)
+          : shelljs.exec(`${executable} --version`);
       results[cli] = result.code === 0;
     }
     return results;
@@ -261,18 +263,22 @@ class Npm extends Method.Base {
   private async install(): Promise<void> {
     ux.action.start(`Installing: ${chalk.cyan(this.package)}`);
     return new Promise((resolve, reject) => {
-      exec(`npm install ${this.package}`, { silent: true, cwd: this.options.directory }, (code, stdout, stderr) => {
-        if (code === 0) {
-          ux.action.stop();
-          ux.log(stdout);
-          resolve();
-        } else {
-          ux.action.stop('Failed');
-          ux.log(stdout);
-          ux.log(stderr);
-          reject();
+      shelljs.exec(
+        `npm install ${this.package}`,
+        { silent: true, cwd: this.options.directory },
+        (code, stdout, stderr) => {
+          if (code === 0) {
+            ux.action.stop();
+            ux.log(stdout);
+            resolve();
+          } else {
+            ux.action.stop('Failed');
+            ux.log(stdout);
+            ux.log(stderr);
+            reject();
+          }
         }
-      });
+      );
     });
   }
 
@@ -282,7 +288,9 @@ class Npm extends Method.Base {
     ux.log(`Testing ${chalk.cyan(executable)}`);
 
     const result =
-      process.platform === 'win32' ? exec(`cmd /c "${executable}" --version`) : exec(`${executable} --version`);
+      process.platform === 'win32'
+        ? shelljs.exec(process.platform === 'win32' ? `cmd /c "${executable}" --version` : `${executable} --version`)
+        : shelljs.exec(`${executable} --version`);
     results[this.options.cli] = result.code === 0;
     return results;
   }
@@ -301,7 +309,7 @@ class Installer extends Method.Base {
     const url = `${this.s3.directory}/channels/${this.options.channel}/${pkg}`;
     const location = path.join(this.options.directory, pkg);
     await this.s3.download(url, location);
-    const result = exec(`sudo installer -pkg ${location} -target /`);
+    const result = shelljs.exec(`sudo installer -pkg ${location} -target /`);
     const results: Results = {};
     if (result.code === 0) {
       const testResults = this.nixTest();
@@ -331,7 +339,7 @@ class Installer extends Method.Base {
       const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
       ux.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
-      const result = exec(cmd, { shell: 'powershell.exe' });
+      const result = shelljs.exec(cmd, { shell: 'powershell.exe' });
       if (result.code === 0) {
         const testResults = this.win32Test(installLocation);
         for (const [cli, success] of Object.entries(testResults)) {
@@ -364,7 +372,7 @@ class Installer extends Method.Base {
     for (const cli of this.getTargets()) {
       const binaryPath = path.join(installLocation, 'bin', `${cli}.cmd`);
       ux.log(`Testing ${chalk.cyan(binaryPath)}`);
-      const result = exec(`cmd /c "${binaryPath}" --version`);
+      const result = shelljs.exec(`cmd /c "${binaryPath}" --version`);
       results[cli] =
         result.code === 0 && binaryPath.includes('x86')
           ? result.stdout.includes('win32-x86')
@@ -378,7 +386,7 @@ class Installer extends Method.Base {
     for (const cli of this.getTargets()) {
       const binaryPath = `/usr/local/bin/${cli}`;
       ux.log(`Testing ${chalk.cyan(binaryPath)}`);
-      const result = exec(`${binaryPath} --version`);
+      const result = shelljs.exec(`${binaryPath} --version`);
       results[cli] = result.code === 0;
     }
     return results;

@@ -10,9 +10,9 @@ import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
-import { maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot';
+import { maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.automerge');
 const messagesFromConsolidate = Messages.loadMessages(

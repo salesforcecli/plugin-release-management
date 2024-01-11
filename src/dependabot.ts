@@ -9,9 +9,9 @@ import { Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { parseJson } from '@salesforce/kit';
 import { ensureString, isString } from '@salesforce/ts-types';
-import { PackageJson } from './package';
+import { PackageJson } from './package.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'dependabot.consolidate');
 
 export const maxVersionBumpFlag = Flags.string({

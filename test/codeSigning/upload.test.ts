@@ -7,8 +7,8 @@
 import * as AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import * as upload from '../../src/codeSigning/upload';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import * as upload from '../../src/codeSigning/upload.js';
 
 describe('Upload', () => {
   const $$ = new TestContext();

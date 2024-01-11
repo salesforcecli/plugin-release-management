@@ -11,7 +11,7 @@ import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { ensureString, isObject } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'github.check.closed');
 
 export type GithubCheckClosedResult = {

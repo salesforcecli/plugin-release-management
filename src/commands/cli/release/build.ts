@@ -12,11 +12,11 @@ import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
 import { Messages, SfError } from '@salesforce/core';
-import { PackageRepo } from '../../../repository';
+import { PackageRepo } from '../../../repository.js';
 
 const exec = promisify(execSync);
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.release.build');
 
 export default class build extends SfCommand<void> {
