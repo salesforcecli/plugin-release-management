@@ -14,7 +14,7 @@ import { Messages, SfError } from '@salesforce/core';
 import shelljs from 'shelljs';
 import semver from 'semver';
 import { CLI } from '../../types.js';
-import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package.js';
+import { NpmPackage, parsePackageVersion } from '../../package.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
@@ -227,8 +227,7 @@ const normalizePlugins = (npmPackage: NpmPackage): Map<string, string> => {
     if (!version) {
       throw new SfError(`Could not find version for ${p}`, 'VersionNotFound');
     }
-    const name = dependencies[p].startsWith('npm:') ? parseAliasedPackageName(dependencies[p]) : p;
-    return [name, version];
+    return [p, version];
   });
   return new Map<string, string>([[npmPackage.name, npmPackage.version], ...pluginsTuples]);
 };

@@ -11,7 +11,7 @@ import { ux } from '@oclif/core';
 import shelljs from 'shelljs';
 import { SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
-import { AnyJson, get, isObject, isPlainObject, Nullable } from '@salesforce/ts-types';
+import { AnyJson, isObject, isPlainObject } from '@salesforce/ts-types';
 import { Registry } from './registry.js';
 
 export type PackageJson = {
@@ -63,20 +63,12 @@ interface PinnedPackage {
   name: string;
   version: string;
   tag: string;
-  alias: Nullable<string>;
 }
 
-// Differentiates between dependencyName and packageName to support npm aliases
 interface DependencyInfo {
-  dependencyName: string;
   packageName: string;
-  alias: Nullable<string>;
   currentVersion?: string;
   finalVersion?: string;
-}
-
-export function parseAliasedPackageName(alias: string): string {
-  return alias.replace('npm:', '').replace(/@(\^|~)?[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/, '');
 }
 
 export function parsePackageVersion(alias: string): string | undefined {
@@ -161,7 +153,7 @@ export class Package extends AsyncOptionalCreatable {
       } else {
         version = versions[tag];
       }
-      return { name: dep.name, version, tag, alias: dep.alias };
+      return { name: dep.name, version, tag };
     });
   }
 
@@ -189,48 +181,22 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   /**
-   * Lookup dependency info by package name or npm alias
-   * Examples: @salesforce/plugin-info or @sf/info
+   * Lookup dependency info by package name
+   * Examples: @salesforce/plugin-info
    * Pass in the dependencies you want to search through (dependencies, devDependencies, resolutions, etc)
    */
   // eslint-disable-next-line class-methods-use-this
   public getDependencyInfo(name: string, dependencies: Record<string, string>): DependencyInfo {
-    for (const [key, value] of Object.entries(dependencies)) {
-      if (key === name) {
-        if (value.startsWith('npm:')) {
-          // npm alias was passed in as name, so we need to parse package name and version
-          // e.g. passed in:  "@sf/login"
-          //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
-          return {
-            dependencyName: key,
-            packageName: parseAliasedPackageName(value),
-            alias: value,
-            currentVersion: parsePackageVersion(value),
-          };
-        } else {
-          // package name was passed, so we can use key and value directly
-          return {
-            dependencyName: key,
-            packageName: key,
-            alias: null,
-            currentVersion: value,
-          };
-        }
-      }
-      if (value.startsWith(`npm:${name}`)) {
-        // package name was passed in as name, but an alias is used for the dependency
-        // e.g. passed in:  "@salesforce/plugin-login"
-        //      dependency: "@sf/login": "npm:@salesforce/plugin-login@1.1.1"
-        return {
-          dependencyName: key,
-          packageName: name,
-          alias: value,
-          currentVersion: parsePackageVersion(value),
-        };
-      }
+    const match = Object.entries(dependencies).find(([key]) => key === name);
+    if (match) {
+      const [matchingName, value] = match;
+      return {
+        packageName: matchingName,
+        currentVersion: value,
+      };
+    } else {
+      ux.error(`${name} was not found in the dependencies section of the package.json`);
     }
-
-    ux.error(`${name} was not found in the dependencies section of the package.json`);
   }
 
   public bumpDependencyVersions(targetDependencies: string[]): DependencyInfo[] {
@@ -254,18 +220,13 @@ export class Package extends AsyncOptionalCreatable {
         // return if version did not change
         if (depInfo.currentVersion === depInfo.finalVersion) return;
 
-        // override final version if npm alias is used
-        if (depInfo.alias) {
-          depInfo.finalVersion = `npm:${depInfo.packageName}@${depInfo.finalVersion}`;
-        }
-
         // update dependency (or resolution) in package.json
-        if (dependencies[depInfo.dependencyName]) {
-          this.packageJson.dependencies[depInfo.dependencyName] = depInfo.finalVersion;
-        } else if (resolutions?.[depInfo.dependencyName] && this.packageJson.resolutions) {
-          this.packageJson.resolutions[depInfo.dependencyName] = depInfo.finalVersion;
+        if (dependencies[depInfo.packageName]) {
+          this.packageJson.dependencies[depInfo.packageName] = depInfo.finalVersion;
+        } else if (resolutions?.[depInfo.packageName] && this.packageJson.resolutions) {
+          this.packageJson.resolutions[depInfo.packageName] = depInfo.finalVersion;
         } else if (this.packageJson.oclif?.jitPlugins) {
-          this.packageJson.oclif.jitPlugins[depInfo.dependencyName] = depInfo.finalVersion;
+          this.packageJson.oclif.jitPlugins[depInfo.packageName] = depInfo.finalVersion;
         }
 
         return depInfo;
@@ -311,11 +272,7 @@ export class Package extends AsyncOptionalCreatable {
     const updatedDeps = this.calculatePinnedPackageUpdates(deps);
 
     updatedDeps.forEach((pp) => {
-      if (pp.alias) {
-        this.packageJson.dependencies[pp.alias] = `npm:${pp.name}@${pp.version}`;
-      } else {
-        this.packageJson.dependencies[pp.name] = pp.version;
-      }
+      this.packageJson.dependencies[pp.name] = pp.version;
     });
     return updatedDeps;
   }
@@ -349,9 +306,7 @@ export class Package extends AsyncOptionalCreatable {
     // side effect: mutate package.json reference
     updatedDeps.forEach((pp) => {
       if (this.packageJson.oclif?.jitPlugins) {
-        if (pp.alias) {
-          this.packageJson.oclif.jitPlugins[pp.alias] = `npm:${pp.name}@${pp.version}`;
-        } else if (this.packageJson.oclif?.jitPlugins) {
+        if (this.packageJson.oclif?.jitPlugins) {
           this.packageJson.oclif.jitPlugins[pp.name] = pp.version;
         }
       }
@@ -369,7 +324,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public hasScript(scriptName: string): boolean {
-    return !!get(this.packageJson, `scripts.${scriptName}`, null);
+    return typeof this.packageJson.scripts[scriptName] === 'string';
   }
 
   protected async init(): Promise<void> {
@@ -406,20 +361,8 @@ const getPinnedPackage = ({
   version: string;
   tag?: string;
   targetTag: string;
-}): PinnedPackage => {
-  if (version.startsWith('npm:')) {
-    return {
-      name: parseAliasedPackageName(version),
-      version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-      alias: name,
-      tag: tag ?? targetTag,
-    };
-  } else {
-    return {
-      name,
-      version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
-      alias: null,
-      tag: tag ?? targetTag,
-    };
-  }
-};
+}): PinnedPackage => ({
+  name,
+  version: version.split('@').reverse()[0].replace('^', '').replace('~', ''),
+  tag: tag ?? targetTag,
+});
