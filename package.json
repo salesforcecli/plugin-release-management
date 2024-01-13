@@ -15,7 +15,7 @@
     "@salesforce/cli-plugins-testkit": "^4.4.12",
     "@salesforce/core": "^6.4.4",
     "@salesforce/kit": "^3.0.15",
-    "@salesforce/plugin-command-reference": "^3.0.59",
+    "@salesforce/plugin-command-reference": "^3.0.61",
     "@salesforce/plugin-trust": "^2.6.23",
     "@salesforce/sf-plugins-core": "^5.0.13",
     "@salesforce/ts-types": "^2.0.9",
