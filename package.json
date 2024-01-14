@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^4.0.16",
-    "@salesforce/dev-scripts": "^8.2.0",
+    "@salesforce/dev-scripts": "^8.3.0",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/semver": "^7.5.6",
     "@types/shelljs": "^0.8.15",
@@ -134,7 +134,8 @@
       "typescript": {
         "description": "test updates to typescript version"
       }
-    }
+    },
+    "topicSeparator": " "
   },
   "repository": "salesforcecli/plugin-release-management",
   "scripts": {
