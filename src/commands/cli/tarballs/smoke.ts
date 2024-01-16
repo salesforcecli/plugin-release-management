@@ -46,7 +46,7 @@ export default class SmokeTest extends SfCommand<void> {
       this.execute(executable, '--version'),
       this.execute(executable, '--help'),
       this.execute(executable, 'plugins --core'),
-      this.testInstall(executable, '@salesforce/plugin-alias', 'latest'),
+      this.testInstall(executable, '@salesforce/plugin-settings', 'latest'),
     ]);
 
     await this.testJITInstall(executable);
