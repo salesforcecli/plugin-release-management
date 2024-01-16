@@ -100,32 +100,32 @@ sfdx plugins
 
 <!-- commands -->
 
-- [`sfdx channel:promote`](#sfdx-channelpromote)
-- [`sfdx cli:artifacts:compare`](#sfdx-cliartifactscompare)
-- [`sfdx cli:install:jit:test`](#sfdx-cliinstalljittest)
-- [`sfdx cli:install:test`](#sfdx-cliinstalltest)
-- [`sfdx cli:release:automerge`](#sfdx-clireleaseautomerge)
-- [`sfdx cli:release:build`](#sfdx-clireleasebuild)
-- [`sfdx cli:releasenotes`](#sfdx-clireleasenotes)
-- [`sfdx cli:schemas:compare`](#sfdx-clischemascompare)
-- [`sfdx cli:tarballs:prepare`](#sfdx-clitarballsprepare)
-- [`sfdx cli:tarballs:smoke`](#sfdx-clitarballssmoke)
-- [`sfdx cli:tarballs:verify`](#sfdx-clitarballsverify)
-- [`sfdx cli:versions:inspect`](#sfdx-cliversionsinspect)
-- [`sfdx dependabot:automerge`](#sfdx-dependabotautomerge)
-- [`sfdx github:check:closed`](#sfdx-githubcheckclosed)
-- [`sfdx npm:dependencies:pin`](#sfdx-npmdependenciespin)
-- [`sfdx npm:package:release`](#sfdx-npmpackagerelease)
-- [`sfdx plugins:trust:verify`](#sfdx-pluginstrustverify)
+- [`sfdx channel promote`](#sfdx-channel-promote)
+- [`sfdx cli artifacts compare`](#sfdx-cli-artifacts-compare)
+- [`sfdx cli install jit test`](#sfdx-cli-install-jit-test)
+- [`sfdx cli install test`](#sfdx-cli-install-test)
+- [`sfdx cli release automerge`](#sfdx-cli-release-automerge)
+- [`sfdx cli release build`](#sfdx-cli-release-build)
+- [`sfdx cli releasenotes`](#sfdx-cli-releasenotes)
+- [`sfdx cli schemas compare`](#sfdx-cli-schemas-compare)
+- [`sfdx cli tarballs prepare`](#sfdx-cli-tarballs-prepare)
+- [`sfdx cli tarballs smoke`](#sfdx-cli-tarballs-smoke)
+- [`sfdx cli tarballs verify`](#sfdx-cli-tarballs-verify)
+- [`sfdx cli versions inspect`](#sfdx-cli-versions-inspect)
+- [`sfdx dependabot automerge`](#sfdx-dependabot-automerge)
+- [`sfdx github check closed`](#sfdx-github-check-closed)
+- [`sfdx npm dependencies pin`](#sfdx-npm-dependencies-pin)
+- [`sfdx npm package release`](#sfdx-npm-package-release)
+- [`sfdx plugins trust verify`](#sfdx-plugins-trust-verify)
 - [`sfdx repositories`](#sfdx-repositories)
 
-## `sfdx channel:promote`
+## `sfdx channel promote`
 
 promote a s3 channel
 
 ```
 USAGE
-  $ sfdx channel:promote -t <value> -c sf|sfdx [--json] [-d] [-C <value>] [-p win|macos|deb] [-s <value>] [-m
+  $ sfdx channel promote -t <value> -c sf|sfdx [--json] [-d] [-C <value>] [-p win|macos|deb] [-s <value>] [-m
     <value>] [-i] [-x] [-T linux-x64|linux-arm|win32-x64|win32-x86|darwin-x64] [-v <value>]
 
 FLAGS
@@ -154,18 +154,18 @@ DESCRIPTION
   promote a s3 channel
 
 EXAMPLES
-  $ sfdx channel:promote --candidate latest-rc --target latest --platform win --platform mac
+  $ sfdx channel promote --candidate latest-rc --target latest --platform win --platform mac
 ```
 
-_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/channel/promote.ts)_
+_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/channel/promote.ts)_
 
-## `sfdx cli:artifacts:compare`
+## `sfdx cli artifacts compare`
 
 Look for breaking changes in artifacts (schemas and snapshots) from plugins. Must be run in CLI directory.
 
 ```
 USAGE
-  $ sfdx cli:artifacts:compare [--json] [-p <value>] [-r <value>] [-c <value>]
+  $ sfdx cli artifacts compare [--json] [-p <value>] [-r <value>] [-c <value>]
 
 FLAGS
   -c, --current=<value>    Current CLI version to compare against. Defaults to the version on the CLI in the current
@@ -177,18 +177,18 @@ GLOBAL FLAGS
   --json  Format output as json.
 
 EXAMPLES
-  $ sfdx cli:artifacts:compare
+  $ sfdx cli artifacts compare
 ```
 
-_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/artifacts/compare.ts)_
+_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/artifacts/compare.ts)_
 
-## `sfdx cli:install:jit:test`
+## `sfdx cli install jit test`
 
 Test that all JIT plugins can be successfully installed.
 
 ```
 USAGE
-  $ sfdx cli:install:jit:test [--json] [-j <value>]
+  $ sfdx cli install jit test [--json] [-j <value>]
 
 FLAGS
   -j, --jit-plugin=<value>...  JIT plugin(s) to test, example: @salesforce/plugin-community
@@ -197,18 +197,18 @@ GLOBAL FLAGS
   --json  Format output as json.
 
 EXAMPLES
-  $ sfdx cli:install:jit:test
+  $ sfdx cli install jit test
 ```
 
-_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/install/jit/test.ts)_
+_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/install/jit/test.ts)_
 
-## `sfdx cli:install:test`
+## `sfdx cli install test`
 
 install sf or sfdx
 
 ```
 USAGE
-  $ sfdx cli:install:test -c sf|sfdx -m installer|npm|tarball [--json] [--channel
+  $ sfdx cli install test -c sf|sfdx -m installer|npm|tarball [--json] [--channel
     legacy|stable|stable-rc|latest|latest-rc] [--output-file <value>]
 
 FLAGS
@@ -229,26 +229,26 @@ DESCRIPTION
   install sf or sfdx
 
 EXAMPLES
-  $ sfdx cli:install:test --cli sfdx --method installer
+  $ sfdx cli install test --cli sfdx --method installer
 
-  $ sfdx cli:install:test --cli sfdx --method npm
+  $ sfdx cli install test --cli sfdx --method npm
 
-  $ sfdx cli:install:test --cli sfdx --method tarball
+  $ sfdx cli install test --cli sfdx --method tarball
 
-  $ sfdx cli:install:test --cli sf --method tarball
+  $ sfdx cli install test --cli sf --method tarball
 
-  $ sfdx cli:install:test --cli sf --method tarball --channel stable-rc
+  $ sfdx cli install test --cli sf --method tarball --channel stable-rc
 ```
 
-_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/install/test.ts)_
+_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/install/test.ts)_
 
-## `sfdx cli:release:automerge`
+## `sfdx cli release automerge`
 
 Attempt to automerge nightly PR
 
 ```
 USAGE
-  $ sfdx cli:release:automerge (--owner <value> --repo <value>) --pull-number <value> [--json] [-d] [--verbose]
+  $ sfdx cli release automerge (--owner <value> --repo <value>) --pull-number <value> [--json] [-d] [--verbose]
 
 FLAGS
   -d, --dry-run              Run all checks, but do not merge PR
@@ -266,18 +266,18 @@ DESCRIPTION
   Attempt to automerge nightly PR
 
 EXAMPLES
-  $ sfdx cli:release:automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
+  $ sfdx cli release automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
 ```
 
-_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/release/automerge.ts)_
+_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/release/automerge.ts)_
 
-## `sfdx cli:release:build`
+## `sfdx cli release build`
 
 builds a new release from a designated starting point and optionally creates PR in Github
 
 ```
 USAGE
-  $ sfdx cli:release:build -c <value> [--json] [-d <value>] [-g <value>] [--build-only] [--resolutions] [--only
+  $ sfdx cli release build -c <value> [--json] [-d <value>] [-g <value>] [--build-only] [--resolutions] [--only
     <value>] [--pinned-deps] [--jit] [--label <value>] [--patch] [--empty] [--pr-base-branch <value>]
 
 FLAGS
@@ -308,37 +308,37 @@ DESCRIPTION
   builds a new release from a designated starting point and optionally creates PR in Github
 
 ALIASES
-  $ sfdx cli:latestrc:build
+  $ sfdx cli latestrc build
 
 EXAMPLES
-  $ sfdx cli:release:build
+  $ sfdx cli release build
 
-  $ sfdx cli:release:build --patch
+  $ sfdx cli release build --patch
 
-  $ sfdx cli:release:build --start-from-npm-dist-tag latest-rc --patch
+  $ sfdx cli release build --start-from-npm-dist-tag latest-rc --patch
 
-  $ sfdx cli:release:build --start-from-github-ref 7.144.0
+  $ sfdx cli release build --start-from-github-ref 7.144.0
 
-  $ sfdx cli:release:build --start-from-github-ref main
+  $ sfdx cli release build --start-from-github-ref main
 
-  $ sfdx cli:release:build --start-from-github-ref f476e8e
+  $ sfdx cli release build --start-from-github-ref f476e8e
 
-  $ sfdx cli:release:build --start-from-github-ref main --prerelease beta
+  $ sfdx cli release build --start-from-github-ref main --prerelease beta
 
-  $ sfdx cli:release:build --build-only
+  $ sfdx cli release build --build-only
 
-  $ sfdx cli:release:build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
+  $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
 ```
 
-_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/release/build.ts)_
+_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/release/build.ts)_
 
-## `sfdx cli:releasenotes`
+## `sfdx cli releasenotes`
 
 pull all relevant information for writing release notes.
 
 ```
 USAGE
-  $ sfdx cli:releasenotes -c sf|sfdx [--json] [-s <value>] [-m]
+  $ sfdx cli releasenotes -c sf|sfdx [--json] [-s <value>] [-m]
 
 FLAGS
   -c, --cli=<option>   (required) the cli to pull information for
@@ -357,28 +357,28 @@ DESCRIPTION
   Requires the GH_TOKEN to be set in the environment.
 
 EXAMPLES
-  $ sfdx cli:releasenotes --cli sf
+  $ sfdx cli releasenotes --cli sf
 
-  $ sfdx cli:releasenotes --cli sfdx
+  $ sfdx cli releasenotes --cli sfdx
 
-  $ sfdx cli:releasenotes --cli sf --since 1.0.0
+  $ sfdx cli releasenotes --cli sf --since 1.0.0
 
-  $ sfdx cli:releasenotes --cli sfdx --since 7.19.0
+  $ sfdx cli releasenotes --cli sfdx --since 7.19.0
 
-  $ sfdx cli:releasenotes --cli sf > changes.txt
+  $ sfdx cli releasenotes --cli sf > changes.txt
 
-  $ sfdx cli:releasenotes --cli sf --markdown > changes.md
+  $ sfdx cli releasenotes --cli sf --markdown > changes.md
 ```
 
-_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/releasenotes.ts)_
+_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/releasenotes.ts)_
 
-## `sfdx cli:schemas:compare`
+## `sfdx cli schemas compare`
 
 compare schemas from installed plugins
 
 ```
 USAGE
-  $ sfdx cli:schemas:compare [--json]
+  $ sfdx cli schemas compare [--json]
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -389,18 +389,18 @@ DESCRIPTION
   compare schemas from installed plugins
 
 EXAMPLES
-  $ sfdx cli:schemas:compare
+  $ sfdx cli schemas compare
 ```
 
-_See code: [src/commands/cli/schemas/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/schemas/compare.ts)_
+_See code: [src/commands/cli/schemas/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/schemas/compare.ts)_
 
-## `sfdx cli:tarballs:prepare`
+## `sfdx cli tarballs prepare`
 
 remove unnecessary files from node_modules
 
 ```
 USAGE
-  $ sfdx cli:tarballs:prepare [--json] [-d] [-t] [--verbose]
+  $ sfdx cli tarballs prepare [--json] [-d] [-t] [--verbose]
 
 FLAGS
   -d, --dryrun   only show what would be removed from node_modules
@@ -416,18 +416,18 @@ DESCRIPTION
   remove unnecessary files from node_modules
 
 EXAMPLES
-  $ sfdx cli:tarballs:prepare
+  $ sfdx cli tarballs prepare
 ```
 
-_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/tarballs/prepare.ts)_
+_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/tarballs/prepare.ts)_
 
-## `sfdx cli:tarballs:smoke`
+## `sfdx cli tarballs smoke`
 
 smoke tests for the sf CLI
 
 ```
 USAGE
-  $ sfdx cli:tarballs:smoke [--json] [--verbose]
+  $ sfdx cli tarballs smoke [--json] [--verbose]
 
 FLAGS
   --verbose  show the --help output for each command
@@ -443,20 +443,20 @@ DESCRIPTION
   Tests that the CLI and every command can be initialized.
 
 EXAMPLES
-  $ sfdx cli:tarballs:smoke
+  $ sfdx cli tarballs smoke
 
-  $ sfdx cli:tarballs:smoke
+  $ sfdx cli tarballs smoke
 ```
 
-_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/tarballs/smoke.ts)_
+_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/tarballs/smoke.ts)_
 
-## `sfdx cli:tarballs:verify`
+## `sfdx cli tarballs verify`
 
 verify that tarballs are ready to be uploaded
 
 ```
 USAGE
-  $ sfdx cli:tarballs:verify [--json] [-c sf|sfdx] [-w <value>]
+  $ sfdx cli tarballs verify [--json] [-c sf|sfdx] [-w <value>]
 
 FLAGS
   -c, --cli=<option>                     [default: sfdx] the cli to verify
@@ -472,22 +472,22 @@ DESCRIPTION
   verify that tarballs are ready to be uploaded
 
 EXAMPLES
-  $ sfdx cli:tarballs:verify
+  $ sfdx cli tarballs verify
 
-  $ sfdx cli:tarballs:verify --cli sfdx
+  $ sfdx cli tarballs verify --cli sfdx
 
-  $ sfdx cli:tarballs:verify --cli sf
+  $ sfdx cli tarballs verify --cli sf
 ```
 
-_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/tarballs/verify.ts)_
+_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/tarballs/verify.ts)_
 
-## `sfdx cli:versions:inspect`
+## `sfdx cli versions inspect`
 
 inspect the CLI version across all install paths
 
 ```
 USAGE
-  $ sfdx cli:versions:inspect -c legacy|stable|stable-rc|latest|latest-rc|nightly -l archive|npm --cli sf|sfdx [--json]
+  $ sfdx cli versions inspect -c legacy|stable|stable-rc|latest|latest-rc|nightly -l archive|npm --cli sf|sfdx [--json]
     [-d <value>] [-s]
 
 FLAGS
@@ -510,36 +510,36 @@ DESCRIPTION
   inspect the CLI version across all install paths
 
 EXAMPLES
-  $ sfdx cli:versions:inspect -l archive -c stable
+  $ sfdx cli versions inspect -l archive -c stable
 
-  $ sfdx cli:versions:inspect -l archive -c stable-rc
+  $ sfdx cli versions inspect -l archive -c stable-rc
 
-  $ sfdx cli:versions:inspect -l archive npm -c stable
+  $ sfdx cli versions inspect -l archive npm -c stable
 
-  $ sfdx cli:versions:inspect -l archive npm -c latest
+  $ sfdx cli versions inspect -l archive npm -c latest
 
-  $ sfdx cli:versions:inspect -l archive npm -c latest latest-rc
+  $ sfdx cli versions inspect -l archive npm -c latest latest-rc
 
-  $ sfdx cli:versions:inspect -l archive npm -c stable stable-rc
+  $ sfdx cli versions inspect -l archive npm -c stable stable-rc
 
-  $ sfdx cli:versions:inspect -l npm -c latest --salesforce
+  $ sfdx cli versions inspect -l npm -c latest --salesforce
 
-  $ sfdx cli:versions:inspect -l npm -c latest -d @salesforce/core
+  $ sfdx cli versions inspect -l npm -c latest -d @salesforce/core
 
-  $ sfdx cli:versions:inspect -l npm -c latest -d @salesforce/\*\*/ salesforce-alm
+  $ sfdx cli versions inspect -l npm -c latest -d @salesforce/\*\*/ salesforce-alm
 
-  $ sfdx cli:versions:inspect -l npm -c latest -d chalk -s
+  $ sfdx cli versions inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/cli/versions/inspect.ts)_
 
-## `sfdx dependabot:automerge`
+## `sfdx dependabot automerge`
 
 automatically merge one green, mergeable PR up to the specified maximum bump type
 
 ```
 USAGE
-  $ sfdx dependabot:automerge -m major|minor|patch [--json] [-o <value> -r <value>] [-d] [-s] [--merge-method
+  $ sfdx dependabot automerge -m major|minor|patch [--json] [-o <value> -r <value>] [-d] [-s] [--merge-method
     merge|squash|rebase]
 
 FLAGS
@@ -563,22 +563,22 @@ DESCRIPTION
   automatically merge one green, mergeable PR up to the specified maximum bump type
 
 EXAMPLES
-  $ sfdx dependabot:automerge --max-version-bump patch
+  $ sfdx dependabot automerge --max-version-bump patch
 
-  $ sfdx dependabot:automerge --max-version-bump minor
+  $ sfdx dependabot automerge --max-version-bump minor
 
-  $ sfdx dependabot:automerge --max-version-bump major
+  $ sfdx dependabot automerge --max-version-bump major
 ```
 
-_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/dependabot/automerge.ts)_
+_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/dependabot/automerge.ts)_
 
-## `sfdx github:check:closed`
+## `sfdx github check closed`
 
 Show open Github issues with GUS WI
 
 ```
 USAGE
-  $ sfdx github:check:closed -o <value> --github-token <value> [--json]
+  $ sfdx github check closed -o <value> --github-token <value> [--json]
 
 FLAGS
   -o, --gus=<value>           (required) Username/alias of your GUS org connection
@@ -593,18 +593,18 @@ DESCRIPTION
   Description of a command.
 
 EXAMPLES
-  $ sfdx github:check:closed -o me@gus.com
+  $ sfdx github check closed -o me@gus.com
 ```
 
-_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/github/check/closed.ts)_
+_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/github/check/closed.ts)_
 
-## `sfdx npm:dependencies:pin`
+## `sfdx npm dependencies pin`
 
 lock a list of dependencies to a target tag or default to 'latest', place these entries in 'pinnedDependencies' entry in the package.json
 
 ```
 USAGE
-  $ sfdx npm:dependencies:pin [--json] [-d] [-t <value>]
+  $ sfdx npm dependencies pin [--json] [-d] [-t <value>]
 
 FLAGS
   -d, --dryrun       If true, will not make any changes to the package.json
@@ -621,15 +621,15 @@ DESCRIPTION
   in the package.json
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/npm/dependencies/pin.ts)_
 
-## `sfdx npm:package:release`
+## `sfdx npm package release`
 
 publish npm package
 
 ```
 USAGE
-  $ sfdx npm:package:release [--json] [-d] [-s] [-t <value>] [-a <value>] [--install] [--prerelease <value>] [--verify]
+  $ sfdx npm package release [--json] [-d] [-s] [-t <value>] [-a <value>] [--install] [--prerelease <value>] [--verify]
     [--githubtag <value>]
 
 FLAGS
@@ -652,15 +652,15 @@ DESCRIPTION
   publish npm package
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/npm/package/release.ts)_
 
-## `sfdx plugins:trust:verify`
+## `sfdx plugins trust verify`
 
 Validate a digital signature.
 
 ```
 USAGE
-  $ sfdx plugins:trust:verify -n <value> [--json] [-r <value>]
+  $ sfdx plugins trust verify -n <value> [--json] [-r <value>]
 
 FLAGS
   -n, --npm=<value>       (required) Specify the npm name. This can include a tag/version.
@@ -675,9 +675,9 @@ DESCRIPTION
   Verifies the digital signature on an npm package matches the signature and key stored at the expected URLs.
 
 EXAMPLES
-  $ sfdx plugins:trust:verify --npm @scope/npmName --registry http://my.repo.org:4874
+  $ sfdx plugins trust verify --npm @scope/npmName --registry http://my.repo.org:4874
 
-  $ sfdx plugins:trust:verify --npm @scope/npmName
+  $ sfdx plugins trust verify --npm @scope/npmName
 ```
 
 _See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/2.6.23/src/commands/plugins/trust/verify.ts)_
@@ -718,6 +718,6 @@ EXAMPLES
   $ sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.26/src/commands/repositories/index.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.5.27/src/commands/repositories/index.ts)_
 
 <!-- commandsstop -->

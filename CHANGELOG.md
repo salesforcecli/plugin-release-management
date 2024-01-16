@@ -1,3 +1,9 @@
+## [4.5.27](https://github.com/salesforcecli/plugin-release-management/compare/4.5.26...4.5.27) (2024-01-16)
+
+### Bug Fixes
+
+- swap plugin-alias install ([374a0e4](https://github.com/salesforcecli/plugin-release-management/commit/374a0e4df1e862232258b2c1fe12c4bdfd411baf))
+
 ## [4.5.26](https://github.com/salesforcecli/plugin-release-management/compare/4.5.25...4.5.26) (2024-01-14)
 
 ### Bug Fixes
