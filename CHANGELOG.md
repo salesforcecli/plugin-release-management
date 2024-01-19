@@ -1,3 +1,9 @@
+# [4.6.0](https://github.com/salesforcecli/plugin-release-management/compare/4.5.27...4.6.0) (2024-01-19)
+
+### Features
+
+- migrate to ESM + bump deps([#983](https://github.com/salesforcecli/plugin-release-management/issues/983)) ([2cc3b0a](https://github.com/salesforcecli/plugin-release-management/commit/2cc3b0a1cd43782c5546764264781d47882c9c52))
+
 ## [4.5.27](https://github.com/salesforcecli/plugin-release-management/compare/4.5.26...4.5.27) (2024-01-16)
 
 ### Bug Fixes
