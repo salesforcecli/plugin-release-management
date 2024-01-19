@@ -24,8 +24,8 @@
 import { generateKeyPair, createSign, createVerify } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { S3 } from 'aws-sdk';
-import { putObject } from '../codeSigning/upload';
-import { PackageJsonSfdxProperty } from '../package';
+import { putObject } from '../codeSigning/upload.js';
+import { PackageJsonSfdxProperty } from '../package.js';
 const CRYPTO_LEVEL = 'RSA-SHA256';
 const BUCKET = 'dfc-data-production';
 export const BASE_URL = 'https://developer.salesforce.com';

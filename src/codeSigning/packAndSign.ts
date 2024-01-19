@@ -8,8 +8,8 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import * as fs from 'node:fs/promises';
-import { exec } from 'node:child_process';
+import fs from 'node:fs/promises';
+import cp from 'node:child_process';
 import { EOL } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import { Agents } from 'got';
@@ -17,10 +17,10 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import { ProxyAgent } from 'proxy-agent';
-import { PackageJson } from '../package';
-import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning';
-import { ExecProcessFailed } from './error';
-import { parseNpmName } from './NpmName';
+import { PackageJson } from '../package.js';
+import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning.js';
+import { ExecProcessFailed } from './error.js';
+import { parseNpmName } from './NpmName.js';
 
 class PathGetter {
   private static packageJson = 'package.json';
@@ -79,7 +79,7 @@ export const api = {
     if (!pathGetter) pathGetter = new PathGetter();
     return new Promise<string>((resolve, reject) => {
       const command = 'npm pack -p';
-      exec(
+      cp.exec(
         command,
         { cwd: pathGetter.target, maxBuffer: 1024 * 4096 },
         // we expect an error code from this command, so we're adding it to the normal Error type

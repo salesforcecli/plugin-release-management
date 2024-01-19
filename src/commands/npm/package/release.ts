@@ -5,24 +5,24 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'node:os';
-import * as chalk from 'chalk';
+import os from 'node:os';
+import chalk from 'chalk';
 import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
-import { exec } from 'shelljs';
+import shelljs from 'shelljs';
 import { isString } from '@salesforce/ts-types';
-import { PackageInfo } from '../../../repository';
-import { verifyDependencies } from '../../../dependencies';
-import { Access, PackageRepo } from '../../../repository';
-import { SigningResponse } from '../../../codeSigning/SimplifiedSigning';
+import { PackageInfo } from '../../../repository.js';
+import { verifyDependencies } from '../../../dependencies.js';
+import { Access, PackageRepo } from '../../../repository.js';
+import { SigningResponse } from '../../../codeSigning/SimplifiedSigning.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.package.release');
 
-interface ReleaseResult {
+export type ReleaseResult = {
   version: string;
   name: string;
-}
+};
 
 export default class Release extends SfCommand<ReleaseResult> {
   public static readonly summary = messages.getMessage('description');
@@ -146,7 +146,7 @@ export default class Release extends SfCommand<ReleaseResult> {
 
     this.log(chalk.dim(`sf-release ${cmd} ${argv}`) + os.EOL);
     try {
-      const result = exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
+      const result = shelljs.exec(`DEBUG=sfdx:* ${this.config.root}/bin/run ${cmd} ${argv}`);
       if (result.code !== 0) {
         const sfdxVerifyCmd = `sfdx plugins:trust:verify ${argv}`;
         this.warn(

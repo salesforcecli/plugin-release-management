@@ -6,10 +6,10 @@
  */
 
 import { URL } from 'node:url';
-import * as path from 'node:path';
-import * as os from 'node:os';
-import * as fs from 'node:fs/promises';
-import { exec } from 'shelljs';
+import path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs/promises';
+import shelljs from 'shelljs';
 import { SfError } from '@salesforce/core';
 import { Env } from '@salesforce/kit';
 
@@ -22,8 +22,8 @@ export class Registry {
     this.env = new Env();
     this.registryUrl = this.env.getString('NPM_REGISTRY') ?? this.registryUrl;
     this.authToken = this.env.getString('NPM_TOKEN') ?? this.authToken;
-    this.registryEntryLocal = exec('npm config get registry', { silent: true }).stdout.trim();
-    this.registryEntryGlobal = exec('npm config get registry -g', { silent: true }).stdout.trim();
+    this.registryEntryLocal = shelljs.exec('npm config get registry', { silent: true }).stdout.trim();
+    this.registryEntryGlobal = shelljs.exec('npm config get registry -g', { silent: true }).stdout.trim();
     this.loadNpmConfigs();
   }
 

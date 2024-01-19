@@ -5,18 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable no-await-in-loop */
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 import { promisify } from 'node:util';
 import { exec as execSync, ExecException } from 'node:child_process';
 import { Ux } from '@salesforce/sf-plugins-core';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { SfError } from '@salesforce/core';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
-import stripAnsi = require('strip-ansi');
-import { PackageJson } from './package';
+import stripAnsi from 'strip-ansi';
+import { PackageJson } from './package.js';
 
 const exec = promisify(execSync);
 

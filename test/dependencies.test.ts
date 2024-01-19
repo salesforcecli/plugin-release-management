@@ -6,10 +6,10 @@
  */
 
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import { Env } from '@salesforce/kit';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { verifyDependencies } from '../src/dependencies';
+import { verifyDependencies } from '../src/dependencies.js';
 
 describe('Dependencies', () => {
   const $$ = new TestContext();

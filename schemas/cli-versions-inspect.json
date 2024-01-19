@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/InspectResult",
+  "definitions": {
+    "InspectResult": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Info"
+      }
+    },
+    "Info": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/definitions/Channel"
+        },
+        "location": {
+          "$ref": "#/definitions/Location"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Dependency"
+          }
+        }
+      },
+      "required": ["origin", "version", "channel", "location", "dependencies"],
+      "additionalProperties": false
+    },
+    "Channel": {
+      "type": "string",
+      "enum": ["legacy", "stable", "stable-rc", "latest", "latest-rc", "nightly"]
+    },
+    "Location": {
+      "type": "string",
+      "enum": ["archive", "npm"]
+    },
+    "Dependency": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "version"],
+      "additionalProperties": false
+    }
+  }
+}

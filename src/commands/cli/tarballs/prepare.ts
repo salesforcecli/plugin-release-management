@@ -5,14 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fg from 'fast-glob';
-import { pwd, rm } from 'shelljs';
+import fg from 'fast-glob';
+import shelljs from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { red } from 'chalk';
+import chalk from 'chalk';
 import { Interfaces } from '@oclif/core';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.prepare');
 
 /**
@@ -45,7 +45,7 @@ export default class Prepare extends SfCommand<void> {
     const { flags } = await this.parse(Prepare);
     this.flags = flags;
 
-    const workingDir = pwd().stdout;
+    const workingDir = shelljs.pwd().stdout;
     const baseDirGlob = `${workingDir}/node_modules`;
 
     // Remove JSforceTestSuite from dist
@@ -129,8 +129,8 @@ export default class Prepare extends SfCommand<void> {
   private remove(files: string[], type: string): void {
     if (!files.length) return;
     const msg = this.flags.dryrun
-      ? `${red.bold('[DRYRUN] Removing:')} ${files.length} ${type}`
-      : `${red.bold('Removing:')} ${files.length} ${type}`;
+      ? `${chalk.red.bold('[DRYRUN] Removing:')} ${files.length} ${type}`
+      : `${chalk.red.bold('Removing:')} ${files.length} ${type}`;
     this.log(msg);
 
     if (this.flags.verbose) {
@@ -138,7 +138,7 @@ export default class Prepare extends SfCommand<void> {
     }
 
     if (!this.flags.dryrun) {
-      files.forEach((f) => rm('-rf', f));
+      files.forEach((f) => shelljs.rm('-rf', f));
     }
   }
 }

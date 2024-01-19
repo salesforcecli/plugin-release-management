@@ -8,9 +8,9 @@
 import { join } from 'node:path';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { testJITInstall } from '../../../../jit';
+import { testJITInstall } from '../../../../jit.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.jit.test');
 
 export default class Test extends SfCommand<void> {

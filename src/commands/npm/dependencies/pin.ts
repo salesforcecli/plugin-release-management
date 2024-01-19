@@ -8,9 +8,9 @@
 
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { ChangedPackageVersions, Package } from '../../../package';
+import { ChangedPackageVersions, Package } from '../../../package.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'npm.dependencies.pin');
 
 export default class Pin extends SfCommand<ChangedPackageVersions> {

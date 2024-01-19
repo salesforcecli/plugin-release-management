@@ -6,7 +6,7 @@
  */
 
 import got from 'got';
-import { api } from './codeSigning/packAndSign';
+import { api } from './codeSigning/packAndSign.js';
 
 const KNOWN_REPOSITORIES_URL = 'https://raw.githubusercontent.com/salesforcecli/status/main/repositories.json';
 const PACKAGE_REGISTRY_BASE_URL = 'https://www.npmjs.com/package';
@@ -31,7 +31,7 @@ export type RepositoryInfo = {
  */
 export const retrieveKnownRepositories = async (): Promise<RepositoryInfo[]> => {
   const agent = api.getAgentForUri(KNOWN_REPOSITORIES_URL);
-  const response = await got.get(KNOWN_REPOSITORIES_URL, { agent });
+  const response = await got.get(KNOWN_REPOSITORIES_URL, agent ? { agent } : {});
   const repositories = JSON.parse(response.body) as SourceRepositoryDefinition[];
 
   return repositories.map((repository) => {

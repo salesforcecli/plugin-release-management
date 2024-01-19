@@ -11,16 +11,17 @@ import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { ensureString, isObject } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'github.check.closed');
 
-export type GithubCheckClosedResult = {
+type GithubCheckClosedResultItem = {
   issueUrl: string;
   status: string;
   workItem: string;
 };
+export type GithubCheckClosedResult = GithubCheckClosedResultItem[];
 
-export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult[]> {
+export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -37,7 +38,7 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
     }),
   };
 
-  public async run(): Promise<GithubCheckClosedResult[]> {
+  public async run(): Promise<GithubCheckClosedResult> {
     const { flags } = await this.parse(GithubCheckClosed);
     const ThrottledOctokit = Octokit.plugin(throttling);
     const octokit = new ThrottledOctokit({
@@ -93,7 +94,7 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
     // join GH and GUS results
     const results = commentsWithWI
       .map(
-        (item): GithubCheckClosedResult => ({
+        (item): GithubCheckClosedResultItem => ({
           ...item,
           status: ensureString(wiQueryResult.get(item.workItem)),
           issueUrl: item.issueUrl.replace('api.', '').replace('repos/', ''),

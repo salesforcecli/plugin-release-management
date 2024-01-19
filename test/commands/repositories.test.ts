@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { Config } from '@oclif/core';
 import { expect } from 'chai';
 import { stubMethod, fromStub, stubInterface } from '@salesforce/ts-sinon';
 import got from 'got';
-import Repositories from '../../src/commands/repositories/index';
+import Repositories from '../../src/commands/repositories/index.js';
 
 describe('repositories', () => {
   const sandbox = sinon.createSandbox();

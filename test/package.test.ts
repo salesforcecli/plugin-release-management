@@ -5,13 +5,13 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { assert, expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import * as sinon from 'sinon';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { Package } from '../src/package';
+import { Package } from '../src/package.js';
 
 const pkgName = '@salesforce/my-plugin';
 
@@ -56,47 +56,6 @@ describe('Package', () => {
         version: '1.0.0',
       });
       expect(readStub.firstCall.calledWith(path.join(packageDir, 'package.json'))).be.true;
-    });
-  });
-
-  describe('validateNextVersion', () => {
-    beforeEach(() => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({
-          name: pkgName,
-          version: '1.0.0',
-        })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['0.0.1', '0.0.5', '1.0.0'],
-      });
-    });
-    afterEach(() => {
-      $$.restore();
-    });
-
-    it('should validate that next version is valid', async () => {
-      const pkg = await Package.create();
-      const validation = pkg.validateNextVersion('1.1.0');
-      expect(validation).to.deep.equal({
-        nextVersion: '1.1.0',
-        currentVersion: '1.0.0',
-        valid: true,
-        name: pkgName,
-      });
-    });
-
-    it('should invalidate that next version when it already exists', async () => {
-      const pkg = await Package.create();
-      const validation = pkg.validateNextVersion('1.0.0');
-      expect(validation).to.deep.equal({
-        nextVersion: '1.0.0',
-        currentVersion: '1.0.0',
-        valid: false,
-        name: pkgName,
-      });
     });
   });
 

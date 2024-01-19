@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/GithubCheckClosedResult",
+  "definitions": {
+    "GithubCheckClosedResult": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "issueUrl": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "workItem": {
+            "type": "string"
+          }
+        },
+        "required": ["issueUrl", "status", "workItem"],
+        "additionalProperties": false
+      }
+    }
+  }
+}

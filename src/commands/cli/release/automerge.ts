@@ -12,7 +12,7 @@ import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.release.automerge');
 

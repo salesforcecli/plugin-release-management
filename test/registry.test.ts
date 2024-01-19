@@ -6,15 +6,15 @@
  */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import * as os from 'node:os';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
 import { expect } from 'chai';
-import { shouldThrow, TestContext } from '@salesforce/core/lib/testSetup';
+import { shouldThrow, TestContext } from '@salesforce/core/lib/testSetup.js';
 
 import { Env } from '@salesforce/kit';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { Registry } from '../src/registry';
+import { Registry } from '../src/registry.js';
 
 describe('src/registry', () => {
   const $$ = new TestContext();

@@ -4,15 +4,15 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as semver from 'semver';
+import fs from 'node:fs';
+import path from 'node:path';
+import semver from 'semver';
 import { ux } from '@oclif/core';
-import { exec, pwd } from 'shelljs';
-import { Logger, SfError } from '@salesforce/core';
+import shelljs from 'shelljs';
+import { SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, findKey, parseJson } from '@salesforce/kit';
 import { AnyJson, get, isObject, isPlainObject, Nullable } from '@salesforce/ts-types';
-import { Registry } from './registry';
+import { Registry } from './registry.js';
 
 export type PackageJson = {
   name: string;
@@ -91,13 +91,11 @@ export class Package extends AsyncOptionalCreatable {
   public packageJson!: PackageJson;
   public location: string;
 
-  // set during init
-  private logger!: Logger;
   private registry: Registry;
 
   public constructor(opts: { location?: string } | undefined) {
     super();
-    this.location = opts?.location ?? pwd().stdout;
+    this.location = opts?.location ?? shelljs.pwd().stdout;
     this.registry = new Registry();
   }
 
@@ -114,37 +112,15 @@ export class Package extends AsyncOptionalCreatable {
    * If that version doesn't exist, it'll find the version tagged as latest
    */
   public retrieveNpmPackage(): NpmPackage | undefined {
-    let result = exec(
+    let result = shelljs.exec(
       `npm view ${this.name}@${this.packageJson.version} ${this.registry.getRegistryParameter()} --json`,
       { silent: true }
     );
     if (!result.stdout) {
-      result = exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+      result = shelljs.exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
     }
     if (result.stdout) {
       return JSON.parse(result.stdout) as NpmPackage;
-    }
-  }
-
-  public validateNextVersion(nextVersion: string): VersionValidation {
-    const nextVersionExists = (this.npmPackage.versions ?? []).includes(nextVersion);
-    const currentVersion = this.npmPackage.version ?? null;
-    if (!nextVersionExists) {
-      this.logger.debug(`${this.npmPackage.name}@${nextVersion} does not exist in the registry. Proceeding...`);
-      return {
-        nextVersion,
-        currentVersion,
-        valid: true,
-        name: this.name,
-      };
-    } else {
-      this.logger.debug(`${this.npmPackage.name}@${nextVersion} already exists in the registry. Exiting...`);
-      return {
-        nextVersion,
-        currentVersion,
-        valid: false,
-        name: this.name,
-      };
     }
   }
 
@@ -190,7 +166,7 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   public getDistTags(name: string): Record<string, string> {
-    const result = exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
+    const result = shelljs.exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
     if (result.stdout) {
@@ -397,7 +373,6 @@ export class Package extends AsyncOptionalCreatable {
   }
 
   protected async init(): Promise<void> {
-    this.logger = await Logger.child(this.constructor.name);
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
     this.npmPackage = this.retrieveNpmPackage() ?? this.createDefaultNpmPackage();

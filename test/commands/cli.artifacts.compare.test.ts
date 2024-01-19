@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import { SnapshotComparator, SchemaComparator } from '../../src/commands/cli/artifacts/compare';
+import { SnapshotComparator, SchemaComparator } from '../../src/commands/cli/artifacts/compare.js';
 
 const foo = {
   command: 'foo',

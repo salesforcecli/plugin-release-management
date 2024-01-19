@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/ChangesByPlugin",
+  "definitions": {
+    "ChangesByPlugin": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "author": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "link": {
+              "type": "string"
+            },
+            "mergedAt": {
+              "type": "string"
+            },
+            "mergedInto": {
+              "type": "string"
+            },
+            "plugin": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": ["author", "description", "link", "mergedAt", "mergedInto", "plugin", "title"],
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}

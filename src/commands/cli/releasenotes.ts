@@ -9,14 +9,14 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { ensure, ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
-import { bold, cyan, dim } from 'chalk';
+import chalk from 'chalk';
 import { Messages, SfError } from '@salesforce/core';
-import { exec } from 'shelljs';
-import * as semver from 'semver';
-import { CLI } from '../../types';
-import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package';
+import shelljs from 'shelljs';
+import semver from 'semver';
+import { CLI } from '../../types.js';
+import { NpmPackage, parseAliasedPackageName, parsePackageVersion } from '../../package.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
 
 type Change = {
@@ -29,7 +29,7 @@ type Change = {
   title: string;
 };
 
-type ChangesByPlugin = Record<string, Change[]>;
+export type ChangesByPlugin = Record<string, Change[]>;
 
 type Differences = {
   removed: Map<string, string>;
@@ -175,15 +175,15 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
 
   private logChanges(changesByPlugin: ChangesByPlugin): void {
     for (const [plugin, changes] of Object.entries(changesByPlugin)) {
-      this.styledHeader(cyan(plugin));
+      this.styledHeader(chalk.cyan(plugin));
       for (const change of changes) {
-        this.log(bold(`${change.title}`));
+        this.log(chalk.bold(`${change.title}`));
         for (const [key, value] of Object.entries(change)) {
           if (['title', 'plugin'].includes(key)) continue;
           if (key === 'description') {
-            this.log(`${key}:\n${dim(value)}`);
+            this.log(`${key}:\n${chalk.dim(value)}`);
           } else {
-            this.log(`${key}: ${dim(value)}`);
+            this.log(`${key}: ${chalk.dim(value)}`);
           }
         }
         this.log();
@@ -213,7 +213,7 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
 }
 
 const getNpmPackage = (name: string, version = 'latest'): NpmPackage => {
-  const result = exec(`npm view ${name}@${version} --json`, { silent: true });
+  const result = shelljs.exec(`npm view ${name}@${version} --json`, { silent: true });
   return JSON.parse(result.stdout) as NpmPackage;
 };
 

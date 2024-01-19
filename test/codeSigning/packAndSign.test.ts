@@ -9,16 +9,17 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
 
-import child_process = require('child_process');
+import child_process from 'node:child_process';
 import { EOL } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
-import * as fs from 'node:fs/promises';
+import fs from 'node:fs/promises';
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import { stubMethod } from '@salesforce/ts-sinon';
 import got from 'got';
-import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert';
+import { api as packAndSignApi } from '../../src/codeSigning/packAndSign.js';
+import { CERTIFICATE, PRIVATE_KEY, TEST_DATA } from './testCert.js';
 
 const _getCertResponse = (path: string, e?: Error, statusCode?: number) => {
   const response = {};
@@ -35,8 +36,6 @@ const _getCertResponse = (path: string, e?: Error, statusCode?: number) => {
   }
   return response;
 };
-
-let packAndSignApi: any;
 
 const REJECT_ERROR = new Error('Should have been rejected');
 
@@ -92,18 +91,10 @@ describe('packAndSign', () => {
       stubMethod($$.SANDBOX, child_process, 'exec').callsFake((command, opts, cb) => {
         cb(null, `foo.tgz${EOL}`);
       });
-
-      packAndSignApi = require('../../src/codeSigning/packAndSign').api;
     });
   });
 
   describe('packAndSign Tests', () => {
-    beforeEach(() => {
-      if (!packAndSignApi) {
-        packAndSignApi = require('../../src/codeSigning/packAndSign').api;
-      }
-    });
-
     describe('pack', () => {
       it('Process Failed', () => {
         stubMethod($$.SANDBOX, child_process, 'exec').callsFake((command: string, opts: any, cb: any) => {
@@ -162,6 +153,7 @@ describe('packAndSign', () => {
 
     describe('validateNpmIgnore', () => {
       it('no content', () => {
+        // @ts-expect-error testing invalid input
         expect(() => packAndSignApi.validateNpmIgnorePatterns(undefined))
           .to.throw(Error)
           .and.have.property('name', 'MissingNpmIgnoreFile');
