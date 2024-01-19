@@ -46,9 +46,12 @@ export default class SmokeTest extends SfCommand<void> {
       this.execute(executable, '--version'),
       this.execute(executable, '--help'),
       this.execute(executable, 'plugins --core'),
-      this.testInstall(executable, '@salesforce/plugin-alias', 'latest'),
+      this.testInstall(executable, '@salesforce/plugin-settings', 'latest'),
     ]);
 
+    // This tests JIT installs on the generated tarball
+    // The cli/jit/install/test.ts command tests against a "local" version (e.g. npm install)
+    // If this test continues to be flakey, it could be removed
     await this.testJITInstall(executable);
     await this.initializeAllCommands(executable);
   }

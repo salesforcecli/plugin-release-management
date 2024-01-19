@@ -1,3 +1,33 @@
+## [4.5.27](https://github.com/salesforcecli/plugin-release-management/compare/4.5.26...4.5.27) (2024-01-16)
+
+### Bug Fixes
+
+- swap plugin-alias install ([374a0e4](https://github.com/salesforcecli/plugin-release-management/commit/374a0e4df1e862232258b2c1fe12c4bdfd411baf))
+
+## [4.5.26](https://github.com/salesforcecli/plugin-release-management/compare/4.5.25...4.5.26) (2024-01-14)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 6.4.4 to 6.4.7 ([b9c7d6d](https://github.com/salesforcecli/plugin-release-management/commit/b9c7d6d6a914c39535d1913e273669cbd6c9fd7d))
+
+## [4.5.25](https://github.com/salesforcecli/plugin-release-management/compare/4.5.24...4.5.25) (2024-01-13)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 3.16.0 to 3.18.1 ([f068307](https://github.com/salesforcecli/plugin-release-management/commit/f068307359b6be6e4fd58a6df7f191da39791c67))
+
+## [4.5.24](https://github.com/salesforcecli/plugin-release-management/compare/4.5.23...4.5.24) (2024-01-13)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-command-reference ([e7e20dd](https://github.com/salesforcecli/plugin-release-management/commit/e7e20dd9d222a23db88a9ec50c1ca55723ed4159))
+
+## [4.5.23](https://github.com/salesforcecli/plugin-release-management/compare/4.5.22...4.5.23) (2024-01-13)
+
+### Bug Fixes
+
+- **deps:** bump aws-sdk from 2.1531.0 to 2.1535.0 ([1b1b8dc](https://github.com/salesforcecli/plugin-release-management/commit/1b1b8dc0cf509533e6b522131ba05b99a99d754f))
+
 ## [4.5.22](https://github.com/salesforcecli/plugin-release-management/compare/4.5.21...4.5.22) (2024-01-06)
 
 ### Bug Fixes
