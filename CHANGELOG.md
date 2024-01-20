@@ -1,3 +1,9 @@
+## [4.6.1](https://github.com/salesforcecli/plugin-release-management/compare/4.6.0...4.6.1) (2024-01-20)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/sf-plugins-core from 7.1.1 to 7.1.3 ([f84630a](https://github.com/salesforcecli/plugin-release-management/commit/f84630abad61ff160a1d84e6752b05677f0ea0c3))
+
 # [4.6.0](https://github.com/salesforcecli/plugin-release-management/compare/4.5.27...4.6.0) (2024-01-19)
 
 ### Features
