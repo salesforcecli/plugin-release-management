@@ -1,3 +1,9 @@
+## [4.6.3](https://github.com/salesforcecli/plugin-release-management/compare/4.6.2...4.6.3) (2024-01-20)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-trust from 3.3.1 to 3.3.2 ([7d57f2c](https://github.com/salesforcecli/plugin-release-management/commit/7d57f2c3ecd7ae1ed2929749dd7dfd222ec8f232))
+
 ## [4.6.2](https://github.com/salesforcecli/plugin-release-management/compare/4.6.1...4.6.2) (2024-01-20)
 
 ### Bug Fixes
