@@ -1,3 +1,14 @@
+# [4.7.0](https://github.com/salesforcecli/plugin-release-management/compare/4.6.3...4.7.0) (2024-01-22)
+
+### Bug Fixes
+
+- **deps:** use plugins-core7 ([0b6d49d](https://github.com/salesforcecli/plugin-release-management/commit/0b6d49d9a8a4a41d5d46421051f2091b467383d4))
+
+### Features
+
+- delete unused deprecated command ([5c1352e](https://github.com/salesforcecli/plugin-release-management/commit/5c1352ebec16284417f64bbf11b1d4174820d3be))
+- remove npm alias code ([af66a0a](https://github.com/salesforcecli/plugin-release-management/commit/af66a0a7a2ff6cc18e3c316071956683f04aaa13))
+
 ## [4.6.3](https://github.com/salesforcecli/plugin-release-management/compare/4.6.2...4.6.3) (2024-01-20)
 
 ### Bug Fixes
