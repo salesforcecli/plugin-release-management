@@ -136,7 +136,7 @@ const resolveCredentials = (
 };
 
 const fileIsAvailable = async (url: string): Promise<ServiceAvailability> => {
-  const { statusCode } = await got.get(url, { throwHttpErrors: false });
+  const { statusCode } = await got.head(url, { throwHttpErrors: false });
   return { service: 'file', name: url, available: statusCode >= 200 && statusCode < 300 };
 };
 

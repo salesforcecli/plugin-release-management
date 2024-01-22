@@ -6,7 +6,6 @@
  */
 
 import os from 'node:os';
-import { ensureString } from '@salesforce/ts-types';
 import { Ux } from '@salesforce/sf-plugins-core';
 import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
@@ -78,20 +77,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
 
   public test(): void {
     this.execCommand('yarn test');
-  }
-
-  public getBranchName(): string {
-    const branch = this.env.getString(
-      'CIRCLE_BRANCH',
-      shelljs.exec('git branch --show-current', { silent: true }).stdout
-    );
-    return ensureString(branch);
-  }
-
-  public pushChangesToGit(): void {
-    const branch = this.getBranchName();
-    const cmd = `git push --set-upstream --no-verify --follow-tags origin ${branch}`;
-    this.execCommand(cmd, false);
   }
 
   public stageChanges(): void {
