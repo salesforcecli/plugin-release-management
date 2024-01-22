@@ -17,11 +17,6 @@ import { Registry } from './registry.js';
 import { SigningResponse } from './codeSigning/SimplifiedSigning.js';
 import { api as packAndSignApi } from './codeSigning/packAndSign.js';
 
-interface PrepareOpts {
-  dryrun?: boolean;
-  githubRelease?: boolean;
-}
-
 export type Access = 'public' | 'restricted';
 
 interface PublishOpts {
@@ -79,26 +74,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
     this.execCommand('yarn test');
   }
 
-  public stageChanges(): void {
-    this.execCommand('git add .', false);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public revertUnstagedChanges(): void {
-    const changedFiles = shelljs
-      .exec('git diff --name-only', { silent: true })
-      .stdout.split(os.EOL)
-      .filter((f) => !!f);
-    changedFiles.forEach((file) => {
-      shelljs.exec(`git checkout -- ${file}`, { silent: false });
-    });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public revertAllChanges(): void {
-    shelljs.exec('git reset --hard HEAD', { silent: true });
-  }
-
   public printStage(msg: string): void {
     this.ux.log(chalk.green.bold(`${os.EOL}${this.stepCounter}) ${msg}`));
     this.stepCounter += 1;
@@ -146,7 +121,6 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
   }
 
   public abstract getSuccessMessage(): string;
-  public abstract prepare(options: PrepareOpts): void;
   public abstract getPkgInfo(packageNames?: string[]): PackageInfo | PackageInfo[];
   public abstract publish(options: PublishOpts): Promise<void>;
   public abstract sign(packageNames?: string[]): Promise<SigningResponse | SigningResponse[]>;
@@ -166,22 +140,6 @@ export class PackageRepo extends Repository {
 
   public constructor(options: RepositoryOptions | undefined) {
     super(options);
-  }
-
-  public prepare(opts: PrepareOpts = {}): void {
-    const { dryrun } = opts;
-
-    if (this.package.hasScript('version')) {
-      this.run('version');
-      this.stageChanges();
-    }
-
-    let cmd =
-      'npx standard-version --commit-all --releaseCommitMessageFormat="chore(release): {{currentTag}} [ci skip]"';
-    if (dryrun) cmd += ' --dry-run';
-
-    cmd += ` --release-as ${this.nextVersion}`;
-    this.execCommand(cmd);
   }
 
   public async sign(): Promise<SigningResponse> {

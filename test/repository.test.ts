@@ -72,42 +72,6 @@ describe('PackageRepo', () => {
     });
   });
 
-  describe('prepare', () => {
-    beforeEach(async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.1.0' })
-      );
-      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
-        name: pkgName,
-        version: '1.0.0',
-        versions: ['1.0.0'],
-      });
-      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
-    });
-
-    it('should run standard-version command with --dry-run when the dryrun option is provided', async () => {
-      const repo = await PackageRepo.create({ ux: uxStub });
-      repo.prepare({ dryrun: true });
-      const cmd = execStub.firstCall.args[0];
-      expect(cmd).to.include('--dry-run');
-    });
-
-    it('should run standard-version command without --dry-run when the dryrun option is not provided', async () => {
-      const repo = await PackageRepo.create({ ux: uxStub });
-      repo.prepare();
-      const cmd = execStub.firstCall.args[0];
-      expect(cmd).to.not.include('--dry-run');
-    });
-
-    it('should use the this.nextVersion as the value for the --release-as flag', async () => {
-      stubMethod($$.SANDBOX, PackageRepo.prototype, 'determineNextVersion').returns('2.0.0');
-      const repo = await PackageRepo.create({ ux: uxStub });
-      repo.prepare({ dryrun: true });
-      const cmd = execStub.firstCall.args[0];
-      expect(cmd).to.include('--release-as 2.0.0');
-    });
-  });
-
   describe('publish', () => {
     let repo: PackageRepo;
 
