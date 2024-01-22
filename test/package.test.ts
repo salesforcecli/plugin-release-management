@@ -15,7 +15,7 @@ import { Package } from '../src/package.js';
 
 const pkgName = '@salesforce/my-plugin';
 
-describe.only('Package', () => {
+describe('Package', () => {
   const $$ = new TestContext();
   describe('readPackageJson', () => {
     let readStub: sinon.SinonStub;

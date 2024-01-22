@@ -20,7 +20,7 @@ builds a new release from a designated starting point and optionally creates PR 
 
 - <%= config.bin %> <%= command.id %> --build-only
 
-- <%= config.bin %> <%= command.id %> --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
+- <%= config.bin %> <%= command.id %> --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3
 
 # flags.start-from-npm-dist-tag.summary
 
