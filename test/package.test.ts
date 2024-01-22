@@ -99,7 +99,6 @@ describe('Package', () => {
           name: pkgName,
           version: '1.0.0',
           dependencies: {
-            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
             '@salesforce/plugin-config': '1.2.3',
           },
         })
@@ -108,31 +107,6 @@ describe('Package', () => {
     afterEach(() => {
       $$.restore();
     });
-    it('should find dependency using an npm alias', async () => {
-      const pkg = await Package.create();
-      const deps = pkg.packageJson.dependencies;
-      const dependency = pkg.getDependencyInfo('@sf/info', deps);
-
-      expect(dependency).to.deep.equal({
-        dependencyName: '@sf/info',
-        packageName: '@salesforce/plugin-info',
-        alias: 'npm:@salesforce/plugin-info@2.0.1',
-        currentVersion: '2.0.1',
-      });
-    });
-
-    it('should find an npm alias with a package name', async () => {
-      const pkg = await Package.create();
-      const deps = pkg.packageJson.dependencies;
-      const dependency = pkg.getDependencyInfo('@salesforce/plugin-info', deps);
-
-      expect(dependency).to.deep.equal({
-        dependencyName: '@sf/info',
-        packageName: '@salesforce/plugin-info',
-        alias: 'npm:@salesforce/plugin-info@2.0.1',
-        currentVersion: '2.0.1',
-      });
-    });
 
     it('should find a dependency using a package name', async () => {
       const pkg = await Package.create();
@@ -140,9 +114,7 @@ describe('Package', () => {
       const dependency = pkg.getDependencyInfo('@salesforce/plugin-config', deps);
 
       expect(dependency).to.deep.equal({
-        dependencyName: '@salesforce/plugin-config',
         packageName: '@salesforce/plugin-config',
-        alias: null,
         currentVersion: '1.2.3',
       });
     });
@@ -155,7 +127,6 @@ describe('Package', () => {
           name: pkgName,
           version: '1.0.0',
           dependencies: {
-            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },
@@ -178,27 +149,16 @@ describe('Package', () => {
     });
     it('should look up latest version if not provided', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['@sf/info', '@salesforce/plugin-config', '@salesforce/jit-me']);
+      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-config', '@salesforce/jit-me']);
 
       expect(results).to.deep.equal([
         {
-          dependencyName: '@sf/info',
-          packageName: '@salesforce/plugin-info',
-          alias: 'npm:@salesforce/plugin-info@2.0.1',
-          currentVersion: '2.0.1',
-          finalVersion: 'npm:@salesforce/plugin-info@9.9.9',
-        },
-        {
-          dependencyName: '@salesforce/plugin-config',
           packageName: '@salesforce/plugin-config',
-          alias: null,
           currentVersion: '1.2.3',
           finalVersion: '9.9.9',
         },
         {
-          dependencyName: '@salesforce/jit-me',
           packageName: '@salesforce/jit-me',
-          alias: null,
           currentVersion: '1.0.0',
           finalVersion: '9.9.9',
         },
@@ -207,15 +167,13 @@ describe('Package', () => {
 
     it('should used passed in version', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-info@7.7.7']);
+      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-config@11.0.0']);
 
       expect(results).to.deep.equal([
         {
-          dependencyName: '@sf/info',
-          packageName: '@salesforce/plugin-info',
-          alias: 'npm:@salesforce/plugin-info@2.0.1',
-          currentVersion: '2.0.1',
-          finalVersion: 'npm:@salesforce/plugin-info@7.7.7',
+          packageName: '@salesforce/plugin-config',
+          currentVersion: '1.2.3',
+          finalVersion: '11.0.0',
         },
       ]);
     });
@@ -226,9 +184,7 @@ describe('Package', () => {
 
       expect(results).to.deep.equal([
         {
-          dependencyName: 'left-pad',
           packageName: 'left-pad',
-          alias: null,
           currentVersion: '1.1.1',
           finalVersion: '9.9.9',
         },
@@ -237,16 +193,15 @@ describe('Package', () => {
 
     it('should return an empty array if all versions are already up to date', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['@sf/info@2.0.1', '@salesforce/plugin-config@1.2.3']);
+      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-config@1.2.3']);
 
       expect(results).to.deep.equal([]);
     });
 
     it('should update dependencies in package.json', async () => {
       const pkg = await Package.create();
-      pkg.bumpDependencyVersions(['@sf/info@2.2.2', '@salesforce/plugin-config@3.3.3']);
+      pkg.bumpDependencyVersions(['@salesforce/plugin-config@3.3.3']);
 
-      expect(pkg.packageJson.dependencies['@sf/info']).to.equal('npm:@salesforce/plugin-info@2.2.2');
       expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('3.3.3');
     });
 
@@ -273,7 +228,6 @@ describe('Package', () => {
             name: pkgName,
             version: '1.0.0',
             dependencies: {
-              '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
               '@salesforce/plugin-config': '1.2.3',
               'left-pad': '1.1.1',
             },
@@ -299,13 +253,11 @@ describe('Package', () => {
           {
             name: '@salesforce/jit-me',
             tag: 'pre',
-            alias: null,
             version: '9.9.11',
           },
           {
             name: '@salesforce/jit-me-too',
             tag: 'pre',
-            alias: null,
             version: '9.9.11',
           },
         ]);
@@ -319,13 +271,11 @@ describe('Package', () => {
           {
             name: '@salesforce/jit-me',
             tag: 'latest-rc',
-            alias: null,
             version: '9.9.10',
           },
           {
             name: '@salesforce/jit-me-too',
             tag: 'latest-rc',
-            alias: null,
             version: '9.9.10',
           },
         ]);
@@ -338,7 +288,6 @@ describe('Package', () => {
         expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('9.9.10');
         expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me-too']).to.equal('9.9.10');
         // no change to other plugins
-        expect(pkg.packageJson.dependencies['@sf/info']).to.equal('npm:@salesforce/plugin-info@2.0.1');
         expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('1.2.3');
       });
     });
@@ -349,7 +298,6 @@ describe('Package', () => {
           name: pkgName,
           version: '1.0.0',
           dependencies: {
-            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },
@@ -373,13 +321,11 @@ describe('Package', () => {
         {
           name: '@salesforce/jit-me',
           tag: 'latest',
-          alias: null,
           version: '9.9.9',
         },
         {
           name: '@salesforce/jit-me-too',
           tag: 'latest',
-          alias: null,
           version: '9.9.9',
         },
       ]);
@@ -394,7 +340,6 @@ describe('Package', () => {
           name: pkgName,
           version: '1.0.0',
           dependencies: {
-            '@sf/info': 'npm:@salesforce/plugin-info@2.0.1',
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },

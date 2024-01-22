@@ -33,22 +33,15 @@ describe('dependencies:pin', () => {
     sandbox.restore();
   });
 
-  function setupStub(alias?: string): void {
+  function setupStub(): void {
     // prevent it from writing back to the package.json
     stubMethod(sandbox, fs, 'writeFileSync');
-    const pJson = alias
-      ? {
-          name: 'test',
-          version: '1.0.0',
-          dependencies: { [alias]: 'npm:@salesforce/plugin-auth@^1.4.0' },
-          pinnedDependencies: [alias],
-        }
-      : {
-          name: 'test',
-          version: '1.0.0',
-          dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
-          pinnedDependencies: ['@salesforce/plugin-auth'],
-        };
+    const pJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: { '@salesforce/plugin-auth': '^1.4.0' },
+      pinnedDependencies: ['@salesforce/plugin-auth'],
+    };
 
     stubMethod(sandbox, fs.promises, 'readFile').resolves(JSON.stringify(pJson));
     // we don't need all members of what exec returns, just the stdout
@@ -64,23 +57,6 @@ describe('dependencies:pin', () => {
         name: '@salesforce/plugin-auth',
         tag: 'latest',
         version: '1.4.4',
-        alias: null,
-      },
-    ];
-
-    expect(result).to.deep.equal(expected);
-  });
-
-  it('should update the package.json with pinned versions for an aliased package', async () => {
-    setupStub('auth');
-    const result = await runNpmDependenciesPinCmd(['--json']);
-
-    const expected = [
-      {
-        name: '@salesforce/plugin-auth',
-        tag: 'latest',
-        version: '1.4.4',
-        alias: 'auth',
       },
     ];
 
@@ -96,7 +72,6 @@ describe('dependencies:pin', () => {
         name: '@salesforce/plugin-auth',
         tag: 'latest-rc',
         version: '1.5.0',
-        alias: null,
       },
     ];
 

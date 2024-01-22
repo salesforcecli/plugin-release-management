@@ -326,7 +326,7 @@ EXAMPLES
 
   $ sfdx cli release build --build-only
 
-  $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3,@sf/config
+  $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3
 ```
 
 _See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.6.3/src/commands/cli/release/build.ts)_
