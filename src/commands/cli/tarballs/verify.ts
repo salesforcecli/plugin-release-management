@@ -247,6 +247,7 @@ export default class Verify extends SfCommand<void> {
         `${this.baseDir}/dist/builtins/package.json`,
         `${this.baseDir}/scripts/*`,
         `${this.baseDir}/sf/**/*`,
+        `${this.baseDir}/theme.json`,
       ];
       const expectedFiles = await fg(expectedFileGlobs);
       const allFiles = await fg([`${this.baseDir}/**/*`, `!${this.baseDir}/node_modules/**/*`]);
