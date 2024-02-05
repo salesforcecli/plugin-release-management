@@ -1,3 +1,27 @@
+## [4.7.6](https://github.com/salesforcecli/plugin-release-management/compare/4.7.5...4.7.6) (2024-02-04)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 3.18.1 to 3.18.2 ([b02025e](https://github.com/salesforcecli/plugin-release-management/commit/b02025e367a6bc02d42870834ef9ed4a740a1dd5))
+
+## [4.7.5](https://github.com/salesforcecli/plugin-release-management/compare/4.7.4...4.7.5) (2024-02-03)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-command-reference ([3f48f10](https://github.com/salesforcecli/plugin-release-management/commit/3f48f10456915a91715da85ec9b17cec6d09e5d9))
+
+## [4.7.4](https://github.com/salesforcecli/plugin-release-management/compare/4.7.3...4.7.4) (2024-02-03)
+
+### Bug Fixes
+
+- **deps:** bump aws-sdk from 2.1545.0 to 2.1550.0 ([aa657cf](https://github.com/salesforcecli/plugin-release-management/commit/aa657cf1336c525b2d302a16afa24dc2d78f6643))
+
+## [4.7.3](https://github.com/salesforcecli/plugin-release-management/compare/4.7.2...4.7.3) (2024-02-03)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-trust from 3.3.2 to 3.3.5 ([07450d8](https://github.com/salesforcecli/plugin-release-management/commit/07450d8f07bc57559a9344b64a79b013e9cf190b))
+
 ## [4.7.2](https://github.com/salesforcecli/plugin-release-management/compare/4.7.1...4.7.2) (2024-01-27)
 
 ### Bug Fixes
