@@ -1,3 +1,9 @@
+## [4.7.7](https://github.com/salesforcecli/plugin-release-management/compare/4.7.6...4.7.7) (2024-02-05)
+
+### Bug Fixes
+
+- expect theme.json in tarball ([233be54](https://github.com/salesforcecli/plugin-release-management/commit/233be542d8bb95eae4ba5406529d8e045266c347))
+
 ## [4.7.6](https://github.com/salesforcecli/plugin-release-management/compare/4.7.5...4.7.6) (2024-02-04)
 
 ### Bug Fixes
