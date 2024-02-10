@@ -1,3 +1,9 @@
+## [4.7.8](https://github.com/salesforcecli/plugin-release-management/compare/4.7.7...4.7.8) (2024-02-10)
+
+### Bug Fixes
+
+- **deps:** bump semver from 7.5.4 to 7.6.0 ([bb1451a](https://github.com/salesforcecli/plugin-release-management/commit/bb1451afa01178b7c37bbf8b8e9b6c1d0d5fad79))
+
 ## [4.7.7](https://github.com/salesforcecli/plugin-release-management/compare/4.7.6...4.7.7) (2024-02-05)
 
 ### Bug Fixes
