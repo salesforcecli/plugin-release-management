@@ -1,3 +1,9 @@
+## [4.7.15](https://github.com/salesforcecli/plugin-release-management/compare/4.7.14...4.7.15) (2024-02-21)
+
+### Bug Fixes
+
+- **deps:** bump ip from 1.1.8 to 1.1.9 ([520b224](https://github.com/salesforcecli/plugin-release-management/commit/520b224ccbd83d2ef95bf85bfe21e9d7bff62102))
+
 ## [4.7.14](https://github.com/salesforcecli/plugin-release-management/compare/4.7.13...4.7.14) (2024-02-18)
 
 ### Bug Fixes
