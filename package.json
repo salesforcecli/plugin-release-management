@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-release-management",
   "description": "A plugin for preparing and publishing npm packages",
-  "version": "4.7.16",
+  "version": "4.7.17",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "type": "module",
