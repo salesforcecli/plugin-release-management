@@ -2007,10 +2007,10 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-trust@^3.3.8":
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.8.tgz#269d29395f3bdb9f20e4cd46f5a3b9f2959e6771"
-  integrity sha512-g3oBJGZYEkIAlWN5dozoCXqawQEEWVDBmpBrAojHcMN9C3L6bG1gkwSoPkOdl0E2sPxMzlFSN0sw7B9w/nKysA==
+"@salesforce/plugin-trust@^3.3.10":
+  version "3.3.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.10.tgz#e6e7381471cc7d65dec65495ce7b99ce587985a8"
+  integrity sha512-jDBah3lAyWtsdjfNd7dTRELJWEjfco5bQXPCPNqx8tH/yoLIbUMrHD7fW782tA5UbbXrW9HHB/ugykeoCxAB0w==
   dependencies:
     "@oclif/core" "^3.18.2"
     "@salesforce/core" "^6.5.1"
@@ -2018,7 +2018,7 @@
     got "^13.0.0"
     npm "10.2.3"
     npm-run-path "^4.0.1"
-    proxy-agent "^6.3.1"
+    proxy-agent "^6.4.0"
     semver "^7.6.0"
     shelljs "^0.8.4"
 
@@ -9019,7 +9019,7 @@ proper-lockfile@^4.1.2:
     retry "^0.12.0"
     signal-exit "^3.0.2"
 
-proxy-agent@^6.3.1, proxy-agent@^6.4.0:
+proxy-agent@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/proxy-agent/-/proxy-agent-6.4.0.tgz#b4e2dd51dee2b377748aef8d45604c2d7608652d"
   integrity sha512-u0piLU+nCOHMgGjRbimiXmA9kM/L9EHh3zL81xCdp7m+Y2pHIsnmbdDoEDoAz5geaonNR6q6+yOPQs6n4T6sBQ==
