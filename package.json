@@ -34,14 +34,13 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^4.0.16",
-    "@salesforce/dev-scripts": "^8.3.0",
+    "@salesforce/dev-scripts": "^8.4.0",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/semver": "^7.5.7",
     "@types/shelljs": "^0.8.15",
     "aws-sdk-mock": "^5.9.0",
     "eslint-plugin-sf-plugin": "^1.17.3",
     "oclif": "^4.4.8",
-    "shx": "0.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
@@ -50,11 +49,13 @@
     "node": ">=16.0.0"
   },
   "files": [
-    "bin",
-    "oclif.manifest.json",
     "/lib",
     "/messages",
-    "/npm-shrinkwrap.json"
+    "/npm-shrinkwrap.json",
+    "/oclif.lock",
+    "/oclif.manifest.json",
+    "bin",
+    "oclif.manifest.json"
   ],
   "homepage": "https://github.com/salesforcecli/plugin-release-management",
   "keywords": [
@@ -142,13 +143,12 @@
     "build": "wireit",
     "clean": "sf-clean",
     "clean-all": "sf-clean all",
-    "clean:lib": "shx rm -rf lib && shx rm -rf coverage && shx rm -rf .nyc_output && shx rm -f oclif.manifest.json",
     "compile": "wireit",
     "docs": "sf-docs",
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
-    "postpack": "shx rm -f oclif.manifest.json npm-shrinkwrap.json",
+    "postpack": "sf-clean",
     "prepack": "sf-prepack && npm shrinkwrap",
     "prepare": "sf-install",
     "test": "wireit",
