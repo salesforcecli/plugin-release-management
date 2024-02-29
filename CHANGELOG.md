@@ -1,3 +1,9 @@
+## [4.7.20](https://github.com/salesforcecli/plugin-release-management/compare/4.7.19...4.7.20) (2024-02-29)
+
+### Bug Fixes
+
+- prevent empty flags/aliases ([#1025](https://github.com/salesforcecli/plugin-release-management/issues/1025)) ([ccc935c](https://github.com/salesforcecli/plugin-release-management/commit/ccc935c3f6f514199b2422ba4c716b988a31cfef))
+
 ## [4.7.19](https://github.com/salesforcecli/plugin-release-management/compare/4.7.18...4.7.19) (2024-02-25)
 
 ### Bug Fixes
