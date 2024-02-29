@@ -583,7 +583,9 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
       });
       // @ts-expect-error octokit doesn't have a type for this
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as CommandSnapshot[];
+      return (JSON.parse(Buffer.from(response.data.content ?? '', 'base64').toString()) as CommandSnapshot[])
+        .map(ensureAliases)
+        .map(ensureFlags);
     } catch {
       this.warn(`No command-snapshot.json found for ${owner}/${repo}@${ref}`);
       return [];
@@ -601,3 +603,9 @@ export default class ArtifactsTest extends SfCommand<ArtifactsCompareResult> {
     return response.map((tag: { name: string }) => tag.name);
   }
 }
+
+const ensureAliases = (snapshot: CommandSnapshot): CommandSnapshot =>
+  snapshot.alias ? snapshot : { ...snapshot, alias: [] };
+
+const ensureFlags = (snapshot: CommandSnapshot): CommandSnapshot =>
+  snapshot.flags ? snapshot : { ...snapshot, flags: [] };
