@@ -1606,7 +1606,7 @@
     read-package-json-fast "^3.0.0"
     which "^4.0.0"
 
-"@oclif/core@^3.15.1", "@oclif/core@^3.16.0", "@oclif/core@^3.18.1", "@oclif/core@^3.18.2", "@oclif/core@^3.19.1", "@oclif/core@^3.19.6", "@oclif/core@^3.5.0":
+"@oclif/core@^3.15.1", "@oclif/core@^3.16.0", "@oclif/core@^3.18.1", "@oclif/core@^3.18.2", "@oclif/core@^3.19.6", "@oclif/core@^3.5.0":
   version "3.20.0"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.20.0.tgz#534458dc6e8c46d8f03906aaadaca079e16a6554"
   integrity sha512-8BajhglY8frYGAS1whAukeouFZUN9MgQoLfNXtScPVEAjPlaD2BbSIAYQH2yF2qb/iVvbj/1DwYS3gqicYOq1A==
@@ -1985,12 +1985,12 @@
     "@salesforce/ts-types" "^2.0.9"
     tslib "^2.6.2"
 
-"@salesforce/plugin-command-reference@^3.0.68":
-  version "3.0.68"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.68.tgz#10761fb48f5346bdd3ed0c8e2f6cfaaaf32d1eca"
-  integrity sha512-tsAcHX2/wXIymRwUj+VEOfcX3Yz3G8wg2wCFI6pUGiEgz+6StVRXhG/lwRxNp+xHAxDmohW1FFNTQVeeJwCGqg==
+"@salesforce/plugin-command-reference@^3.0.69":
+  version "3.0.69"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.69.tgz#e187706e6751a27d99047f8fe5b42cda8c6a8819"
+  integrity sha512-SVUx7CMdc9h10x1S1X50Vk5q8lNm53Erz+j8X1niAAqeoh/cubYrwChyJS8rhrToxLfV3OeHJ7NQsqovNqTzVg==
   dependencies:
-    "@oclif/core" "^3.19.1"
+    "@oclif/core" "^3.19.6"
     "@salesforce/core" "^6.5.3"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/sf-plugins-core" "^5.0.13"
