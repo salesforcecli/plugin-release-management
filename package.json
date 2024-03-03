@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^4.0.16",
-    "@salesforce/dev-scripts": "^8.4.0",
+    "@salesforce/dev-scripts": "^8.4.1",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/semver": "^7.5.8",
     "@types/shelljs": "^0.8.15",
@@ -148,7 +148,7 @@
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
-    "postpack": "sf-clean",
+    "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack && npm shrinkwrap",
     "prepare": "sf-install",
     "test": "wireit",
