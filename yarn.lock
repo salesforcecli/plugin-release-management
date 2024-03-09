@@ -1613,7 +1613,7 @@
     read-package-json-fast "^3.0.0"
     which "^4.0.0"
 
-"@oclif/core@^3.15.1", "@oclif/core@^3.18.2", "@oclif/core@^3.19.6", "@oclif/core@^3.21.0", "@oclif/core@^3.5.0":
+"@oclif/core@^3.15.1", "@oclif/core@^3.18.2", "@oclif/core@^3.19.6", "@oclif/core@^3.20.0", "@oclif/core@^3.21.0", "@oclif/core@^3.5.0":
   version "3.23.0"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.23.0.tgz#d0ccc5f99c376e4bcfce04e8e94efae8417a53f8"
   integrity sha512-giQ/8Ft8yXWg4IyPVtynPb7ihoQsa3A/1Q53UIJIhh+8k+EedE3lJ01yn6sq6Ha35IGqsG1WhkeHzlJIuldEaw==
@@ -2007,14 +2007,14 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-trust@^3.3.14":
-  version "3.3.14"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.14.tgz#577a787c8f3489a0cee70f4d92c889f9c9632994"
-  integrity sha512-9aMuTo5xUHpnXUHPTKUr+uYju0DiPr9bIQV0bnQKRidKsfSftpHVg6pUJR1Rk4HZAjnBXc2W1FCkfubzKEgV6w==
+"@salesforce/plugin-trust@^3.3.16":
+  version "3.3.16"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.16.tgz#c8d4f64b884c9b75994d3e300381094f77f27ca1"
+  integrity sha512-CVdmiNpf3WuiH60xqJoOvxV02ZkvjRvrw63/hTKe5fwUJv4DVtz+gRhNSO4ZbCgPMfPY9otajagX2yKNI1hg9g==
   dependencies:
-    "@oclif/core" "^3.19.6"
+    "@oclif/core" "^3.20.0"
     "@salesforce/core" "^6.5.5"
-    "@salesforce/sf-plugins-core" "^7.1.13"
+    "@salesforce/sf-plugins-core" "^7.1.14"
     got "^13.0.0"
     npm "10.2.3"
     npm-run-path "^4.0.1"
@@ -2045,7 +2045,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/sf-plugins-core@^7.1.11", "@salesforce/sf-plugins-core@^7.1.13":
+"@salesforce/sf-plugins-core@^7.1.11", "@salesforce/sf-plugins-core@^7.1.14":
   version "7.1.14"
   resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-7.1.14.tgz#5f07316a602b4c5d44c09bc74c294d7df9e2e260"
   integrity sha512-KDX9vYDeVOkozRrsjVh4Pvzay++7bWWKmaHtGOwkZrBHb3mVEdCp0ryF0WaDTfaEvgNKn7kiZEDSO7oEhJSzug==
