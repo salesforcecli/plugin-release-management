@@ -1,3 +1,9 @@
+## [4.7.25](https://github.com/salesforcecli/plugin-release-management/compare/4.7.24...4.7.25) (2024-03-12)
+
+### Bug Fixes
+
+- safely fail package.json revert ([#1038](https://github.com/salesforcecli/plugin-release-management/issues/1038)) ([3f480df](https://github.com/salesforcecli/plugin-release-management/commit/3f480df82d5579c7acbb24f5194b791869b5f261))
+
 ## [4.7.24](https://github.com/salesforcecli/plugin-release-management/compare/4.7.23...4.7.24) (2024-03-10)
 
 ### Bug Fixes
