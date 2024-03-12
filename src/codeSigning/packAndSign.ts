@@ -193,11 +193,15 @@ export const api = {
   },
 
   async revertPackageJsonIfExists(): Promise<void> {
-    // Restore the package.json file so it doesn't show a git diff.
-    await fs.access(pathGetter.packageJsonBak);
-    cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
-    await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
-    await fs.unlink(pathGetter.packageJsonBak);
+    try {
+      // Restore the package.json file so it doesn't show a git diff.
+      await fs.access(pathGetter.packageJsonBak);
+      cliUx.log(`Restoring package.json from ${pathGetter.packageJsonBak}`);
+      await api.copyPackageDotJson(pathGetter.packageJsonBak, pathGetter.packageJson);
+      await fs.unlink(pathGetter.packageJsonBak);
+    } catch {
+      // It's okay that the backup doesn't exist - do nothing
+    }
   },
   /**
    * main method to pack and sign an npm.
