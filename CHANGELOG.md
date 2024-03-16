@@ -1,3 +1,9 @@
+## [4.7.28](https://github.com/salesforcecli/plugin-release-management/compare/4.7.27...4.7.28) (2024-03-16)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 6.7.0 to 6.7.1 ([c943c52](https://github.com/salesforcecli/plugin-release-management/commit/c943c522ac4714b0ed74adf683fdb76fb00888b4))
+
 ## [4.7.27](https://github.com/salesforcecli/plugin-release-management/compare/4.7.26...4.7.27) (2024-03-16)
 
 ### Bug Fixes
