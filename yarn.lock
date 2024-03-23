@@ -1999,14 +1999,14 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-trust@^3.3.16":
-  version "3.3.16"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.16.tgz#c8d4f64b884c9b75994d3e300381094f77f27ca1"
-  integrity sha512-CVdmiNpf3WuiH60xqJoOvxV02ZkvjRvrw63/hTKe5fwUJv4DVtz+gRhNSO4ZbCgPMfPY9otajagX2yKNI1hg9g==
+"@salesforce/plugin-trust@^3.3.17":
+  version "3.3.17"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.3.17.tgz#ecda65c6c17be99dbb1872be661d306505e69465"
+  integrity sha512-sxXNOw+ZrLxxoToWN5CCn5ZT1+gOAV53HeCTE3w1InxWMrhKIe95dHzci/YbJD/9pIGZsfKZ3bre83oL0nIgHQ==
   dependencies:
     "@oclif/core" "^3.20.0"
     "@salesforce/core" "^6.5.5"
-    "@salesforce/sf-plugins-core" "^7.1.14"
+    "@salesforce/sf-plugins-core" "^7.1.15"
     got "^13.0.0"
     npm "10.2.3"
     npm-run-path "^4.0.1"
@@ -2037,7 +2037,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/sf-plugins-core@^7.1.14", "@salesforce/sf-plugins-core@^7.1.15":
+"@salesforce/sf-plugins-core@^7.1.15":
   version "7.1.15"
   resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-7.1.15.tgz#4d6033d56d78cf6046abfce96c119a8a60ee7c07"
   integrity sha512-dQSSIHEpeFIadkWqZE24068m01vy31hVJdGWYvgscTnNrR30jIC5fXRevYvGG0l+8vVEJkCYYnJFQabUjSw3Eg==
