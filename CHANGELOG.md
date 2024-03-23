@@ -1,3 +1,9 @@
+## [4.7.30](https://github.com/salesforcecli/plugin-release-management/compare/4.7.29...4.7.30) (2024-03-23)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-trust from 3.3.16 to 3.3.17 ([a17de57](https://github.com/salesforcecli/plugin-release-management/commit/a17de572bf2ec6fc09bdaeeb3c10a3fa99406d46))
+
 ## [4.7.29](https://github.com/salesforcecli/plugin-release-management/compare/4.7.28...4.7.29) (2024-03-17)
 
 ### Bug Fixes
