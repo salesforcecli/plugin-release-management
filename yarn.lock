@@ -1733,10 +1733,10 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-trust@^3.5.2":
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.5.2.tgz#adbceeb90dcc07bb378e57a59071f0286874c163"
-  integrity sha512-HCzLFkD9Gyb2MN/PlEImGrF7Czb8dif+/N/9tyM+xLvn9RQQmPjmVsI97RlNgz1lxMwXY0Zv06YHK2pBrg3gOw==
+"@salesforce/plugin-trust@^3.5.3":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.5.3.tgz#d0e77e8bcd83a38e445d73598bf4284cdcbeb495"
+  integrity sha512-lJNlO4SaKOM4gIeGKgewvovbk+/+qjAF/dP7M6dZLFopGljVQzZzs7wlbOanSGSLzRkB8HSfaDCCshGj2NxnRg==
   dependencies:
     "@oclif/core" "^3.26.0"
     "@salesforce/core" "^6.7.6"
