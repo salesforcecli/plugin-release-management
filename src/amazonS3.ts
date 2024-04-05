@@ -65,9 +65,12 @@ export class AmazonS3 {
   }
 
   public async getObject(options: GetObjectOption): Promise<GetObjectOutput> {
-    options.Key = options.Key.replace(BASE_URL, '').replace(/^\//, '');
     const object = (await this.s3
-      .getObject({ ...options, ...{ Bucket: this.options.bucket ?? BUCKET } })
+      .getObject({
+        ...options,
+        Key: options.Key.replace(BASE_URL, '').replace(/^\//, ''),
+        ...{ Bucket: this.options.bucket ?? BUCKET },
+      })
       .promise()) as GetObjectOutput;
     return object;
   }
