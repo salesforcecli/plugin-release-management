@@ -1,341 +1,189 @@
 [
-    {
-        "alias": [],
-        "command": "channel:promote",
-        "flagAliases": [
-            "candidate",
-            "maxage",
-            "target",
-            "targets"
-        ],
-        "flagChars": [
-            "C",
-            "T",
-            "c",
-            "d",
-            "i",
-            "m",
-            "p",
-            "s",
-            "t",
-            "v",
-            "x"
-        ],
-        "flags": [
-            "architecture-target",
-            "cli",
-            "dryrun",
-            "flags-dir",
-            "indexes",
-            "json",
-            "max-age",
-            "platform",
-            "promote-from-channel",
-            "promote-to-channel",
-            "sha",
-            "version",
-            "xz"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:artifacts:compare",
-        "flagAliases": [],
-        "flagChars": [
-            "c",
-            "p",
-            "r"
-        ],
-        "flags": [
-            "current",
-            "flags-dir",
-            "json",
-            "plugin",
-            "previous"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:install:jit:test",
-        "flagAliases": [],
-        "flagChars": [
-            "j"
-        ],
-        "flags": [
-            "flags-dir",
-            "jit-plugin",
-            "json"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:install:test",
-        "flagAliases": [],
-        "flagChars": [
-            "c",
-            "m"
-        ],
-        "flags": [
-            "channel",
-            "cli",
-            "flags-dir",
-            "json",
-            "method",
-            "output-file"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:release:automerge",
-        "flagAliases": [
-            "org"
-        ],
-        "flagChars": [
-            "d"
-        ],
-        "flags": [
-            "dry-run",
-            "flags-dir",
-            "json",
-            "owner",
-            "pull-number",
-            "repo",
-            "verbose"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [
-            "cli:latestrc:build"
-        ],
-        "command": "cli:release:build",
-        "flagAliases": [
-            "rctag"
-        ],
-        "flagChars": [
-            "c",
-            "d",
-            "g"
-        ],
-        "flags": [
-            "build-only",
-            "empty",
-            "flags-dir",
-            "jit",
-            "json",
-            "label",
-            "only",
-            "patch",
-            "pinned-deps",
-            "pr-base-branch",
-            "release-channel",
-            "resolutions",
-            "start-from-github-ref",
-            "start-from-npm-dist-tag"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:releasenotes",
-        "flagAliases": [],
-        "flagChars": [
-            "c",
-            "m",
-            "s"
-        ],
-        "flags": [
-            "cli",
-            "flags-dir",
-            "json",
-            "markdown",
-            "since"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:tarballs:prepare",
-        "flagAliases": [],
-        "flagChars": [
-            "d",
-            "t"
-        ],
-        "flags": [
-            "dryrun",
-            "flags-dir",
-            "json",
-            "types",
-            "verbose"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:tarballs:smoke",
-        "flagAliases": [],
-        "flagChars": [],
-        "flags": [
-            "flags-dir",
-            "json",
-            "verbose"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:tarballs:verify",
-        "flagAliases": [],
-        "flagChars": [
-            "c",
-            "w"
-        ],
-        "flags": [
-            "cli",
-            "flags-dir",
-            "json",
-            "windows-username-buffer"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "cli:versions:inspect",
-        "flagAliases": [],
-        "flagChars": [
-            "c",
-            "d",
-            "l",
-            "s"
-        ],
-        "flags": [
-            "channels",
-            "cli",
-            "dependencies",
-            "flags-dir",
-            "json",
-            "locations",
-            "salesforce"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "dependabot:automerge",
-        "flagAliases": [],
-        "flagChars": [
-            "d",
-            "m",
-            "o",
-            "r",
-            "s"
-        ],
-        "flags": [
-            "dryrun",
-            "flags-dir",
-            "json",
-            "max-version-bump",
-            "merge-method",
-            "owner",
-            "repo",
-            "skip-ci"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "github:check:closed",
-        "flagAliases": [],
-        "flagChars": [
-            "o"
-        ],
-        "flags": [
-            "flags-dir",
-            "github-token",
-            "gus",
-            "json"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "npm:dependencies:pin",
-        "flagAliases": [],
-        "flagChars": [
-            "d",
-            "t"
-        ],
-        "flags": [
-            "dryrun",
-            "flags-dir",
-            "json",
-            "tag"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "npm:package:release",
-        "flagAliases": [],
-        "flagChars": [
-            "a",
-            "d",
-            "s",
-            "t"
-        ],
-        "flags": [
-            "dryrun",
-            "flags-dir",
-            "githubtag",
-            "install",
-            "json",
-            "npmaccess",
-            "npmtag",
-            "prerelease",
-            "sign",
-            "verify"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    },
-    {
-        "alias": [],
-        "command": "plugins:trust:verify",
-        "flagAliases": [],
-        "flagChars": [
-            "n",
-            "r"
-        ],
-        "flags": [
-            "json",
-            "loglevel",
-            "npm",
-            "registry"
-        ],
-        "plugin": "@salesforce/plugin-trust"
-    },
-    {
-        "alias": [],
-        "command": "repositories",
-        "flagAliases": [],
-        "flagChars": [
-            "x"
-        ],
-        "flags": [
-            "columns",
-            "csv",
-            "extended",
-            "filter",
-            "flags-dir",
-            "json",
-            "no-header",
-            "no-truncate",
-            "output",
-            "sort"
-        ],
-        "plugin": "@salesforce/plugin-release-management"
-    }
+  {
+    "alias": [],
+    "command": "channel:promote",
+    "flagAliases": ["candidate", "maxage", "target", "targets"],
+    "flagChars": ["C", "T", "c", "d", "i", "m", "p", "s", "t", "v", "x"],
+    "flags": [
+      "architecture-target",
+      "cli",
+      "dryrun",
+      "flags-dir",
+      "indexes",
+      "json",
+      "max-age",
+      "platform",
+      "promote-from-channel",
+      "promote-to-channel",
+      "sha",
+      "version",
+      "xz"
+    ],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:artifacts:compare",
+    "flagAliases": [],
+    "flagChars": ["c", "p", "r"],
+    "flags": ["current", "flags-dir", "json", "plugin", "previous"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:install:jit:test",
+    "flagAliases": [],
+    "flagChars": ["j"],
+    "flags": ["flags-dir", "jit-plugin", "json"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:install:test",
+    "flagAliases": [],
+    "flagChars": ["c", "m"],
+    "flags": ["channel", "cli", "flags-dir", "json", "method", "output-file"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:release:automerge",
+    "flagAliases": ["org"],
+    "flagChars": ["d"],
+    "flags": ["dry-run", "flags-dir", "json", "owner", "pull-number", "repo", "verbose"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": ["cli:latestrc:build"],
+    "command": "cli:release:build",
+    "flagAliases": ["rctag"],
+    "flagChars": ["c", "d", "g"],
+    "flags": [
+      "build-only",
+      "empty",
+      "flags-dir",
+      "jit",
+      "json",
+      "label",
+      "only",
+      "patch",
+      "pinned-deps",
+      "pr-base-branch",
+      "release-channel",
+      "resolutions",
+      "start-from-github-ref",
+      "start-from-npm-dist-tag"
+    ],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:releasenotes",
+    "flagAliases": [],
+    "flagChars": ["c", "m", "s"],
+    "flags": ["cli", "flags-dir", "json", "markdown", "since"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:tarballs:prepare",
+    "flagAliases": [],
+    "flagChars": ["d", "t"],
+    "flags": ["dryrun", "flags-dir", "json", "types", "verbose"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:tarballs:smoke",
+    "flagAliases": [],
+    "flagChars": [],
+    "flags": ["flags-dir", "json", "verbose"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:tarballs:verify",
+    "flagAliases": [],
+    "flagChars": ["c", "w"],
+    "flags": ["cli", "flags-dir", "json", "windows-username-buffer"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "cli:versions:inspect",
+    "flagAliases": [],
+    "flagChars": ["c", "d", "l", "s"],
+    "flags": ["channels", "cli", "dependencies", "flags-dir", "json", "locations", "salesforce"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "dependabot:automerge",
+    "flagAliases": [],
+    "flagChars": ["d", "m", "o", "r", "s"],
+    "flags": ["dryrun", "flags-dir", "json", "max-version-bump", "merge-method", "owner", "repo", "skip-ci"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "github:check:closed",
+    "flagAliases": [],
+    "flagChars": ["o"],
+    "flags": ["flags-dir", "github-token", "gus", "json"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "npm:dependencies:pin",
+    "flagAliases": [],
+    "flagChars": ["d", "t"],
+    "flags": ["dryrun", "flags-dir", "json", "tag"],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "npm:package:release",
+    "flagAliases": [],
+    "flagChars": ["a", "d", "s", "t"],
+    "flags": [
+      "dryrun",
+      "flags-dir",
+      "githubtag",
+      "install",
+      "json",
+      "npmaccess",
+      "npmtag",
+      "prerelease",
+      "sign",
+      "verify"
+    ],
+    "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "plugins:trust:verify",
+    "flagAliases": [],
+    "flagChars": ["n", "r"],
+    "flags": ["flags-dir", "json", "loglevel", "npm", "registry"],
+    "plugin": "@salesforce/plugin-trust"
+  },
+  {
+    "alias": [],
+    "command": "repositories",
+    "flagAliases": [],
+    "flagChars": ["x"],
+    "flags": [
+      "columns",
+      "csv",
+      "extended",
+      "filter",
+      "flags-dir",
+      "json",
+      "no-header",
+      "no-truncate",
+      "output",
+      "sort"
+    ],
+    "plugin": "@salesforce/plugin-release-management"
+  }
 ]
