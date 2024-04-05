@@ -112,8 +112,8 @@ promote a s3 channel
 
 ```
 USAGE
-  $ sfdx channel promote -t <value> -c sf|sfdx [--json] [-d] [-C <value>] [-p win|macos|deb] [-s <value>] [-m
-    <value>] [-i] [-x] [-T linux-x64|linux-arm|win32-x64|win32-x86|darwin-x64] [-v <value>]
+  $ sfdx channel promote -t <value> -c sf|sfdx [--json] [--flags-dir <value>] [-d] [-C <value>] [-p win|macos|deb]
+    [-s <value>] [-m <value>] [-i] [-x] [-T linux-x64|linux-arm|win32-x64|win32-x86|darwin-x64] [-v <value>]
 
 FLAGS
   -C, --promote-from-channel=<value>     the channel name that you want to promote
@@ -133,7 +133,8 @@ FLAGS
   -x, --[no-]xz                          also upload xz
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   promote a s3 channel
@@ -144,7 +145,7 @@ EXAMPLES
   $ sfdx channel promote --candidate latest-rc --target latest --platform win --platform mac
 ```
 
-_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/channel/promote.ts)_
+_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/channel/promote.ts)_
 
 ## `sfdx cli artifacts compare`
 
@@ -152,7 +153,7 @@ Look for breaking changes in artifacts (schemas and snapshots) from plugins. Mus
 
 ```
 USAGE
-  $ sfdx cli artifacts compare [--json] [-p <value>] [-r <value>] [-c <value>]
+  $ sfdx cli artifacts compare [--json] [--flags-dir <value>] [-p <value>] [-r <value>] [-c <value>]
 
 FLAGS
   -c, --current=<value>    Current CLI version to compare against. Defaults to the version on the CLI in the current
@@ -161,13 +162,14 @@ FLAGS
   -r, --previous=<value>   Previous CLI version to compare against. Defaults to the last published version.
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 EXAMPLES
   $ sfdx cli artifacts compare
 ```
 
-_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/artifacts/compare.ts)_
+_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/artifacts/compare.ts)_
 
 ## `sfdx cli install jit test`
 
@@ -175,19 +177,20 @@ Test that all JIT plugins can be successfully installed.
 
 ```
 USAGE
-  $ sfdx cli install jit test [--json] [-j <value>]
+  $ sfdx cli install jit test [--json] [--flags-dir <value>] [-j <value>]
 
 FLAGS
   -j, --jit-plugin=<value>...  JIT plugin(s) to test, example: @salesforce/plugin-community
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 EXAMPLES
   $ sfdx cli install jit test
 ```
 
-_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/install/jit/test.ts)_
+_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/install/jit/test.ts)_
 
 ## `sfdx cli install test`
 
@@ -195,7 +198,7 @@ install sf or sfdx
 
 ```
 USAGE
-  $ sfdx cli install test -c sf|sfdx -m installer|npm|tarball [--json] [--channel
+  $ sfdx cli install test -c sf|sfdx -m installer|npm|tarball [--json] [--flags-dir <value>] [--channel
     legacy|stable|stable-rc|latest|latest-rc] [--output-file <value>]
 
 FLAGS
@@ -208,7 +211,8 @@ FLAGS
       --output-file=<value>  [default: test-results.json] the file to write the JSON results to (must be .json)
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   install sf or sfdx
@@ -227,7 +231,7 @@ EXAMPLES
   $ sfdx cli install test --cli sf --method tarball --channel stable-rc
 ```
 
-_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/install/test.ts)_
+_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/install/test.ts)_
 
 ## `sfdx cli release automerge`
 
@@ -235,7 +239,8 @@ Attempt to automerge nightly PR
 
 ```
 USAGE
-  $ sfdx cli release automerge (--owner <value> --repo <value>) --pull-number <value> [--json] [-d] [--verbose]
+  $ sfdx cli release automerge (--owner <value> --repo <value>) --pull-number <value> [--json] [--flags-dir <value>] [-d]
+    [--verbose]
 
 FLAGS
   -d, --dry-run              Run all checks, but do not merge PR
@@ -245,7 +250,8 @@ FLAGS
       --verbose              Show additional debug output
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   Attempt to automerge nightly PR
@@ -256,7 +262,7 @@ EXAMPLES
   $ sfdx cli release automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
 ```
 
-_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/release/automerge.ts)_
+_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/release/automerge.ts)_
 
 ## `sfdx cli release build`
 
@@ -264,8 +270,9 @@ builds a new release from a designated starting point and optionally creates PR 
 
 ```
 USAGE
-  $ sfdx cli release build -c <value> [--json] [-d <value>] [-g <value>] [--build-only] [--resolutions] [--only
-    <value>] [--pinned-deps] [--jit] [--label <value>] [--patch] [--empty] [--pr-base-branch <value>]
+  $ sfdx cli release build -c <value> [--json] [--flags-dir <value>] [-d <value>] [-g <value>] [--build-only]
+    [--resolutions] [--only <value>] [--pinned-deps] [--jit] [--label <value>] [--patch] [--empty] [--pr-base-branch
+    <value>]
 
 FLAGS
   -c, --release-channel=<value>          (required) the channel intended for this release, examples: nightly, latest-rc,
@@ -287,7 +294,8 @@ FLAGS
       --[no-]resolutions                 bump the versions of packages listed in the resolutions section
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   builds a new release from a designated starting point and optionally creates PR in Github
@@ -317,7 +325,7 @@ EXAMPLES
   $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3
 ```
 
-_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/release/build.ts)_
+_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/release/build.ts)_
 
 ## `sfdx cli releasenotes`
 
@@ -325,7 +333,7 @@ pull all relevant information for writing release notes.
 
 ```
 USAGE
-  $ sfdx cli releasenotes -c sf|sfdx [--json] [-s <value>] [-m]
+  $ sfdx cli releasenotes -c sf|sfdx [--json] [--flags-dir <value>] [-s <value>] [-m]
 
 FLAGS
   -c, --cli=<option>   (required) the cli to pull information for
@@ -334,7 +342,8 @@ FLAGS
   -s, --since=<value>  the version number of the previous release. Defaults to the latest-rc version on npm
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   pull all relevant information for writing release notes.
@@ -357,7 +366,7 @@ EXAMPLES
   $ sfdx cli releasenotes --cli sf --markdown > changes.md
 ```
 
-_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/releasenotes.ts)_
+_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/releasenotes.ts)_
 
 ## `sfdx cli tarballs prepare`
 
@@ -365,7 +374,7 @@ remove unnecessary files from node_modules
 
 ```
 USAGE
-  $ sfdx cli tarballs prepare [--json] [-d] [-t] [--verbose]
+  $ sfdx cli tarballs prepare [--json] [--flags-dir <value>] [-d] [-t] [--verbose]
 
 FLAGS
   -d, --dryrun   only show what would be removed from node_modules
@@ -373,7 +382,8 @@ FLAGS
       --verbose  show all files paths being removed
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   remove unnecessary files from node_modules
@@ -384,7 +394,7 @@ EXAMPLES
   $ sfdx cli tarballs prepare
 ```
 
-_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/tarballs/prepare.ts)_
+_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/tarballs/prepare.ts)_
 
 ## `sfdx cli tarballs smoke`
 
@@ -392,13 +402,14 @@ smoke tests for the sf CLI
 
 ```
 USAGE
-  $ sfdx cli tarballs smoke [--json] [--verbose]
+  $ sfdx cli tarballs smoke [--json] [--flags-dir <value>] [--verbose]
 
 FLAGS
   --verbose  show the --help output for each command
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   smoke tests for the sf CLI
@@ -413,7 +424,7 @@ EXAMPLES
   $ sfdx cli tarballs smoke
 ```
 
-_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/tarballs/smoke.ts)_
+_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/tarballs/smoke.ts)_
 
 ## `sfdx cli tarballs verify`
 
@@ -421,7 +432,7 @@ verify that tarballs are ready to be uploaded
 
 ```
 USAGE
-  $ sfdx cli tarballs verify [--json] [-c sf|sfdx] [-w <value>]
+  $ sfdx cli tarballs verify [--json] [--flags-dir <value>] [-c sf|sfdx] [-w <value>]
 
 FLAGS
   -c, --cli=<option>                     [default: sfdx] the cli to verify
@@ -429,7 +440,8 @@ FLAGS
   -w, --windows-username-buffer=<value>  [default: 41] the number of characters to allow for windows usernames
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   verify that tarballs are ready to be uploaded
@@ -444,7 +456,7 @@ EXAMPLES
   $ sfdx cli tarballs verify --cli sf
 ```
 
-_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/tarballs/verify.ts)_
+_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/tarballs/verify.ts)_
 
 ## `sfdx cli versions inspect`
 
@@ -453,7 +465,7 @@ inspect the CLI version across all install paths
 ```
 USAGE
   $ sfdx cli versions inspect -c legacy|stable|stable-rc|latest|latest-rc|nightly -l archive|npm --cli sf|sfdx [--json]
-    [-d <value>] [-s]
+    [--flags-dir <value>] [-d <value>] [-s]
 
 FLAGS
   -c, --channels=<option>...     (required) the channel you want to inspect (for achives, latest and latest-rc are
@@ -467,7 +479,8 @@ FLAGS
                                  <options: sf|sfdx>
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   inspect the CLI version across all install paths
@@ -496,7 +509,7 @@ EXAMPLES
   $ sfdx cli versions inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/cli/versions/inspect.ts)_
 
 ## `sfdx dependabot automerge`
 
@@ -504,8 +517,8 @@ automatically merge one green, mergeable PR up to the specified maximum bump typ
 
 ```
 USAGE
-  $ sfdx dependabot automerge -m major|minor|patch [--json] [-o <value> -r <value>] [-d] [-s] [--merge-method
-    merge|squash|rebase]
+  $ sfdx dependabot automerge -m major|minor|patch [--json] [--flags-dir <value>] [-o <value> -r <value>] [-d] [-s]
+    [--merge-method merge|squash|rebase]
 
 FLAGS
   -d, --dryrun                     only show what would happen if you consolidated dependabot PRs
@@ -520,7 +533,8 @@ FLAGS
                                    <options: merge|squash|rebase>
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   automatically merge one green, mergeable PR up to the specified maximum bump type
@@ -535,7 +549,7 @@ EXAMPLES
   $ sfdx dependabot automerge --max-version-bump major
 ```
 
-_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/dependabot/automerge.ts)_
+_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/dependabot/automerge.ts)_
 
 ## `sfdx github check closed`
 
@@ -543,14 +557,15 @@ Show open Github issues with GUS WI
 
 ```
 USAGE
-  $ sfdx github check closed -o <value> --github-token <value> [--json]
+  $ sfdx github check closed -o <value> --github-token <value> [--json] [--flags-dir <value>]
 
 FLAGS
   -o, --gus=<value>           (required) Username/alias of your GUS org connection
       --github-token=<value>  (required) Github token--store this in the environment as GITHUB_TOKEN
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   Show open Github issues with GUS WI
@@ -561,7 +576,7 @@ EXAMPLES
   $ sfdx github check closed -o me@gus.com
 ```
 
-_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/github/check/closed.ts)_
+_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/github/check/closed.ts)_
 
 ## `sfdx npm dependencies pin`
 
@@ -569,14 +584,15 @@ lock a list of dependencies to a target tag or default to 'latest', place these 
 
 ```
 USAGE
-  $ sfdx npm dependencies pin [--json] [-d] [-t <value>]
+  $ sfdx npm dependencies pin [--json] [--flags-dir <value>] [-d] [-t <value>]
 
 FLAGS
   -d, --dryrun       If true, will not make any changes to the package.json
   -t, --tag=<value>  [default: latest] The name of the tag you want, e.g. 'latest-rc', or 'latest'
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   lock a list of dependencies to a target tag or default to 'latest', place these entries in 'pinnedDependencies' entry
@@ -586,7 +602,7 @@ DESCRIPTION
   in the package.json
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/npm/dependencies/pin.ts)_
 
 ## `sfdx npm package release`
 
@@ -594,8 +610,8 @@ publish npm package
 
 ```
 USAGE
-  $ sfdx npm package release [--json] [-d] [-s] [-t <value>] [-a <value>] [--install] [--prerelease <value>] [--verify]
-    [--githubtag <value>]
+  $ sfdx npm package release [--json] [--flags-dir <value>] [-d] [-s] [-t <value>] [-a <value>] [--install] [--prerelease
+    <value>] [--verify] [--githubtag <value>]
 
 FLAGS
   -a, --npmaccess=<value>   [default: public] access level to use when publishing to npm
@@ -609,7 +625,8 @@ FLAGS
       --[no-]verify         verify npm registry has new version after publish and digital signature
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   publish npm package
@@ -617,7 +634,7 @@ DESCRIPTION
   publish npm package
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/npm/package/release.ts)_
 
 ## `sfdx plugins trust verify`
 
@@ -625,14 +642,15 @@ Validate a digital signature.
 
 ```
 USAGE
-  $ sfdx plugins trust verify -n <value> [--json] [-r <value>]
+  $ sfdx plugins trust verify -n <value> [--json] [--flags-dir <value>] [-r <value>]
 
 FLAGS
   -n, --npm=<value>       (required) Specify the npm name. This can include a tag/version.
   -r, --registry=<value>  The registry name. The behavior is the same as npm.
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   Validate a digital signature.
@@ -645,7 +663,7 @@ EXAMPLES
   $ sfdx plugins trust verify --npm @scope/npmName
 ```
 
-_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/3.3.17/src/commands/plugins/trust/verify.ts)_
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/3.5.3/src/commands/plugins/trust/verify.ts)_
 
 ## `sfdx repositories`
 
@@ -653,8 +671,8 @@ list repositories owned and supported by Salesforce CLI
 
 ```
 USAGE
-  $ sfdx repositories [--json] [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
+  $ sfdx repositories [--json] [--flags-dir <value>] [--columns <value> | -x] [--filter <value>] [--no-header |
+    [--csv | --no-truncate]] [--output csv|json|yaml |  | ] [--sort <value>]
 
 FLAGS
   -x, --extended         show extra columns
@@ -668,7 +686,8 @@ FLAGS
       --sort=<value>     property to sort by (prepend '-' for descending)
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
 
 DESCRIPTION
   list repositories owned and supported by Salesforce CLI
@@ -683,6 +702,6 @@ EXAMPLES
   $ sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/4.7.34/src/commands/repositories/index.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.0.0/src/commands/repositories/index.ts)_
 
 <!-- commandsstop -->

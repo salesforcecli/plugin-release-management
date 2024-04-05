@@ -1,3 +1,31 @@
+# [5.0.0](https://github.com/salesforcecli/plugin-release-management/compare/4.7.34...5.0.0) (2024-04-05)
+
+- feat!: remove versioning code (#1053) ([c2a8348](https://github.com/salesforcecli/plugin-release-management/commit/c2a83484e5f9c1c363410fc507584ec9e01d1454)), closes [#1053](https://github.com/salesforcecli/plugin-release-management/issues/1053)
+
+### BREAKING CHANGES
+
+- don't calculate the next version. Throw an error if the version in pjson is already published.
+
+- fix: use npmName from plugin-trust
+
+- chore: new snapshot because flagsDir
+
+- test: oclif runHook stubs
+
+- feat!: publish doesn't do versioning
+
+- chore: snapshot generate for flags-dir
+
+- refactor: eslint likes # over \_
+
+- fix: don't mutate params
+
+- chore: bump sf plugin
+
+- refactor: no param reassign
+
+- chore: bump plugin-trust for npmName lowercasing
+
 ## [4.7.34](https://github.com/salesforcecli/plugin-release-management/compare/4.7.33...4.7.34) (2024-03-30)
 
 ### Bug Fixes
