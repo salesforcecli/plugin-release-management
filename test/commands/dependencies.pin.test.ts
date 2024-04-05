@@ -17,6 +17,8 @@ describe('dependencies:pin', () => {
 
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
+  oclifConfigStub.runHook = async () => ({ successes: [], failures: [] });
+
   class TestNpmDependenciesPin extends Pin {
     public async runIt() {
       await this.init();

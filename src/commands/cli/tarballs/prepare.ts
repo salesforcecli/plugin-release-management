@@ -11,6 +11,7 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import chalk from 'chalk';
 import { Interfaces } from '@oclif/core';
+import { omit } from '@salesforce/kit';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.tarballs.prepare');
@@ -157,6 +158,5 @@ const find = async (
       patterns.push(exclusionPattern);
     }
   }
-  if (options?.excludeDirectories) delete options.excludeDirectories;
-  return fg(patterns, options);
+  return fg(patterns, options.excludeDirectories ? omit(options, ['excludeDirectories']) : options);
 };

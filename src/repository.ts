@@ -10,7 +10,6 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
-import { isString } from '@salesforce/ts-types';
 import chalk from 'chalk';
 import { Package } from './package.js';
 import { Registry } from './registry.js';
@@ -195,19 +194,9 @@ export class PackageRepo extends Repository {
       );
       return this.package.packageJson.version;
     } else {
-      this.logger.debug('Using standard-version to determine next version');
-      let command = 'npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog';
-      // It can be an empty string if they want
-      if (isString(this.options?.useprerelease)) {
-        command += ` --prerelease ${this.options?.useprerelease}`;
-      }
-      const result = this.execCommand(command, true);
-      const nextVersionRegex = /(?<=to\s)([0-9]{1,}\.|.){2,}/gi;
-      const nextVersion = result.match(nextVersionRegex)?.[0];
-      if (!nextVersion) {
-        throw new SfError(`Could not determine next version from ${result} using regex`);
-      }
-      return nextVersion;
+      throw new SfError(
+        'the next version has already been published to the registry.  This should not happen due to other CI checks'
+      );
     }
   }
 }

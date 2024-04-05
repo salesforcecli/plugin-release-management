@@ -6,8 +6,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable no-underscore-dangle */
-
 import fs from 'node:fs/promises';
 import cp from 'node:child_process';
 import { EOL } from 'node:os';
@@ -17,50 +15,50 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { Logger } from '@salesforce/core';
 import { NamedError } from '@salesforce/kit';
 import { ProxyAgent } from 'proxy-agent';
+import { parseNpmName } from '@salesforce/plugin-trust/npmName';
 import { PackageJson } from '../package.js';
 import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning.js';
 import { ExecProcessFailed } from './error.js';
-import { parseNpmName } from './NpmName.js';
 
 class PathGetter {
   private static packageJson = 'package.json';
 
-  private _packageJson: string;
-  private _packageJsonBak: string;
-  private _target: string;
-  private _cwd: string;
+  #packageJson: string;
+  #packageJsonBak: string;
+  #target: string;
+  #cwd: string;
 
   public constructor(target?: string) {
-    this._cwd = process.cwd();
+    this.#cwd = process.cwd();
     if (!target) {
-      this._target = this._cwd;
-    } else if (target?.includes(this._cwd)) {
-      this._target = target;
+      this.#target = this.#cwd;
+    } else if (target?.includes(this.#cwd)) {
+      this.#target = target;
     } else {
-      this._target = pathJoin(this._cwd, target);
+      this.#target = pathJoin(this.#cwd, target);
     }
-    this._packageJson = pathJoin(this._target, PathGetter.packageJson);
-    this._packageJsonBak = pathJoin(this._target, `${PathGetter.packageJson}.bak`);
+    this.#packageJson = pathJoin(this.#target, PathGetter.packageJson);
+    this.#packageJsonBak = pathJoin(this.#target, `${PathGetter.packageJson}.bak`);
   }
 
   public get packageJson(): string {
-    return this._packageJson;
+    return this.#packageJson;
   }
 
   public get packageJsonBak(): string {
-    return this._packageJsonBak;
+    return this.#packageJsonBak;
   }
 
   public get target(): string {
-    return this._target;
+    return this.#target;
   }
 
   public getFile(filename: string): string {
-    return pathJoin(this._target, filename);
+    return pathJoin(this.#target, filename);
   }
 
   public getIgnoreFile(filename: string): string {
-    return pathJoin(this._cwd, filename);
+    return pathJoin(this.#cwd, filename);
   }
 }
 
