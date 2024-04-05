@@ -16,6 +16,7 @@ describe('repositories', () => {
   const sandbox = sinon.createSandbox();
 
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  oclifConfigStub.runHook = async () => ({ successes: [], failures: [] });
 
   class TestRepositories extends Repositories {
     public async runIt() {
