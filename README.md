@@ -8,23 +8,11 @@ Plugin designed to handle all tasks related to signing, releasing, and testing n
 
 The following steps are automated for package releases
 
-### Version Bump
+### Version Bump | Prerelease | ChangeLog
 
-We use [standard-version](https://github.com/conventional-changelog/standard-version) to determine the next version that will be published. This means that all commits **must** adhere to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) in order for `standard-version` to work.
+This plugin will not bump your package version for you. Use https://github.com/salesforcecli/github-workflows?tab=readme-ov-file#githubrelease and conventional commit tags to manage that.
 
-In the case that you have manually bumped the version in the package.json, then the plugin will respect that and publish that version instead of using `standard-version` to determine the next version.
-
-NOTE: We consider the `chore`, `style`, `docs`, `ci`, `test` commit types to be "non-releasable", meaning that if all the commits are of those types then we do not publish a new version. However, if you've manually bumped the version in the package.json then the plugin will publish that version regardless of the commit types.
-
-#### `--prerelease`
-
-1. If you've manually bumped the version in the package.json, the prerelease tag will not be added if it's not already there. For example, if you want to do a prerelease for a new major version, you will want to update the package version to `X.0.0-<your-prerelease-tag>`.
-
-2. When using the `--prerelease` flag, `standard-version` will bump both the prerelease version and the package version, e.g. `3.0.0-alpha.0` => `3.0.1-alpha.1`. See https://github.com/conventional-changelog/standard-version#release-as-a-pre-release for more
-
-### Changelogs
-
-`standard-version` automatically handles this for us as well. Again you must adhere to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) in order for the changelog generation to work.
+It used to.
 
 ### Build
 

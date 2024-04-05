@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import sinon from 'sinon';
@@ -42,33 +42,18 @@ describe('PackageRepo', () => {
       expect(repo.nextVersion).to.equal('2.0.0');
     });
 
-    it('should use standard-version to determine the next version if the version in the package.json already exists', async () => {
+    it('should throw if the version in the package.json already exists', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
       execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0');
-      const repo = await PackageRepo.create({ ux: uxStub });
-      expect(repo.nextVersion).to.equal('1.1.0');
-    });
-
-    it('should use standard-version to determine a prerelease version', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-0');
-      const repo = await PackageRepo.create({ ux: uxStub, useprerelease: '' });
-      expect(repo.nextVersion).to.equal('1.1.0-0');
-      expect(execStub.args[0][0]).to.include('--prerelease');
-    });
-
-    it('should use standard-version to determine a specific prerelease version', async () => {
-      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
-        Promise.resolve({ name: pkgName, version: '1.0.0' })
-      );
-      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('1.0.0 to 1.1.0-beta.0');
-      const repo = await PackageRepo.create({ ux: uxStub, useprerelease: 'beta' });
-      expect(repo.nextVersion).to.equal('1.1.0-beta.0');
-      expect(execStub.args[0][0]).to.include('--prerelease');
+      try {
+        await PackageRepo.create({ ux: uxStub });
+        expect.fail('Expected an error to be thrown');
+      } catch (err) {
+        assert(err instanceof Error);
+        expect(err.message).to.include('already been published');
+      }
     });
   });
 
