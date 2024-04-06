@@ -1,3 +1,9 @@
+## [5.0.1](https://github.com/salesforcecli/plugin-release-management/compare/5.0.0...5.0.1) (2024-04-06)
+
+### Bug Fixes
+
+- **deps:** bump aws-sdk from 2.1593.0 to 2.1594.0 ([e26eaea](https://github.com/salesforcecli/plugin-release-management/commit/e26eaead1c9b69d8865d90b9810109b2bd88595e))
+
 # [5.0.0](https://github.com/salesforcecli/plugin-release-management/compare/4.7.34...5.0.0) (2024-04-05)
 
 - feat!: remove versioning code (#1053) ([c2a8348](https://github.com/salesforcecli/plugin-release-management/commit/c2a83484e5f9c1c363410fc507584ec9e01d1454)), closes [#1053](https://github.com/salesforcecli/plugin-release-management/issues/1053)
