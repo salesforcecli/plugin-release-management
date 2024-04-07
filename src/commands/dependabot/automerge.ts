@@ -20,7 +20,7 @@ const messagesFromConsolidate = Messages.loadMessages(
   'dependabot.consolidate'
 );
 
-interface PullRequest {
+type PullRequest = {
   state: string;
   title: string;
   user: {

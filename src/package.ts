@@ -52,20 +52,20 @@ export type NpmPackage = {
   time?: Record<string, string>;
 } & Partial<PackageJson>;
 
-export interface VersionValidation {
+export type VersionValidation = {
   nextVersion: string;
   currentVersion: string;
   valid: boolean;
   name: string;
 }
 
-interface PinnedPackage {
+type PinnedPackage = {
   name: string;
   version: string;
   tag: string;
 }
 
-interface DependencyInfo {
+type DependencyInfo = {
   packageName: string;
   currentVersion?: string;
   finalVersion?: string;
