@@ -31,7 +31,7 @@ const BUCKET = 'dfc-data-production';
 export const BASE_URL = 'https://developer.salesforce.com';
 export const SECURITY_PATH = 'media/salesforce-cli/security';
 
-interface SigningRequest {
+type SigningRequest = {
   /** path to the file on local FS */
   targetFileToSign: string;
   /** npm name, including namespace */
@@ -42,7 +42,7 @@ interface SigningRequest {
   upload: boolean;
 }
 
-export interface SigningResponse {
+export type SigningResponse = {
   publicKeyContents: string;
   signatureContents: string;
   /**
@@ -60,7 +60,7 @@ export interface SigningResponse {
   packageVersion: string;
 }
 
-interface KeyPair {
+type KeyPair = {
   publicKey: string;
   privateKey: string;
 }

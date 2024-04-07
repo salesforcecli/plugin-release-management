@@ -30,7 +30,7 @@ namespace Method {
     TARBALL = 'tarball',
   }
 
-  export interface Options {
+  export type Options = {
     cli: CLI;
     channel: Channel;
     method: Type;

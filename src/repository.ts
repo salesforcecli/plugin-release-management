@@ -18,14 +18,14 @@ import { api as packAndSignApi } from './codeSigning/packAndSign.js';
 
 export type Access = 'public' | 'restricted';
 
-interface PublishOpts {
+type PublishOpts = {
   dryrun?: boolean;
   signatures?: SigningResponse[];
   tag?: string;
   access?: Access;
 }
 
-export interface PackageInfo {
+export type PackageInfo = {
   name: string;
   nextVersion: string;
   registryParam: string;
