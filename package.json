@@ -28,6 +28,7 @@
     "proxy-agent": "^6.4.0",
     "semver": "^7.6.0",
     "shelljs": "^0.8.5",
+    "standard-version": "^9.5.0",
     "strip-ansi": "^6",
     "yarn-deduplicate": "^6.0.2"
   },

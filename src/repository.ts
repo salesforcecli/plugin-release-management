@@ -11,6 +11,7 @@ import shelljs from 'shelljs';
 import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import chalk from 'chalk';
+import { isString } from '@salesforce/ts-types';
 import { Package } from './package.js';
 import { Registry } from './registry.js';
 import { SigningResponse } from './codeSigning/SimplifiedSigning.js';
@@ -23,13 +24,13 @@ type PublishOpts = {
   signatures?: SigningResponse[];
   tag?: string;
   access?: Access;
-}
+};
 
 export type PackageInfo = {
   name: string;
   nextVersion: string;
   registryParam: string;
-}
+};
 
 type PollFunction = () => boolean;
 
@@ -194,9 +195,19 @@ export class PackageRepo extends Repository {
       );
       return this.package.packageJson.version;
     } else {
-      throw new SfError(
-        'the next version has already been published to the registry.  This should not happen due to other CI checks'
-      );
+      this.logger.debug('Using standard-version to determine next version');
+      let command = 'npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog';
+      // It can be an empty string if they want
+      if (isString(this.options?.useprerelease)) {
+        command += ` --prerelease ${this.options?.useprerelease}`;
+      }
+      const result = this.execCommand(command, true);
+      const nextVersionRegex = /(?<=to\s)([0-9]{1,}\.|.){2,}/gi;
+      const nextVersion = result.match(nextVersionRegex)?.[0];
+      if (!nextVersion) {
+        throw new SfError(`Could not determine next version from ${result} using regex`);
+      }
+      return nextVersion;
     }
   }
 }
