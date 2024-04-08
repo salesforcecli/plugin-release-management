@@ -1,3 +1,9 @@
+## [5.0.2](https://github.com/salesforcecli/plugin-release-management/compare/5.0.1...5.0.2) (2024-04-08)
+
+### Bug Fixes
+
+- restore standardVersion stuff for cli publish scripts ([#1057](https://github.com/salesforcecli/plugin-release-management/issues/1057)) ([b956b45](https://github.com/salesforcecli/plugin-release-management/commit/b956b45e5d23006f6a3218e01186b6c00c2d6438))
+
 ## [5.0.1](https://github.com/salesforcecli/plugin-release-management/compare/5.0.0...5.0.1) (2024-04-06)
 
 ### Bug Fixes
