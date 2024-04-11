@@ -6,7 +6,7 @@
  */
 
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';

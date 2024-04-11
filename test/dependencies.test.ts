@@ -6,7 +6,7 @@
  */
 
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { Env } from '@salesforce/kit';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { verifyDependencies } from '../src/dependencies.js';
