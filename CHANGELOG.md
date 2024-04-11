@@ -1,3 +1,9 @@
+# [5.2.0](https://github.com/salesforcecli/plugin-release-management/compare/5.1.0...5.2.0) (2024-04-11)
+
+### Features
+
+- core7 ([#1061](https://github.com/salesforcecli/plugin-release-management/issues/1061)) ([5a56913](https://github.com/salesforcecli/plugin-release-management/commit/5a56913395fe02709db93e1a6352648d0b5cad5d))
+
 # [5.1.0](https://github.com/salesforcecli/plugin-release-management/compare/5.0.2...5.1.0) (2024-04-11)
 
 ### Features
