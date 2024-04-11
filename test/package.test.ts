@@ -8,7 +8,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { assert, expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Package } from '../src/package.js';

@@ -10,7 +10,7 @@ import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect } from 'chai';
-import { shouldThrow, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { shouldThrow, TestContext } from '@salesforce/core/testSetup';
 
 import { Env } from '@salesforce/kit';
 import { stubMethod } from '@salesforce/ts-sinon';

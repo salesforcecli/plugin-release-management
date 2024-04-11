@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import fs from 'node:fs/promises';
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { stubMethod } from '@salesforce/ts-sinon';
 import got from 'got';
 import { api as packAndSignApi } from '../../src/codeSigning/packAndSign.js';
