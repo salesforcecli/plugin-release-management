@@ -1,3 +1,9 @@
+# [5.1.0](https://github.com/salesforcecli/plugin-release-management/compare/5.0.2...5.1.0) (2024-04-11)
+
+### Features
+
+- allow 2 more files in tarballs ([#1060](https://github.com/salesforcecli/plugin-release-management/issues/1060)) ([2dfd605](https://github.com/salesforcecli/plugin-release-management/commit/2dfd605aafaa1f570e98918a2fd1dfe0d4f17038))
+
 ## [5.0.2](https://github.com/salesforcecli/plugin-release-management/compare/5.0.1...5.0.2) (2024-04-08)
 
 ### Bug Fixes
