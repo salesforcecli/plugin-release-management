@@ -1,3 +1,9 @@
+## [5.2.1](https://github.com/salesforcecli/plugin-release-management/compare/5.2.0...5.2.1) (2024-04-12)
+
+### Bug Fixes
+
+- **deps:** bump tar from 6.2.0 to 6.2.1 ([b890f0f](https://github.com/salesforcecli/plugin-release-management/commit/b890f0ffe13ac0ba04e909e0e5303820af9799b7))
+
 # [5.2.0](https://github.com/salesforcecli/plugin-release-management/compare/5.1.0...5.2.0) (2024-04-11)
 
 ### Features
