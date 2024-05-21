@@ -29,11 +29,15 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 
 async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: string }> {
   const result = await exec(`npm view ${plugin} repository.url --json`);
-  const parsed = (JSON.parse(result.stdout) as string)
-    .replace('git+https://github.com/', '')
-    .replace('.git', '')
-    .split('/');
-  return { owner: parsed[0], repo: parsed[1] };
+  try {
+    const [owner, repo] = (JSON.parse(result.stdout) as string)
+      .replace('git+https://github.com/', '')
+      .replace('.git', '')
+      .split('/');
+    return { owner, repo };
+  } catch (e) {
+    throw SfError.create({ message: `Error getting owner and repo for ${plugin}`, cause: e, data: result });
+  }
 }
 
 async function getNpmVersions(plugin: string): Promise<string[]> {
