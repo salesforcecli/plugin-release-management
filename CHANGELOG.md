@@ -1,3 +1,9 @@
+# [5.3.0](https://github.com/salesforcecli/plugin-release-management/compare/5.2.17...5.3.0) (2024-05-21)
+
+### Features
+
+- log additional info for json parse errors ([#1093](https://github.com/salesforcecli/plugin-release-management/issues/1093)) ([7b37432](https://github.com/salesforcecli/plugin-release-management/commit/7b3743242a5f5eac9037baefff9f27bd8b34d285))
+
 ## [5.2.17](https://github.com/salesforcecli/plugin-release-management/compare/5.2.16...5.2.17) (2024-05-18)
 
 ### Bug Fixes
