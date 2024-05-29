@@ -30,7 +30,13 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
 async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: string }> {
   const result = await exec(`npm view ${plugin} repository.url --json`);
   try {
-    const [owner, repo] = (JSON.parse(result.stdout) as string)
+    const [owner, repo] = (
+      result.stdout.startsWith('"')
+        ? // it returned json (a string in quotes ex: "git+https://github.com/salesforcecli/plugin-org.git")
+          (JSON.parse(result.stdout) as string)
+        : // it returned non-json (just the string)
+          result.stdout
+    )
       .replace('git+https://github.com/', '')
       .replace('.git', '')
       .split('/');
