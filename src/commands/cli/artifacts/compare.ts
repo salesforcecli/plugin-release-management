@@ -34,7 +34,7 @@ async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: s
       result.stdout.startsWith('"')
         ? // it returned json (a string in quotes ex: "git+https://github.com/salesforcecli/plugin-org.git")
           (JSON.parse(result.stdout) as string)
-        : // it returned non-json (just the string) https://github.com/npm/cli/issues/5444
+        : // it returned non-json (just the string) https://github.com/npm/cli/issues/7537
           result.stdout
     )
       .replace('git+https://github.com/', '')
