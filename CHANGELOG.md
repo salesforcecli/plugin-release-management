@@ -1,3 +1,9 @@
+# [5.4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.3.1...5.4.0) (2024-05-29)
+
+### Features
+
+- handle non-json from npm view ([#1099](https://github.com/salesforcecli/plugin-release-management/issues/1099)) ([d58786f](https://github.com/salesforcecli/plugin-release-management/commit/d58786f40586f8c520d3ae3a0088f2e56798f894))
+
 ## [5.3.1](https://github.com/salesforcecli/plugin-release-management/compare/5.3.0...5.3.1) (2024-05-25)
 
 ### Bug Fixes
