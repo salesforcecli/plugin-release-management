@@ -1,3 +1,9 @@
+## [5.4.1](https://github.com/salesforcecli/plugin-release-management/compare/5.4.0...5.4.1) (2024-05-30)
+
+### Bug Fixes
+
+- trim git url ([#1100](https://github.com/salesforcecli/plugin-release-management/issues/1100)) ([5f1acd5](https://github.com/salesforcecli/plugin-release-management/commit/5f1acd5039e89a77f04218010761388b1069ff4a))
+
 # [5.4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.3.1...5.4.0) (2024-05-29)
 
 ### Features
