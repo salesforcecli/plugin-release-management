@@ -39,6 +39,7 @@ async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: s
     )
       .replace('git+https://github.com/', '')
       .replace('.git', '')
+      .trim()
       .split('/');
     return { owner, repo };
   } catch (e) {
