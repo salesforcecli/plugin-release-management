@@ -31,9 +31,9 @@ async function getOwnerAndRepo(plugin: string): Promise<{ owner: string; repo: s
   const result = await exec(`npm view ${plugin} repository.url --json`);
   try {
     const [owner, repo] = (
-      result.stdout.startsWith('"')
+      result.stdout.includes('"')
         ? // it returned json (a string in quotes ex: "git+https://github.com/salesforcecli/plugin-org.git")
-          (JSON.parse(result.stdout) as string)
+          (JSON.parse(result.stdout.trim()) as string)
         : // it returned non-json (just the string) https://github.com/npm/cli/issues/7537
           result.stdout
     )
