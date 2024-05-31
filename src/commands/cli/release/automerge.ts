@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, camelcase*/
+/* eslint-disable camelcase*/
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { components } from '@octokit/openapi-types';
@@ -144,6 +144,7 @@ export default class AutoMerge extends SfCommand<void> {
     const checkRunResponse = await this.octokit.request('GET /repos/{owner}/{repo}/commits/{ref}/check-runs', {
       ...this.baseRepoParams,
       ref: pr.head.sha,
+      per_page: 50,
     });
 
     if (verbose) this.styledJSON(checkRunResponse);

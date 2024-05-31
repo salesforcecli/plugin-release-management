@@ -1,3 +1,21 @@
+## [5.4.2](https://github.com/salesforcecli/plugin-release-management/compare/5.4.1...5.4.2) (2024-05-30)
+
+### Bug Fixes
+
+- request more check_run results ([#1101](https://github.com/salesforcecli/plugin-release-management/issues/1101)) ([959df33](https://github.com/salesforcecli/plugin-release-management/commit/959df335d1d0fb4c01e8e39f74fb2164f00007ea))
+
+## [5.4.1](https://github.com/salesforcecli/plugin-release-management/compare/5.4.0...5.4.1) (2024-05-30)
+
+### Bug Fixes
+
+- trim git url ([#1100](https://github.com/salesforcecli/plugin-release-management/issues/1100)) ([5f1acd5](https://github.com/salesforcecli/plugin-release-management/commit/5f1acd5039e89a77f04218010761388b1069ff4a))
+
+# [5.4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.3.1...5.4.0) (2024-05-29)
+
+### Features
+
+- handle non-json from npm view ([#1099](https://github.com/salesforcecli/plugin-release-management/issues/1099)) ([d58786f](https://github.com/salesforcecli/plugin-release-management/commit/d58786f40586f8c520d3ae3a0088f2e56798f894))
+
 ## [5.3.1](https://github.com/salesforcecli/plugin-release-management/compare/5.3.0...5.3.1) (2024-05-25)
 
 ### Bug Fixes
