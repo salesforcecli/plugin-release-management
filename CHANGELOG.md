@@ -1,3 +1,9 @@
+## [5.4.3](https://github.com/salesforcecli/plugin-release-management/compare/5.4.2...5.4.3) (2024-05-31)
+
+### Bug Fixes
+
+- more attemps at npm view json workaround ([#1102](https://github.com/salesforcecli/plugin-release-management/issues/1102)) ([707b98d](https://github.com/salesforcecli/plugin-release-management/commit/707b98ddabf4e329f688f60e7c7ffb2addc251fb))
+
 ## [5.4.2](https://github.com/salesforcecli/plugin-release-management/compare/5.4.1...5.4.2) (2024-05-30)
 
 ### Bug Fixes
