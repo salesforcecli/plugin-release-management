@@ -1,3 +1,9 @@
+## [5.4.7](https://github.com/salesforcecli/plugin-release-management/compare/5.4.6...5.4.7) (2024-06-02)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/sf-plugins-core from 9.0.12 to 9.1.1 ([adabc93](https://github.com/salesforcecli/plugin-release-management/commit/adabc934409eb48d44904d583fb034dc256a5132))
+
 ## [5.4.6](https://github.com/salesforcecli/plugin-release-management/compare/5.4.5...5.4.6) (2024-06-01)
 
 ### Bug Fixes
