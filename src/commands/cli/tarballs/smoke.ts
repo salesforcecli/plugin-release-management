@@ -111,8 +111,18 @@ export default class SmokeTest extends SfCommand<void> {
   }
 
   private async getAllCommands(executable: string): Promise<string[]> {
-    const commandsJson = JSON.parse(await this.execute(executable, 'commands --json', false)) as Array<{ id: string }>;
-    return commandsJson.map((c) => c.id);
+    try {
+      const commandsJson = JSON.parse(await this.execute(executable, 'commands --json', false)) as Array<{
+        id: string;
+      }>;
+      return commandsJson.map((c) => c.id);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Failed to get all commands');
+      // eslint-disable-next-line no-console
+      console.log(error);
+      throw error;
+    }
   }
 
   private async nonVerboseCommandExecution(executable: string, command: string): Promise<void> {
@@ -131,7 +141,7 @@ export default class SmokeTest extends SfCommand<void> {
       const { stdout } = await exec(command, { maxBuffer: 1024 * 1024 * 100 });
       if (!silent) {
         this.styledHeader(command);
-        this.log(stdout);
+        this.log(stripAnsi(stdout));
       }
       return stripAnsi(stdout);
     } catch (e) {
