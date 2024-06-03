@@ -15,6 +15,7 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import { Duration, parseJson, ThrottledPromiseAll } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
+import stripAnsi from 'strip-ansi';
 import { PackageJson } from '../../../package.js';
 import { testJITInstall } from '../../../jit.js';
 
@@ -132,7 +133,7 @@ export default class SmokeTest extends SfCommand<void> {
         this.styledHeader(command);
         this.log(stdout);
       }
-      return stdout;
+      return stripAnsi(stdout);
     } catch (e) {
       const err = e as Error;
       throw new SfError(`Failed: ${command}.\n ${err.message}`, 'SMOKE_TEST_FAILURE', [], err);
