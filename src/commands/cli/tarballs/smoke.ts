@@ -110,7 +110,7 @@ export default class SmokeTest extends SfCommand<void> {
   }
 
   private async getAllCommands(executable: string): Promise<string[]> {
-    const commandsJson = JSON.parse(await this.execute(executable, 'commands --json', true)) as Array<{ id: string }>;
+    const commandsJson = JSON.parse(await this.execute(executable, 'commands --json', false)) as Array<{ id: string }>;
     return commandsJson.map((c) => c.id);
   }
 
