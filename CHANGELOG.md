@@ -1,3 +1,9 @@
+## [5.4.8](https://github.com/salesforcecli/plugin-release-management/compare/5.4.7...5.4.8) (2024-06-06)
+
+### Bug Fixes
+
+- replace NamedError with SfError ([857a694](https://github.com/salesforcecli/plugin-release-management/commit/857a6947564c5d8a6ca199fa16105751e461f9d7))
+
 ## [5.4.7](https://github.com/salesforcecli/plugin-release-management/compare/5.4.6...5.4.7) (2024-06-02)
 
 ### Bug Fixes
