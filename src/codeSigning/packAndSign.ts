@@ -12,13 +12,11 @@ import { EOL } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import { Agents } from 'got';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { Logger } from '@salesforce/core';
-import { NamedError } from '@salesforce/kit';
+import { Logger, SfError } from '@salesforce/core';
 import { ProxyAgent } from 'proxy-agent';
 import { parseNpmName } from '@salesforce/plugin-trust/npmName';
 import { PackageJson } from '../package.js';
 import { signVerifyUpload as sign2, SigningResponse, getSfdxProperty } from './SimplifiedSigning.js';
-import { ExecProcessFailed } from './error.js';
 
 class PathGetter {
   private static packageJson = 'package.json';
@@ -83,7 +81,12 @@ export const api = {
         // we expect an error code from this command, so we're adding it to the normal Error type
         (error: null | (Error & { code?: number | string }), stdout: string, stderr: string) => {
           if (error?.code) {
-            return reject(new ExecProcessFailed(command, error['code'], stderr));
+            return reject(
+              new SfError(
+                `Exec'd subprocess ${command} failed with error code '${error['code']}' and message '${stderr}'.`,
+                'SubProcessError'
+              )
+            );
           } else {
             const output = stdout.split(EOL);
             if (output.length > 1) {
@@ -93,15 +96,15 @@ export const api = {
                 return resolve(pathGetter.getFile(path));
               } else {
                 return reject(
-                  new NamedError(
-                    'UnexpectedNpmFormat',
-                    `Npm pack did not return an expected tgz filename result: [${path}]`
+                  new SfError(
+                    `Npm pack did not return an expected tgz filename result: [${path}]`,
+                    'UnexpectedNpmFormat'
                   )
                 );
               }
             } else {
               return reject(
-                new NamedError('UnexpectedNpmFormat', `The output from the npm utility is unexpected [${stdout}]`)
+                new SfError(`The output from the npm utility is unexpected [${stdout}]`, 'UnexpectedNpmFormat')
               );
             }
           }
@@ -134,16 +137,16 @@ export const api = {
   validateNpmIgnorePatterns(content: string): void {
     const validate = (pattern: string): void => {
       if (!content) {
-        throw new NamedError(
-          'MissingNpmIgnoreFile',
-          'Missing .npmignore file. The following patterns are required in for code signing: *.tgz, *.sig, package.json.bak.'
+        throw new SfError(
+          'Missing .npmignore file. The following patterns are required in for code signing: *.tgz, *.sig, package.json.bak.',
+          'MissingNpmIgnoreFile'
         );
       }
 
       if (!content.includes(pattern)) {
-        throw new NamedError(
-          'MissingNpmIgnorePattern',
-          `.npmignore is missing ${pattern}. The following patterns are required for code signing: *.tgz, *.sig, package.json.bak`
+        throw new SfError(
+          `.npmignore is missing ${pattern}. The following patterns are required for code signing: *.tgz, *.sig, package.json.bak`,
+          'MissingNpmIgnorePattern'
         );
       }
     };
@@ -160,9 +163,9 @@ export const api = {
   validateNpmFilePatterns(patterns: string[]): void {
     const validate = (pattern: string): void => {
       if (patterns.includes(pattern)) {
-        throw new NamedError(
-          'ForbiddenFilePattern',
-          'the files property in package.json should not include the following: *.tgz, *.sig, package.json.bak'
+        throw new SfError(
+          'the files property in package.json should not include the following: *.tgz, *.sig, package.json.bak',
+          'ForbiddenFilePattern'
         );
       }
     };
