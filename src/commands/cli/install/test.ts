@@ -9,8 +9,7 @@ import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 import shelljs from 'shelljs';
-import { ux } from '@oclif/core';
-import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
+import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
 import { ensure } from '@salesforce/ts-types';
 import got from 'got';
@@ -20,6 +19,8 @@ import { AmazonS3, download } from '../../../amazonS3.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.install.test');
+
+const ux = new Ux();
 
 type Results = Record<string, Record<CLI, boolean>>;
 
@@ -35,7 +36,7 @@ namespace Method {
     channel: Channel;
     method: Type;
     directory: string;
-  }
+  };
 
   export abstract class Base {
     private static TEST_TARGETS = {
@@ -175,7 +176,7 @@ class Tarball extends Method.Base {
     const dir = path.join(this.options.directory, path.basename(file).replace(/\./g, '-'));
     await fs.mkdir(dir, { recursive: true });
     return new Promise((resolve, reject) => {
-      ux.action.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
+      ux.spinner.start(`Unpacking ${chalk.cyan(path.basename(file))} to ${dir}`);
       const cmd =
         process.platform === 'win32'
           ? `tar -xf ${file} -C ${dir} --strip-components 1 --exclude node_modules/.bin`
@@ -183,7 +184,7 @@ class Tarball extends Method.Base {
       const opts = process.platform === 'win32' ? { shell: 'powershell.exe' } : {};
       shelljs.exec(cmd, { ...opts, silent: true }, (code: number, stdout: string, stderr: string) => {
         if (code === 0) {
-          ux.action.stop();
+          ux.spinner.stop();
           ux.log(stdout);
           resolve(dir);
         } else {
@@ -261,18 +262,18 @@ class Npm extends Method.Base {
   }
 
   private async install(): Promise<void> {
-    ux.action.start(`Installing: ${chalk.cyan(this.package)}`);
+    ux.spinner.start(`Installing: ${chalk.cyan(this.package)}`);
     return new Promise((resolve, reject) => {
       shelljs.exec(
         `npm install ${this.package}`,
         { silent: true, cwd: this.options.directory },
         (code, stdout, stderr) => {
           if (code === 0) {
-            ux.action.stop();
+            ux.spinner.stop();
             ux.log(stdout);
             resolve();
           } else {
-            ux.action.stop('Failed');
+            ux.spinner.stop('Failed');
             ux.log(stdout);
             ux.log(stderr);
             reject();

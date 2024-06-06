@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Env } from '@salesforce/kit';
-import { OutputFlags } from '@oclif/core/lib/interfaces/parser.js';
+import { OutputFlags } from '@oclif/core/parser';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Flags = OutputFlags<any>;
@@ -16,14 +16,14 @@ type Dependency = {
   name: string;
   type: DependencyType;
   condition?: ConditionFn;
-}
+};
 
 type Result = {
   name: string;
   type: DependencyType;
   passed: boolean;
   message?: string;
-}
+};
 
 const DEPENDENCIES: Dependency[] = [
   {
