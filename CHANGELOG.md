@@ -1,3 +1,9 @@
+# [5.5.0](https://github.com/salesforcecli/plugin-release-management/compare/5.4.8...5.5.0) (2024-06-06)
+
+### Features
+
+- use oclif/core v4 ([#1111](https://github.com/salesforcecli/plugin-release-management/issues/1111)) ([1713848](https://github.com/salesforcecli/plugin-release-management/commit/171384831ee30e5211e0c239737f6f4139065483))
+
 ## [5.4.8](https://github.com/salesforcecli/plugin-release-management/compare/5.4.7...5.4.8) (2024-06-06)
 
 ### Bug Fixes
