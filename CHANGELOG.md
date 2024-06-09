@@ -1,3 +1,9 @@
+## [5.5.2](https://github.com/salesforcecli/plugin-release-management/compare/5.5.1...5.5.2) (2024-06-09)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 7.3.10 to 7.3.12 ([348410e](https://github.com/salesforcecli/plugin-release-management/commit/348410e10acd3623e08fad3ee1003ece15c29707))
+
 ## [5.5.1](https://github.com/salesforcecli/plugin-release-management/compare/5.5.0...5.5.1) (2024-06-08)
 
 ### Bug Fixes
