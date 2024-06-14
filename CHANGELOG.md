@@ -1,3 +1,9 @@
+## [5.5.4](https://github.com/salesforcecli/plugin-release-management/compare/5.5.3...5.5.4) (2024-06-14)
+
+### Bug Fixes
+
+- **deps:** bump braces from 3.0.2 to 3.0.3 ([c17d795](https://github.com/salesforcecli/plugin-release-management/commit/c17d79502e970314c00e8ff8f015c1fabd60ee37))
+
 ## [5.5.3](https://github.com/salesforcecli/plugin-release-management/compare/5.5.2...5.5.3) (2024-06-09)
 
 ### Bug Fixes
