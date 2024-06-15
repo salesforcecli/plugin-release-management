@@ -1,3 +1,9 @@
+## [5.5.5](https://github.com/salesforcecli/plugin-release-management/compare/5.5.4...5.5.5) (2024-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/kit from 3.1.2 to 3.1.4 ([ce5d309](https://github.com/salesforcecli/plugin-release-management/commit/ce5d309c04be149a37a4b7c283fe47edd3dc4667))
+
 ## [5.5.4](https://github.com/salesforcecli/plugin-release-management/compare/5.5.3...5.5.4) (2024-06-14)
 
 ### Bug Fixes
