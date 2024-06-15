@@ -1,3 +1,9 @@
+## [5.5.7](https://github.com/salesforcecli/plugin-release-management/compare/5.5.6...5.5.7) (2024-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/ts-types from 2.0.9 to 2.0.10 ([30bde59](https://github.com/salesforcecli/plugin-release-management/commit/30bde596b759e6e36599e03f00a6fa0d78468c24))
+
 ## [5.5.6](https://github.com/salesforcecli/plugin-release-management/compare/5.5.5...5.5.6) (2024-06-15)
 
 ### Bug Fixes
