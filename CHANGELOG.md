@@ -1,3 +1,9 @@
+## [5.5.8](https://github.com/salesforcecli/plugin-release-management/compare/5.5.7...5.5.8) (2024-06-21)
+
+### Bug Fixes
+
+- core 8 ([#1127](https://github.com/salesforcecli/plugin-release-management/issues/1127)) ([34f01ee](https://github.com/salesforcecli/plugin-release-management/commit/34f01ee8edd3c94e92d6dcb07b02ada1eab81a97))
+
 ## [5.5.7](https://github.com/salesforcecli/plugin-release-management/compare/5.5.6...5.5.7) (2024-06-15)
 
 ### Bug Fixes
