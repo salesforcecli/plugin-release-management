@@ -1,3 +1,9 @@
+## [5.5.20](https://github.com/salesforcecli/plugin-release-management/compare/5.5.19...5.5.20) (2024-07-20)
+
+### Bug Fixes
+
+- **deps:** bump semver from 7.6.2 to 7.6.3 ([b32d40f](https://github.com/salesforcecli/plugin-release-management/commit/b32d40f828491eed11bbec33f591cc8430fe7d22))
+
 ## [5.5.19](https://github.com/salesforcecli/plugin-release-management/compare/5.5.18...5.5.19) (2024-07-20)
 
 ### Bug Fixes
