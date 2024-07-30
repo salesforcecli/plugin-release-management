@@ -298,8 +298,8 @@ export default class build extends SfCommand<void> {
     const email = await this.exec('git config user.email', true);
     if (!username || !email) {
       const user = await octokit.request('GET /user');
-      if (!username) await this.exec(`git config user.name "${user.data.name}"`);
-      if (!email) await this.exec(`git config user.email "${user.data.email}"`);
+      if (!username && user.data.name) await this.exec(`git config user.name "${user.data.name}"`);
+      if (!email && user.data.email) await this.exec(`git config user.email "${user.data.email}"`);
     }
   }
 }
