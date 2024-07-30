@@ -1,3 +1,9 @@
+## [5.5.25](https://github.com/salesforcecli/plugin-release-management/compare/5.5.24...5.5.25) (2024-07-30)
+
+### Bug Fixes
+
+- lint undefined template literals ([150b2b7](https://github.com/salesforcecli/plugin-release-management/commit/150b2b72dd0f3740e13d5dad84d4f48c52282ac0))
+
 ## [5.5.24](https://github.com/salesforcecli/plugin-release-management/compare/5.5.23...5.5.24) (2024-07-28)
 
 ### Bug Fixes
