@@ -31,6 +31,9 @@ export class Registry {
    * Return a properly formatted --registry string
    */
   public getRegistryParameter(): string {
+    if (!this.registryUrl) {
+      throw new SfError('registry is not set');
+    }
     return `--registry ${this.registryUrl}`;
   }
 
@@ -47,12 +50,12 @@ export class Registry {
         npmrc = npmrc.map((line) => {
           if (line.includes('registry=')) {
             if (this.registryUrl && line.endsWith(this.registryUrl)) return line;
-            return `registry=${this.registryUrl}`;
+            return `registry=${this.registryUrl ?? ''}`;
           }
           return line;
         });
       } else {
-        npmrc.push(`registry=${this.registryUrl}`);
+        npmrc.push(`registry=${this.registryUrl ?? ''}`);
       }
       await this.writeNpmrc(packageDirectory, npmrc);
     }
@@ -75,7 +78,7 @@ export class Registry {
       npmrc = npmrc.map((line) => {
         if (line.includes('_authToken')) {
           if (line.includes(normalizedRegistry)) return line;
-          return `${normalizedRegistry}:_authToken="${this.authToken}"`;
+          return `${normalizedRegistry}:_authToken="${this.authToken ?? ''}"`;
         }
         return line;
       });

@@ -29,7 +29,7 @@ type GetObjectOption = Omit<GetObjectRequest, 'Bucket'>;
 
 type AmazonS3Options = {
   bucket?: string;
-  cli?: CLI;
+  cli: CLI;
   channel?: Channel;
   baseUrl?: string;
   credentials?: CredentialsOptions;

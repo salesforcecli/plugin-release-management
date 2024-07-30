@@ -81,14 +81,14 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
     if (differences.upgraded.size) {
       this.styledHeader('Upgraded Plugins');
       for (const [plugin, version] of differences.upgraded.entries()) {
-        this.log(`• ${plugin} ${oldPlugins.get(plugin)} => ${version}`);
+        this.log(`• ${plugin} ${oldPlugins.get(plugin) ?? '<no match in old plugins>'} => ${version}`);
       }
     }
 
     if (differences.downgraded.size) {
       this.styledHeader('Downgraded Plugins');
       for (const [plugin, version] of differences.downgraded.entries()) {
-        this.log(`• ${plugin} ${oldPlugins.get(plugin)} => ${version}`);
+        this.log(`• ${plugin} ${oldPlugins.get(plugin) ?? '<no match in old plugins>'} => ${version}`);
       }
     }
 
@@ -155,10 +155,9 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
           (pr) => pr.merged_at && (!publishDate || pr.merged_at > publishDate) && !pr.user?.login.includes('dependabot')
         )
         .map(async (pr) => {
-          const username = await this.getNameOfUser(
-            ensureString(pr.user?.login, `No user.login property found for ${JSON.stringify(pr)}`)
-          );
-          const author = pr.user?.login === username ? username : `${username} (${pr.user?.login})`;
+          const prUserLogin = ensureString(pr.user?.login, `No user.login property found for ${JSON.stringify(pr)}`);
+          const username = await this.getNameOfUser(prUserLogin);
+          const author = pr.user?.login === username ? username : `${username} (${prUserLogin})`;
           return {
             author,
             mergedAt: pr.merged_at,
