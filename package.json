@@ -40,7 +40,7 @@
     "@types/shelljs": "^0.8.15",
     "aws-sdk-mock": "^5.9.0",
     "eslint-plugin-sf-plugin": "^1.18.12",
-    "oclif": "^4.14.9",
+    "oclif": "^4.14.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
