@@ -1,3 +1,9 @@
+## [5.5.30](https://github.com/salesforcecli/plugin-release-management/compare/5.5.29...5.5.30) (2024-08-24)
+
+### Bug Fixes
+
+- **deps:** bump micromatch from 4.0.5 to 4.0.8 ([e3bca97](https://github.com/salesforcecli/plugin-release-management/commit/e3bca972d2988f48fe06e69d14bf1e28e2a4b668))
+
 ## [5.5.29](https://github.com/salesforcecli/plugin-release-management/compare/5.5.28...5.5.29) (2024-08-17)
 
 ### Bug Fixes
