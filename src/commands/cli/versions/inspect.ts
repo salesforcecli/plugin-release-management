@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -15,17 +15,14 @@ import shelljs from 'shelljs';
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Messages, SfError } from '@salesforce/core';
 import chalk from 'chalk';
-import { ensure, entriesOf } from '@salesforce/ts-types';
+import { entriesOf } from '@salesforce/ts-types';
 import { parseJson } from '@salesforce/kit';
 import { Interfaces } from '@oclif/core';
 import { PackageJson } from '../../../package.js';
-import { CLI } from '../../../types.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.versions.inspect');
 
-const LEGACY_PATH = 'https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable';
-const LEGACY_TOP_LEVEL_PATH = 'https://developer.salesforce.com/media/salesforce-cli';
 const SALESFORCE_DEP_GLOBS = ['@salesforce/**/*', 'salesforce-alm', 'salesforcedx'];
 
 export type Info = {
@@ -44,7 +41,6 @@ export type Dependency = {
 };
 
 export enum Channel {
-  LEGACY = 'legacy',
   STABLE = 'stable',
   STABLE_RC = 'stable-rc',
   LATEST = 'latest',
@@ -57,98 +53,47 @@ export enum Location {
   NPM = 'npm',
 }
 
-type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.NIGHTLY | Channel.LEGACY>;
+type ArchiveChannel = Extract<Channel, Channel.STABLE | Channel.STABLE_RC | Channel.NIGHTLY>;
 type Archives = Record<ArchiveChannel, string[]>;
 type ChannelMapping = Record<Location, Record<Channel, Channel>>;
 
+const defaultArchives = [
+  'sf-darwin-x64.tar.gz',
+  'sf-darwin-x64.tar.xz',
+  'sf-darwin-arm64.tar.gz',
+  'sf-darwin-arm64.tar.xz',
+  'sf-linux-arm.tar.gz',
+  'sf-linux-arm.tar.xz',
+  'sf-linux-x64.tar.gz',
+  'sf-linux-x64.tar.xz',
+  'sf-win32-x64.tar.gz',
+  'sf-win32-x64.tar.xz',
+  'sf-win32-x86.tar.gz',
+  'sf-win32-x86.tar.xz',
+  'sf-win32-arm64.tar.xz',
+  'sf-win32-arm64.tar.xz',
+];
+
 const ARCHIVES: Archives = {
-  [Channel.STABLE]: [
-    '%s/%s-darwin-x64.tar.gz',
-    '%s/%s-darwin-x64.tar.xz',
-    '%s/%s-darwin-arm64.tar.gz',
-    '%s/%s-darwin-arm64.tar.xz',
-    '%s/%s-linux-arm.tar.gz',
-    '%s/%s-linux-arm.tar.xz',
-    '%s/%s-linux-x64.tar.gz',
-    '%s/%s-linux-x64.tar.xz',
-    '%s/%s-win32-x64.tar.gz',
-    '%s/%s-win32-x64.tar.xz',
-    '%s/%s-win32-x86.tar.gz',
-    '%s/%s-win32-x86.tar.xz',
-  ],
-  [Channel.STABLE_RC]: [
-    '%s/%s-darwin-x64.tar.gz',
-    '%s/%s-darwin-x64.tar.xz',
-    '%s/%s-darwin-arm64.tar.gz',
-    '%s/%s-darwin-arm64.tar.xz',
-    '%s/%s-linux-arm.tar.gz',
-    '%s/%s-linux-arm.tar.xz',
-    '%s/%s-linux-x64.tar.gz',
-    '%s/%s-linux-x64.tar.xz',
-    '%s/%s-win32-x64.tar.gz',
-    '%s/%s-win32-x64.tar.xz',
-    '%s/%s-win32-x86.tar.gz',
-    '%s/%s-win32-x86.tar.xz',
-  ],
-  [Channel.NIGHTLY]: [
-    '%s/%s-darwin-x64.tar.gz',
-    '%s/%s-darwin-x64.tar.xz',
-    '%s/%s-darwin-arm64.tar.gz',
-    '%s/%s-darwin-arm64.tar.xz',
-    '%s/%s-linux-arm.tar.gz',
-    '%s/%s-linux-arm.tar.xz',
-    '%s/%s-linux-x64.tar.gz',
-    '%s/%s-linux-x64.tar.xz',
-    '%s/%s-win32-x64.tar.gz',
-    '%s/%s-win32-x64.tar.xz',
-    '%s/%s-win32-x86.tar.gz',
-    '%s/%s-win32-x86.tar.xz',
-  ],
-  [Channel.LEGACY]: [
-    `${LEGACY_PATH}/%s-darwin-x64.tar.gz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-darwin-x64.tar.xz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-linux-arm.tar.gz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-linux-arm.tar.xz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-linux-x64.tar.gz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-linux-x64.tar.xz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-windows-x64.tar.gz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-windows-x64.tar.xz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-windows-x86.tar.gz`, // sfdx-cli
-    `${LEGACY_PATH}/%s-windows-x86.tar.xz`, // sfdx-cli
-    `${LEGACY_TOP_LEVEL_PATH}/%s-linux-amd64.tar.gz`,
-    `${LEGACY_TOP_LEVEL_PATH}/%s-linux-amd64.tar.xz`,
-  ],
+  [Channel.STABLE]: [...defaultArchives],
+  [Channel.STABLE_RC]: [...defaultArchives],
+  [Channel.NIGHTLY]: [...defaultArchives],
 };
 
 const CHANNEL_MAPPING: ChannelMapping = {
   [Location.NPM]: {
-    [Channel.STABLE_RC]: Channel.LATEST_RC,
     [Channel.STABLE]: Channel.LATEST,
+    [Channel.LATEST]: Channel.LATEST,
+    [Channel.STABLE_RC]: Channel.LATEST_RC,
     [Channel.LATEST_RC]: Channel.LATEST_RC,
     [Channel.NIGHTLY]: Channel.NIGHTLY,
-    [Channel.LATEST]: Channel.LATEST,
-    [Channel.LEGACY]: Channel.LEGACY,
   },
   [Location.ARCHIVE]: {
-    [Channel.LATEST_RC]: Channel.STABLE_RC,
+    [Channel.STABLE]: Channel.STABLE,
     [Channel.LATEST]: Channel.STABLE,
     [Channel.STABLE_RC]: Channel.STABLE_RC,
+    [Channel.LATEST_RC]: Channel.STABLE_RC,
     [Channel.NIGHTLY]: Channel.NIGHTLY,
-    [Channel.STABLE]: Channel.STABLE,
-    [Channel.LEGACY]: Channel.LEGACY,
-  },
-};
-
-const CLI_META = {
-  [CLI.SFDX]: {
-    npm: 'https://www.npmjs.com/package/sfdx-cli',
-    repoName: 'sfdx-cli',
-    packageName: 'sfdx-cli',
-  },
-  [CLI.SF]: {
-    npm: 'https://www.npmjs.com/package/@salesforce/cli',
-    repoName: 'cli',
-    packageName: '@salesforce/cli',
   },
 };
 
@@ -182,12 +127,9 @@ export default class Inspect extends SfCommand<InspectResult> {
       required: true,
       multiple: true,
     }),
-    cli: Flags.custom<CLI>({
-      options: Object.values(CLI),
-    })({
-      summary: messages.getMessage('flags.cli.summary'),
-      default: CLI.SFDX,
-      required: true,
+    'ignore-missing': Flags.boolean({
+      summary: messages.getMessage('flags.ignoreMissing.summary'),
+      default: false,
     }),
   };
 
@@ -202,10 +144,6 @@ export default class Inspect extends SfCommand<InspectResult> {
 
     const locations = this.flags.locations as Location[];
     const channels = this.flags.channels as Channel[];
-
-    if (this.flags.cli === CLI.SF && channels.includes(Channel.LEGACY)) {
-      throw new SfError('the sf CLI does not have a legacy channel');
-    }
 
     this.log(`Working Directory: ${this.workingDir}`);
 
@@ -230,27 +168,12 @@ export default class Inspect extends SfCommand<InspectResult> {
   }
 
   private initArchives(): void {
-    const cli = ensure<CLI>(this.flags.cli);
-    const stablePath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable`;
-    const stableRcPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/stable-rc`;
-    const nightlyPath = `https://developer.salesforce.com/media/salesforce-cli/${cli}/channels/nightly`;
+    // Example formatted url: https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-darwin-x64.tar.gz
+    const basePath = 'https://developer.salesforce.com/media/salesforce-cli/sf/channels/%s/%s';
+
     this.archives = {} as Archives;
     for (const [channel, paths] of entriesOf(ARCHIVES)) {
-      if (channel === Channel.LEGACY && cli === CLI.SFDX) {
-        this.archives[channel] = paths.map((p) => {
-          if (p.includes('amd64')) {
-            return util.format(p, this.flags.cli);
-          } else {
-            return util.format(p, CLI_META[this.flags.cli].packageName);
-          }
-        });
-      } else if (channel === Channel.STABLE) {
-        this.archives[channel] = paths.map((p) => util.format(p, stablePath, this.flags.cli));
-      } else if (channel === Channel.STABLE_RC) {
-        this.archives[channel] = paths.map((p) => util.format(p, stableRcPath, this.flags.cli));
-      } else if (channel === Channel.NIGHTLY) {
-        this.archives[channel] = paths.map((p) => util.format(p, nightlyPath, this.flags.cli));
-      }
+      this.archives[channel] = paths.map((p) => util.format(basePath, channel, p));
     }
   }
 
@@ -269,11 +192,15 @@ export default class Inspect extends SfCommand<InspectResult> {
       this.log(`---- ${Location.ARCHIVE} ${channel} ----`);
       for (const archivePath of pathsByChannel[channel] ?? []) {
         this.spinner.start(`Downloading: ${chalk.cyan(archivePath)}`);
-        const curlResult = shelljs.exec(`curl ${archivePath} -Os`, { cwd: tarDir });
+        const curlResult = shelljs.exec(`curl ${archivePath} -Ofs`, { cwd: tarDir });
         this.spinner.stop();
         if (curlResult.code !== 0) {
-          this.log(chalk.red('Download failed. That is a big deal. Investigate immediately.'));
-          continue;
+          if (this.flags['ignore-missing']) {
+            this.log(chalk.red(`Failed to download: ${archivePath}. Skipping because --ignore-missing flag is set.`));
+            continue;
+          } else {
+            throw new SfError(`Failed to download: ${archivePath}. This is a big deal. Investigate immediately.`);
+          }
         }
         const filename = path.basename(archivePath);
         const unpackedDir = await mkdir(this.workingDir, 'unpacked', filename);
@@ -298,21 +225,20 @@ export default class Inspect extends SfCommand<InspectResult> {
   }
 
   private async inspectNpm(channels: Channel[]): Promise<Info[]> {
-    const cliMeta = CLI_META[this.flags.cli];
     const npmDir = await mkdir(this.workingDir, 'npm');
     const results: Info[] = [];
-    const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]).filter((c) => c !== Channel.LEGACY);
+    const tags = channels.map((c) => CHANNEL_MAPPING[Location.NPM][c]);
     for (const tag of tags) {
       this.log(`---- ${Location.NPM} ${tag} ----`);
       const installDir = await mkdir(npmDir, tag);
-      const name = `${cliMeta.packageName}@${tag}`;
+      const name = `@salesforce/cli@${tag}`;
       this.spinner.start(`Installing: ${chalk.cyan(name)}`);
       shelljs.exec(`npm install ${name}`, { cwd: installDir, silent: true });
       this.spinner.stop();
-      const pkgJson = await readPackageJson(path.join(installDir, 'node_modules', cliMeta.repoName));
+      const pkgJson = await readPackageJson(path.join(installDir, 'node_modules', '@salesforce/cli'));
       results.push({
         dependencies: await this.getDependencies(installDir),
-        origin: `${cliMeta.npm}/v/${pkgJson.version}`,
+        origin: `https://www.npmjs.com/package/@salesforce/cli/v/${pkgJson.version}`,
         channel: tag,
         location: Location.NPM,
         version: pkgJson.version,
@@ -372,22 +298,19 @@ export default class Inspect extends SfCommand<InspectResult> {
     }
 
     if (locations.includes(Location.NPM) && locations.includes(Location.ARCHIVE)) {
-      channels
-        .filter((c) => c !== Channel.LEGACY)
-        .forEach((channel) => {
-          const npmChannel = CHANNEL_MAPPING[Location.NPM][channel];
-          const archiveChannel = CHANNEL_MAPPING[Location.ARCHIVE][channel];
+      channels.forEach((channel) => {
+        const npmChannel = CHANNEL_MAPPING[Location.NPM][channel];
+        const archiveChannel = CHANNEL_MAPPING[Location.ARCHIVE][channel];
 
-          npmAndArchivesMatch =
-            new Set(
-              results.filter((r) => r.channel === npmChannel || r.channel === archiveChannel).map((r) => r.version)
-            ).size === 1;
+        npmAndArchivesMatch =
+          new Set(results.filter((r) => r.channel === npmChannel || r.channel === archiveChannel).map((r) => r.version))
+            .size === 1;
 
-          const match = npmAndArchivesMatch ? chalk.green(true) : chalk.red(false);
-          this.log(
-            `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
-          );
-        });
+        const match = npmAndArchivesMatch ? chalk.green(true) : chalk.red(false);
+        this.log(
+          `${Location.NPM}@${npmChannel} and all ${Location.ARCHIVE}@${archiveChannel} versions match? ${match}`
+        );
+      });
     }
     // npmAndArchivesMatch can be undefined
     if ((npmAndArchivesMatch !== undefined && !npmAndArchivesMatch) || !allMatch) {
