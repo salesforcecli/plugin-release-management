@@ -18,6 +18,10 @@ the channel you want to inspect (for achives, latest and latest-rc are translate
 
 the location you want to inspect
 
+# flags.ignoreMissing.summary
+
+skip missing archives. Useful when supporting new architectures in oclif
+
 # flags.cli.summary
 
 the CLI you want to inspect
