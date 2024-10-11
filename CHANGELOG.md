@@ -1,3 +1,9 @@
+## [5.5.39](https://github.com/salesforcecli/plugin-release-management/compare/5.5.38...5.5.39) (2024-10-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/cli-plugins-testkit from 5.3.28 to 5.3.33 ([4615fc2](https://github.com/salesforcecli/plugin-release-management/commit/4615fc218f40f9c34b72557c8e833153bd25c77a))
+
 ## [5.5.38](https://github.com/salesforcecli/plugin-release-management/compare/5.5.37...5.5.38) (2024-09-28)
 
 ### Bug Fixes
