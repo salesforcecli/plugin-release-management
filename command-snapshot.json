@@ -113,7 +113,7 @@
     "command": "cli:versions:inspect",
     "flagAliases": [],
     "flagChars": ["c", "d", "l", "s"],
-    "flags": ["channels", "cli", "dependencies", "flags-dir", "json", "locations", "salesforce"],
+    "flags": ["channels", "dependencies", "flags-dir", "ignore-missing", "json", "locations", "salesforce"],
     "plugin": "@salesforce/plugin-release-management"
   },
   {

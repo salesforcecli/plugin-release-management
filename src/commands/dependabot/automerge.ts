@@ -32,7 +32,7 @@ type PullRequest = {
     sha: string;
     ref: string;
   };
-}
+};
 
 type octokitOpts = {
   owner: string;

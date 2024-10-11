@@ -57,19 +57,19 @@ export type VersionValidation = {
   currentVersion: string;
   valid: boolean;
   name: string;
-}
+};
 
 type PinnedPackage = {
   name: string;
   version: string;
   tag: string;
-}
+};
 
 type DependencyInfo = {
   packageName: string;
   currentVersion?: string;
   finalVersion?: string;
-}
+};
 
 export function parsePackageVersion(alias: string): string | undefined {
   const regex = /[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/;

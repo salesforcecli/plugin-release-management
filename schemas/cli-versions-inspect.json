@@ -35,7 +35,7 @@
     },
     "Channel": {
       "type": "string",
-      "enum": ["legacy", "stable", "stable-rc", "latest", "latest-rc", "nightly"]
+      "enum": ["stable", "stable-rc", "latest", "latest-rc", "nightly"]
     },
     "Location": {
       "type": "string",

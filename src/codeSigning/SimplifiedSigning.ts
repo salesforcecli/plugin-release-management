@@ -40,7 +40,7 @@ type SigningRequest = {
   packageVersion: string;
   /** if true, uploads the signature and key file to AWS */
   upload: boolean;
-}
+};
 
 export type SigningResponse = {
   publicKeyContents: string;
@@ -58,12 +58,12 @@ export type SigningResponse = {
   packageName: string;
   /** npm version, like 1.0.0 */
   packageVersion: string;
-}
+};
 
 type KeyPair = {
   publicKey: string;
   privateKey: string;
-}
+};
 
 export const getSfdxProperty = (packageName: string, packageVersion: string): PackageJsonSfdxProperty => {
   const fullPathNoExtension = `${BASE_URL}/${SECURITY_PATH}/${packageName}/${packageVersion}`;
