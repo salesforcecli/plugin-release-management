@@ -128,7 +128,7 @@ export default class Inspect extends SfCommand<InspectResult> {
       multiple: true,
     }),
     'ignore-missing': Flags.boolean({
-      summary: messages.getMessage('flags.ignoreMissing.summary'),
+      summary: messages.getMessage('flags.ignore-missing.summary'),
       default: false,
     }),
   };
