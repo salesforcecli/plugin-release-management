@@ -41,13 +41,10 @@ export default class Pin extends SfCommand<ChangedPackageVersions> {
       packageJson.writePackageJson();
     }
 
-    this.table(pkg, {
-      name: { header: 'Name' },
-      version: { header: 'Version' },
-      tag: { header: 'Tag' },
-      alias: { header: 'Alias' },
+    this.table({
+      data: pkg,
+      columns: ['name', 'version', 'tag'],
     });
-
     return pkg;
   }
 }

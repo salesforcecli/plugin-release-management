@@ -58,6 +58,7 @@ export default class Promote extends SfCommand<PromoteResult> {
       char: 'p',
       summary: messages.getMessage('flags.platform.summary'),
       options: ['win', 'macos', 'deb'],
+      required: true,
     }),
     cli: Flags.custom<CLI>({
       options: Object.values(CLI),
@@ -162,7 +163,7 @@ export default class Promote extends SfCommand<PromoteResult> {
       target,
       sha,
       version,
-      platforms: this.flags.platform,
+      platforms: this.flags.platform ?? [],
     };
   }
 
