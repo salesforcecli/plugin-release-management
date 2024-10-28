@@ -101,15 +101,12 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
         })
       )
       .filter((item) => item.status);
-    this.table(
-      results,
-      {
-        issueUrl: { header: 'github issue' },
-        workItem: { header: 'work item' },
-        status: { header: 'status' },
-      },
-      { sort: 'status' }
-    );
+
+    this.table({
+      data: results,
+      columns: [{ key: 'issueUrl', name: 'github issue' }, { key: 'workItem', name: 'work item' }, 'status'],
+      sort: { status: 'asc' },
+    });
     return results;
   }
 }

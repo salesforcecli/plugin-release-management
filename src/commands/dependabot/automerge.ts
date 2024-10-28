@@ -106,13 +106,9 @@ export default class AutoMerge extends SfCommand<void> {
     const greenPRs = (await Promise.all(eligiblePRs.map((pr) => this.isGreen(pr)))).filter(isPrNotUndefined);
     const mergeablePRs = (await Promise.all(greenPRs.map((pr) => this.isMergeable(pr)))).filter(isPrNotUndefined);
 
-    this.table(
-      mergeablePRs.map((pr) => ({ title: pr.title, html_url: pr.html_url })),
-      {
-        title: { header: 'Green, Mergeable PR' },
-        html_url: { header: 'Link' },
-      }
-    );
+    this.table({
+      data: mergeablePRs.map((pr) => ({ 'Green, Mergeable PR': pr.title, Link: pr.html_url })),
+    });
     this.log('');
 
     const prToMerge = mergeablePRs[0];

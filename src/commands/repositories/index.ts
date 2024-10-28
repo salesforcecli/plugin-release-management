@@ -60,24 +60,15 @@ export default class Repositories extends SfCommand<RepositoryResult> {
     const repositories = await retrieveKnownRepositories();
     const ux = new Ux({ jsonEnabled: flags.json ?? false });
 
-    ux.table(
-      repositories,
-      {
-        organization: {},
-        name: {},
-        url: {},
-        packages: {
-          get: (row: RepositoryInfo): string => row.packages.map((pkg) => `${pkg.type} ${pkg.name}`).join('\n'),
-          extended: true,
-        },
-      },
-      {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        printLine: this.log.bind(this),
+    ux.table({
+      data: repositories.map((s) => ({
+        organization: s.organization,
+        name: s.name,
+        url: s.url,
+        packages: s.packages.map((pkg) => `${pkg.type} ${pkg.name}`).join('\n'),
         ...flags, // parsed flags
-      }
-    );
-
+      })),
+    });
     return repositories;
   }
 }

@@ -162,7 +162,7 @@ export default class Promote extends SfCommand<PromoteResult> {
       target,
       sha,
       version,
-      platforms: this.flags.platform,
+      platforms: this.flags.platform ?? [],
     };
   }
 
