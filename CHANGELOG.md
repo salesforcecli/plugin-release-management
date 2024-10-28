@@ -1,3 +1,9 @@
+# [5.6.0](https://github.com/salesforcecli/plugin-release-management/compare/5.5.41...5.6.0) (2024-10-28)
+
+### Features
+
+- update new table ([#1229](https://github.com/salesforcecli/plugin-release-management/issues/1229)) ([8594bf1](https://github.com/salesforcecli/plugin-release-management/commit/8594bf1475265bd182adb298e0ad87a930529603))
+
 ## [5.5.41](https://github.com/salesforcecli/plugin-release-management/compare/5.5.40...5.5.41) (2024-10-12)
 
 ### Bug Fixes
