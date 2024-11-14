@@ -122,6 +122,8 @@ export async function testJITInstall(options: Options): Promise<void> {
         // Test that executing the command will trigger JIT install
         // This will likely always fail because we're not providing all the required flags or it depends on some other setup.
         // However, this is okay because all we need to verify is that running the command will trigger the JIT install
+        // eslint-disable-next-line no-console
+        console.log(`process.cwd: ${process.cwd()}`);
         const { stdout, stderr } = await exec(`${executable} ${firstCommand.id}`, {
           env: {
             ...process.env,
@@ -140,6 +142,8 @@ export async function testJITInstall(options: Options): Promise<void> {
         // @ts-expect-error ExecException type doesn't have a stdout or stderr property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         resultStderr = stripAnsi(err.stderr);
+        // eslint-disable-next-line no-console
+        console.error(e);
       } finally {
         const result = await verifyInstall(plugin, dataDir);
         if (result) {
