@@ -1,3 +1,9 @@
+## [5.6.11](https://github.com/salesforcecli/plugin-release-management/compare/5.6.10...5.6.11) (2024-11-16)
+
+### Bug Fixes
+
+- **deps:** bump cross-spawn from 7.0.3 to 7.0.5 ([cdf8881](https://github.com/salesforcecli/plugin-release-management/commit/cdf888107af60ae65ea23b12c65bf6eb9774756b))
+
 ## [5.6.10](https://github.com/salesforcecli/plugin-release-management/compare/5.6.9...5.6.10) (2024-11-16)
 
 ### Bug Fixes
