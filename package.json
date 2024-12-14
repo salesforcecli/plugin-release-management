@@ -25,7 +25,7 @@
     "fast-glob": "^3.3.2",
     "got": "^13",
     "just-diff": "^5.2.0",
-    "proxy-agent": "^6.4.0",
+    "proxy-agent": "^6.5.0",
     "semver": "^7.6.3",
     "shelljs": "^0.8.5",
     "standard-version": "^9.5.0",
