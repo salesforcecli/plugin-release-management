@@ -1,3 +1,9 @@
+## [5.6.26](https://github.com/salesforcecli/plugin-release-management/compare/5.6.25...5.6.26) (2024-12-21)
+
+### Bug Fixes
+
+- **deps:** bump chalk from 5.3.0 to 5.4.0 ([de49745](https://github.com/salesforcecli/plugin-release-management/commit/de49745cbc9743df95c6b429bc378b13062dcacf))
+
 ## [5.6.25](https://github.com/salesforcecli/plugin-release-management/compare/5.6.24...5.6.25) (2024-12-14)
 
 ### Bug Fixes
