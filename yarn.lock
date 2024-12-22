@@ -1985,10 +1985,10 @@
     proxy-agent "^6.5.0"
     semver "^7.6.3"
 
-"@salesforce/plugin-trust@^3.7.50":
-  version "3.7.50"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.50.tgz#148bc81605529dc6dc008fa1066810f7c7082c23"
-  integrity sha512-KAbmRRPoJ5B79TtRGxZTurjUddgprQ30zG2SuBS1l7kv3GIwFizafpPqvcEH0jVS60Y9n0NzdLTqefRi7G/HjQ==
+"@salesforce/plugin-trust@^3.7.51":
+  version "3.7.51"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.51.tgz#9ef349697bfb6c29fedfd7b96eca5a9cb87e02af"
+  integrity sha512-CvzOtGosJhnzJBQvnuiAb02WyLee8t0foSrS3Bsuz9QoUkXz8bmf7Re7UTpPFdRZx+N5Tj8cC8cf0YD8BRwzwQ==
   dependencies:
     "@oclif/core" "^4"
     "@salesforce/core" "^8.8.0"
