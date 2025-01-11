@@ -1,3 +1,9 @@
+## [5.6.34](https://github.com/salesforcecli/plugin-release-management/compare/5.6.33...5.6.34) (2025-01-11)
+
+### Bug Fixes
+
+- **deps:** bump fast-glob from 3.3.2 to 3.3.3 ([e0e695f](https://github.com/salesforcecli/plugin-release-management/commit/e0e695f2cdc186a97e0ea751661366d7885efd37))
+
 ## [5.6.33](https://github.com/salesforcecli/plugin-release-management/compare/5.6.32...5.6.33) (2025-01-11)
 
 ### Bug Fixes
