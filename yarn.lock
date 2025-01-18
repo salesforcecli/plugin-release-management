@@ -1714,23 +1714,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsforce/jsforce-node@^3.6.1":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.6.2.tgz#5d8509aaeb161f1d6658e4ce737948a04d3ce3a6"
-  integrity sha512-bBWRCZl4kVRnYLHRSzl4piqowM3GeTW2yBoKo+WnMGAw36uGjyMq/9z9yAaA+0AmpHFaI4po7/0PrAMdEU/AGA==
-  dependencies:
-    "@sindresorhus/is" "^4"
-    base64url "^3.0.1"
-    csv-parse "^5.5.2"
-    csv-stringify "^6.4.4"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    https-proxy-agent "^5.0.0"
-    multistream "^3.1.0"
-    node-fetch "^2.6.1"
-    xml2js "^0.6.2"
-
-"@jsforce/jsforce-node@^3.6.3":
+"@jsforce/jsforce-node@^3.6.1", "@jsforce/jsforce-node@^3.6.3":
   version "3.6.3"
   resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.6.3.tgz#a5c984b6deffac01ddabc3f4b48374408c5cd194"
   integrity sha512-sNUeBzfUv57uH0AiYuAOO8yjBP7lNY33mWybrjvBud8gMFVWozY6UAWU1DUk/dpqZ0+FK3iqB++nOQRczj1nSg==
@@ -2195,10 +2179,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.5.1", "@salesforce/core@^8.6.4", "@salesforce/core@^8.8.0":
-  version "8.8.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.8.0.tgz#849c07ea3a2548ca201fc0fe8baef9b36a462194"
-  integrity sha512-HWGdRiy/MPCJ2KHz+W+cnqx0O9xhx9+QYvwP8bn9PE27wj0A/NjTi4xrqIWk1M+fE4dXHycE+8qPf4b540euvg==
+"@salesforce/core@^8.5.1", "@salesforce/core@^8.6.4", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.2":
+  version "8.8.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.8.2.tgz#0fc1632cc183b8c62e333f1f884bf3ee0f4aee6e"
+  integrity sha512-EOH75R2Nr2tg7b3gbyzRNwZPfZ/dZOpmMKmFHKL9oCtUI59+N4IkVljg6dpKYypVKuJJTzjI7T2ibnA8/cluZg==
   dependencies:
     "@jsforce/jsforce-node" "^3.6.1"
     "@salesforce/kit" "^3.2.2"
