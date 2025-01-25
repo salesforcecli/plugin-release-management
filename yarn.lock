@@ -2261,10 +2261,10 @@
     debug "^4.4.0"
     handlebars "^4.7.8"
 
-"@salesforce/plugin-info@^3.4.30":
-  version "3.4.30"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.30.tgz#6a62622c14bba4cd3920bf5951e2caf794957ae7"
-  integrity sha512-PQ4/6u85epah4w5Y7nC665PCgPTVta17eyB/5noRm0Inu/jzTLMqJnWRa9ZVHbQmWSraZSHt6fO25FWRLL5zHA==
+"@salesforce/plugin-info@^3.4.32":
+  version "3.4.32"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.32.tgz#bf9e1811e49bc9e9c33e01826300e23013f41d50"
+  integrity sha512-vBLb7H1nhdpaev9Ef4ytfJj6irlhjO9Kmz+1EXGxkRmlfqWZO/Kfb5tb2RCM33twDEw7HKGgZzoAjJ6DsWkp8A==
   dependencies:
     "@inquirer/input" "^2.3.0"
     "@jsforce/jsforce-node" "^3.6.3"
@@ -2279,15 +2279,15 @@
     proxy-agent "^6.5.0"
     semver "^7.6.3"
 
-"@salesforce/plugin-trust@^3.7.53":
-  version "3.7.53"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.53.tgz#24474566ee1fe4c23026885e8aa35fdafa01caa4"
-  integrity sha512-orZlPf23WEwNvNzusqotP31GNwR9Csm7ZLPETqMWkpiI0vnWYKDxBlgzdmmPEpI8DqNUO/BURBTz+ZOSsUJiLw==
+"@salesforce/plugin-trust@^3.7.59":
+  version "3.7.59"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.59.tgz#c4bec3e211d29f7af63945617d1d973b9fa7891b"
+  integrity sha512-nfQdd7vsUCtB1+TBGwDU9a4TK2+L9rb2ZxKOypDu0xOlZCygL+poJ7k1v+tAEz9Mf3UnnrNtmW5FNhFAyl0h7A==
   dependencies:
     "@oclif/core" "^4"
-    "@salesforce/core" "^8.8.0"
+    "@salesforce/core" "^8.8.2"
     "@salesforce/kit" "^3.2.0"
-    "@salesforce/plugin-info" "^3.4.30"
+    "@salesforce/plugin-info" "^3.4.32"
     "@salesforce/sf-plugins-core" "^12"
     got "^13.0.0"
     npm "^10.9.2"
