@@ -26,7 +26,7 @@
     "got": "^13",
     "just-diff": "^5.2.0",
     "proxy-agent": "^6.4.0",
-    "semver": "^7.7.0",
+    "semver": "^7.7.1",
     "shelljs": "^0.8.5",
     "standard-version": "^9.5.0",
     "strip-ansi": "^6",
