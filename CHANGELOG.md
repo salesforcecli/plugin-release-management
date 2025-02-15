@@ -1,3 +1,9 @@
+## [5.6.48](https://github.com/salesforcecli/plugin-release-management/compare/5.6.47...5.6.48) (2025-02-15)
+
+### Bug Fixes
+
+- **deps:** bump @octokit/plugin-paginate-rest from 6.1.2 to 11.4.1 ([06cf778](https://github.com/salesforcecli/plugin-release-management/commit/06cf7783f75dd7c06cc9840da4266d71d632a8d9))
+
 ## [5.6.47](https://github.com/salesforcecli/plugin-release-management/compare/5.6.46...5.6.47) (2025-02-08)
 
 ### Bug Fixes
