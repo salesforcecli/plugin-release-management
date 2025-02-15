@@ -11,7 +11,7 @@
   "dependencies": {
     "@oclif/core": "^4.2.6",
     "@octokit/core": "^4.2.4",
-    "@octokit/plugin-paginate-rest": "^6.1.2",
+    "@octokit/plugin-paginate-rest": "^11.4.1",
     "@octokit/plugin-throttling": "^5.2.3",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/core": "^8.8.2",
