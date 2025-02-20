@@ -1,3 +1,9 @@
+## [5.6.50](https://github.com/salesforcecli/plugin-release-management/compare/5.6.49...5.6.50) (2025-02-20)
+
+### Bug Fixes
+
+- bump octokit dependencies ([7eda59c](https://github.com/salesforcecli/plugin-release-management/commit/7eda59c9ea06f3e27830ead80420780c099628e5))
+
 ## [5.6.49](https://github.com/salesforcecli/plugin-release-management/compare/5.6.48...5.6.49) (2025-02-15)
 
 ### Bug Fixes
