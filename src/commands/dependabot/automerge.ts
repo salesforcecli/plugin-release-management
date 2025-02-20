@@ -8,7 +8,7 @@
 import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { Env } from '@salesforce/kit';
-import { ensureString } from '@salesforce/ts-types';
+import { type AnyJson, ensureString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
 import { maxVersionBumpFlag, getOwnerAndRepo } from '../../dependabot.js';
 
@@ -130,7 +130,7 @@ export default class AutoMerge extends SfCommand<void> {
         opts.commit_title = `Merge pull request #${prToMerge.number} from ${prToMerge.head.ref} [skip ci]`;
       }
       const mergeResult = await this.octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', opts);
-      this.styledJSON(mergeResult);
+      this.styledJSON(mergeResult as unknown as AnyJson);
     } else {
       this.log(`dry run ${prToMerge.number.toString()} | ${prToMerge.title}`);
     }

@@ -9,7 +9,7 @@ import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { Octokit } from '@octokit/core';
 import { components } from '@octokit/openapi-types';
 import { Env } from '@salesforce/kit';
-import { ensureString } from '@salesforce/ts-types';
+import { type AnyJson, ensureString } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
@@ -124,7 +124,7 @@ export default class AutoMerge extends SfCommand<void> {
 
       this.info('Run with --verbose to see PR merge response');
       if (verbose) {
-        this.styledJSON(mergeResult);
+        this.styledJSON(mergeResult as unknown as AnyJson);
       }
     } else {
       this.logSuccess(`Dry run successful: ${prData.number} | ${prData.title}`);
@@ -147,7 +147,7 @@ export default class AutoMerge extends SfCommand<void> {
       per_page: 50,
     });
 
-    if (verbose) this.styledJSON(checkRunResponse);
+    if (verbose) this.styledJSON(checkRunResponse as unknown as AnyJson);
 
     return checkRunResponse.data.check_runs.every(
       (cr) =>
