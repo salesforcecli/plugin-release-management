@@ -39,7 +39,7 @@
     "@types/semver": "^7.5.8",
     "@types/shelljs": "^0.8.15",
     "aws-sdk-mock": "^5.9.0",
-    "eslint-plugin-sf-plugin": "^1.20.14",
+    "eslint-plugin-sf-plugin": "^1.20.15",
     "oclif": "^4.17.30",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
