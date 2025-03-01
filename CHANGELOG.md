@@ -1,3 +1,9 @@
+## [5.6.55](https://github.com/salesforcecli/plugin-release-management/compare/5.6.54...5.6.55) (2025-03-01)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-trust from 3.7.66 to 3.7.67 ([2aaa3ed](https://github.com/salesforcecli/plugin-release-management/commit/2aaa3ed5cc5a6592a88d83a712c7376ed263e852))
+
 ## [5.6.54](https://github.com/salesforcecli/plugin-release-management/compare/5.6.53...5.6.54) (2025-03-01)
 
 ### Bug Fixes
