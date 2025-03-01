@@ -1356,7 +1356,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsforce/jsforce-node@^3.6.4", "@jsforce/jsforce-node@^3.6.5":
+"@jsforce/jsforce-node@^3.6.5":
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.6.5.tgz#d8a4097b46348b6b5001da66d616b3e9c7efb59f"
   integrity sha512-XqYOCgqET9XYhwI3wmrg4oMRzKkTqy0ua8aopMQRMGT2QVuq2IBfRTSrfoMa129lqJvNy7XXA4ntXQJkKI/VqQ==
@@ -1892,13 +1892,13 @@
     debug "^4.4.0"
     handlebars "^4.7.8"
 
-"@salesforce/plugin-info@^3.4.39":
-  version "3.4.40"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.40.tgz#be1b6a94c901b6dbd7cf47e3561210c46578d901"
-  integrity sha512-hZ9nNVgAeo68rh8mOSiQyww9hziGrQCbXKkD4t4bTDOpy2FAQ29ZrJLh5JwxiovY73js4bNWpuiVXR5KG7LNvw==
+"@salesforce/plugin-info@^3.4.40":
+  version "3.4.41"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.41.tgz#be0c00d8491e9eb1164d36d151ae6a115cbf85fe"
+  integrity sha512-ExvesSKBOi7gCx0oom3I3I5SLCGOrQyYOSIdf8YOjQzMqT5/5IOI0fEqV8zD7RPw5WHn6TyJgRgYodP8bCrFaw==
   dependencies:
     "@inquirer/input" "^2.3.0"
-    "@jsforce/jsforce-node" "^3.6.4"
+    "@jsforce/jsforce-node" "^3.6.5"
     "@oclif/core" "^4"
     "@salesforce/core" "^8.8.0"
     "@salesforce/kit" "^3.2.3"
@@ -1910,15 +1910,15 @@
     proxy-agent "^6.5.0"
     semver "^7.7.1"
 
-"@salesforce/plugin-trust@^3.7.66":
-  version "3.7.66"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.66.tgz#c7bd9a30b3452c1b2da871443725c24fd87335f1"
-  integrity sha512-QvB/Vmmu6A8ho1C28NchNhAeKfQRe2V69iqPtcB/XRYD45ToCsGOcD0jJWFsA50OSDLsSY54qmZCL+18N4qEkA==
+"@salesforce/plugin-trust@^3.7.67":
+  version "3.7.67"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.67.tgz#eb957a76735fa29b5a622df1e5e8a9bce0261a1e"
+  integrity sha512-zpxLPrMeOO9jfX1Yb6HpnO6Cv3BHGIG3p8ow9boQsQxY5KjDfM8QaBKygnkkpetWy0hpwO2g8tRzlS1yT8+C8A==
   dependencies:
     "@oclif/core" "^4"
     "@salesforce/core" "^8.8.2"
     "@salesforce/kit" "^3.2.0"
-    "@salesforce/plugin-info" "^3.4.39"
+    "@salesforce/plugin-info" "^3.4.40"
     "@salesforce/sf-plugins-core" "^12"
     got "^13.0.0"
     npm "^10.9.2"
