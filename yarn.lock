@@ -1910,13 +1910,13 @@
     proxy-agent "^6.5.0"
     semver "^7.7.1"
 
-"@salesforce/plugin-trust@^3.7.67":
-  version "3.7.67"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.67.tgz#eb957a76735fa29b5a622df1e5e8a9bce0261a1e"
-  integrity sha512-zpxLPrMeOO9jfX1Yb6HpnO6Cv3BHGIG3p8ow9boQsQxY5KjDfM8QaBKygnkkpetWy0hpwO2g8tRzlS1yT8+C8A==
+"@salesforce/plugin-trust@^3.7.69":
+  version "3.7.69"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.69.tgz#4e07877c7d6989a5ff40c150b4a2da01fc73cd94"
+  integrity sha512-RsmRU03+6nClCIjZeoLRRhifkIzcXQTxNcproJnuI/oY7He5UZcM6V6FarqkjbRh61qUugFdP6OYsodiUQNOEg==
   dependencies:
     "@oclif/core" "^4"
-    "@salesforce/core" "^8.8.2"
+    "@salesforce/core" "^8.8.4"
     "@salesforce/kit" "^3.2.0"
     "@salesforce/plugin-info" "^3.4.40"
     "@salesforce/sf-plugins-core" "^12"
