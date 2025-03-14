@@ -1,3 +1,9 @@
+# [5.7.0](https://github.com/salesforcecli/plugin-release-management/compare/5.6.60...5.7.0) (2025-03-14)
+
+### Features
+
+- paginates listObjectsV2 ([ffb4c2d](https://github.com/salesforcecli/plugin-release-management/commit/ffb4c2d70f4a1dfa49e19e5a90858d3404906bde))
+
 ## [5.6.60](https://github.com/salesforcecli/plugin-release-management/compare/5.6.59...5.6.60) (2025-03-09)
 
 ### Bug Fixes
