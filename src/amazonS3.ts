@@ -75,20 +75,51 @@ export class AmazonS3 {
     return object;
   }
 
-  public async listCommonPrefixes(key: string): Promise<string[]> {
+  // Paginates listObjectV2 and returns both Contents and CommonPrefixes
+  public async listAllObjects(key: string): Promise<{ contents: S3.ObjectList; commonPrefixes: string[] }> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
-    const objects = await this.s3
-      .listObjectsV2({ Bucket: this.options.bucket ?? BUCKET, Delimiter: '/', Prefix: prefix })
-      .promise();
-    return (objects.CommonPrefixes ?? [])?.map((item) => item.Prefix).filter(isString);
+    const bucket = this.options.bucket ?? BUCKET;
+    let continuationToken;
+    const allContents: S3.ObjectList = [];
+    const allCommonPrefixes: string[] = [];
+
+    // Use maximum iteration to ensure termination
+    const MAX_ITERATIONS = 100;
+    for (let i = 1; i <= MAX_ITERATIONS; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await this.s3
+        .listObjectsV2({
+          Bucket: bucket,
+          Delimiter: '/',
+          Prefix: prefix,
+          ContinuationToken: continuationToken,
+        })
+        .promise();
+
+      if (response.Contents) {
+        allContents.push(...response.Contents);
+      }
+      if (response.CommonPrefixes) {
+        allCommonPrefixes.push(...response.CommonPrefixes.map((item) => item.Prefix).filter(isString));
+      }
+
+      if (!response.IsTruncated) break;
+      if (i === MAX_ITERATIONS) throw new SfError('Max listObjectsV2 iterations reached');
+
+      continuationToken = response.NextContinuationToken;
+    }
+
+    return { contents: allContents, commonPrefixes: allCommonPrefixes };
+  }
+
+  public async listCommonPrefixes(key: string): Promise<string[]> {
+    const result = await this.listAllObjects(key);
+    return result.commonPrefixes;
   }
 
   public async listKeyContents(key: string): Promise<S3.ObjectList> {
-    const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
-    const objects = await this.s3
-      .listObjectsV2({ Bucket: this.options.bucket ?? BUCKET, Delimiter: '/', Prefix: prefix })
-      .promise();
-    return objects.Contents ?? [];
+    const result = await this.listAllObjects(key);
+    return result.contents;
   }
 }
 
