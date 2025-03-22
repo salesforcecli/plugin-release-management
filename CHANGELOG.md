@@ -1,3 +1,9 @@
+## [5.7.5](https://github.com/salesforcecli/plugin-release-management/compare/5.7.4...5.7.5) (2025-03-22)
+
+### Bug Fixes
+
+- **deps:** bump shelljs from 0.9.1 to 0.9.2 ([a089f9b](https://github.com/salesforcecli/plugin-release-management/commit/a089f9bf88cd45c07de3b9dd713efa077973201a))
+
 ## [5.7.4](https://github.com/salesforcecli/plugin-release-management/compare/5.7.3...5.7.4) (2025-03-16)
 
 ### Bug Fixes
