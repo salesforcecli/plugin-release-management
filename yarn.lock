@@ -1598,23 +1598,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsforce/jsforce-node@^3.6.5":
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.6.5.tgz#d8a4097b46348b6b5001da66d616b3e9c7efb59f"
-  integrity sha512-XqYOCgqET9XYhwI3wmrg4oMRzKkTqy0ua8aopMQRMGT2QVuq2IBfRTSrfoMa129lqJvNy7XXA4ntXQJkKI/VqQ==
-  dependencies:
-    "@sindresorhus/is" "^4"
-    base64url "^3.0.1"
-    csv-parse "^5.5.2"
-    csv-stringify "^6.4.4"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    https-proxy-agent "^5.0.0"
-    multistream "^3.1.0"
-    node-fetch "^2.6.1"
-    xml2js "^0.6.2"
-
-"@jsforce/jsforce-node@^3.6.6":
+"@jsforce/jsforce-node@^3.6.5", "@jsforce/jsforce-node@^3.6.6":
   version "3.6.6"
   resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.6.6.tgz#26fe2fc9f4f3671ca8bfb0c98a728cb8a0219265"
   integrity sha512-WdIo2lLbrz6nkfiaz2UynyaNiM8o+fEjaRev7zA4KKSaQYB1MJ66xHubeI5Iheq8WgkY9XGwWKAwPDhuV+GROQ==
@@ -2068,10 +2052,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.5.1", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.3", "@salesforce/core@^8.8.4", "@salesforce/core@^8.8.5":
-  version "8.8.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.8.5.tgz#4004e22523e4e45b42631733d06dc8aec9fdc23d"
-  integrity sha512-eCiiO4NptvKkz04A4ivBVLzEBy/6IIFmaXoZ4tnF1FcD5MESvC+Xuc+0RFSRiYmPi5oloKNl6njrfVCKAho2zQ==
+"@salesforce/core@^8.5.1", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.3", "@salesforce/core@^8.8.4", "@salesforce/core@^8.8.5", "@salesforce/core@^8.8.6":
+  version "8.8.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.8.6.tgz#a7e4e7a6ed074efa60cca30d1ef620d62f443d8c"
+  integrity sha512-RQK7iUvOv579qZkz93DtXOTFY6HZrOF1iJB5JntnzzmWgKXwdeRdoyIYlLksrDp0vkNtjtNTZZz+IJY4x6eCig==
   dependencies:
     "@jsforce/jsforce-node" "^3.6.5"
     "@salesforce/kit" "^3.2.2"
@@ -9076,10 +9060,10 @@ secure-json-parse@^2.4.0:
   resolved "https://registry.npmjs.org/secure-json-parse/-/secure-json-parse-2.7.0.tgz"
   integrity sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==
 
-"semver@2 || 3 || 4 || 5":
-  version "5.7.1"
-  resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
-  integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
+"semver@2 || 3 || 4 || 5", semver@^5.5.0:
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
+  integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
 
 semver@7.5.0:
   version "7.5.0"
@@ -9087,11 +9071,6 @@ semver@7.5.0:
   integrity sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==
   dependencies:
     lru-cache "^6.0.0"
-
-semver@^5.5.0:
-  version "5.7.2"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
-  integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
 
 semver@^6.0.0, semver@^6.3.0, semver@^6.3.1:
   version "6.3.1"
