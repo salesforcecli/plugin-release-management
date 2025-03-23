@@ -19,7 +19,7 @@
     "@salesforce/plugin-command-reference": "^3.1.49",
     "@salesforce/plugin-trust": "^3.7.70",
     "@salesforce/sf-plugins-core": "^12.2.0",
-    "@salesforce/ts-types": "^2.0.10",
+    "@salesforce/ts-types": "^2.0.11",
     "aws-sdk": "^2.1692.0",
     "chalk": "^5.4.0",
     "fast-glob": "^3.3.3",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5.2.36",
-    "@salesforce/dev-scripts": "^10.2.4",
+    "@salesforce/dev-scripts": "^10.2.12",
     "@salesforce/ts-sinon": "^1.4.30",
     "@types/semver": "^7.5.8",
     "@types/shelljs": "^0.8.15",
@@ -265,7 +265,7 @@
       "output": []
     },
     "link-check": {
-      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|%s\" --markdown --retry --directory-listing --verbosity error",
+      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
       "files": [
         "./*.md",
         "./!(CHANGELOG).md",
