@@ -1,3 +1,9 @@
+## [5.7.7](https://github.com/salesforcecli/plugin-release-management/compare/5.7.6...5.7.7) (2025-03-23)
+
+### Bug Fixes
+
+- **deps:** bump @octokit/plugin-throttling from 9.4.0 to 9.6.0 ([2213ac3](https://github.com/salesforcecli/plugin-release-management/commit/2213ac329ceaff721be33f0b6415739c733672b4))
+
 ## [5.7.6](https://github.com/salesforcecli/plugin-release-management/compare/5.7.5...5.7.6) (2025-03-22)
 
 ### Bug Fixes
