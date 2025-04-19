@@ -2223,15 +2223,15 @@
     debug "^4.4.0"
     handlebars "^4.7.8"
 
-"@salesforce/plugin-info@^3.4.51":
-  version "3.4.52"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.52.tgz#e7fc5cca53dea78b59115811badb07d502e7285f"
-  integrity sha512-AJiZXeNpNFS21fMIyYRrKP/mRryM2OrdKQnuhgsLgWa3wfTFGEIeSgo8WlmGOVbC+Rdr+oOxA8DAX+Yx8Jr+fQ==
+"@salesforce/plugin-info@^3.4.52":
+  version "3.4.53"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-3.4.53.tgz#401bddba6dec54e093446040be859081ab7b67a7"
+  integrity sha512-pRhvBw2wCxsBI3hFdALLwLPErCZu9FLyJ2q/JqbJFo7O1efYTV2VAecFc4rcMeRRJFBgXsmPr7Q774K1cw5pog==
   dependencies:
     "@inquirer/input" "^2.3.0"
     "@jsforce/jsforce-node" "^3.7.0"
     "@oclif/core" "^4"
-    "@salesforce/core" "^8.8.6"
+    "@salesforce/core" "^8.9.0"
     "@salesforce/kit" "^3.2.3"
     "@salesforce/sf-plugins-core" "^12"
     got "^13.0.0"
@@ -2241,15 +2241,15 @@
     proxy-agent "^6.5.0"
     semver "^7.7.1"
 
-"@salesforce/plugin-trust@^3.7.79":
-  version "3.7.79"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.79.tgz#e474312a9b63425630e6eb755b30a299a733ab2e"
-  integrity sha512-HHU8fPADWoesP0DklakbDD4BYeN5JLsdayujY2uwIcIGSjJ8WKT7ciEIKIJCsCgzlS+kivE2+0ojyuCtmdFk4Q==
+"@salesforce/plugin-trust@^3.7.81":
+  version "3.7.81"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-3.7.81.tgz#2c79478ec1ae2c3f41388f901cdc983dc9b13b33"
+  integrity sha512-Nc0PXX18B5W3m8X1vuBfEfJpo6YoaswKHpxNBBkdqPS6xns5x1nuNwdHsU2fHaAiIZCoNCvIYGi2rIcmATZ2+A==
   dependencies:
     "@oclif/core" "^4"
-    "@salesforce/core" "^8.8.7"
+    "@salesforce/core" "^8.9.0"
     "@salesforce/kit" "^3.2.0"
-    "@salesforce/plugin-info" "^3.4.51"
+    "@salesforce/plugin-info" "^3.4.52"
     "@salesforce/sf-plugins-core" "^12"
     got "^13.0.0"
     npm "^10.9.2"
