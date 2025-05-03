@@ -1,3 +1,9 @@
+## [5.7.23](https://github.com/salesforcecli/plugin-release-management/compare/5.7.22...5.7.23) (2025-05-03)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-command-reference ([22fff5d](https://github.com/salesforcecli/plugin-release-management/commit/22fff5d6017b49f4bac8161b3d121e281d1d1c5a))
+
 ## [5.7.22](https://github.com/salesforcecli/plugin-release-management/compare/5.7.21...5.7.22) (2025-05-03)
 
 ### Bug Fixes
