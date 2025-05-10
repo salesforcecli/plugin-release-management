@@ -27,7 +27,7 @@
     "just-diff": "^5.2.0",
     "proxy-agent": "^6.4.0",
     "semver": "^7.7.0",
-    "shelljs": "^0.9.2",
+    "shelljs": "^0.10.0",
     "standard-version": "^9.5.0",
     "strip-ansi": "^6",
     "yarn-deduplicate": "^6.0.2"
