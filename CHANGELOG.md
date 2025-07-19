@@ -1,3 +1,9 @@
+## [5.7.47](https://github.com/salesforcecli/plugin-release-management/compare/5.7.46...5.7.47) (2025-07-19)
+
+### Bug Fixes
+
+- **deps:** bump @octokit/core from 6.1.5 to 6.1.6 ([58bd792](https://github.com/salesforcecli/plugin-release-management/commit/58bd792cff32df0728fdcebda069bdf708a1a296))
+
 ## [5.7.46](https://github.com/salesforcecli/plugin-release-management/compare/5.7.45...5.7.46) (2025-07-19)
 
 ### Bug Fixes
