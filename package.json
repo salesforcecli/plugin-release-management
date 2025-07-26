@@ -9,7 +9,7 @@
     "sf-release": "bin/run.js"
   },
   "dependencies": {
-    "@oclif/core": "^4.5.1",
+    "@oclif/core": "^4.5.2",
     "@octokit/core": "^6.1.6",
     "@octokit/plugin-paginate-rest": "^11.6.0",
     "@octokit/plugin-throttling": "^9.6.1",
