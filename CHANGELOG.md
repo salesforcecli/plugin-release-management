@@ -1,3 +1,9 @@
+## [5.7.54](https://github.com/salesforcecli/plugin-release-management/compare/5.7.53...5.7.54) (2025-08-09)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/sf-plugins-core from 12.2.3 to 12.2.4 ([4cfe97c](https://github.com/salesforcecli/plugin-release-management/commit/4cfe97cc4357738657bebd0e69fd98fe7621aa0b))
+
 ## [5.7.53](https://github.com/salesforcecli/plugin-release-management/compare/5.7.52...5.7.53) (2025-08-09)
 
 ### Bug Fixes
