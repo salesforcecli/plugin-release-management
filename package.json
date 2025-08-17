@@ -19,7 +19,7 @@
     "@salesforce/plugin-command-reference": "^3.1.65",
     "@salesforce/plugin-trust": "^3.7.89",
     "@salesforce/sf-plugins-core": "^12.2.4",
-    "@salesforce/ts-types": "^2.0.10",
+    "@salesforce/ts-types": "^2.0.11",
     "aws-sdk": "^2.1692.0",
     "chalk": "^5.5.0",
     "fast-glob": "^3.3.3",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5.3.5",
-    "@salesforce/dev-scripts": "^10.2.4",
+    "@salesforce/dev-scripts": "^11.0.2",
     "@salesforce/ts-sinon": "^1.4.30",
     "@types/semver": "^7.7.0",
     "@types/shelljs": "^0.8.17",
@@ -65,7 +65,7 @@
     "salesforcedx",
     "sfdx-plugin"
   ],
-  "license": "BSD-3-Clause",
+  "license": "Apache-2.0",
   "oclif": {
     "commands": "./lib/commands",
     "node": "14.15.4",
@@ -145,6 +145,7 @@
     "clean-all": "sf-clean all",
     "compile": "wireit",
     "docs": "sf-docs",
+    "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
@@ -265,7 +266,7 @@
       "output": []
     },
     "link-check": {
-      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|%s\" --markdown --retry --directory-listing --verbosity error",
+      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
       "files": [
         "./*.md",
         "./!(CHANGELOG).md",
