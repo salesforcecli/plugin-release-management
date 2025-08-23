@@ -1,3 +1,9 @@
+## [5.7.57](https://github.com/salesforcecli/plugin-release-management/compare/5.7.56...5.7.57) (2025-08-23)
+
+### Bug Fixes
+
+- **deps:** bump chalk from 5.5.0 to 5.6.0 ([2a8acf4](https://github.com/salesforcecli/plugin-release-management/commit/2a8acf48c3c239895c70f4b97ef058bdb9129907))
+
 ## [5.7.56](https://github.com/salesforcecli/plugin-release-management/compare/5.7.55...5.7.56) (2025-08-23)
 
 ### Bug Fixes
