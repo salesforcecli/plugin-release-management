@@ -1,3 +1,9 @@
+## [5.7.58](https://github.com/salesforcecli/plugin-release-management/compare/5.7.57...5.7.58) (2025-08-30)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 8.21.2 to 8.22.0 ([d3d4953](https://github.com/salesforcecli/plugin-release-management/commit/d3d49532d88fbda3176e96473333c658396f764a))
+
 ## [5.7.57](https://github.com/salesforcecli/plugin-release-management/compare/5.7.56...5.7.57) (2025-08-23)
 
 ### Bug Fixes
