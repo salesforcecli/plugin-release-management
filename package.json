@@ -35,7 +35,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5.3.5",
     "@salesforce/dev-scripts": "^10.2.4",
-    "@salesforce/ts-sinon": "^1.4.30",
+    "@salesforce/ts-sinon": "^1.4.31",
     "@types/semver": "^7.7.0",
     "@types/shelljs": "^0.8.17",
     "aws-sdk-mock": "^5.9.0",
