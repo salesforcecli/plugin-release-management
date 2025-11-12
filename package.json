@@ -9,6 +9,7 @@
     "sf-release": "bin/run.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.929.0",
     "@oclif/core": "^4.8.0",
     "@octokit/core": "^6.1.6",
     "@octokit/plugin-paginate-rest": "^11.6.0",
@@ -20,7 +21,8 @@
     "@salesforce/plugin-trust": "^3.7.89",
     "@salesforce/sf-plugins-core": "^12.2.5",
     "@salesforce/ts-types": "^2.0.10",
-    "aws-sdk": "^2.1692.0",
+    "@smithy/node-http-handler": "^4.4.5",
+    "@smithy/types": "^4.8.1",
     "chalk": "^5.6.0",
     "fast-glob": "^3.3.3",
     "got": "^13",
@@ -38,7 +40,7 @@
     "@salesforce/ts-sinon": "^1.4.31",
     "@types/semver": "^7.7.0",
     "@types/shelljs": "^0.8.17",
-    "aws-sdk-mock": "^5.9.0",
+    "aws-sdk-client-mock": "^4.1.0",
     "eslint-plugin-sf-plugin": "^1.20.33",
     "oclif": "^4.22.41",
     "ts-node": "^10.9.2",
