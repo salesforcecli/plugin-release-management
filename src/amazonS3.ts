@@ -46,7 +46,7 @@ export class AmazonS3 {
     this.s3 = new S3({
       region: 'us-east-1',
       ...resolveCredentials(options.credentials),
-      ...buildRequestHandler(),
+      requestHandler: buildRequestHandler(),
     });
   }
 
