@@ -13,6 +13,7 @@ export async function putObject(bucket: string, key: string, body: string): Prom
   const agent = api.getAgentForUri('https://s3.amazonaws.com') as Agents;
   const s3 = new S3({
     requestHandler: new NodeHttpHandler({
+      region: 'us-east-1',
       httpAgent: agent.http,
       httpsAgent: agent.https,
     } as NodeHttpHandlerOptions),
