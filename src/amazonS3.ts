@@ -51,7 +51,7 @@ export class AmazonS3 {
       ...buildHttpOptions(),
     });
     // eslint-disable-next-line no-console
-    console.log(`JFDEBUG: amazonS3.ts: Region is ${this.s3.config.region || 'undefined'}`);
+    console.log(`JFDEBUG: amazonS3.ts: Region is ${this.s3.config.region ?? 'undefined'}`);
   }
 
   // there's an abstract class for cli:install:test using this

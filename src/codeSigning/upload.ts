@@ -19,7 +19,7 @@ export async function putObject(bucket: string, key: string, body: string): Prom
       httpsOptions: { agent: agent.https },
     } as ClientConfiguration);
     // eslint-disable-next-line no-console
-    console.log(`JFDEBUG: upload.ts: region is ${s3.config.region || 'undefined'}`);
+    console.log(`JFDEBUG: upload.ts: region is ${s3.config.region ?? 'undefined'}`);
     s3.putObject({ Bucket: bucket, Key: key, Body: body }, (err, resp) => {
       if (err) reject(err);
       if (resp) resolve(resp);
