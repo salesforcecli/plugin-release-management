@@ -44,6 +44,7 @@ export class AmazonS3 {
     this.directory = `https://developer.salesforce.com/media/salesforce-cli/${this.options.cli ?? ''}`;
     this.baseKey = this.directory.replace(BASE_URL, '').replace(/^\//, '');
     this.s3 = new S3({
+      region: 'us-east-1',
       ...resolveCredentials(options.credentials),
       ...buildRequestHandler(),
     });

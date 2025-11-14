@@ -12,6 +12,7 @@ import { api } from './packAndSign.js';
 export async function putObject(bucket: string, key: string, body: string): Promise<PutObjectCommandOutput> {
   const agent = api.getAgentForUri('https://s3.amazonaws.com') as Agents;
   const s3 = new S3({
+    region: 'us-east-1',
     requestHandler: new NodeHttpHandler({
       httpAgent: agent.http,
       httpsAgent: agent.https,
