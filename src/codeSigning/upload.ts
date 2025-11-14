@@ -18,6 +18,7 @@ export async function putObject(bucket: string, key: string, body: string): Prom
       httpOptions: { agent: agent.http },
       httpsOptions: { agent: agent.https },
     } as ClientConfiguration);
+    console.log(`JFDEBUG: upload.ts: region is ${s3.config.region}`);
     s3.putObject({ Bucket: bucket, Key: key, Body: body }, (err, resp) => {
       if (err) reject(err);
       if (resp) resolve(resp);

@@ -50,6 +50,7 @@ export class AmazonS3 {
       ...resolveCredentials(options.credentials),
       ...buildHttpOptions(),
     });
+    console.log(`JFDEBUG: amazonS3.ts: Region is ${this.s3.config.region}`);
   }
 
   // there's an abstract class for cli:install:test using this
