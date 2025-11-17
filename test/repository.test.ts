@@ -42,7 +42,7 @@ describe('PackageRepo', () => {
       expect(repo.nextVersion).to.equal('2.0.0');
     });
 
-    it('should use standard-version to determine the next version if the version in the package.json already exists', async () => {
+    it('should use commit-and-tag-version to determine the next version if the version in the package.json already exists', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
@@ -51,7 +51,7 @@ describe('PackageRepo', () => {
       expect(repo.nextVersion).to.equal('1.1.0');
     });
 
-    it('should use standard-version to determine a prerelease version', async () => {
+    it('should use commit-and-tag-version to determine a prerelease version', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
@@ -61,7 +61,7 @@ describe('PackageRepo', () => {
       expect(execStub.args[0][0]).to.include('--prerelease');
     });
 
-    it('should use standard-version to determine a specific prerelease version', async () => {
+    it('should use commit-and-tag-version to determine a specific prerelease version', async () => {
       stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
         Promise.resolve({ name: pkgName, version: '1.0.0' })
       );
