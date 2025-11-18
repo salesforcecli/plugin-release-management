@@ -1,8 +1,30 @@
-## [5.7.73](https://github.com/salesforcecli/plugin-release-management/compare/5.7.72...5.7.73) (2025-11-17)
+## [5.7.74](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73...5.7.74) (2025-11-18)
+
+## [5.7.73-jf4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-jf3.0...5.7.73-jf4.0) (2025-11-14)
+
+### Bug Fixes
+
+- resolving bug in requestHandler @W-20084586@ ([e46d7d0](https://github.com/salesforcecli/plugin-release-management/commit/e46d7d0a4b9539eb159fe00be40e87b85d81a6c5))
+
+## [5.7.73-jf3.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-beta.0...5.7.73-jf3.0) (2025-11-14)
+
+## [5.7.73-beta.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.72...5.7.73-beta.0) (2025-11-14)
+
+## [5.7.73](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-jf4.0...5.7.73) (2025-11-17)
 
 ### Bug Fixes
 
 - replace standard-version with commit-and-tag-version @W-11741114@ ([d202a64](https://github.com/salesforcecli/plugin-release-management/commit/d202a64c54c1129c4553d7f789473be0dd508b7e))
+
+## [5.7.73-jf4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-jf3.0...5.7.73-jf4.0) (2025-11-14)
+
+### Bug Fixes
+
+- resolving bug in requestHandler @W-20084586@ ([e46d7d0](https://github.com/salesforcecli/plugin-release-management/commit/e46d7d0a4b9539eb159fe00be40e87b85d81a6c5))
+
+## [5.7.73-jf3.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-beta.0...5.7.73-jf3.0) (2025-11-14)
+
+## [5.7.73-beta.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.72...5.7.73-beta.0) (2025-11-14)
 
 ## [5.7.72](https://github.com/salesforcecli/plugin-release-management/compare/5.7.71...5.7.72) (2025-11-08)
 
