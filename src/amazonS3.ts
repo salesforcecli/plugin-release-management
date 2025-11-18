@@ -11,16 +11,13 @@ import { ux } from '@oclif/core';
 import got from 'got';
 import { SfError } from '@salesforce/core';
 import chalk from 'chalk';
-import AWS from 'aws-sdk';
-import { S3, WebIdentityCredentials } from 'aws-sdk';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials.js';
+import { _Object, ListObjectsV2CommandOutput, S3, GetObjectRequest, GetObjectOutput } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { AwsCredentialIdentity } from '@smithy/types';
 import { isString } from '@salesforce/ts-types';
 
-import { GetObjectRequest, GetObjectOutput } from 'aws-sdk/clients/s3.js';
 import { Channel, CLI, S3Manifest, ServiceAvailability } from './types.js';
 import { api } from './codeSigning/packAndSign.js';
-
-import ClientConfiguration = WebIdentityCredentials.ClientConfiguration;
 
 const BASE_URL = 'https://developer.salesforce.com';
 const BUCKET = 'dfc-data-production';
@@ -32,7 +29,7 @@ type AmazonS3Options = {
   cli: CLI;
   channel?: Channel;
   baseUrl?: string;
-  credentials?: CredentialsOptions;
+  credentials?: AwsCredentialIdentity;
   baseKey?: string;
 };
 
@@ -41,14 +38,15 @@ export class AmazonS3 {
 
   public directory: string;
   private s3: S3;
-  private baseKey: string;
+  private readonly baseKey: string;
 
   public constructor(private options: AmazonS3Options) {
     this.directory = `https://developer.salesforce.com/media/salesforce-cli/${this.options.cli ?? ''}`;
     this.baseKey = this.directory.replace(BASE_URL, '').replace(/^\//, '');
-    this.s3 = new AWS.S3({
+    this.s3 = new S3({
+      region: 'us-east-1',
       ...resolveCredentials(options.credentials),
-      ...buildHttpOptions(),
+      requestHandler: buildRequestHandler(),
     });
   }
 
@@ -65,36 +63,31 @@ export class AmazonS3 {
   }
 
   public async getObject(options: GetObjectOption): Promise<GetObjectOutput> {
-    const object = (await this.s3
-      .getObject({
-        ...options,
-        Key: options.Key.replace(BASE_URL, '').replace(/^\//, ''),
-        ...{ Bucket: this.options.bucket ?? BUCKET },
-      })
-      .promise()) as GetObjectOutput;
-    return object;
+    return this.s3.getObject({
+      ...options,
+      Key: options.Key?.replace(BASE_URL, '').replace(/^\//, ''),
+      ...{ Bucket: this.options.bucket ?? BUCKET },
+    });
   }
 
   // Paginates listObjectV2 and returns both Contents and CommonPrefixes
-  public async listAllObjects(key: string): Promise<{ contents: S3.ObjectList; commonPrefixes: string[] }> {
+  public async listAllObjects(key: string): Promise<{ contents: _Object[]; commonPrefixes: string[] }> {
     const prefix = key.startsWith(this.baseKey) ? key : `${this.baseKey}/${key}/`;
     const bucket = this.options.bucket ?? BUCKET;
     let continuationToken;
-    const allContents: S3.ObjectList = [];
+    const allContents: _Object[] = [];
     const allCommonPrefixes: string[] = [];
 
     // Use maximum iteration to ensure termination
     const MAX_ITERATIONS = 100;
     for (let i = 1; i <= MAX_ITERATIONS; i++) {
       // eslint-disable-next-line no-await-in-loop
-      const response = await this.s3
-        .listObjectsV2({
-          Bucket: bucket,
-          Delimiter: '/',
-          Prefix: prefix,
-          ContinuationToken: continuationToken,
-        })
-        .promise();
+      const response: ListObjectsV2CommandOutput = await this.s3.listObjectsV2({
+        Bucket: bucket,
+        Delimiter: '/',
+        Prefix: prefix,
+        ContinuationToken: continuationToken,
+      });
 
       if (response.Contents) {
         allContents.push(...response.Contents);
@@ -117,7 +110,7 @@ export class AmazonS3 {
     return result.commonPrefixes;
   }
 
-  public async listKeyContents(key: string): Promise<S3.ObjectList> {
+  public async listKeyContents(key: string): Promise<_Object[]> {
     const result = await this.listAllObjects(key);
     return result.contents;
   }
@@ -157,8 +150,8 @@ const getFileAtUrl = async (url: string): Promise<string> => {
 };
 
 const resolveCredentials = (
-  credentialOptions?: CredentialsOptions
-): { credentials: CredentialsOptions } | Record<string, string> => {
+  credentialOptions?: AwsCredentialIdentity
+): { credentials: AwsCredentialIdentity } | Record<string, string> => {
   if (credentialOptions) {
     return { credentials: credentialOptions };
   }
@@ -174,7 +167,13 @@ const fileIsAvailable = async (url: string): Promise<ServiceAvailability> => {
   return { service: 'file', name: url, available: statusCode >= 200 && statusCode < 300 };
 };
 
-const buildHttpOptions = (): { httpOptions: ClientConfiguration['httpOptions'] } | Record<string, never> => {
+const buildRequestHandler = (): NodeHttpHandler => {
   const agent = api.getAgentForUri('https://s3.amazonaws.com');
-  return agent && agent.http ? { httpOptions: { agent: agent.http } } : {};
+  const options =
+    agent && agent.http
+      ? {
+          httpAgent: agent.http,
+        }
+      : {};
+  return new NodeHttpHandler(options);
 };

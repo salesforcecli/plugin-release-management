@@ -23,9 +23,9 @@
  */
 import { generateKeyPair, createSign, createVerify } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { S3 } from 'aws-sdk';
-import { putObject } from '../codeSigning/upload.js';
+import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import { PackageJsonSfdxProperty } from '../package.js';
+import { putObject } from './upload.js';
 const CRYPTO_LEVEL = 'RSA-SHA256';
 const BUCKET = 'dfc-data-production';
 export const BASE_URL = 'https://developer.salesforce.com';
@@ -98,7 +98,7 @@ export const signVerifyUpload = async (signingRequest: SigningRequest): Promise<
 /**
  * Save the security items (publicKey and .sig file) to AWS based on the generates filenames
  */
-const upload = async (input: SigningResponse): Promise<S3.PutObjectOutput[]> =>
+const upload = async (input: SigningResponse): Promise<PutObjectCommandOutput[]> =>
   Promise.all([
     // signature file
     putObject(BUCKET, input.packageJsonSfdxProperty.signatureUrl.replace(`${BASE_URL}/`, ''), input.signatureContents),
