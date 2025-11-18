@@ -1,3 +1,9 @@
+## [5.7.73](https://github.com/salesforcecli/plugin-release-management/compare/5.7.72...5.7.73) (2025-11-17)
+
+### Bug Fixes
+
+- replace standard-version with commit-and-tag-version @W-11741114@ ([d202a64](https://github.com/salesforcecli/plugin-release-management/commit/d202a64c54c1129c4553d7f789473be0dd508b7e))
+
 ## [5.7.72](https://github.com/salesforcecli/plugin-release-management/compare/5.7.71...5.7.72) (2025-11-08)
 
 ### Bug Fixes

@@ -195,8 +195,8 @@ export class PackageRepo extends Repository {
       );
       return this.package.packageJson.version;
     } else {
-      this.logger.debug('Using standard-version to determine next version');
-      let command = 'npx standard-version --dry-run --skip.tag --skip.commit --skip.changelog';
+      this.logger.debug('Using commit-and-tag-version to determine next version');
+      let command = 'npx commit-and-tag-version --dry-run --skip.tag --skip.commit --skip.changelog';
       // It can be an empty string if they want
       if (isString(this.options?.useprerelease)) {
         command += ` --prerelease ${this.options?.useprerelease}`;
