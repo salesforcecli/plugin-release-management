@@ -1,3 +1,9 @@
+## [5.7.75](https://github.com/salesforcecli/plugin-release-management/compare/5.7.74...5.7.75) (2025-11-29)
+
+### Bug Fixes
+
+- **deps:** bump @aws-sdk/client-s3 from 3.937.0 to 3.940.0 ([aa782bd](https://github.com/salesforcecli/plugin-release-management/commit/aa782bdeeaf3bfe9e11d0797fd4daea186461227))
+
 ## [5.7.74](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73...5.7.74) (2025-11-18)
 
 ## [5.7.73-jf4.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.73-jf3.0...5.7.73-jf4.0) (2025-11-14)
