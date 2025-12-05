@@ -1,3 +1,9 @@
+## [5.7.77](https://github.com/salesforcecli/plugin-release-management/compare/5.7.76...5.7.77) (2025-12-05)
+
+### Bug Fixes
+
+- **deps:** bump jws from 3.2.2 to 3.2.3 ([0716aec](https://github.com/salesforcecli/plugin-release-management/commit/0716aece25bd34233d92143dd257fc3c1fe16af1))
+
 ## [5.7.76](https://github.com/salesforcecli/plugin-release-management/compare/5.7.75...5.7.76) (2025-11-29)
 
 ### Bug Fixes
