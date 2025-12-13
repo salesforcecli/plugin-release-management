@@ -1,3 +1,9 @@
+## [5.7.82](https://github.com/salesforcecli/plugin-release-management/compare/5.7.81...5.7.82) (2025-12-13)
+
+### Bug Fixes
+
+- **deps:** bump commit-and-tag-version from 12.6.0 to 12.6.1 ([299ce90](https://github.com/salesforcecli/plugin-release-management/commit/299ce90785f485ed635ff8cf510a501bd0e89cba))
+
 ## [5.7.81](https://github.com/salesforcecli/plugin-release-management/compare/5.7.80...5.7.81) (2025-12-13)
 
 ### Bug Fixes
