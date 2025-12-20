@@ -3246,7 +3246,15 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.7.0.tgz#64c441bdae033b378b6eef7d0c3d77c329b9378e"
   integrity sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==
 
-"@types/shelljs@^0.8.15", "@types/shelljs@^0.8.17":
+"@types/shelljs@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.10.0.tgz#c5a5cb47f9bac25de535ffe8b77a32c0f7ed8e83"
+  integrity sha512-OEfyhE5Ox+FeoHbhrEDwm0kXxntO6nsyMRCFvNsIBHPZu5rV1w2OjPcLclaC/IZ1TlzZPgbeMfwAZEi5N238yQ==
+  dependencies:
+    "@types/node" "*"
+    fast-glob "^3.3.2"
+
+"@types/shelljs@^0.8.15":
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.8.17.tgz#8b21b8f77015af263a7e3e5093ff2b77320e45d2"
   integrity sha512-IDksKYmQA2W9MkQjiyptbMmcQx+8+Ol6b7h6dPU5S05JyiQDSb/nZKnrMrZqGwgV6VkVdl6/SPCKPDlMRvqECg==
