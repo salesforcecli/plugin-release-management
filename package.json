@@ -9,7 +9,7 @@
     "sf-release": "bin/run.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.948.0",
+    "@aws-sdk/client-s3": "^3.956.0",
     "@oclif/core": "^4.8.0",
     "@octokit/core": "^6.1.6",
     "@octokit/plugin-paginate-rest": "^11.6.0",
