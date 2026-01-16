@@ -102,8 +102,10 @@ export default class AutoMerge extends SfCommand<void> {
       stop(`Missing automerge label: [${automergeLabels.join(', ')}]`);
     }
 
-    if (prData.user?.login !== 'svc-cli-bot') {
-      stop('PR must be created by "svc-cli-bot"');
+    const allowedAuthors = ['svc-cli-bot', 'svc-idee-bot'];
+
+    if (prData.user?.login && !allowedAuthors.includes(prData.user.login)) {
+      stop(`PR must be created by one of: [${allowedAuthors.join(', ')}]`);
     }
 
     if (!(await this.isGreen(prData, verbose))) {
