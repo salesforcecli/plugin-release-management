@@ -1,3 +1,9 @@
+## [5.7.93](https://github.com/salesforcecli/plugin-release-management/compare/5.7.92...5.7.93) (2026-02-04)
+
+### Bug Fixes
+
+- **deps:** bump @isaacs/brace-expansion from 5.0.0 to 5.0.1 ([f4d548d](https://github.com/salesforcecli/plugin-release-management/commit/f4d548df74709c116a5e63c5d256f488c09746a6))
+
 ## [5.7.92](https://github.com/salesforcecli/plugin-release-management/compare/5.7.91...5.7.92) (2026-01-31)
 
 ### Bug Fixes
