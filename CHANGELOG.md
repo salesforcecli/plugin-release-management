@@ -1,3 +1,9 @@
+## [5.7.97](https://github.com/salesforcecli/plugin-release-management/compare/5.7.96...5.7.97) (2026-02-12)
+
+### Bug Fixes
+
+- **deps:** bump fast-xml-parser from 5.3.3 to 5.3.4 ([0b64a0e](https://github.com/salesforcecli/plugin-release-management/commit/0b64a0eced693749f5d6e044ddd6598954a173bb))
+
 ## [5.7.96](https://github.com/salesforcecli/plugin-release-management/compare/5.7.95...5.7.96) (2026-02-07)
 
 ### Bug Fixes
