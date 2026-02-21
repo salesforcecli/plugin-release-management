@@ -145,7 +145,7 @@ EXAMPLES
   $ sfdx channel promote --candidate latest-rc --target latest --platform win --platform mac
 ```
 
-_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/channel/promote.ts)_
+_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/channel/promote.ts)_
 
 ## `sfdx cli artifacts compare`
 
@@ -169,7 +169,7 @@ EXAMPLES
   $ sfdx cli artifacts compare
 ```
 
-_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/artifacts/compare.ts)_
+_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/artifacts/compare.ts)_
 
 ## `sfdx cli install jit test`
 
@@ -190,7 +190,7 @@ EXAMPLES
   $ sfdx cli install jit test
 ```
 
-_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/install/jit/test.ts)_
+_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/install/jit/test.ts)_
 
 ## `sfdx cli install test`
 
@@ -231,7 +231,7 @@ EXAMPLES
   $ sfdx cli install test --cli sf --method tarball --channel stable-rc
 ```
 
-_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/install/test.ts)_
+_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/install/test.ts)_
 
 ## `sfdx cli release automerge`
 
@@ -262,7 +262,7 @@ EXAMPLES
   $ sfdx cli release automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
 ```
 
-_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/release/automerge.ts)_
+_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/release/automerge.ts)_
 
 ## `sfdx cli release build`
 
@@ -325,7 +325,7 @@ EXAMPLES
   $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3
 ```
 
-_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/release/build.ts)_
+_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/release/build.ts)_
 
 ## `sfdx cli releasenotes`
 
@@ -366,7 +366,7 @@ EXAMPLES
   $ sfdx cli releasenotes --cli sf --markdown > changes.md
 ```
 
-_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/releasenotes.ts)_
+_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/releasenotes.ts)_
 
 ## `sfdx cli tarballs prepare`
 
@@ -394,7 +394,7 @@ EXAMPLES
   $ sfdx cli tarballs prepare
 ```
 
-_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/tarballs/prepare.ts)_
+_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/tarballs/prepare.ts)_
 
 ## `sfdx cli tarballs smoke`
 
@@ -424,7 +424,7 @@ EXAMPLES
   $ sfdx cli tarballs smoke
 ```
 
-_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/tarballs/smoke.ts)_
+_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/tarballs/smoke.ts)_
 
 ## `sfdx cli tarballs verify`
 
@@ -456,7 +456,7 @@ EXAMPLES
   $ sfdx cli tarballs verify --cli sf
 ```
 
-_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/tarballs/verify.ts)_
+_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/tarballs/verify.ts)_
 
 ## `sfdx cli versions inspect`
 
@@ -508,7 +508,7 @@ EXAMPLES
   $ sfdx cli versions inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/cli/versions/inspect.ts)_
 
 ## `sfdx dependabot automerge`
 
@@ -548,7 +548,7 @@ EXAMPLES
   $ sfdx dependabot automerge --max-version-bump major
 ```
 
-_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/dependabot/automerge.ts)_
+_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/dependabot/automerge.ts)_
 
 ## `sfdx github check closed`
 
@@ -575,7 +575,7 @@ EXAMPLES
   $ sfdx github check closed -o me@gus.com
 ```
 
-_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/github/check/closed.ts)_
+_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/github/check/closed.ts)_
 
 ## `sfdx npm dependencies pin`
 
@@ -601,7 +601,7 @@ DESCRIPTION
   in the package.json
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/npm/dependencies/pin.ts)_
 
 ## `sfdx npm package release`
 
@@ -633,7 +633,7 @@ DESCRIPTION
   publish npm package
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/npm/package/release.ts)_
 
 ## `sfdx plugins trust verify`
 
@@ -701,6 +701,6 @@ EXAMPLES
   $ sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.100/src/commands/repositories/index.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.7.101/src/commands/repositories/index.ts)_
 
 <!-- commandsstop -->
