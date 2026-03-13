@@ -7,7 +7,7 @@
 
 import { promisify } from 'node:util';
 import { exec as execSync, ExecException } from 'node:child_process';
-import { arrayWithDeprecation, Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
+import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { ensureString } from '@salesforce/ts-types';
 import { Env } from '@salesforce/kit';
 import { Octokit } from '@octokit/core';
@@ -51,8 +51,10 @@ export default class build extends SfCommand<void> {
       default: true,
       allowNo: true,
     }),
-    only: arrayWithDeprecation({
+    only: Flags.string({
       summary: messages.getMessage('flags.only.summary'),
+      multiple: true,
+      delimiter: ',',
     }),
     'pinned-deps': Flags.boolean({
       summary: messages.getMessage('flags.pinned-deps.summary'),

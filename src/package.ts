@@ -214,8 +214,10 @@ export class Package extends AsyncOptionalCreatable {
         // find dependency in package.json (could be an npm alias)
         const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions, ...jitPlugins });
 
+        const isPinned: boolean = (this.packageJson.pinnedDependencies ?? []).includes(depInfo.packageName);
+
         // if a version is not provided, we'll look up the "latest" version
-        depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
+        depInfo.finalVersion = `${isPinned ? '' : '^'}${version ?? this.getDistTags(depInfo.packageName).latest}`;
 
         // return if version did not change
         if (depInfo.currentVersion === depInfo.finalVersion) return;
