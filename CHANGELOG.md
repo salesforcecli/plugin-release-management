@@ -1,3 +1,9 @@
+## [5.7.109](https://github.com/salesforcecli/plugin-release-management/compare/5.7.108...5.7.109) (2026-03-20)
+
+### Bug Fixes
+
+- **deps:** bump flatted from 3.2.7 to 3.4.2 ([fecf787](https://github.com/salesforcecli/plugin-release-management/commit/fecf7875fe6e949bfe528ab51b887aae35316768))
+
 ## [5.7.108](https://github.com/salesforcecli/plugin-release-management/compare/5.7.107...5.7.108) (2026-03-14)
 
 ### Bug Fixes
