@@ -1,3 +1,33 @@
+## [5.7.111](https://github.com/salesforcecli/plugin-release-management/compare/5.7.110...5.7.111) (2026-03-21)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.9.0 to 4.10.1 ([aab5df2](https://github.com/salesforcecli/plugin-release-management/commit/aab5df23d7357b2bf70c731da6e937f49191d1a2))
+
+## [5.7.110](https://github.com/salesforcecli/plugin-release-management/compare/5.7.109...5.7.110) (2026-03-21)
+
+### Bug Fixes
+
+- **deps:** bump @aws-sdk/client-s3 from 3.1000.0 to 3.1014.0 ([948c84d](https://github.com/salesforcecli/plugin-release-management/commit/948c84d0eff36b8482bdd0109435edfe622d50f1))
+
+## [5.7.109](https://github.com/salesforcecli/plugin-release-management/compare/5.7.108...5.7.109) (2026-03-20)
+
+### Bug Fixes
+
+- **deps:** bump flatted from 3.2.7 to 3.4.2 ([fecf787](https://github.com/salesforcecli/plugin-release-management/commit/fecf7875fe6e949bfe528ab51b887aae35316768))
+
+## [5.7.108](https://github.com/salesforcecli/plugin-release-management/compare/5.7.107...5.7.108) (2026-03-14)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.8.3 to 4.9.0 ([ba1bf26](https://github.com/salesforcecli/plugin-release-management/commit/ba1bf264076646d46f8b67435c058dce89ee9ca4))
+
+## [5.7.107](https://github.com/salesforcecli/plugin-release-management/compare/5.7.106...5.7.107) (2026-03-14)
+
+### Bug Fixes
+
+- **deps:** bump @smithy/node-http-handler from 4.4.12 to 4.4.16 ([cff867f](https://github.com/salesforcecli/plugin-release-management/commit/cff867f8cf61d59d516867637366142380fd961d))
+
 ## [5.7.106](https://github.com/salesforcecli/plugin-release-management/compare/5.7.105...5.7.106) (2026-03-07)
 
 ### Bug Fixes
