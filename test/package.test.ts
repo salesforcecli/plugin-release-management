@@ -130,7 +130,7 @@ describe('Package', () => {
             '@salesforce/plugin-config': '1.2.3',
             'left-pad': '1.1.1',
           },
-          pinnedDependencies: ['left-pad'],
+          pinnedDependencies: ['@salesforce/plugin-config'],
           resolutions: {
             '@salesforce/source-deploy-retrieve': '1.0.0',
           },
@@ -156,20 +156,20 @@ describe('Package', () => {
         {
           packageName: '@salesforce/plugin-config',
           currentVersion: '1.2.3',
-          // Dependency should be unpinned because it is not listed in `pinnedDependencies`
-          finalVersion: '^9.9.9',
+          // Dependency should be pinned because it is listed in `pinnedDependencies`
+          finalVersion: '9.9.9',
         },
         {
           packageName: '@salesforce/jit-me',
           currentVersion: '1.0.0',
-          // Dependency should be unpinned because it is not listed in `pinnedDependencies`
-          finalVersion: '^9.9.9',
+          // Dependency should be pinned, even though it's not in `pinnedDependencies`, because it's in `oclif.jitPlugins`
+          finalVersion: '9.9.9',
         },
         {
           packageName: 'left-pad',
           currentVersion: '1.1.1',
-          // Dependency should be pinned because it is listed in `pinnedDependencies`
-          finalVersion: '9.9.9',
+          // Dependency should be unpinned because it is not listed in `pinnedDependencies`
+          finalVersion: '^9.9.9',
         },
       ]);
     });
@@ -182,57 +182,57 @@ describe('Package', () => {
         {
           packageName: '@salesforce/plugin-config',
           currentVersion: '1.2.3',
-          // Dependency should be unpinned because it's not in `pinnedDependencies`
-          finalVersion: '^11.0.0',
+          // Dependency should be pinned because it's in `pinnedDependencies`
+          finalVersion: '11.0.0',
         },
         {
           packageName: 'left-pad',
           currentVersion: '1.1.1',
-          // Dependency should be pinned because it's in `pinnedDependencies`
-          finalVersion: '11.0.0',
+          // Dependency should be unpinned because it's not in `pinnedDependencies`
+          finalVersion: '^11.0.0',
         },
       ]);
     });
 
-    it('should unpin a pinned version even if it is already up-to-date', async () => {
+    it('should unpin a not-explicitly-pinned version even if it is already up-to-date', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-config@1.2.3']);
+      const results = pkg.bumpDependencyVersions(['left-pad@11.0.0']);
 
       expect(results).to.deep.equal([
         {
-          packageName: '@salesforce/plugin-config',
-          currentVersion: '1.2.3',
-          finalVersion: '^1.2.3',
+          packageName: 'left-pad',
+          currentVersion: '1.1.1',
+          finalVersion: '^11.0.0',
         },
       ]);
     });
 
     it('should return an empty array if all bumped versions are already up to date', async () => {
       const pkg = await Package.create();
-      const results = pkg.bumpDependencyVersions(['left-pad@1.1.1']);
+      const results = pkg.bumpDependencyVersions(['@salesforce/plugin-config@1.2.3']);
 
       expect(results).to.deep.equal([]);
     });
 
-    it('should update dependencies in package.json', async () => {
+    it('should update unpinned dependencies in package.json to unpinned version', async () => {
       const pkg = await Package.create();
-      pkg.bumpDependencyVersions(['@salesforce/plugin-config@3.3.3']);
+      pkg.bumpDependencyVersions(['left-pad@3.3.3']);
 
-      expect(pkg.packageJson.dependencies['@salesforce/plugin-config']).to.equal('^3.3.3');
+      expect(pkg.packageJson.dependencies['left-pad']).to.equal('^3.3.3');
     });
 
-    it('should update resolutions in package.json', async () => {
+    it('should update resolutions in package.json to unpinned version', async () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@salesforce/source-deploy-retrieve@1.0.1']);
       assert(pkg.packageJson.resolutions);
       expect(pkg.packageJson.resolutions['@salesforce/source-deploy-retrieve']).to.equal('^1.0.1');
     });
 
-    it('should update jit in package.json', async () => {
+    it('should update jit in package.json to pinned version', async () => {
       const pkg = await Package.create();
       pkg.bumpDependencyVersions(['@salesforce/jit-me@1.0.1']);
       assert(pkg.packageJson.oclif?.jitPlugins);
-      expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('^1.0.1');
+      expect(pkg.packageJson.oclif.jitPlugins['@salesforce/jit-me']).to.equal('1.0.1');
     });
   });
 
