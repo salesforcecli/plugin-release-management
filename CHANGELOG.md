@@ -1,3 +1,9 @@
+## [5.7.112](https://github.com/salesforcecli/plugin-release-management/compare/5.7.111...5.7.112) (2026-03-27)
+
+### Bug Fixes
+
+- **deps:** bump yaml from 2.8.1 to 2.8.3 ([91501b7](https://github.com/salesforcecli/plugin-release-management/commit/91501b7d7bf566c3f8788d68e25782ec0112daf6))
+
 ## [5.7.111](https://github.com/salesforcecli/plugin-release-management/compare/5.7.110...5.7.111) (2026-03-21)
 
 ### Bug Fixes
