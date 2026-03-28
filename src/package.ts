@@ -214,8 +214,10 @@ export class Package extends AsyncOptionalCreatable {
         // find dependency in package.json (could be an npm alias)
         const depInfo = this.getDependencyInfo(name, { ...dependencies, ...resolutions, ...jitPlugins });
 
+        const shouldPin: boolean = this.shouldPinDependency(depInfo.packageName);
+
         // if a version is not provided, we'll look up the "latest" version
-        depInfo.finalVersion = version ?? this.getDistTags(depInfo.packageName).latest;
+        depInfo.finalVersion = `${shouldPin ? '' : '^'}${version ?? this.getDistTags(depInfo.packageName).latest}`;
 
         // return if version did not change
         if (depInfo.currentVersion === depInfo.finalVersion) return;
@@ -340,6 +342,17 @@ export class Package extends AsyncOptionalCreatable {
       versions: [],
       'dist-tags': {},
     };
+  }
+
+  private shouldPinDependency(dependencyName: string): boolean {
+    const pinnedDependencies: string[] = this.packageJson.pinnedDependencies ?? [];
+    const jitDependencies: string[] = this.packageJson.oclif?.jitPlugins
+      ? Object.keys(this.packageJson.oclif.jitPlugins)
+      : [];
+
+    const dependenciesThatShouldBePinned = [...pinnedDependencies, ...jitDependencies];
+
+    return dependenciesThatShouldBePinned.includes(dependencyName);
   }
 }
 
