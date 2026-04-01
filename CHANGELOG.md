@@ -1,3 +1,13 @@
+# [5.8.0](https://github.com/salesforcecli/plugin-release-management/compare/5.7.115...5.8.0) (2026-04-01)
+
+### Bug Fixes
+
+- feedback from code review @W-21064297@ ([2c39146](https://github.com/salesforcecli/plugin-release-management/commit/2c39146c2fe943f89142df5dc1afb3d5daef56ac))
+
+### Features
+
+- enforces that only pinned dependencies should be pinned @W-21064297@ ([d2f1066](https://github.com/salesforcecli/plugin-release-management/commit/d2f10666f6b7042d287da6d97694d6980495cca2))
+
 ## [5.7.115](https://github.com/salesforcecli/plugin-release-management/compare/5.7.114...5.7.115) (2026-03-28)
 
 ### Bug Fixes
