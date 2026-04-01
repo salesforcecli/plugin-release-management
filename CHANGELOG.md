@@ -1,3 +1,27 @@
+## [5.7.115](https://github.com/salesforcecli/plugin-release-management/compare/5.7.114...5.7.115) (2026-03-28)
+
+### Bug Fixes
+
+- **deps:** bump @aws-sdk/client-s3 from 3.1014.0 to 3.1019.0 ([52083c3](https://github.com/salesforcecli/plugin-release-management/commit/52083c3c6ef5f3e693856897c3c52dc174c8671e))
+
+## [5.7.114](https://github.com/salesforcecli/plugin-release-management/compare/5.7.113...5.7.114) (2026-03-28)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 8.26.3 to 8.27.1 ([97c00b3](https://github.com/salesforcecli/plugin-release-management/commit/97c00b3be727c11053ea88a1ca176d90e24d9bd0))
+
+## [5.7.113](https://github.com/salesforcecli/plugin-release-management/compare/5.7.112...5.7.113) (2026-03-27)
+
+### Bug Fixes
+
+- **deps:** bump handlebars from 4.7.8 to 4.7.9 ([719affb](https://github.com/salesforcecli/plugin-release-management/commit/719affbb1906b6cd6c55860be89e153f8ab23e56))
+
+## [5.7.112](https://github.com/salesforcecli/plugin-release-management/compare/5.7.111...5.7.112) (2026-03-27)
+
+### Bug Fixes
+
+- **deps:** bump yaml from 2.8.1 to 2.8.3 ([91501b7](https://github.com/salesforcecli/plugin-release-management/commit/91501b7d7bf566c3f8788d68e25782ec0112daf6))
+
 ## [5.7.111](https://github.com/salesforcecli/plugin-release-management/compare/5.7.110...5.7.111) (2026-03-21)
 
 ### Bug Fixes
