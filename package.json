@@ -38,7 +38,7 @@
     "@oclif/plugin-command-snapshot": "^5.3.13",
     "@salesforce/dev-scripts": "^10.2.4",
     "@salesforce/ts-sinon": "^1.4.31",
-    "@types/semver": "^7.7.0",
+    "@types/semver": "^7.7.1",
     "@types/shelljs": "^0.10.0",
     "aws-sdk-client-mock": "^4.1.0",
     "eslint-plugin-sf-plugin": "^1.20.33",
