@@ -1,3 +1,9 @@
+## [5.8.2](https://github.com/salesforcecli/plugin-release-management/compare/5.8.1...5.8.2) (2026-04-04)
+
+### Bug Fixes
+
+- **deps:** bump lodash from 4.17.23 to 4.18.1 ([de25299](https://github.com/salesforcecli/plugin-release-management/commit/de252990b66303b2584651fd0912be9786d4127b))
+
 ## [5.8.1](https://github.com/salesforcecli/plugin-release-management/compare/5.8.0...5.8.1) (2026-04-04)
 
 ### Bug Fixes
