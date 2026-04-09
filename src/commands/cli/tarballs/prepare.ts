@@ -120,9 +120,9 @@ export default class Prepare extends SfCommand<void> {
 
     // This breaks compilation. We need to probably do this right before the pack, but then this will
     // break compilation the next time compile is ran without doing a yarn install --force
-    // We don't need types in the production code
+    // We don't need types in the production code (skip template trees: generator ships .d.ts as sources)
     if (this.flags.types) {
-      const types = await find(`${baseDirGlob}/**/*.d.ts`);
+      const types = await find(`${baseDirGlob}/**/*.d.ts`, { excludeDirectories: ['templates'] });
       this.remove(types, '*.d.ts files');
     }
   }
