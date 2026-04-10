@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { Readable } from 'node:stream';
 import chalk from 'chalk';
 import { valid as validSemVer } from 'semver';
 import { Interfaces } from '@oclif/core';
@@ -12,6 +13,7 @@ import shelljs from 'shelljs';
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { ensureString, isString } from '@salesforce/ts-types';
 import { SfCommand, Flags, arrayWithDeprecation } from '@salesforce/sf-plugins-core';
+import { SdkStream } from '@smithy/types';
 import { AmazonS3 } from '../../amazonS3.js';
 import { verifyDependencies } from '../../dependencies.js';
 import { CLI, Channel, S3Manifest, VersionShaContents } from '../../types.js';
@@ -309,9 +311,7 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
           `Could not load manifest body from S3 getObject response for ${manifestForMostRecentSha.Key}`
         );
       }
-      const json = JSON.parse(
-        await (manifest.Body as unknown as { transformToString(): Promise<string> }).transformToString()
-      ) as S3Manifest;
+      const json = JSON.parse(await (manifest.Body as SdkStream<Readable>).transformToString()) as S3Manifest;
       return json.sha;
     }
   }
