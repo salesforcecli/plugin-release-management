@@ -1,3 +1,9 @@
+## [5.8.7](https://github.com/salesforcecli/plugin-release-management/compare/5.8.6...5.8.7) (2026-04-10)
+
+### Bug Fixes
+
+- properly read stream body ([c31fd90](https://github.com/salesforcecli/plugin-release-management/commit/c31fd9093e61d97978477280e1ba49041f79f8a2))
+
 ## [5.8.6](https://github.com/salesforcecli/plugin-release-management/compare/5.8.5...5.8.6) (2026-04-10)
 
 ### Bug Fixes
