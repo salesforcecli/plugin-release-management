@@ -1,3 +1,10 @@
+## [5.8.6](https://github.com/salesforcecli/plugin-release-management/compare/5.8.5...5.8.6) (2026-04-10)
+
+### Bug Fixes
+
+- exclude templates from .d.ts removal in tarball prepare ([c8a2fd5](https://github.com/salesforcecli/plugin-release-management/commit/c8a2fd5ed861dc9cca555f76b3318d4660f2cd2f))
+- scoping d.ts removal exclusion to @salesforce/templates/lib/templates ([ccfaac7](https://github.com/salesforcecli/plugin-release-management/commit/ccfaac71ce6a5dc76c0607bdb1babb6081201b16))
+
 ## [5.8.5](https://github.com/salesforcecli/plugin-release-management/compare/5.8.4...5.8.5) (2026-04-09)
 
 ### Bug Fixes
