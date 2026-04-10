@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { text } from 'node:stream/consumers';
 import chalk from 'chalk';
 import { valid as validSemVer } from 'semver';
 import { Interfaces } from '@oclif/core';
@@ -309,8 +310,9 @@ const findShaForVersion = async (cli: CLI, version: string): Promise<string> => 
           `Could not load manifest body from S3 getObject response for ${manifestForMostRecentSha.Key}`
         );
       }
-      logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${String(manifest)}`);
-      const json = JSON.parse(String(manifest.Body)) as S3Manifest;
+      const bodyString = await text(manifest.Body as NodeJS.ReadableStream);
+      logger.debug(`Loaded manifest ${manifestForMostRecentSha.Key} contents: ${bodyString}`);
+      const json = JSON.parse(bodyString) as S3Manifest;
       return json.sha;
     }
   }
