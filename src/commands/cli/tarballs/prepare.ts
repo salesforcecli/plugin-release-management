@@ -120,9 +120,12 @@ export default class Prepare extends SfCommand<void> {
 
     // This breaks compilation. We need to probably do this right before the pack, but then this will
     // break compilation the next time compile is ran without doing a yarn install --force
-    // We don't need types in the production code (skip template trees: generator ships .d.ts as sources)
+    // Strip .d.ts under all of node_modules. Keep only generator template sources shipped under
+    // @salesforce/templates/lib/templates (see package layout); everything else is removed.
     if (this.flags.types) {
-      const types = await find(`${baseDirGlob}/**/*.d.ts`, { excludeDirectories: ['templates'] });
+      const types = await find(`${baseDirGlob}/**/*.d.ts`, {
+        excludeDirectories: ['@salesforce/templates/lib/templates'],
+      });
       this.remove(types, '*.d.ts files');
     }
   }
@@ -153,7 +156,10 @@ const find = async (
     const parts = globPattern.split('/').slice();
     const lastPart = parts.pop();
     for (const dir of options.excludeDirectories) {
-      const patternParts = parts.concat([dir, '**', lastPart ?? '']);
+      // Single segment (e.g. `templates`) or a path under node_modules (e.g.
+      // `@salesforce/templates/lib/templates`) — each piece becomes one glob path segment.
+      const dirSegments = dir.split('/').filter((s) => s.length > 0);
+      const patternParts = parts.concat(dirSegments, '**', lastPart ?? '');
       const exclusionPattern = `!${patternParts.join('/')}`;
       patterns.push(exclusionPattern);
     }
