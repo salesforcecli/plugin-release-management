@@ -2468,10 +2468,10 @@
     cli-progress "^3.12.0"
     terminal-link "^3.0.0"
 
-"@salesforce/ts-sinon@^1.4.31":
-  version "1.4.31"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-sinon/-/ts-sinon-1.4.31.tgz#59225de2bc0c415b694ed5e8777df886eb79b606"
-  integrity sha512-AwdfynLtwk001v3AdkhiCrZArnp1osET+arE659633PnDxUtk45WPHQUKVc4eblOo/s7pRNotUMDisxwzPWCDw==
+"@salesforce/ts-sinon@^1.4.34":
+  version "1.4.34"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-sinon/-/ts-sinon-1.4.34.tgz#1996fed7497c1f33bd3ddd145d1ccd3b6f6dd239"
+  integrity sha512-fzpCoOUUfE3I43HYFATWEPlGRUvQIxMecdmMuaG61T/Y2Vsvw9oU+YtHx9zDmvuVy/g0fUj/lxMoqRRMy5ttpQ==
   dependencies:
     "@salesforce/ts-types" "^2.0.12"
     sinon "^5.1.1"
