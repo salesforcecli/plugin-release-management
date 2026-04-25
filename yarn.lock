@@ -3185,14 +3185,7 @@
     "@smithy/util-stream" "^4.5.21"
     tslib "^2.6.2"
 
-"@smithy/types@^4.11.0", "@smithy/types@^4.13.1":
-  version "4.13.1"
-  resolved "https://registry.yarnpkg.com/@smithy/types/-/types-4.13.1.tgz#8aaf15bb0f42b4e7c93c87018a3678a06d74691d"
-  integrity sha512-787F3yzE2UiJIQ+wYW1CVg2odHjmaWLGksnKQHUrK/lYZSEcy1msuLVvxaR/sI2/aDe9U+TBuLsXnr3vod1g0g==
-  dependencies:
-    tslib "^2.6.2"
-
-"@smithy/types@^4.14.1":
+"@smithy/types@^4.13.1", "@smithy/types@^4.14.1":
   version "4.14.1"
   resolved "https://registry.yarnpkg.com/@smithy/types/-/types-4.14.1.tgz#aba92b4cdb406f2a2b062e82f1e3728d809a7c23"
   integrity sha512-59b5HtSVrVR/eYNei3BUj3DCPKD/G7EtDDe7OEJE7i7FtQFugYo6MxbotS8mVJkLNVf8gYaAlEBwwtJ9HzhWSg==
