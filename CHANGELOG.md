@@ -1,3 +1,9 @@
+## [5.8.20](https://github.com/salesforcecli/plugin-release-management/compare/5.8.19...5.8.20) (2026-05-09)
+
+### Bug Fixes
+
+- **deps:** bump fast-xml-builder from 1.1.4 to 1.2.0 ([832026d](https://github.com/salesforcecli/plugin-release-management/commit/832026d3c176a70c43b2d606c0ee7016cdae7df7))
+
 ## [5.8.19](https://github.com/salesforcecli/plugin-release-management/compare/5.8.18...5.8.19) (2026-05-09)
 
 ### Bug Fixes
