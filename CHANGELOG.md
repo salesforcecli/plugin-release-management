@@ -1,3 +1,9 @@
+## [5.8.18](https://github.com/salesforcecli/plugin-release-management/compare/5.8.17...5.8.18) (2026-05-09)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/plugin-command-reference ([5dd7b2b](https://github.com/salesforcecli/plugin-release-management/commit/5dd7b2b17426cc8efc76bdd13f4cf52cc91d0870))
+
 ## [5.8.17](https://github.com/salesforcecli/plugin-release-management/compare/5.8.16...5.8.17) (2026-05-08)
 
 ### Bug Fixes
