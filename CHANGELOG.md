@@ -1,3 +1,9 @@
+## [5.8.21](https://github.com/salesforcecli/plugin-release-management/compare/5.8.20...5.8.21) (2026-05-14)
+
+### Bug Fixes
+
+- bumped plugin-command-reference dependency @W-22477677@ ([fca631e](https://github.com/salesforcecli/plugin-release-management/commit/fca631e6d7b40f5f3fd4f5012ab54573ce6737d0))
+
 ## [5.8.20](https://github.com/salesforcecli/plugin-release-management/compare/5.8.19...5.8.20) (2026-05-09)
 
 ### Bug Fixes
