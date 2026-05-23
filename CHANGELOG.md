@@ -1,3 +1,9 @@
+## [5.8.26](https://github.com/salesforcecli/plugin-release-management/compare/5.8.25...5.8.26) (2026-05-23)
+
+### Bug Fixes
+
+- **deps:** bump ws from 8.18.0 to 8.21.0 ([b9abcdd](https://github.com/salesforcecli/plugin-release-management/commit/b9abcdd349c62a3e9e25e0765eff910d2cdee943))
+
 ## [5.8.25](https://github.com/salesforcecli/plugin-release-management/compare/5.8.24...5.8.25) (2026-05-23)
 
 ### Bug Fixes
