@@ -2444,12 +2444,12 @@
     "@smithy/types" "^4.14.1"
     tslib "^2.6.2"
 
-"@smithy/node-http-handler@^4.4.16", "@smithy/node-http-handler@^4.5.0", "@smithy/node-http-handler@^4.5.3", "@smithy/node-http-handler@^4.7.3":
-  version "4.7.3"
-  resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-4.7.3.tgz#ebdfaad62fe4e5bde19824490f9f590d446b746a"
-  integrity sha512-/jPhevcTFPMVl6KNjbaI47iOg1zxC7IsnX4PQDGVZKMFceOXtB8IEYaB7a9VvkP/3oC60WzTeKocvSI7vLT0vA==
+"@smithy/node-http-handler@^4.4.16", "@smithy/node-http-handler@^4.5.0", "@smithy/node-http-handler@^4.5.3", "@smithy/node-http-handler@^4.7.3", "@smithy/node-http-handler@^4.7.4":
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-4.7.4.tgz#dfa9634130841cbb0a780c8b4a3ea7ec1c904f0c"
+  integrity sha512-HIeF+1vrDGzPkkv39Hj2vlHSXHY3p958jd/8ZnePIY6+ZOsQX8coyEUKO5yQu4r0bQIVsbpotVIrXXwyycMStQ==
   dependencies:
-    "@smithy/core" "^3.24.3"
+    "@smithy/core" "^3.24.4"
     "@smithy/types" "^4.14.2"
     tslib "^2.6.2"
 
