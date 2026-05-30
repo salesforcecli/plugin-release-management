@@ -1,3 +1,9 @@
+## [5.8.32](https://github.com/salesforcecli/plugin-release-management/compare/5.8.31...5.8.32) (2026-05-30)
+
+### Bug Fixes
+
+- **deps:** bump @smithy/node-http-handler from 4.7.4 to 4.7.5 ([b51796f](https://github.com/salesforcecli/plugin-release-management/commit/b51796ff08d983630089f729211444f8f2363adc))
+
 ## [5.8.31](https://github.com/salesforcecli/plugin-release-management/compare/5.8.30...5.8.31) (2026-05-30)
 
 ### Bug Fixes
