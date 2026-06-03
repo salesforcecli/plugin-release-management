@@ -16,6 +16,16 @@ Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.release.automerge');
 
+/**
+ * Bot accounts whose PRs are eligible for automerge. Add to this list (via
+ * reviewed PR) to onboard a new bot.
+ */
+export const ALLOWED_BOT_USERS = ['svc-cli-bot', 'svc-idee-bot'] as const;
+
+export function isAllowedBotUser(login: string | undefined | null): boolean {
+  return !!login && (ALLOWED_BOT_USERS as readonly string[]).includes(login);
+}
+
 type BaseRepoParams = {
   owner: string;
   repo: string;
@@ -102,8 +112,8 @@ export default class AutoMerge extends SfCommand<void> {
       stop(`Missing automerge label: [${automergeLabels.join(', ')}]`);
     }
 
-    if (prData.user?.login !== 'svc-cli-bot') {
-      stop('PR must be created by "svc-cli-bot"');
+    if (!isAllowedBotUser(prData.user?.login)) {
+      stop(`PR must be created by one of: [${ALLOWED_BOT_USERS.join(', ')}]`);
     }
 
     if (!(await this.isGreen(prData, verbose))) {
