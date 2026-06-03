@@ -1,3 +1,9 @@
+# [5.9.0](https://github.com/salesforcecli/plugin-release-management/compare/5.8.32...5.9.0) (2026-06-03)
+
+### Features
+
+- **automerge:** allow multiple bot identities via array allow-list ([31069aa](https://github.com/salesforcecli/plugin-release-management/commit/31069aa43c84ced62c16e5a68668c959bc0a0a88))
+
 ## [5.8.32](https://github.com/salesforcecli/plugin-release-management/compare/5.8.31...5.8.32) (2026-05-30)
 
 ### Bug Fixes
