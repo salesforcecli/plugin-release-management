@@ -20,10 +20,10 @@ const messages = Messages.loadMessages('@salesforce/plugin-release-management', 
  * Bot accounts whose PRs are eligible for automerge. Add to this list (via
  * reviewed PR) to onboard a new bot.
  */
-export const ALLOWED_BOT_USERS = ['svc-cli-bot', 'svc-idee-bot'] as const;
+export const ALLOWED_BOT_USERS = ['svc-cli-bot', 'svc-idee-bot'];
 
 export function isAllowedBotUser(login: string | undefined | null): boolean {
-  return !!login && (ALLOWED_BOT_USERS as readonly string[]).includes(login);
+  return !!login && ALLOWED_BOT_USERS.includes(login);
 }
 
 type BaseRepoParams = {
