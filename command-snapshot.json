@@ -153,6 +153,7 @@
       "json",
       "npmaccess",
       "npmtag",
+      "oidc",
       "prerelease",
       "sign",
       "verify"

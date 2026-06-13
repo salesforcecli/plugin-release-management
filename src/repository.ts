@@ -37,6 +37,7 @@ type PollFunction = () => boolean;
 type RepositoryOptions = {
   ux: Ux;
   useprerelease?: string;
+  useoidc?: boolean;
 };
 
 abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
@@ -81,7 +82,7 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
 
   public async writeNpmToken(): Promise<void> {
     const home = this.env.getString('HOME') ?? os.homedir();
-    await this.registry.setNpmAuth(home);
+    if (!this.options?.useoidc) await this.registry.setNpmAuth(home);
     await this.registry.setNpmRegistry(home);
   }
 
