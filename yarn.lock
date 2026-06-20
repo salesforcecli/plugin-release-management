@@ -1598,12 +1598,12 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
-"@salesforce/cli-plugins-testkit@^5.3.58":
-  version "5.3.58"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.58.tgz#79278780433baf565bb5b57146669760e5e56680"
-  integrity sha512-JNRqR+XDhaWUu419Kum5KvUKiw6gQL6O+DUAn3+GRfuia2jYmwVAC9RdQaEcdXQH5BH/3E4JLw5EVEw/LndRQw==
+"@salesforce/cli-plugins-testkit@^5.3.61":
+  version "5.3.61"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.61.tgz#78321a8bea2646efc1dcacd7f619a4068195ea9f"
+  integrity sha512-OOKTuV5aFJC539ZWlcVe715FAMtIDCQET+cJDj73Mn0xilCknN06XZy9k2w4M9LocRuErCzqRAwJMgXNO0vZlg==
   dependencies:
-    "@salesforce/core" "^8.30.3"
+    "@salesforce/core" "^8.31.1"
     "@salesforce/kit" "^3.2.6"
     "@salesforce/ts-types" "^2.0.11"
     "@types/shelljs" "^0.10.0"
@@ -1614,10 +1614,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.10.1", "@salesforce/core@^8.10.3", "@salesforce/core@^8.23.1", "@salesforce/core@^8.28.3", "@salesforce/core@^8.30.3", "@salesforce/core@^8.31.0":
-  version "8.31.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.31.0.tgz#153beb193af8fce73d31cc39afee794c4c1ee1c0"
-  integrity sha512-TXQoR7Bs0Dk5AuNY8eaNRhMeLDLcpJ8su7LVxn7VVfnRxITrRh4gkSuOAXdBKAqx0WcjRONDs1twedaOE7Xu4Q==
+"@salesforce/core@^8.10.1", "@salesforce/core@^8.10.3", "@salesforce/core@^8.23.1", "@salesforce/core@^8.28.3", "@salesforce/core@^8.31.0", "@salesforce/core@^8.31.1":
+  version "8.31.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.31.2.tgz#968448f423b553f726f42c27da6b55c4ec7eb93a"
+  integrity sha512-naqnq7Z+gbl1LdnyNvrGrNUoeMUQtCOsnrS6DfqeuLMJTFqcL9Dq0/od+xcuqi0+l7HTyH0/gU1BQitWpd1rag==
   dependencies:
     "@jsforce/jsforce-node" "^3.10.13"
     "@salesforce/kit" "^3.2.4"
@@ -2437,11 +2437,6 @@ ansi-regex@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/ansi-regex/-/ansi-regex-5.0.1.tgz"
   integrity sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==
-
-ansi-regex@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/ansi-regex/-/ansi-regex-6.0.1.tgz"
-  integrity sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==
 
 ansi-regex@^6.2.2:
   version "6.2.2"
@@ -8715,14 +8710,7 @@ strip-ansi@6.0.1, strip-ansi@^6, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   dependencies:
     ansi-regex "^5.0.1"
 
-strip-ansi@^7.0.1, strip-ansi@^7.1.0, strip-ansi@^7.1.2:
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-7.1.2.tgz#132875abde678c7ea8d691533f2e7e22bb744dba"
-  integrity sha512-gmBGslpoQJtgnMAvOVqGZpEz9dyoKTCzy2nfz/n8aIFhN/jCE/rCmcxabB6jOOHV+0WNnylOxaxBQPSvcWklhA==
-  dependencies:
-    ansi-regex "^6.0.1"
-
-strip-ansi@^7.2.0:
+strip-ansi@^7.0.1, strip-ansi@^7.1.0, strip-ansi@^7.1.2, strip-ansi@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-7.2.0.tgz#d22a269522836a627af8d04b5c3fd2c7fa3e32e3"
   integrity sha512-yDPMNjp4WyfYBkHnjIRLfca1i6KMyGCtsVgoKe/z1+6vukgaENdgGBZt+ZmKPc4gavvEZ5OgHfHdrazhgNyG7w==
