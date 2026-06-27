@@ -1,3 +1,9 @@
+## [5.9.11](https://github.com/salesforcecli/plugin-release-management/compare/5.9.10...5.9.11) (2026-06-27)
+
+### Bug Fixes
+
+- **deps:** bump @smithy/types from 4.14.4 to 4.15.0 ([6ec55a3](https://github.com/salesforcecli/plugin-release-management/commit/6ec55a34ef51ed6c7e2cfeb48ab2037d99b3020d))
+
 ## [5.9.10](https://github.com/salesforcecli/plugin-release-management/compare/5.9.9...5.9.10) (2026-06-20)
 
 ### Bug Fixes
