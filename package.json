@@ -21,7 +21,7 @@
     "@salesforce/plugin-trust": "^3.7.89",
     "@salesforce/sf-plugins-core": "^12.2.25",
     "@salesforce/ts-types": "^2.0.10",
-    "@smithy/node-http-handler": "^4.7.7",
+    "@smithy/node-http-handler": "^4.9.5",
     "@smithy/types": "^4.16.1",
     "chalk": "^5.6.0",
     "commit-and-tag-version": "^12.7.3",
