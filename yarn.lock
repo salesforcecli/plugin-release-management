@@ -1881,10 +1881,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.3.tgz#282046f03e886e352b2d5f5da5eb755e01457f3f"
   integrity sha512-DE427ROAphMQzU4ENbliGYrBSYPXF+TtLg9S8vzeA+OF4ZKzoDdzfL8sxuMUGS/lgRhM6j1URSk9ghf7Xo1tyA==
 
-"@smithy/core@^3.24.6", "@smithy/core@^3.29.0", "@smithy/core@^3.29.1", "@smithy/core@^3.29.3":
-  version "3.29.3"
-  resolved "https://registry.yarnpkg.com/@smithy/core/-/core-3.29.3.tgz#d255cc12f19d612872f5255b7f415f6cb96ec30f"
-  integrity sha512-L+Ys6ecjk5vwPMAKHBpPKlJ3DkqwNcnfEISXBZIsVvWG/XKXfsAP8mwIYlTeLcd2ElHdesPI8OuOmJSFAPhm6A==
+"@smithy/core@^3.24.6", "@smithy/core@^3.29.0", "@smithy/core@^3.29.1", "@smithy/core@^3.29.5":
+  version "3.29.5"
+  resolved "https://registry.yarnpkg.com/@smithy/core/-/core-3.29.5.tgz#ea1012125719f4287b07aed67f7087b8f5eb70ee"
+  integrity sha512-i0dk2t5B+CwV/dcJdUHILYkOQF5lof8f44dFCfDWToGCxjT9YQ+CgHqTAvJxzc3+zqQwm2QtVoJ5IqiNar/CnQ==
   dependencies:
     "@smithy/types" "^4.16.1"
     tslib "^2.6.2"
@@ -1914,12 +1914,12 @@
   dependencies:
     tslib "^2.6.2"
 
-"@smithy/node-http-handler@^4.7.6", "@smithy/node-http-handler@^4.9.2", "@smithy/node-http-handler@^4.9.5":
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-4.9.5.tgz#7c8af721b0b16ffd4f4b51d7a1da34042810891c"
-  integrity sha512-bNqdxTQTxmLbomSmlkZFz8L6B/feQ2HHzw4L2zY7Ecp2XffYAZq2uzdWDdxJHJFbEvqd+SRuluJso0P8+xPdbw==
+"@smithy/node-http-handler@^4.7.6", "@smithy/node-http-handler@^4.9.2", "@smithy/node-http-handler@^4.9.7":
+  version "4.9.7"
+  resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-4.9.7.tgz#006ea7ab886f44adb686e65a40a979c8458eb2d3"
+  integrity sha512-wCU8HCLjAtAVqxxe0j2xff9LcEPw3yjBbg5IdQDIYFnxnPxbxcSLc7rgex7kqm9L/WYOnJEgaWQlfDkZleozMA==
   dependencies:
-    "@smithy/core" "^3.29.3"
+    "@smithy/core" "^3.29.5"
     "@smithy/types" "^4.16.1"
     tslib "^2.6.2"
 
