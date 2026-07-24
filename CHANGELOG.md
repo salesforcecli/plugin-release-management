@@ -1,3 +1,9 @@
+## [5.9.25](https://github.com/salesforcecli/plugin-release-management/compare/5.9.24...5.9.25) (2026-07-24)
+
+### Bug Fixes
+
+- **deps:** bump linkify-it from 5.0.1 to 5.0.2 ([101589f](https://github.com/salesforcecli/plugin-release-management/commit/101589fba36133836bab922d98689cc20f144512))
+
 ## [5.9.24](https://github.com/salesforcecli/plugin-release-management/compare/5.9.23...5.9.24) (2026-07-18)
 
 ### Bug Fixes
