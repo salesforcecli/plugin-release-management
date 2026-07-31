@@ -98,16 +98,15 @@ namespace Method {
 class Tarball extends Method.Base {
   private s3: AmazonS3;
   private paths = {
-    darwin: ['x64.tar.gz', 'x64.tar.xz'],
+    darwin: ['x64.tar.gz', 'x64.tar.xz', 'arm64.tar.gz', 'arm64.tar.xz'],
     win32: [
       'x64.tar.gz',
-      'x86.tar.gz',
+      'arm64.tar.gz',
       // .xz is not supported by powershell's tar command
       // 'x64.tar.xz',
-      // 'x86.tar.xz'
+      // 'arm64.tar.xz'
     ],
     linux: ['x64.tar.gz', 'x64.tar.xz'],
-    'linux-arm': ['arm.tar.gz', 'arm.tar.xz'],
   };
 
   public constructor(protected options: Method.Options) {
@@ -157,7 +156,7 @@ class Tarball extends Method.Base {
   }
 
   private getTarballs(platform: Extract<NodeJS.Platform, 'darwin' | 'linux' | 'win32'>): Record<string, string> {
-    const paths = platform === 'linux' && os.arch().includes('arm') ? this.paths['linux-arm'] : this.paths[platform];
+    const paths = this.paths[platform];
     const s3Tarballs = paths.map(
       (p) => `${this.s3.directory}/channels/${this.options.channel}/${this.options.cli}-${platform}-${p}`
     );
@@ -330,14 +329,14 @@ class Installer extends Method.Base {
   }
 
   public async win32(): Promise<Results> {
-    const executables = [`${this.options.cli}-x64.exe`, `${this.options.cli}-x86.exe`];
+    const executables = [`${this.options.cli}-x64.exe`, `${this.options.cli}-arm64.exe`];
     const results: Results = {};
     for (const exe of executables) {
       const url = `${this.s3.directory}/channels/${this.options.channel}/${exe}`;
       const location = path.join(this.options.directory, exe);
       // eslint-disable-next-line no-await-in-loop
       await download(url, location);
-      const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('x86') ? 'x86' : 'x64'}`;
+      const installLocation = `C:\\install-test\\${this.options.cli}\\${exe.includes('arm64') ? 'arm64' : 'x64'}`;
       const cmd = `Start-Process -Wait -FilePath "${location}" -ArgumentList "/S", "/D=${installLocation}" -PassThru`;
       ux.log(`Installing ${chalk.cyan(exe)} to ${installLocation}...`);
       const result = shelljs.exec(cmd, { shell: 'powershell.exe' });
@@ -375,8 +374,8 @@ class Installer extends Method.Base {
       ux.log(`Testing ${chalk.cyan(binaryPath)}`);
       const result = shelljs.exec(`cmd /c "${binaryPath}" --version`);
       results[cli] =
-        result.code === 0 && binaryPath.includes('x86')
-          ? result.stdout.includes('win32-x86')
+        result.code === 0 && binaryPath.includes('arm64')
+          ? result.stdout.includes('win32-arm64')
           : result.stdout.includes('win32-x64');
     }
     return results;

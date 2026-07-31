@@ -62,15 +62,11 @@ const defaultArchives = [
   'sf-darwin-x64.tar.xz',
   'sf-darwin-arm64.tar.gz',
   'sf-darwin-arm64.tar.xz',
-  'sf-linux-arm.tar.gz',
-  'sf-linux-arm.tar.xz',
   'sf-linux-x64.tar.gz',
   'sf-linux-x64.tar.xz',
   'sf-win32-x64.tar.gz',
   'sf-win32-x64.tar.xz',
-  'sf-win32-x86.tar.gz',
-  'sf-win32-x86.tar.xz',
-  'sf-win32-arm64.tar.xz',
+  'sf-win32-arm64.tar.gz',
   'sf-win32-arm64.tar.xz',
 ];
 
