@@ -48,7 +48,7 @@ also upload xz
 
 # targets
 
-comma-separated targets to promote (e.g.: linux-arm,win32-x64)
+comma-separated targets to promote (e.g.: darwin-arm64,win32-x64)
 
 # flags.version.summary
 
