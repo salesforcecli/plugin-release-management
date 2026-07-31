@@ -1,3 +1,10 @@
+## [5.9.29](https://github.com/salesforcecli/plugin-release-management/compare/5.9.28...5.9.29) (2026-07-31)
+
+### Bug Fixes
+
+- add linux-arm64 to all target lists ([ab8f777](https://github.com/salesforcecli/plugin-release-management/commit/ab8f7773789309d7e02cc0a1802f525079fb1aed))
+- drop archs ([9e9bc7c](https://github.com/salesforcecli/plugin-release-management/commit/9e9bc7c37d3425accf93c52f1c7f1ea271ff1e29))
+
 ## [5.9.28](https://github.com/salesforcecli/plugin-release-management/compare/5.9.27...5.9.28) (2026-07-25)
 
 ### Bug Fixes
