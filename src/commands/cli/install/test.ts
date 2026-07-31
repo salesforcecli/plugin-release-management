@@ -106,7 +106,7 @@ class Tarball extends Method.Base {
       // 'x64.tar.xz',
       // 'arm64.tar.xz'
     ],
-    linux: ['x64.tar.gz', 'x64.tar.xz'],
+    linux: ['x64.tar.gz', 'x64.tar.xz', 'arm64.tar.gz', 'arm64.tar.xz'],
   };
 
   public constructor(protected options: Method.Options) {
