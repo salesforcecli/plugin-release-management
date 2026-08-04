@@ -134,6 +134,14 @@
   },
   {
     "alias": [],
+    "command": "node:info",
+    "flagAliases": [],
+    "flagChars": [],
+    "flags": ["flags-dir", "json"],
+    "plugin": "@salesforce/plugin-trust"
+  },
+  {
+    "alias": [],
     "command": "npm:dependencies:pin",
     "flagAliases": [],
     "flagChars": ["d", "t"],
@@ -158,6 +166,30 @@
       "verify"
     ],
     "plugin": "@salesforce/plugin-release-management"
+  },
+  {
+    "alias": [],
+    "command": "plugins:trust:allowlist:add",
+    "flagAliases": [],
+    "flagChars": ["n"],
+    "flags": ["flags-dir", "json", "name"],
+    "plugin": "@salesforce/plugin-trust"
+  },
+  {
+    "alias": [],
+    "command": "plugins:trust:allowlist:list",
+    "flagAliases": [],
+    "flagChars": [],
+    "flags": ["flags-dir", "json"],
+    "plugin": "@salesforce/plugin-trust"
+  },
+  {
+    "alias": [],
+    "command": "plugins:trust:allowlist:remove",
+    "flagAliases": [],
+    "flagChars": ["n"],
+    "flags": ["flags-dir", "json", "name"],
+    "plugin": "@salesforce/plugin-trust"
   },
   {
     "alias": [],
