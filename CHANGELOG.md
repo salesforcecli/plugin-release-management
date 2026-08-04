@@ -1,3 +1,9 @@
+## [6.0.1](https://github.com/salesforcecli/plugin-release-management/compare/5.9.31...6.0.1) (2026-08-04)
+
+### Bug Fixes
+
+- drop node support ([fb84fdf](https://github.com/salesforcecli/plugin-release-management/commit/fb84fdf596d4dbfb232af92fa8c0fad6571399d2))
+
 ## [5.9.31](https://github.com/salesforcecli/plugin-release-management/compare/5.9.30...5.9.31) (2026-08-04)
 
 ### Bug Fixes

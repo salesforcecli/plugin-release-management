@@ -103,6 +103,9 @@ sfdx plugins
 - [`sfdx github check closed`](#sfdx-github-check-closed)
 - [`sfdx npm dependencies pin`](#sfdx-npm-dependencies-pin)
 - [`sfdx npm package release`](#sfdx-npm-package-release)
+- [`sfdx plugins trust allowlist add`](#sfdx-plugins-trust-allowlist-add)
+- [`sfdx plugins trust allowlist list`](#sfdx-plugins-trust-allowlist-list)
+- [`sfdx plugins trust allowlist remove`](#sfdx-plugins-trust-allowlist-remove)
 - [`sfdx plugins trust verify`](#sfdx-plugins-trust-verify)
 - [`sfdx repositories`](#sfdx-repositories)
 
@@ -146,7 +149,7 @@ EXAMPLES
   $ sfdx channel promote --candidate latest-rc --target latest --platform win --platform mac
 ```
 
-_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/channel/promote.ts)_
+_See code: [src/commands/channel/promote.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/channel/promote.ts)_
 
 ## `sfdx cli artifacts compare`
 
@@ -170,7 +173,7 @@ EXAMPLES
   $ sfdx cli artifacts compare
 ```
 
-_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/artifacts/compare.ts)_
+_See code: [src/commands/cli/artifacts/compare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/artifacts/compare.ts)_
 
 ## `sfdx cli install jit test`
 
@@ -191,7 +194,7 @@ EXAMPLES
   $ sfdx cli install jit test
 ```
 
-_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/install/jit/test.ts)_
+_See code: [src/commands/cli/install/jit/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/install/jit/test.ts)_
 
 ## `sfdx cli install test`
 
@@ -232,7 +235,7 @@ EXAMPLES
   $ sfdx cli install test --cli sf --method tarball --channel stable-rc
 ```
 
-_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/install/test.ts)_
+_See code: [src/commands/cli/install/test.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/install/test.ts)_
 
 ## `sfdx cli release automerge`
 
@@ -263,7 +266,7 @@ EXAMPLES
   $ sfdx cli release automerge --owner salesforcecli --repo sfdx-cli --pul-number 1049
 ```
 
-_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/release/automerge.ts)_
+_See code: [src/commands/cli/release/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/release/automerge.ts)_
 
 ## `sfdx cli release build`
 
@@ -326,7 +329,7 @@ EXAMPLES
   $ sfdx cli release build --only @salesforce/plugin-source,@salesforce/plugin-info@1.2.3
 ```
 
-_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/release/build.ts)_
+_See code: [src/commands/cli/release/build.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/release/build.ts)_
 
 ## `sfdx cli releasenotes`
 
@@ -367,7 +370,7 @@ EXAMPLES
   $ sfdx cli releasenotes --cli sf --markdown > changes.md
 ```
 
-_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/releasenotes.ts)_
+_See code: [src/commands/cli/releasenotes.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/releasenotes.ts)_
 
 ## `sfdx cli tarballs prepare`
 
@@ -395,7 +398,7 @@ EXAMPLES
   $ sfdx cli tarballs prepare
 ```
 
-_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/tarballs/prepare.ts)_
+_See code: [src/commands/cli/tarballs/prepare.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/tarballs/prepare.ts)_
 
 ## `sfdx cli tarballs smoke`
 
@@ -425,7 +428,7 @@ EXAMPLES
   $ sfdx cli tarballs smoke
 ```
 
-_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/tarballs/smoke.ts)_
+_See code: [src/commands/cli/tarballs/smoke.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/tarballs/smoke.ts)_
 
 ## `sfdx cli tarballs verify`
 
@@ -457,7 +460,7 @@ EXAMPLES
   $ sfdx cli tarballs verify --cli sf
 ```
 
-_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/tarballs/verify.ts)_
+_See code: [src/commands/cli/tarballs/verify.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/tarballs/verify.ts)_
 
 ## `sfdx cli versions inspect`
 
@@ -509,7 +512,7 @@ EXAMPLES
   $ sfdx cli versions inspect -l npm -c latest -d chalk -s
 ```
 
-_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/cli/versions/inspect.ts)_
+_See code: [src/commands/cli/versions/inspect.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/cli/versions/inspect.ts)_
 
 ## `sfdx dependabot automerge`
 
@@ -549,7 +552,7 @@ EXAMPLES
   $ sfdx dependabot automerge --max-version-bump major
 ```
 
-_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/dependabot/automerge.ts)_
+_See code: [src/commands/dependabot/automerge.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/dependabot/automerge.ts)_
 
 ## `sfdx github check closed`
 
@@ -576,7 +579,7 @@ EXAMPLES
   $ sfdx github check closed -o me@gus.com
 ```
 
-_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/github/check/closed.ts)_
+_See code: [src/commands/github/check/closed.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/github/check/closed.ts)_
 
 ## `sfdx npm dependencies pin`
 
@@ -602,7 +605,7 @@ DESCRIPTION
   in the package.json
 ```
 
-_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/npm/dependencies/pin.ts)_
+_See code: [src/commands/npm/dependencies/pin.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/npm/dependencies/pin.ts)_
 
 ## `sfdx npm package release`
 
@@ -634,7 +637,109 @@ DESCRIPTION
   publish npm package
 ```
 
-_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/npm/package/release.ts)_
+_See code: [src/commands/npm/package/release.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/npm/package/release.ts)_
+
+## `sfdx plugins trust allowlist add`
+
+Add plugins to the plugin allowlist.
+
+```
+USAGE
+  $ sfdx plugins trust allowlist add -n <value>... [--json] [--flags-dir <value>]
+
+FLAGS
+  -n, --name=<value>...  (required) The npm name of the plugin to add to the allowlist. Add multiple plugins by
+                         specifying the `--name` flag multiple times.
+
+GLOBAL FLAGS
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
+
+DESCRIPTION
+  Add plugins to the plugin allowlist.
+
+  The plugin allowlist lets users automatically install a plugin without being prompted, even when the plugin is
+  unsigned.
+
+  This command adds one or more plugins to the `unsignedPluginAllowList.json` file, creating the file if it doesn't
+  exist. Plugins already present in the allowlist are skipped.
+
+EXAMPLES
+  Add a single plugin to the allowlist:
+
+    $ sfdx plugins trust allowlist add --name @scope/my-plugin
+
+  Add multiple plugins to the allowlist:
+
+    $ sfdx plugins trust allowlist add --name @scope/my-plugin --name another-plugin
+```
+
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/4.0.1/src/commands/plugins/trust/allowlist/add.ts)_
+
+## `sfdx plugins trust allowlist list`
+
+List the plugins on the plugin allowlist.
+
+```
+USAGE
+  $ sfdx plugins trust allowlist list [--json] [--flags-dir <value>]
+
+GLOBAL FLAGS
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
+
+DESCRIPTION
+  List the plugins on the plugin allowlist.
+
+  The plugin allowlist lets users automatically install a plugin without being prompted, even when the plugin is
+  unsigned.
+
+  This command prints the contents of the `unsignedPluginAllowList.json` file as a table.
+
+EXAMPLES
+  List all plugins on the allowlist:
+
+    $ sfdx plugins trust allowlist list
+```
+
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/4.0.1/src/commands/plugins/trust/allowlist/list.ts)_
+
+## `sfdx plugins trust allowlist remove`
+
+Remove plugins from the plugin allowlist.
+
+```
+USAGE
+  $ sfdx plugins trust allowlist remove -n <value>... [--json] [--flags-dir <value>]
+
+FLAGS
+  -n, --name=<value>...  (required) The npm name of the plugin to remove from the allowlist. Remove multiple plugins by
+                         specifying the `--name` flag multiple times.
+
+GLOBAL FLAGS
+  --flags-dir=<value>  Import flag values from a directory.
+  --json               Format output as json.
+
+DESCRIPTION
+  Remove plugins from the plugin allowlist.
+
+  The plugin allowlist lets users automatically install a plugin without being prompted, even when the plugin is
+  unsigned.
+
+  This command removes one or more plugins from the `unsignedPluginAllowList.json` file. Plugins not present in the
+  allowlist are skipped.
+
+EXAMPLES
+  Remove a single plugin from the allowlist:
+
+    $ sfdx plugins trust allowlist remove --name @scope/my-plugin
+
+  Remove multiple plugins from the allowlist:
+
+    $ sfdx plugins trust allowlist remove --name @scope/my-plugin --name another-plugin
+```
+
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/4.0.1/src/commands/plugins/trust/allowlist/remove.ts)_
 
 ## `sfdx plugins trust verify`
 
@@ -663,7 +768,7 @@ EXAMPLES
   $ sfdx plugins trust verify --npm @scope/npmName
 ```
 
-_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/3.7.89/src/commands/plugins/trust/verify.ts)_
+_See code: [@salesforce/plugin-trust](https://github.com/salesforcecli/plugin-trust/blob/4.0.1/src/commands/plugins/trust/verify.ts)_
 
 ## `sfdx repositories`
 
@@ -702,6 +807,6 @@ EXAMPLES
   $ sfdx repositories --json | jq -r '.result[] | select(.name=="sfdx-core") | .packages[] | .url
 ```
 
-_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.31/src/commands/repositories/index.ts)_
+_See code: [src/commands/repositories/index.ts](https://github.com/salesforcecli/plugin-release-management/blob/5.9.32/src/commands/repositories/index.ts)_
 
 <!-- commandsstop -->
