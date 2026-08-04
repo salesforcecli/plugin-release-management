@@ -1,3 +1,9 @@
+## [5.9.30](https://github.com/salesforcecli/plugin-release-management/compare/5.9.29...5.9.30) (2026-08-04)
+
+### Bug Fixes
+
+- **deps:** bump undici from 8.5.0 to 8.10.0 ([6f0a2f6](https://github.com/salesforcecli/plugin-release-management/commit/6f0a2f6ea04c547aa9ea10da21192d8c1bb50ba2))
+
 ## [5.9.29](https://github.com/salesforcecli/plugin-release-management/compare/5.9.28...5.9.29) (2026-07-31)
 
 ### Bug Fixes
