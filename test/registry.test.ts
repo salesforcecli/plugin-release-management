@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+ 
 
 import os from 'node:os';
 import fs from 'node:fs';

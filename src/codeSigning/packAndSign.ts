@@ -291,7 +291,7 @@ export const api = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getAgentForUri(url: string): false | Agents {
     const agent = new ProxyAgent();
-    /* eslint-disable @typescript-eslint/no-unsafe-call */
+     
     return { https: agent, http: agent };
   },
 };
