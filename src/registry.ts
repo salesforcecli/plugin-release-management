@@ -116,7 +116,7 @@ export class Registry {
     try {
       // check that `.npmrc` exists
       await fs.access(path.join(packageDir, '.npmrc'));
-    } catch (err) {
+    } catch {
       return [];
     }
 

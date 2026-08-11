@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sf-plugin/no-hardcoded-messages-flags */
 
 import { Flags, SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';

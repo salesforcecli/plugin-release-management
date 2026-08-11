@@ -88,7 +88,7 @@ export async function testJITInstall(options: Options): Promise<void> {
     try {
       await exec(`${executable} ${command} --help`);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   };

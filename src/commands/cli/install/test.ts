@@ -67,6 +67,7 @@ namespace Method {
         }
         return results;
       }
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
       switch (process.platform) {
         case 'darwin': {
           return this.darwin();
@@ -198,7 +199,7 @@ class Tarball extends Method.Base {
         } else {
           ux.log('stdout:', stdout);
           ux.log('stderr:', stderr);
-          reject();
+          reject(new Error('Command failed'));
         }
       });
     });
@@ -284,7 +285,7 @@ class Npm extends Method.Base {
             ux.spinner.stop('Failed');
             ux.log(stdout);
             ux.log(stderr);
-            reject();
+            reject(new Error('Command failed'));
           }
         }
       );

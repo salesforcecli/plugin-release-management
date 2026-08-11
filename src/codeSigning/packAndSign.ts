@@ -246,7 +246,7 @@ export const api = {
       try {
         api.validateNpmIgnorePatterns(gitIgnoreContent);
         logger.debug('validated the expected git ignore patterns');
-      } catch (e) {
+      } catch {
         cliUx.warn(
           `WARNING:  The following patterns are recommended in ${filename} for code signing: *.tgz, *.sig, package.json.bak.`
         );
