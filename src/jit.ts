@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable no-await-in-loop */
+ 
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -88,7 +88,7 @@ export async function testJITInstall(options: Options): Promise<void> {
     try {
       await exec(`${executable} ${command} --help`);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   };

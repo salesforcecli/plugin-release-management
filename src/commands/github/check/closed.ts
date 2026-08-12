@@ -53,8 +53,8 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
     const octokit = new ThrottledOctokit({
       auth: flags['github-token'],
       throttle: {
-        onRateLimit: () => true,
-        onSecondaryRateLimit: () => true,
+        onRateLimit: (): boolean => true,
+        onSecondaryRateLimit: (): boolean => true,
       },
     });
 
@@ -93,7 +93,6 @@ export default class GithubCheckClosed extends SfCommand<GithubCheckClosedResult
     const wiQueryResult = new Map<string, string>(
       (
         await flags.gus
-          // eslint-disable-next-line sf-plugin/get-connection-with-version
           .getConnection()
           .sobject('ADM_Work__c')
           .find({ Name: { $in: wiToQuery } })

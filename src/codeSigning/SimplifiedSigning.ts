@@ -161,7 +161,7 @@ const verify = async (dataToSignFilePath: string, publicKey: string, signature: 
       if (verifier.verify(publicKey, signature, 'base64')) {
         return resolve(true);
       }
-      return reject('The signature did not verify');
+      return reject(new Error('The signature did not verify'));
     });
 
     dataToVerifyStream.on('error', (err) => reject(err));

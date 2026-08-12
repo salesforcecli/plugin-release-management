@@ -123,6 +123,7 @@ export default class build extends SfCommand<void> {
 
     // If the pr-base-branch flag is provided, use it
     let baseBranch = flags['pr-base-branch'];
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (!baseBranch) {
       // If not, determine the pr base on other conditions
       // Note: the base branch for 'nightly' will always be 'main'

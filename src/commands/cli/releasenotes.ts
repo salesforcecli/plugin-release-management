@@ -256,9 +256,9 @@ const findDifferences = (oldPlugins: Map<string, string>, newPlugins: Map<string
     // these are in the new, but not in the old
     if (!oldPlugins.has(name)) added.set(name, version);
     // non-null because they aren't added (new, but not old, so we know that must be in the old)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     
     else if (semver.gt(version, oldPlugins.get(name)!)) upgraded.set(name, version);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     
     else if (semver.lt(version, oldPlugins.get(name)!)) downgraded.set(name, version);
     else unchanged.set(name, version);
   });
