@@ -1,3 +1,9 @@
+## [6.0.5](https://github.com/salesforcecli/plugin-release-management/compare/6.0.4...6.0.5) (2026-08-12)
+
+### Bug Fixes
+
+- add @types/\* deps via dev-scripts 13.0.2 @W-23474629@ ([15e65cf](https://github.com/salesforcecli/plugin-release-management/commit/15e65cff93810b0065e9f6e77043bb44c7e806e2))
+
 ## [6.0.4](https://github.com/salesforcecli/plugin-release-management/compare/6.0.3...6.0.4) (2026-08-09)
 
 ### Bug Fixes
