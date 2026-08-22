@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1108.0",
-    "@oclif/core": "^4.13.3",
+    "@oclif/core": "^4.13.5",
     "@octokit/core": "^6.1.6",
     "@octokit/plugin-paginate-rest": "^11.6.0",
     "@octokit/plugin-throttling": "^9.6.1",
