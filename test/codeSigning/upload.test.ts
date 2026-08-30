@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { CreateMultipartUploadCommand, UploadPartCommand, S3, PutObjectCommand } from '@aws-sdk/client-s3';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { expect } from 'chai';
