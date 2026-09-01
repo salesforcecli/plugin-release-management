@@ -1728,16 +1728,16 @@
     semver "^7.8.1"
     which "^4"
 
-"@salesforce/plugin-trust@^4.0.10":
-  version "4.0.10"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-4.0.10.tgz#56ed5a530623d4170a6f64327f7fa53a04b027e4"
-  integrity sha512-7TnS2xlGsgpo98zZ758Z3MQxBmHACH07rTwL+lrEs1QJKcLCAvSbPQ8rCzrurhr6NUJmm1it9jQRw9aLdgNwkA==
+"@salesforce/plugin-trust@^4.0.11":
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-trust/-/plugin-trust-4.0.11.tgz#f1a25605cc372f314349b06e2b7159624d28e013"
+  integrity sha512-SQf4dGmTww0NbKGrCsMPmxinP0wIrokiN7qge1kd1JaRrt+X4AGjEjizNcZwtVuotnrYYZuyCNZupQzMwMpRHQ==
   dependencies:
-    "@oclif/core" "^4"
+    "@oclif/core" "^5.0.0"
     "@salesforce/core" "^9.1.0"
     "@salesforce/kit" "^4.0.0"
     "@salesforce/plugin-info" "^4.0.4"
-    "@salesforce/sf-plugins-core" "^13.0.0"
+    "@salesforce/sf-plugins-core" "^13.0.4"
     cross-spawn "^7.0.6"
     got "^13.0.0"
     npm "^11.19.0"
