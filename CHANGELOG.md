@@ -1,3 +1,10 @@
+## [6.0.10](https://github.com/salesforcecli/plugin-release-management/compare/6.0.9...6.0.10) (2026-09-01)
+
+### Bug Fixes
+
+- bump plugin-trust lib:latest ([50db51e](https://github.com/salesforcecli/plugin-release-management/commit/50db51effd478f078a603cfdd8ee04a509e50a85))
+- upgrade @oclif/core to v5 @W-23512455@ ([75a7f0f](https://github.com/salesforcecli/plugin-release-management/commit/75a7f0fbbbbc404d119f3361c0dc99c5cb760761))
+
 ## [6.0.9](https://github.com/salesforcecli/plugin-release-management/compare/6.0.8...6.0.9) (2026-08-16)
 
 ### Bug Fixes
