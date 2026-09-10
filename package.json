@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^6.0.0",
-    "@salesforce/dev-scripts": "^13.0.2",
+    "@salesforce/dev-scripts": "^14.0.0",
     "@salesforce/ts-sinon": "^1.4.36",
     "@types/chai": "^4.3.17",
     "@types/mocha": "^10.0.10",
@@ -46,11 +46,11 @@
     "@types/sinon": "^10.0.20",
     "aws-sdk-client-mock": "^4.1.0",
     "eslint": "^10.4.0",
-    "eslint-config-salesforce-typescript": "^6.0.0",
-    "eslint-plugin-sf-plugin": "^1.20.33",
+    "eslint-config-salesforce-typescript": "^7.0.0",
+    "eslint-plugin-sf-plugin": "^3.0.0",
     "oclif": "^5.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.0"
   },
   "config": {},
   "engines": {
