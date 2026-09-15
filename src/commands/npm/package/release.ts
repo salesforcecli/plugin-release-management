@@ -74,6 +74,10 @@ export default class Release extends SfCommand<ReleaseResult> {
     githubtag: Flags.string({
       summary: messages.getMessage('flags.githubtag.summary'),
     }),
+    oidc: Flags.boolean({
+      default: false,
+      summary: messages.getMessage('flags.oidc.summary'),
+    }),
   };
 
   public async run(): Promise<ReleaseResult> {
@@ -91,6 +95,7 @@ export default class Release extends SfCommand<ReleaseResult> {
     const pkg = await PackageRepo.create({
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       useprerelease: flags.prerelease,
+      useoidc: flags.oidc,
     });
 
     await pkg.writeNpmToken();

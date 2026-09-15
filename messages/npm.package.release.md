@@ -26,6 +26,10 @@ run yarn install and build on repository
 
 given a github tag, release the version specified in the package.json as is. Useful when you've already done a release and only need npm publish features
 
+# flags.oidc.summary
+
+enable OpenID Connect (OIDC) authentication for secure, token-based package publishing on npm
+
 # flags.prerelease.summary
 
 determine the next version as <version>-<prerelease>.0 if version is not manually set
