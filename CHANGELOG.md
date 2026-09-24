@@ -1,3 +1,9 @@
+# [6.1.0](https://github.com/salesforcecli/plugin-release-management/compare/6.0.10...6.1.0) (2026-09-24)
+
+### Features
+
+- add --trusted-publishing flag for npm OIDC publishing ([029e5d1](https://github.com/salesforcecli/plugin-release-management/commit/029e5d163f01a359b2fb9d075741be6454a64a05))
+
 ## [6.0.10](https://github.com/salesforcecli/plugin-release-management/compare/6.0.9...6.0.10) (2026-09-01)
 
 ### Bug Fixes
