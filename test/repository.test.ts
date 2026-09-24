@@ -16,12 +16,13 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 import { expect } from 'chai';
-import { TestContext } from '@salesforce/core/testSetup';
+import { TestContext, shouldThrow } from '@salesforce/core/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
 import sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Package } from '../src/package.js';
-import { PackageRepo } from '../src/repository.js';
+import { PackageRepo, npmSupportsTrustedPublishing } from '../src/repository.js';
+import { Registry } from '../src/registry.js';
 
 const pkgName = '@salesforce/my-plugin';
 
@@ -153,5 +154,64 @@ describe('PackageRepo', () => {
       const cmd = execStub.firstCall.args[0];
       expect(cmd).to.include('--access restricted');
     });
+  });
+
+  describe('publish with trusted publishing', () => {
+    let repo: PackageRepo;
+
+    beforeEach(async () => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.1.0' })
+      );
+      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({
+        name: pkgName,
+        version: '1.0.0',
+        versions: ['1.0.0'],
+      });
+      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
+      repo = await PackageRepo.create({ ux: uxStub });
+    });
+
+    it('should not write an npm token when trustedPublishing is set', async () => {
+      const writeTokenStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'writeNpmToken').resolves();
+      stubMethod($$.SANDBOX, Registry.prototype, 'isPublicNpmRegistry').returns(true);
+      stubMethod($$.SANDBOX, repo, 'getInstalledNpmVersion').returns('11.5.1');
+      await repo.publish({ trustedPublishing: true });
+      expect(writeTokenStub.called).to.be.false;
+    });
+
+    it('should throw a hard error when the registry is not the public npm registry', async () => {
+      stubMethod($$.SANDBOX, Registry.prototype, 'isPublicNpmRegistry').returns(false);
+      try {
+        await shouldThrow(repo.publish({ trustedPublishing: true }));
+      } catch (e) {
+        expect(e).to.have.property('name', 'TrustedPublishingRegistryError');
+      }
+    });
+
+    it('should throw when the installed npm is too old for trusted publishing', async () => {
+      stubMethod($$.SANDBOX, Registry.prototype, 'isPublicNpmRegistry').returns(true);
+      stubMethod($$.SANDBOX, repo, 'getInstalledNpmVersion').returns('10.9.0');
+      try {
+        await shouldThrow(repo.publish({ trustedPublishing: true }));
+      } catch (e) {
+        expect(e).to.have.property('name', 'TrustedPublishingNpmVersionError');
+      }
+    });
+  });
+});
+
+describe('npmSupportsTrustedPublishing', () => {
+  it('returns true for the minimum supported version 11.5.1', () => {
+    expect(npmSupportsTrustedPublishing('11.5.1')).to.be.true;
+  });
+  it('returns true for a newer version', () => {
+    expect(npmSupportsTrustedPublishing('11.12.1')).to.be.true;
+  });
+  it('returns false for an older patch', () => {
+    expect(npmSupportsTrustedPublishing('11.5.0')).to.be.false;
+  });
+  it('returns false for an older major', () => {
+    expect(npmSupportsTrustedPublishing('10.9.2')).to.be.false;
   });
 });

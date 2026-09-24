@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
- 
 
 import os from 'node:os';
 import fs from 'node:fs';
@@ -50,6 +49,23 @@ describe('src/registry', () => {
       expect(registry).to.be.ok;
       expect(registry.registryUrl).to.be.equal('https://foo.bar.baz.org');
       expect(registry.getRegistryParameter()).to.be.equal('--registry https://foo.bar.baz.org');
+    });
+  });
+  describe('isPublicNpmRegistry', () => {
+    it('returns true for the public npm registry with a trailing slash', () => {
+      stubMethod($$.SANDBOX, Env.prototype, 'getString').returns(undefined);
+      const registry = new Registry('https://registry.npmjs.org/');
+      expect(registry.isPublicNpmRegistry()).to.be.true;
+    });
+    it('returns true for the public npm registry without a trailing slash', () => {
+      stubMethod($$.SANDBOX, Env.prototype, 'getString').returns(undefined);
+      const registry = new Registry('https://registry.npmjs.org');
+      expect(registry.isPublicNpmRegistry()).to.be.true;
+    });
+    it('returns false for a private registry', () => {
+      stubMethod($$.SANDBOX, Env.prototype, 'getString').returns(undefined);
+      const registry = new Registry('https://foo.bar.baz.org');
+      expect(registry.isPublicNpmRegistry()).to.be.false;
     });
   });
   describe('npmrc tests', () => {
