@@ -37,6 +37,15 @@ export class Registry {
   }
 
   /**
+   * Whether the resolved registry is the public npm registry. npm Trusted
+   * Publishing (OIDC) only works against registry.npmjs.org.
+   */
+  public isPublicNpmRegistry(): boolean {
+    if (!this.registryUrl) return false;
+    return new URL(this.registryUrl).host === 'registry.npmjs.org';
+  }
+
+  /**
    * Return a properly formatted --registry string
    */
   public getRegistryParameter(): string {

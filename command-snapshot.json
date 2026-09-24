@@ -163,6 +163,7 @@
       "npmtag",
       "prerelease",
       "sign",
+      "trusted-publishing",
       "verify"
     ],
     "plugin": "@salesforce/plugin-release-management"

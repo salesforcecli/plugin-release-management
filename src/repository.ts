@@ -21,6 +21,7 @@ import { Logger, SfError } from '@salesforce/core';
 import { AsyncOptionalCreatable, Env, sleep } from '@salesforce/kit';
 import chalk from 'chalk';
 import { isString } from '@salesforce/ts-types';
+import semver from 'semver';
 import { Package } from './package.js';
 import { Registry } from './registry.js';
 import { SigningResponse } from './codeSigning/SimplifiedSigning.js';
@@ -28,11 +29,23 @@ import { api as packAndSignApi } from './codeSigning/packAndSign.js';
 
 export type Access = 'public' | 'restricted';
 
+// npm added Trusted Publishing (OIDC) support in this version of the CLI.
+const MIN_TRUSTED_PUBLISHING_NPM_VERSION = '11.5.1';
+
+/**
+ * Whether the given npm CLI version supports Trusted Publishing (OIDC).
+ */
+export function npmSupportsTrustedPublishing(npmVersion: string): boolean {
+  const coerced = semver.coerce(npmVersion);
+  return coerced ? semver.gte(coerced, MIN_TRUSTED_PUBLISHING_NPM_VERSION) : false;
+}
+
 type PublishOpts = {
   dryrun?: boolean;
   signatures?: SigningResponse[];
   tag?: string;
   access?: Access;
+  trustedPublishing?: boolean;
 };
 
 export type PackageInfo = {
@@ -170,8 +183,13 @@ export class PackageRepo extends Repository {
   }
 
   public async publish(opts: PublishOpts = {}): Promise<void> {
-    const { dryrun, signatures, access, tag } = opts;
-    if (!dryrun) await this.writeNpmToken();
+    const { dryrun, signatures, access, tag, trustedPublishing } = opts;
+    if (trustedPublishing) {
+      // OIDC replaces token auth; npm performs the token exchange itself during publish.
+      this.assertTrustedPublishingSupported();
+    } else if (!dryrun) {
+      await this.writeNpmToken();
+    }
     let cmd = 'npm publish';
     if (signatures?.[0]?.fileTarPath) cmd += ` ${signatures[0]?.fileTarPath}`;
     if (tag) cmd += ` --tag ${tag}`;
@@ -187,6 +205,26 @@ export class PackageRepo extends Repository {
 
   public getSuccessMessage(): string {
     return chalk.green.bold(`Successfully released ${this.name}@${this.nextVersion}`);
+  }
+
+  protected getInstalledNpmVersion(): string {
+    return this.execCommand('npm --version', true).stdout.trim();
+  }
+
+  protected assertTrustedPublishingSupported(): void {
+    if (!this.registry.isPublicNpmRegistry()) {
+      throw new SfError(
+        'Trusted Publishing requires the public npm registry (registry.npmjs.org). Remove the custom registry or use token-based auth instead.',
+        'TrustedPublishingRegistryError'
+      );
+    }
+    const npmVersion = this.getInstalledNpmVersion();
+    if (!npmSupportsTrustedPublishing(npmVersion)) {
+      throw new SfError(
+        `Trusted Publishing requires npm >= ${MIN_TRUSTED_PUBLISHING_NPM_VERSION}, but found ${npmVersion}. Update npm in your environment (e.g. "npm install -g npm@latest").`,
+        'TrustedPublishingNpmVersionError'
+      );
+    }
   }
 
   protected async init(): Promise<void> {

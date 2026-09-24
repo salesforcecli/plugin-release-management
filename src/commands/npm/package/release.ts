@@ -74,6 +74,10 @@ export default class Release extends SfCommand<ReleaseResult> {
     githubtag: Flags.string({
       summary: messages.getMessage('flags.githubtag.summary'),
     }),
+    'trusted-publishing': Flags.boolean({
+      default: false,
+      summary: messages.getMessage('flags.trusted-publishing.summary'),
+    }),
   };
 
   public async run(): Promise<ReleaseResult> {
@@ -93,7 +97,10 @@ export default class Release extends SfCommand<ReleaseResult> {
       useprerelease: flags.prerelease,
     });
 
-    await pkg.writeNpmToken();
+    // With Trusted Publishing (OIDC) npm authenticates via the CI identity, so no token is written.
+    if (!flags['trusted-publishing']) {
+      await pkg.writeNpmToken();
+    }
 
     if (flags.githubtag) {
       this.log(`Using Version: ${pkg.nextVersion}`);
@@ -120,6 +127,7 @@ export default class Release extends SfCommand<ReleaseResult> {
         access: flags.npmaccess as Access,
         tag: flags.npmtag,
         dryrun: flags.dryrun,
+        trustedPublishing: flags['trusted-publishing'],
       });
     } catch (err) {
       if (!(err instanceof Error) || typeof err !== 'string') {

@@ -34,6 +34,10 @@ determine the next version as <version>-<prerelease>.0 if version is not manuall
 
 verify npm registry has new version after publish and digital signature
 
+# flags.trusted-publishing.summary
+
+publish using npm Trusted Publishing (OIDC) instead of an auth token; requires running in a configured CI environment against the public npm registry with npm >= 11.5.1
+
 # InvalidNextVersion
 
 %s already exists in the public npm registry
