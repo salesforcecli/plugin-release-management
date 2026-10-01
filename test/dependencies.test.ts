@@ -62,4 +62,11 @@ describe('Dependencies', () => {
       { name: 'GH_TOKEN', type: 'env', passed: true },
     ]);
   });
+
+  it('should not require NPM_TOKEN when trusted-publishing is set', () => {
+    stubMethod($$.SANDBOX, Env.prototype, 'getString').returns(undefined);
+    const validation = verifyDependencies({ 'trusted-publishing': true });
+    expect(validation.failures).to.equal(0);
+    expect(validation.results).to.deep.include({ name: 'NPM_TOKEN', type: 'env', passed: true });
+  });
 });
