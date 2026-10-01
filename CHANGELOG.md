@@ -1,3 +1,9 @@
+## [6.1.1](https://github.com/salesforcecli/plugin-release-management/compare/6.1.0...6.1.1) (2026-10-01)
+
+### Bug Fixes
+
+- remove check for NPM_TOKEN when --trusted-publishing flag is true ([0543f10](https://github.com/salesforcecli/plugin-release-management/commit/0543f10d89dffff92a2c4b550daa59f171131026))
+
 # [6.1.0](https://github.com/salesforcecli/plugin-release-management/compare/6.0.10...6.1.0) (2026-09-24)
 
 ### Features
