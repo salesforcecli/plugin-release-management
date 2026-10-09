@@ -1,3 +1,9 @@
+## [6.1.4](https://github.com/salesforcecli/plugin-release-management/compare/6.1.3...6.1.4) (2026-10-09)
+
+### Bug Fixes
+
+- **deps:** bump handlebars from 4.7.9 to 4.7.10 ([a74a86e](https://github.com/salesforcecli/plugin-release-management/commit/a74a86edf5b315ac4bfa67b02df8234fd5686b8d))
+
 ## [6.1.3](https://github.com/salesforcecli/plugin-release-management/compare/6.1.2...6.1.3) (2026-10-09)
 
 ### Bug Fixes
