@@ -1,3 +1,9 @@
+## [6.1.6](https://github.com/salesforcecli/plugin-release-management/compare/6.1.5...6.1.6) (2026-10-09)
+
+### Bug Fixes
+
+- **deps:** bump postcss-selector-parser from 7.1.4 to 7.1.6 ([4d9ee6a](https://github.com/salesforcecli/plugin-release-management/commit/4d9ee6a4b74df06f860f0e20f64d4fcc0e05d1f1))
+
 ## [6.1.5](https://github.com/salesforcecli/plugin-release-management/compare/6.1.4...6.1.5) (2026-10-09)
 
 ### Bug Fixes
