@@ -1,3 +1,9 @@
+## [6.1.16](https://github.com/salesforcecli/plugin-release-management/compare/6.1.15...6.1.16) (2026-10-24)
+
+### Bug Fixes
+
+- **deps:** bump zod from 4.4.3 to 4.6.7 ([6f58eb0](https://github.com/salesforcecli/plugin-release-management/commit/6f58eb0119dbd43e804de29a48aac6d6868ae57a))
+
 ## [6.1.15](https://github.com/salesforcecli/plugin-release-management/compare/6.1.14...6.1.15) (2026-10-24)
 
 ### Bug Fixes
