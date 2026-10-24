@@ -1,3 +1,9 @@
+## [6.1.14](https://github.com/salesforcecli/plugin-release-management/compare/6.1.13...6.1.14) (2026-10-24)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/kit from 4.0.0 to 4.0.1 ([7c67e64](https://github.com/salesforcecli/plugin-release-management/commit/7c67e64d029ce9608d4eda1a1aaebe56f33dea97))
+
 ## [6.1.13](https://github.com/salesforcecli/plugin-release-management/compare/6.1.12...6.1.13) (2026-10-24)
 
 ### Bug Fixes
