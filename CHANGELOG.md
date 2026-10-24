@@ -1,3 +1,9 @@
+## [6.1.15](https://github.com/salesforcecli/plugin-release-management/compare/6.1.14...6.1.15) (2026-10-24)
+
+### Bug Fixes
+
+- **deps:** bump undici from 6.28.0 to 6.29.1 ([417e6c0](https://github.com/salesforcecli/plugin-release-management/commit/417e6c0412d98e98b20afb08b99967dd0a60b8f1))
+
 ## [6.1.14](https://github.com/salesforcecli/plugin-release-management/compare/6.1.13...6.1.14) (2026-10-24)
 
 ### Bug Fixes
