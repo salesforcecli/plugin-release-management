@@ -1,3 +1,9 @@
+## [6.1.18](https://github.com/salesforcecli/plugin-release-management/compare/6.1.17...6.1.18) (2026-10-25)
+
+### Bug Fixes
+
+- **deps:** bump fast-uri from 3.1.8 to 3.1.9 ([1c0bf13](https://github.com/salesforcecli/plugin-release-management/commit/1c0bf13571e4895c70434adcc0a8fc245f75d9f3))
+
 ## [6.1.17](https://github.com/salesforcecli/plugin-release-management/compare/6.1.16...6.1.17) (2026-10-25)
 
 ### Bug Fixes
