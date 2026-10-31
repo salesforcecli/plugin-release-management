@@ -1,3 +1,9 @@
+## [6.1.21](https://github.com/salesforcecli/plugin-release-management/compare/6.1.20...6.1.21) (2026-10-31)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/cli-plugins-testkit from 5.3.66 to 5.3.81 ([74667bc](https://github.com/salesforcecli/plugin-release-management/commit/74667bc8fdcbfcb1159d02af649ce6300eb3a41a))
+
 ## [6.1.20](https://github.com/salesforcecli/plugin-release-management/compare/6.1.19...6.1.20) (2026-10-31)
 
 ### Bug Fixes
