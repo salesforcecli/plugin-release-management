@@ -38,6 +38,22 @@ verify npm registry has new version after publish and digital signature
 
 publish using npm Trusted Publishing (OIDC) instead of an auth token; requires running in a configured CI environment against the public npm registry with npm >= 11.5.1
 
+# flags.pin-dependencies.summary
+
+pin every production dependency to the version installed from yarn.lock before publishing
+
+# flags.pin-dependencies.description
+
+npm ignores yarn.lock and resolutions when a package is installed from the registry. This writes the exact version of every production package installed at the top of node_modules into "dependencies", so npm installs nearly the same tree as the CLI installers (packages yarn had to nest still resolve from their ranges). Libraries (no "oclif" property) and core plugins of @salesforce/cli are skipped because they have to dedupe with the packages installed next to them; a plugin that becomes core must publish a new release so the CLI doesn't depend on a pinned version. package.json is restored after publishing.
+
+# pinned
+
+Pinned %s dependencies of %s to their installed versions. %s packages are only installed nested and still resolve from their ranges.
+
+# pinSkipped
+
+Not pinning dependencies of %s because %s.
+
 # InvalidNextVersion
 
 %s already exists in the public npm registry

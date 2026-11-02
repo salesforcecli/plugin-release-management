@@ -161,6 +161,7 @@
       "json",
       "npmaccess",
       "npmtag",
+      "pin-dependencies",
       "prerelease",
       "sign",
       "trusted-publishing",
