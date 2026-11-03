@@ -29,7 +29,7 @@ Once the package has been built and signed it will be published to npm. The comm
 ## Install
 
 ```bash
-sf plugins install release-management@x.y.z
+sf plugins install @salesforce/plugin-release-management@x.y.z
 ```
 
 ## Issues
