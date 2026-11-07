@@ -1,3 +1,9 @@
+## [6.1.23](https://github.com/salesforcecli/plugin-release-management/compare/6.1.22...6.1.23) (2026-11-07)
+
+### Bug Fixes
+
+- **deps:** bump brace-expansion from 1.1.18 to 1.1.21 ([ee4f088](https://github.com/salesforcecli/plugin-release-management/commit/ee4f088cc43d901cf0727ae8eea120ba038bb023))
+
 ## [6.1.22](https://github.com/salesforcecli/plugin-release-management/compare/6.1.21...6.1.22) (2026-11-07)
 
 ### Bug Fixes
