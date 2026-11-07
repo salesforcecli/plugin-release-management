@@ -1,3 +1,9 @@
+## [6.1.24](https://github.com/salesforcecli/plugin-release-management/compare/6.1.23...6.1.24) (2026-11-07)
+
+### Bug Fixes
+
+- **deps:** bump js-yaml from 3.15.1 to 3.15.2 ([4aeff56](https://github.com/salesforcecli/plugin-release-management/commit/4aeff567f3e887d5d5542045797f26407f7334bd))
+
 ## [6.1.23](https://github.com/salesforcecli/plugin-release-management/compare/6.1.22...6.1.23) (2026-11-07)
 
 ### Bug Fixes
