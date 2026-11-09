@@ -82,9 +82,8 @@ type DependencyInfo = {
 
 /**
  * Parse `npm view <spec> --json` output for queries that resolve to an object (not `versions`).
- * npm 12 wraps results in an array (one entry per matched version) where npm <= 11 returned a
- * bare object, and npm 7+ writes E404s as `{ "error": {...} }` to stdout. Returns the last
- * match, or undefined when nothing matched.
+ * Accepts a bare object or npm 12's array of matches (returns the last entry), and returns
+ * undefined for the `{ "error": {...} }` JSON npm writes to stdout when nothing matched.
  */
 export function parseNpmViewJson<T extends object>(stdout: string): T | undefined {
   if (!stdout.trim()) return;
