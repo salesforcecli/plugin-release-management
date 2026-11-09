@@ -136,9 +136,9 @@ abstract class Repository extends AsyncOptionalCreatable<RepositoryOptions> {
       update(`attempt: ${attempts} of ${maxAttempts}`);
       found = checkFn();
       // eslint-disable-next-line no-await-in-loop
-      await sleep(1000);
+      if (!found) await sleep(1000);
     }
-    stop(attempts >= maxAttempts ? 'failed' : 'done');
+    stop(found ? 'done' : 'failed');
     return found;
   }
 
@@ -232,7 +232,7 @@ export class PackageRepo extends Repository {
     this.package = await Package.create({ location: undefined });
     this.nextVersion = this.determineNextVersion();
 
-    this.name = this.package.npmPackage.name;
+    this.name = this.package.name;
   }
 
   private determineNextVersion(): string {

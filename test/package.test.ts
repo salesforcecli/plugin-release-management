@@ -21,6 +21,7 @@ import { assert, expect } from 'chai';
 import { TestContext } from '@salesforce/core/testSetup';
 import sinon from 'sinon';
 import { stubMethod } from '@salesforce/ts-sinon';
+import shelljs from 'shelljs';
 import { Package } from '../src/package.js';
 
 const pkgName = '@salesforce/my-plugin';
@@ -99,6 +100,64 @@ describe('Package', () => {
       });
       const pkg = await Package.create();
       expect(pkg.nextVersionIsAvailable('1.1.0')).to.equal(true);
+    });
+  });
+
+  describe('retrieveNpmPackage', () => {
+    let execStub: sinon.SinonStub;
+    const e404 = JSON.stringify({ error: { code: 'E404', summary: 'No match found for version 1.0.0' } });
+
+    beforeEach(() => {
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '1.0.0' })
+      );
+      execStub = $$.SANDBOX.stub(shelljs, 'exec');
+    });
+    afterEach(() => {
+      $$.restore();
+    });
+
+    it('should fall back to the latest version when npm reports E404 JSON for the requested version', async () => {
+      const latest = { name: pkgName, version: '0.9.0', versions: ['0.9.0'] };
+      execStub.callsFake((cmd: string) => ({
+        stdout: cmd.startsWith(`npm view ${pkgName}@1.0.0 `) ? e404 : JSON.stringify(latest),
+      }));
+      const pkg = await Package.create();
+      expect(pkg.npmPackage).to.deep.equal(latest);
+    });
+
+    it('should unwrap the array npm 12 returns for a single version', async () => {
+      const doc = { name: pkgName, version: '1.0.0', versions: ['0.9.0', '1.0.0'] };
+      execStub.returns({ stdout: JSON.stringify([doc]) });
+      const pkg = await Package.create();
+      expect(pkg.npmPackage).to.deep.equal(doc);
+      expect(pkg.nextVersionIsAvailable('1.0.0')).to.equal(true);
+    });
+
+    it('should unwrap the array npm 12 returns for dist-tags', async () => {
+      execStub.returns({ stdout: JSON.stringify([{ latest: '1.0.0', 'latest-rc': '1.1.0' }]) });
+      const pkg = await Package.create();
+      expect(pkg.getDistTags(pkgName)).to.deep.equal({ latest: '1.0.0', 'latest-rc': '1.1.0' });
+    });
+
+    it('should error instead of returning E404 JSON as dist-tags', async () => {
+      execStub.returns({ stdout: e404, stderr: '' });
+      const pkg = await Package.create();
+      expect(() => pkg.getDistTags(pkgName)).to.throw(/E404/);
+    });
+
+    it('should still accept the bare object npm 11 returns', async () => {
+      const doc = { name: pkgName, version: '1.0.0', versions: ['1.0.0'] };
+      execStub.returns({ stdout: JSON.stringify(doc) });
+      const pkg = await Package.create();
+      expect(pkg.npmPackage).to.deep.equal(doc);
+    });
+
+    it('should use a default npm package when the package is not published at all', async () => {
+      execStub.returns({ stdout: e404 });
+      const pkg = await Package.create();
+      expect(pkg.npmPackage).to.deep.equal({ name: pkgName, version: '1.0.0', versions: [], 'dist-tags': {} });
+      expect(pkg.nextVersionIsAvailable('1.0.0')).to.equal(false);
     });
   });
 
