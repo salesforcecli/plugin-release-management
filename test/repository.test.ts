@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
- 
 import { expect } from 'chai';
 import { TestContext, shouldThrow } from '@salesforce/core/testSetup';
 import { stubMethod, stubInterface } from '@salesforce/ts-sinon';
@@ -51,6 +50,19 @@ describe('PackageRepo', () => {
       execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
       const repo = await PackageRepo.create({ ux: uxStub });
       expect(repo.nextVersion).to.equal('2.0.0');
+    });
+
+    it('should take the package name from package.json, not the npm registry response', async () => {
+      $$.SANDBOX.restore();
+      // registry response without a name, e.g. a version-specific lookup that failed
+      stubMethod($$.SANDBOX, Package.prototype, 'retrieveNpmPackage').returns({ versions: ['1.0.0'] });
+      stubMethod($$.SANDBOX, Package.prototype, 'readPackageJson').returns(
+        Promise.resolve({ name: pkgName, version: '2.0.0' })
+      );
+      execStub = stubMethod($$.SANDBOX, PackageRepo.prototype, 'execCommand').returns('');
+      const repo = await PackageRepo.create({ ux: uxStub });
+      expect(repo.name).to.equal(pkgName);
+      expect(repo.getSuccessMessage()).to.include(`${pkgName}@2.0.0`);
     });
 
     it('should use commit-and-tag-version to determine the next version if the version in the package.json already exists', async () => {

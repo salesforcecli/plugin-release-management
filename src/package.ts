@@ -80,6 +80,19 @@ type DependencyInfo = {
   finalVersion?: string;
 };
 
+/**
+ * Parse `npm view <spec> --json` output for queries that resolve to an object (not `versions`).
+ * Accepts a bare object or npm 12's array of matches (returns the last entry), and returns
+ * undefined for the `{ "error": {...} }` JSON npm writes to stdout when nothing matched.
+ */
+export function parseNpmViewJson<T extends object>(stdout: string): T | undefined {
+  if (!stdout.trim()) return;
+  const parsed = JSON.parse(stdout) as unknown;
+  const value: unknown = Array.isArray(parsed) ? parsed.at(-1) : parsed;
+  if (!isPlainObject(value) || 'error' in value) return;
+  return value as T;
+}
+
 export function parsePackageVersion(alias: string): string | undefined {
   const regex = /[0-9]{1,3}(?:.[0-9]{1,3})?(?:.[0-9]{1,3})?(.*?)$/;
   return regex.exec(alias)?.[0];
@@ -113,16 +126,7 @@ export class Package extends AsyncOptionalCreatable {
    * If that version doesn't exist, it'll find the version tagged as latest
    */
   public retrieveNpmPackage(): NpmPackage | undefined {
-    let result = shelljs.exec(
-      `npm view ${this.name}@${this.packageJson.version} ${this.registry.getRegistryParameter()} --json`,
-      { silent: true }
-    );
-    if (!result.stdout) {
-      result = shelljs.exec(`npm view ${this.name} ${this.registry.getRegistryParameter()} --json`, { silent: true });
-    }
-    if (result.stdout) {
-      return JSON.parse(result.stdout) as NpmPackage;
-    }
+    return this.npmView(`${this.name}@${this.packageJson.version}`) ?? this.npmView(this.name);
   }
 
   public nextVersionIsAvailable(nextVersion: string): boolean {
@@ -170,10 +174,9 @@ export class Package extends AsyncOptionalCreatable {
     const result = shelljs.exec(`npm view ${name} dist-tags ${this.registry.getRegistryParameter()} --json`, {
       silent: true,
     });
-    if (result.stdout) {
-      return JSON.parse(result.stdout) as Record<string, string>;
-    }
-    ux.error(result.stderr);
+    const distTags = parseNpmViewJson<Record<string, string>>(result.stdout);
+    if (distTags) return distTags;
+    ux.error(result.stderr || `npm view ${name} dist-tags returned: ${result.stdout}`);
   }
 
   public bumpResolutions(tag: string): Record<string, string> {
@@ -344,6 +347,11 @@ export class Package extends AsyncOptionalCreatable {
     this.packageJson = await this.readPackageJson();
     this.name = this.packageJson.name;
     this.npmPackage = this.retrieveNpmPackage() ?? this.createDefaultNpmPackage();
+  }
+
+  private npmView(spec: string): NpmPackage | undefined {
+    const result = shelljs.exec(`npm view ${spec} ${this.registry.getRegistryParameter()} --json`, { silent: true });
+    return parseNpmViewJson<NpmPackage>(result.stdout);
   }
 
   private createDefaultNpmPackage(): NpmPackage {

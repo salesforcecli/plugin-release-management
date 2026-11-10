@@ -23,7 +23,7 @@ import { Messages, SfError } from '@salesforce/core';
 import shelljs from 'shelljs';
 import semver from 'semver';
 import { CLI } from '../../types.js';
-import { NpmPackage, parsePackageVersion } from '../../package.js';
+import { NpmPackage, parsePackageVersion, parseNpmViewJson } from '../../package.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-release-management', 'cli.releasenotes');
@@ -222,7 +222,9 @@ export default class ReleaseNotes extends SfCommand<ChangesByPlugin> {
 
 const getNpmPackage = (name: string, version = 'latest'): NpmPackage => {
   const result = shelljs.exec(`npm view ${name}@${version} --json`, { silent: true });
-  return JSON.parse(result.stdout) as NpmPackage;
+  const npmPackage = parseNpmViewJson<NpmPackage>(result.stdout);
+  if (!npmPackage) throw new SfError(`No npm package found for ${name}@${version}`, 'NpmPackageNotFound');
+  return npmPackage;
 };
 
 const normalizePlugins = (npmPackage: NpmPackage): Map<string, string> => {
@@ -256,9 +258,7 @@ const findDifferences = (oldPlugins: Map<string, string>, newPlugins: Map<string
     // these are in the new, but not in the old
     if (!oldPlugins.has(name)) added.set(name, version);
     // non-null because they aren't added (new, but not old, so we know that must be in the old)
-     
     else if (semver.gt(version, oldPlugins.get(name)!)) upgraded.set(name, version);
-     
     else if (semver.lt(version, oldPlugins.get(name)!)) downgraded.set(name, version);
     else unchanged.set(name, version);
   });
