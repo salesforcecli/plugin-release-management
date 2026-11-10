@@ -1,3 +1,9 @@
+## [6.1.28](https://github.com/salesforcecli/plugin-release-management/compare/6.1.27...6.1.28) (2026-11-10)
+
+### Bug Fixes
+
+- handle npm 12 `npm view --json` output in publish availability check @W-24844798@ ([24ec1bf](https://github.com/salesforcecli/plugin-release-management/commit/24ec1bf21bd6bef264730db3caa69036de773dfa))
+
 ## [6.1.27](https://github.com/salesforcecli/plugin-release-management/compare/6.1.26...6.1.27) (2026-11-08)
 
 ### Bug Fixes
