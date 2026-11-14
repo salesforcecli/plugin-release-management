@@ -1,3 +1,9 @@
+## [6.1.31](https://github.com/salesforcecli/plugin-release-management/compare/6.1.30...6.1.31) (2026-11-14)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 5.1.11 to 5.1.12 ([731ab2b](https://github.com/salesforcecli/plugin-release-management/commit/731ab2bc27755c376d935cf3763b052bbee8073d))
+
 ## [6.1.30](https://github.com/salesforcecli/plugin-release-management/compare/6.1.29...6.1.30) (2026-11-14)
 
 ### Bug Fixes
