@@ -35,7 +35,7 @@
     "yarn-deduplicate": "^6.0.2"
   },
   "devDependencies": {
-    "@oclif/plugin-command-snapshot": "^6.0.12",
+    "@oclif/plugin-command-snapshot": "^6.0.13",
     "@salesforce/dev-scripts": "^15.0.1",
     "@salesforce/ts-sinon": "^1.4.45",
     "@types/chai": "^4.3.17",
