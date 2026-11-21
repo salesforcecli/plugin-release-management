@@ -19,7 +19,7 @@
     "@salesforce/kit": "^4.0.1",
     "@salesforce/plugin-command-reference": "^3.1.141",
     "@salesforce/plugin-trust": "^4.1.6",
-    "@salesforce/sf-plugins-core": "^13.0.4",
+    "@salesforce/sf-plugins-core": "^13.0.9",
     "@salesforce/ts-types": "^3.2.2",
     "@smithy/node-http-handler": "^4.13.0",
     "@smithy/types": "^4.19.0",
